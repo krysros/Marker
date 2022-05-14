@@ -33,8 +33,8 @@
   </td>
   <td>${company.city}</td>
   <td>${voivodeships.get(company.voivodeship)}</td>
-  <td>${company.added.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${company.edited.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td><a href="${request.route_url('company_upvotes', company_id=company.id, slug=company.slug)}">Pokaż</a> (${company.upvote_count})</td>
 </tr>
 % endfor

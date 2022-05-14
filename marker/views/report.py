@@ -131,9 +131,9 @@ class ReportView(object):
         elif rel == "uc":
             stmt = (
                 select(
-                    User.username, func.count(Company.submitter_id).label("uc")
+                    User.username, func.count(Company.creator_id).label("uc")
                 )
-                .join(Company.added_by)
+                .join(Company.created_by)
                 .group_by(User.username)
                 .order_by(desc("uc"))
             )
@@ -141,9 +141,9 @@ class ReportView(object):
             stmt = (
                 select(
                     User.username,
-                    func.count(Investment.submitter_id).label("ut"),
+                    func.count(Investment.creator_id).label("ut"),
                 )
-                .join(Investment.added_by)
+                .join(Investment.created_by)
                 .group_by(User.username)
                 .order_by(desc("ut"))
             )

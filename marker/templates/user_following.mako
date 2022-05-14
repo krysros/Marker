@@ -42,15 +42,15 @@
         Sortuj
       </button>
       <div class="dropdown-menu" role="menu">
-        <a class="dropdown-item" href="${request.route_url('user_following', username=user.username, _query={'filter': filter, 'sort': 'added', 'order': order})}">
-          % if sort == 'added':
+        <a class="dropdown-item" href="${request.route_url('user_following', username=user.username, _query={'filter': filter, 'sort': 'created_at', 'order': order})}">
+          % if sort == 'created_at':
           <strong>wg daty dodania</strong>
           % else:
           wg daty dodania
           % endif
         </a>
-        <a class="dropdown-item" href="${request.route_url('user_following', username=user.username, _query={'filter': filter, 'sort': 'edited', 'order': order})}">
-          % if sort == 'edited':
+        <a class="dropdown-item" href="${request.route_url('user_following', username=user.username, _query={'filter': filter, 'sort': 'updated_at', 'order': order})}">
+          % if sort == 'updated_at':
           <strong>wg daty edycji</strong>
           % else:
           wg daty edycji

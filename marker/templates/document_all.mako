@@ -37,8 +37,8 @@
           wg nazwy
           % endif
         </a>
-        <a class="dropdown-item" href="${request.route_url('document_all', _query={'filter': filter, 'sort': 'added', 'order': order})}">
-          % if sort == 'added':
+        <a class="dropdown-item" href="${request.route_url('document_all', _query={'filter': filter, 'sort': 'created_at', 'order': order})}">
+          % if sort == 'created_at':
           <strong>wg daty dodania</strong>
           % else:
           wg daty dodania

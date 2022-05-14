@@ -71,8 +71,8 @@ class User(Base):
     email = Column(Unicode(50))
     role = Column(Unicode(20))
     _password = Column("password", Unicode(255))
-    added = Column(DateTime, default=datetime.datetime.now)
-    edited = Column(
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 

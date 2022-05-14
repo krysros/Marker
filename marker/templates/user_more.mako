@@ -10,7 +10,7 @@
   <td>${user.fullname}</td>
   <td>${user.email}</td>
   <td>${user.role}</td>
-  <td>${user.added.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${user.edited.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${user.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${user.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
 </tr>
 % endfor

@@ -8,8 +8,8 @@
 % endif
   <td>${document.filename}</td>
   <td>${doctypes.get(document.typ)}</td>
-  <td>${document.added.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td><a href="${request.route_url('user_view', username=document.added_by.username, what='info')}">${document.added_by.username}</a></td>
+  <td>${document.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td><a href="${request.route_url('user_view', username=document.created_by.username, what='info')}">${document.created_by.username}</a></td>
   <td>
     <form method="post">
       <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">

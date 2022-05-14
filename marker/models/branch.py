@@ -18,14 +18,14 @@ class Branch(Base):
     __tablename__ = "branches"
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(50))
-    added = Column(DateTime, default=datetime.datetime.now)
-    edited = Column(
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
-    submitter_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    added_by = relationship("User", foreign_keys=[submitter_id])
-    edited_by = relationship("User", foreign_keys=[editor_id])
+    created_by = relationship("User", foreign_keys=[creator_id])
+    updated_by = relationship("User", foreign_keys=[editor_id])
 
     def __init__(self, name):
         self.name = name

@@ -14,7 +14,7 @@
   </td>
   <td>${investment.city}</td>
   <td>${investment.deadline}</td>
-  <td>${investment.added.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${investment.edited.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${investment.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${investment.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
 </tr>
 % endfor

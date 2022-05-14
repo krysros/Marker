@@ -49,15 +49,15 @@
           wg nazwy
           % endif
         </a>
-        <a class="dropdown-item" href="${request.route_url('user_all', _query={'filter': filter, 'sort': 'added'})}">
-          % if sort == 'added':
+        <a class="dropdown-item" href="${request.route_url('user_all', _query={'filter': filter, 'sort': 'created_at'})}">
+          % if sort == 'created_at':
           <strong>wg daty dodania</strong>
           % else:
           wg daty dodania
           % endif
         </a>
-        <a class="dropdown-item" href="${request.route_url('user_all', _query={'filter': filter, 'sort': 'edited'})}">
-          % if sort == 'edited':
+        <a class="dropdown-item" href="${request.route_url('user_all', _query={'filter': filter, 'sort': 'updated_at'})}">
+          % if sort == 'updated_at':
           <strong>wg daty edycji</strong>
           % else:
           wg daty edycji

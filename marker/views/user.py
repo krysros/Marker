@@ -100,7 +100,7 @@ class UserView(object):
     def all(self):
         page = int(self.request.params.get("page", 1))
         role = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         roles = dict(ROLES)
         stmt = select(User)
@@ -157,8 +157,8 @@ class UserView(object):
         user = self.request.context.user
         stmt = (
             select(Comment)
-            .filter(Comment.added_by == user)
-            .order_by(Comment.added.desc())
+            .filter(Comment.created_by == user)
+            .order_by(Comment.created_at.desc())
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -187,8 +187,8 @@ class UserView(object):
         user = self.request.context.user
         stmt = (
             select(Branch)
-            .filter(Branch.added_by == user)
-            .order_by(Branch.added.desc())
+            .filter(Branch.created_by == user)
+            .order_by(Branch.created_at.desc())
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -218,8 +218,8 @@ class UserView(object):
         voivodeships = dict(VOIVODESHIPS)
         stmt = (
             select(Company)
-            .filter(Company.added_by == user)
-            .order_by(Company.added.desc())
+            .filter(Company.created_by == user)
+            .order_by(Company.created_at.desc())
         )
 
         paginator = (
@@ -249,8 +249,8 @@ class UserView(object):
         user = self.request.context.user
         stmt = (
             select(Investment)
-            .filter(Investment.added_by == user)
-            .order_by(Investment.added.desc())
+            .filter(Investment.created_by == user)
+            .order_by(Investment.created_at.desc())
         )
 
         paginator = (
@@ -590,7 +590,7 @@ class UserView(object):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()
 
@@ -643,7 +643,7 @@ class UserView(object):
     def export_following(self):
         user = self.request.context.user
         filter = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()
 

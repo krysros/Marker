@@ -44,7 +44,7 @@ class CommentView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        stmt = select(Comment).order_by(Comment.added.desc())
+        stmt = select(Comment).order_by(Comment.created_at.desc())
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -74,7 +74,7 @@ class CommentView(object):
                 comment = Comment(
                     comment=appstruct["comment"],
                 )
-                comment.added_by = self.request.identity
+                comment.created_by = self.request.identity
                 company.comments.append(comment)
                 self.request.dbsession.add(comment)
                 self.request.session.flash("success:Dodano do bazy danych")

@@ -305,7 +305,7 @@ class CompanyView(object):
     def all(self):
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         voivodeships = dict(VOIVODESHIPS)
         stmt = select(Company)
@@ -446,7 +446,7 @@ class CompanyView(object):
             select(Comment)
             .join(companies_comments)
             .filter(company.id == companies_comments.c.company_id)
-            .order_by(Comment.added.desc())
+            .order_by(Comment.created_at.desc())
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -619,7 +619,7 @@ class CompanyView(object):
                     branches=self._get_branches(appstruct),
                     people=self._get_people(appstruct),
                 )
-                company.added_by = self.request.identity
+                company.created_by = self.request.identity
                 self.request.dbsession.add(company)
                 self.request.session.flash("success:Dodano do bazy danych")
                 log.info(
@@ -670,7 +670,7 @@ class CompanyView(object):
                 company.category = appstruct["category"]
                 company.branches = self._get_branches(appstruct)
                 company.people = self._get_people(appstruct)
-                company.edited_by = self.request.identity
+                company.updated_by = self.request.identity
                 self.request.session.flash("success:Zmiany zostały zapisane")
                 next_url = self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug

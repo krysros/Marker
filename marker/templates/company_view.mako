@@ -184,15 +184,15 @@
   <div class="card-header"><i class="fa fa-clock-o" aria-hidden="true"></i> Data modyfikacji</div>
   <div class="card-body">
     <p>
-      Utworzono: ${company.added.strftime('%Y-%m-%d %H:%M:%S')}
-      % if company.added_by:
-        przez <a href="${request.route_url('user_view', username=company.added_by.username, what='info')}">${company.added_by.username}</a>
+      Utworzono: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+      % if company.created_by:
+        przez <a href="${request.route_url('user_view', username=company.created_by.username, what='info')}">${company.created_by.username}</a>
       % endif
       <br>
-      % if company.edited:
-        Zmodyfikowano: ${company.edited.strftime('%Y-%m-%d %H:%M:%S')}
-        % if company.edited_by:
-          przez <a href="${request.route_url('user_view', username=company.edited_by.username, what='info')}">${company.edited_by.username}</a>
+      % if company.updated_at:
+        Zmodyfikowano: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
+        % if company.updated_by:
+          przez <a href="${request.route_url('user_view', username=company.updated_by.username, what='info')}">${company.updated_by.username}</a>
         % endif
       % endif
     </p>

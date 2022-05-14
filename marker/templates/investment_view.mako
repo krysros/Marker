@@ -48,15 +48,15 @@
   <div class="card-header"><i class="fa fa-clock-o" aria-hidden="true"></i> Data modyfikacji</div>
   <div class="card-body">
     <p>
-      Utworzono: ${investment.added.strftime('%Y-%m-%d %H:%M:%S')}
-      % if investment.added_by:
-        przez <a href="${request.route_url('user_view', username=investment.added_by.username, what='info')}">${investment.added_by.username}</a>
+      Utworzono: ${investment.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+      % if investment.created_by:
+        przez <a href="${request.route_url('user_view', username=investment.created_by.username, what='info')}">${investment.created_by.username}</a>
       % endif
       <br>
-      % if investment.edited:
-        Zmodyfikowano: ${investment.edited.strftime('%Y-%m-%d %H:%M:%S')}
-        % if investment.edited_by:
-          przez <a href="${request.route_url('user_view', username=investment.edited_by.username, what='info')}">${investment.edited_by.username}</a>
+      % if investment.updated_at:
+        Zmodyfikowano: ${investment.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
+        % if investment.updated_by:
+          przez <a href="${request.route_url('user_view', username=investment.updated_by.username, what='info')}">${investment.updated_by.username}</a>
         % endif
       % endif
     </p>

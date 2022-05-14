@@ -66,7 +66,7 @@ class DocumentView(object):
     def all(self):
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         stmt = self.request.dbsession.query(Document)
         doctypes = dict(DOCTYPES)
@@ -129,7 +129,7 @@ class DocumentView(object):
                     )
                 else:
                     document = Document(filename, typ)
-                    document.added_by = self.request.identity
+                    document.created_by = self.request.identity
                     self.request.dbsession.add(document)
                     self.request.session.flash("success:Dodano plik")
                     log.info(

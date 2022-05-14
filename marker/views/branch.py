@@ -62,7 +62,7 @@ class BranchView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         stmt = select(Branch)
 
@@ -237,7 +237,7 @@ class BranchView(object):
                 rendered_form = e.render()
             else:
                 branch = Branch(appstruct["name"])
-                branch.added_by = self.request.identity
+                branch.created_by = self.request.identity
                 self.request.dbsession.add(branch)
                 self.request.session.flash("success:Dodano do bazy danych")
                 log.info(
@@ -270,7 +270,7 @@ class BranchView(object):
                 rendered_form = e.render()
             else:
                 branch.name = appstruct["name"]
-                branch.edited_by = self.request.identity
+                branch.updated_by = self.request.identity
                 self.request.session.flash("success:Zmiany zostały zapisane")
                 next_url = self.request.route_url(
                     "branch_edit", branch_id=branch.id, slug=branch.slug

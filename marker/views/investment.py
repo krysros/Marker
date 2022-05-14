@@ -113,7 +113,7 @@ class InvestmentView(object):
     def all(self):
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         stmt = select(Investment)
@@ -182,7 +182,7 @@ class InvestmentView(object):
                     link=appstruct["link"],
                     deadline=appstruct["deadline"],
                 )
-                investment.added_by = self.request.identity
+                investment.created_by = self.request.identity
                 self.request.dbsession.add(investment)
                 self.request.session.flash("success:Dodano do bazy danych")
                 log.info(
@@ -223,7 +223,7 @@ class InvestmentView(object):
                 investment.company = self._get_company(appstruct["company"])
                 investment.link = appstruct["link"]
                 investment.deadline = appstruct["deadline"]
-                investment.edited_by = self.request.identity
+                investment.updated_by = self.request.identity
                 self.request.session.flash("success:Zmiany zostały zapisane")
                 next_url = self.request.route_url(
                     "investment_view",
@@ -343,7 +343,7 @@ class InvestmentView(object):
     @view_config(route_name="investment_export", permission="view")
     def export(self):
         filter = self.request.params.get("filter", "all")
-        sort = self.request.params.get("sort", "added")
+        sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         query = select(Investment)
