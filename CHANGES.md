@@ -102,3 +102,9 @@
 ----
 
 - Dodano zaliczkę do wzoru umowy podwykonawczej
+
+1.20
+----
+
+- Zmiana nazwy tabeli z tenders na investments
+- Zmiana nazw kolumn znaków czasu
