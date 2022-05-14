@@ -352,6 +352,7 @@ class CompanyView(object):
     def view(self):
         company = self.request.context.company
         voivodeships = dict(VOIVODESHIPS)
+        courts = dict(COURTS)
 
         # Counters
         c_comments = self.request.dbsession.scalar(
@@ -391,6 +392,7 @@ class CompanyView(object):
             c_similar=c_similar,
             company=company,
             voivodeships=voivodeships,
+            courts=courts,
             title=company.name,
         )
 

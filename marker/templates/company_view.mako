@@ -94,6 +94,9 @@
         NIP: ${company.nip or "brak"}<br>
         REGON: ${company.regon or "brak"}<br>
         KRS: ${company.krs or "brak"}
+        % if company.court:
+          <br>${courts.get(company.court)}
+        % endif
       </div>
     </div>
   </div>
