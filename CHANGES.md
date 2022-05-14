@@ -108,3 +108,8 @@
 
 - Zmiana nazwy tabeli z tenders na investments
 - Zmiana nazw kolumn znaków czasu
+
+1.21
+----
+
+- KRS + Sąd
