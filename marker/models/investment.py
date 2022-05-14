@@ -16,8 +16,8 @@ from slugify import slugify
 from .meta import Base
 
 
-companies_tenders = Table(
-    "companies_tenders",
+companies_investments = Table(
+    "companies_investments",
     Base.metadata,
     Column(
         "company_id",
@@ -25,15 +25,15 @@ companies_tenders = Table(
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
     Column(
-        "tender_id",
+        "investment_id",
         Integer,
-        ForeignKey("tenders.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("investments.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
 )
 
 
-class Tender(Base):
-    __tablename__ = "tenders"
+class Investment(Base):
+    __tablename__ = "investments"
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(200))
     city = Column(Unicode(100))
@@ -50,8 +50,8 @@ class Tender(Base):
     edited_by = relationship("User", foreign_keys=[editor_id])
     company = relationship(
         "Company",
-        secondary=companies_tenders,
-        backref="tenders",
+        secondary=companies_investments,
+        backref="investments",
         uselist=False,
     )
 

@@ -114,7 +114,7 @@
         % endif
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_tenders', company_id=company.id, slug=company.slug)}">Przetargi (${c_tenders})</a>
+        <a class="nav-link" href="${request.route_url('company_investments', company_id=company.id, slug=company.slug)}">Inwestycje (${c_investments})</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">Podobne (${c_similar})</a>

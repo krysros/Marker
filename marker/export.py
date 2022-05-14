@@ -82,7 +82,7 @@ def export_companies_to_xlsx(companies):
     return response
 
 
-def export_tenders_to_xlsx(tenders):
+def export_investments_to_xlsx(investments):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
@@ -92,26 +92,26 @@ def export_tenders_to_xlsx(tenders):
     bold = workbook.add_format({"bold": True})
     # Write rows.
     header = [
-        "Przetarg",
+        "Inwestycja",
         "Miasto",
         "Województwo",
-        "Zamawiający",
+        "Firma",
         "WWW",
-        "Termin składania ofert",
+        "Termin",
     ]
 
     for j, col in enumerate(header):
         worksheet.write(0, j, col, bold)
 
     i = 1
-    for tender in tenders:
+    for investment in investments:
         cols = [
-            tender.name,
-            tender.city,
-            tender.voivodeship,
-            tender.company.name,
-            tender.link,
-            tender.deadline,
+            investment.name,
+            investment.city,
+            investment.voivodeship,
+            investment.company.name,
+            investment.link,
+            investment.deadline,
         ]
         for j, col in enumerate(cols):
             worksheet.write(i, j, col)
@@ -131,7 +131,7 @@ def export_tenders_to_xlsx(tenders):
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response.content_disposition = 'attachment; filename="przetargi.xlsx"'
+    response.content_disposition = 'attachment; filename="inwestycje.xlsx"'
     return response
 
 

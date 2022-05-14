@@ -12,31 +12,31 @@ from .select import VOIVODESHIPS
 
 from ..models import (
     Company,
-    Tender,
+    Investment,
 )
 from ..paginator import get_paginator
-from ..export import export_tenders_to_xlsx
+from ..export import export_investments_to_xlsx
 
 
 log = logging.getLogger(__name__)
 
 
-class TenderView(object):
+class InvestmentView(object):
     def __init__(self, request):
         self.request = request
 
     @property
-    def tender_form(self):
+    def investment_form(self):
         def check_name(node, value):
             exists = self.request.dbsession.execute(
-                select(Tender).filter_by(name=value)
+                select(Investment).filter_by(name=value)
             ).scalar_one_or_none()
-            current_id = self.request.matchdict.get("tender_id", None)
+            current_id = self.request.matchdict.get("investment_id", None)
             if current_id:
                 current_id = int(current_id)
             if exists and current_id != exists.id:
                 raise colander.Invalid(
-                    node, "Ta nazwa przetargu jest już zajęta"
+                    node, "Ta nazwa inwestycji jest już zajęta"
                 )
 
         def check_company(node, value):
@@ -57,7 +57,7 @@ class TenderView(object):
         class Schema(CSRFSchema):
             name = colander.SchemaNode(
                 colander.String(),
-                title="Nazwa przetargu",
+                title="Nazwa inwestycji",
                 validator=colander.All(
                     colander.Length(min=3, max=200), check_name
                 ),
@@ -74,7 +74,7 @@ class TenderView(object):
             )
             company = colander.SchemaNode(
                 colander.String(),
-                title="Zamawiający",
+                title="Firma",
                 widget=company_widget,
                 validator=check_company,
             )
@@ -88,7 +88,7 @@ class TenderView(object):
             )
             deadline = colander.SchemaNode(
                 colander.Date(),
-                title="Termin składania ofert",
+                title="Termin",
             )
 
         schema = Schema().bind(request=self.request)
@@ -101,11 +101,13 @@ class TenderView(object):
         ).scalar_one()
 
     @view_config(
-        route_name="tender_all", renderer="tender_all.mako", permission="view"
+        route_name="investment_all",
+        renderer="investment_all.mako",
+        permission="view",
     )
     @view_config(
-        route_name="tender_more",
-        renderer="tender_more.mako",
+        route_name="investment_more",
+        renderer="investment_more.mako",
         permission="view",
     )
     def all(self):
@@ -114,17 +116,17 @@ class TenderView(object):
         sort = self.request.params.get("sort", "added")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        stmt = select(Tender)
+        stmt = select(Investment)
 
         if filter == "inprogress":
-            stmt = stmt.filter(Tender.deadline > now.date())
+            stmt = stmt.filter(Investment.deadline > now.date())
         elif filter == "completed":
-            stmt = stmt.filter(Tender.deadline < now.date())
+            stmt = stmt.filter(Investment.deadline < now.date())
 
         if order == "asc":
-            stmt = stmt.order_by(getattr(Tender, sort).asc())
+            stmt = stmt.order_by(getattr(Investment, sort).asc())
         elif order == "desc":
-            stmt = stmt.order_by(getattr(Tender, sort).desc())
+            stmt = stmt.order_by(getattr(Investment, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -132,7 +134,7 @@ class TenderView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "tender_more",
+            "investment_more",
             _query={
                 "filter": filter,
                 "sort": sort,
@@ -149,19 +151,19 @@ class TenderView(object):
         )
 
     @view_config(
-        route_name="tender_view",
-        renderer="tender_view.mako",
+        route_name="investment_view",
+        renderer="investment_view.mako",
         permission="view",
     )
     def view(self):
-        tender = self.request.context.tender
-        return {"tender": tender, "title": tender.name}
+        investment = self.request.context.investment
+        return {"investment": investment, "title": investment.name}
 
     @view_config(
-        route_name="tender_add", renderer="form.mako", permission="edit"
+        route_name="investment_add", renderer="form.mako", permission="edit"
     )
     def add(self):
-        form = self.tender_form
+        form = self.investment_form
         appstruct = {}
         rendered_form = None
 
@@ -172,7 +174,7 @@ class TenderView(object):
             except deform.exception.ValidationFailure as e:
                 rendered_form = e.render()
             else:
-                tender = Tender(
+                investment = Investment(
                     name=appstruct["name"],
                     city=appstruct["city"],
                     voivodeship=appstruct["voivodeship"],
@@ -180,13 +182,13 @@ class TenderView(object):
                     link=appstruct["link"],
                     deadline=appstruct["deadline"],
                 )
-                tender.added_by = self.request.identity
-                self.request.dbsession.add(tender)
+                investment.added_by = self.request.identity
+                self.request.dbsession.add(investment)
                 self.request.session.flash("success:Dodano do bazy danych")
                 log.info(
-                    f"Użytkownik {self.request.identity.username} dodał przetarg {tender.name}"
+                    f"Użytkownik {self.request.identity.username} dodał inwestycję {investment.name}"
                 )
-                next_url = self.request.route_url("tender_all")
+                next_url = self.request.route_url("investment_all")
                 return HTTPSeeOther(location=next_url)
 
         if rendered_form is None:
@@ -194,18 +196,18 @@ class TenderView(object):
         reqts = form.get_widget_resources()
 
         return dict(
-            heading="Dodaj przetarg",
+            heading="Dodaj inwestycję",
             rendered_form=rendered_form,
             css_links=reqts["css"],
             js_links=reqts["js"],
         )
 
     @view_config(
-        route_name="tender_edit", renderer="form.mako", permission="edit"
+        route_name="investment_edit", renderer="form.mako", permission="edit"
     )
     def edit(self):
-        tender = self.request.context.tender
-        form = self.tender_form
+        investment = self.request.context.investment
+        form = self.investment_form
         rendered_form = None
 
         if "submit" in self.request.params:
@@ -215,29 +217,31 @@ class TenderView(object):
             except deform.exception.ValidationFailure as e:
                 rendered_form = e.render()
             else:
-                tender.name = appstruct["name"]
-                tender.city = appstruct["city"]
-                tender.voivodeship = appstruct["voivodeship"]
-                tender.company = self._get_company(appstruct["company"])
-                tender.link = appstruct["link"]
-                tender.deadline = appstruct["deadline"]
-                tender.edited_by = self.request.identity
+                investment.name = appstruct["name"]
+                investment.city = appstruct["city"]
+                investment.voivodeship = appstruct["voivodeship"]
+                investment.company = self._get_company(appstruct["company"])
+                investment.link = appstruct["link"]
+                investment.deadline = appstruct["deadline"]
+                investment.edited_by = self.request.identity
                 self.request.session.flash("success:Zmiany zostały zapisane")
                 next_url = self.request.route_url(
-                    "tender_view", tender_id=tender.id, slug=tender.slug
+                    "investment_view",
+                    investment_id=investment.id,
+                    slug=investment.slug,
                 )
                 log.info(
-                    f"Użytkownik {self.request.identity.username} zmienił dane przetargu {tender.name}"
+                    f"Użytkownik {self.request.identity.username} zmienił dane inwestycji {investment.name}"
                 )
                 return HTTPSeeOther(location=next_url)
 
         appstruct = {
-            "name": tender.name,
-            "city": tender.city,
-            "voivodeship": tender.voivodeship,
-            "company": tender.company.name if tender.company else "",
-            "link": tender.link,
-            "deadline": tender.deadline,
+            "name": investment.name,
+            "city": investment.city,
+            "voivodeship": investment.voivodeship,
+            "company": investment.company.name if investment.company else "",
+            "link": investment.link,
+            "deadline": investment.deadline,
         }
 
         if rendered_form is None:
@@ -245,43 +249,47 @@ class TenderView(object):
         reqts = form.get_widget_resources()
 
         return dict(
-            heading="Edytuj dane przetargu",
+            heading="Edytuj dane inwestycji",
             rendered_form=rendered_form,
             css_links=reqts["css"],
             js_links=reqts["js"],
         )
 
     @view_config(
-        route_name="tender_delete", request_method="POST", permission="edit"
+        route_name="investment_delete",
+        request_method="POST",
+        permission="edit",
     )
     def delete(self):
-        tender = self.request.context.tender
-        tender_id = tender.id
-        tender_name = tender.name
-        self.request.dbsession.delete(tender)
+        investment = self.request.context.investment
+        investment_id = investment.id
+        investment_name = investment.name
+        self.request.dbsession.delete(investment)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
-            f"Użytkownik {self.request.identity.username} usunął przetarg {tender_name}"
+            f"Użytkownik {self.request.identity.username} usunął inwestycję {investment_name}"
         )
         next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
     @view_config(
-        route_name="tender_select",
+        route_name="investment_select",
         request_method="GET",
         renderer="json",
     )
     def select(self):
         term = self.request.params.get("term")
         items = self.request.dbsession.execute(
-            select(Tender).query.filter(Tender.name.ilike("%" + term + "%"))
+            select(Investment).query.filter(
+                Investment.name.ilike("%" + term + "%")
+            )
         ).scalars()
         data = [i.name for i in items]
         return data
 
     @view_config(
-        route_name="tender_search",
-        renderer="tender_search.mako",
+        route_name="investment_search",
+        renderer="investment_search.mako",
         permission="view",
     )
     def search(self):
@@ -289,13 +297,13 @@ class TenderView(object):
         return {"voivodeships": voivodeships}
 
     @view_config(
-        route_name="tender_results",
-        renderer="tender_results.mako",
+        route_name="investment_results",
+        renderer="investment_results.mako",
         permission="view",
     )
     @view_config(
-        route_name="tender_results_more",
-        renderer="tender_more.mako",
+        route_name="investment_results_more",
+        renderer="investment_more.mako",
         permission="view",
     )
     def results(self):
@@ -305,11 +313,11 @@ class TenderView(object):
         page = int(self.request.params.get("page", 1))
         voivodeships = dict(VOIVODESHIPS)
         stmt = (
-            select(Tender)
-            .filter(Tender.name.ilike("%" + name + "%"))
-            .filter(Tender.city.ilike("%" + city + "%"))
-            .filter(Tender.voivodeship.ilike("%" + voivodeship + "%"))
-            .order_by(Tender.name)
+            select(Investment)
+            .filter(Investment.name.ilike("%" + name + "%"))
+            .filter(Investment.city.ilike("%" + city + "%"))
+            .filter(Investment.voivodeship.ilike("%" + voivodeship + "%"))
+            .order_by(Investment.name)
         )
 
         paginator = (
@@ -318,7 +326,7 @@ class TenderView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "tender_results_more",
+            "investment_results_more",
             _query={
                 "name": name,
                 "city": city,
@@ -332,42 +340,42 @@ class TenderView(object):
             "voivodeships": voivodeships,
         }
 
-    @view_config(route_name="tender_export", permission="view")
+    @view_config(route_name="investment_export", permission="view")
     def export(self):
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "added")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        query = select(Tender)
+        query = select(Investment)
 
         if filter == "inprogress":
-            query = query.filter(Tender.deadline > now.date())
+            query = query.filter(Investment.deadline > now.date())
         elif filter == "completed":
-            query = query.filter(Tender.deadline < now.date())
+            query = query.filter(Investment.deadline < now.date())
 
         if order == "asc":
-            query = query.order_by(getattr(Tender, sort).asc())
+            query = query.order_by(getattr(Investment, sort).asc())
         elif order == "desc":
-            query = query.order_by(getattr(Tender, sort).desc())
+            query = query.order_by(getattr(Investment, sort).desc())
 
-        tenders = self.request.dbsession.execute(query).scalars()
-        response = export_tenders_to_xlsx(tenders)
+        investments = self.request.dbsession.execute(query).scalars()
+        response = export_investments_to_xlsx(investments)
         log.info(
-            f"Użytkownik {self.request.identity.username} eksportował dane przetargów"
+            f"Użytkownik {self.request.identity.username} eksportował dane inwestycji"
         )
         return response
 
     @view_config(
-        route_name="tender_follow",
+        route_name="investment_follow",
         request_method="POST",
         renderer="string",
         permission="view",
     )
     def follow(self):
-        tender = self.request.context.tender
-        if tender in self.request.identity.following:
-            self.request.identity.following.remove(tender)
+        investment = self.request.context.investment
+        if investment in self.request.identity.following:
+            self.request.identity.following.remove(investment)
             return '<span class="fa fa-eye-slash fa-lg"></span>'
         else:
-            self.request.identity.following.append(tender)
+            self.request.identity.following.append(investment)
             return '<span class="fa fa-eye fa-lg"></span>'

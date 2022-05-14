@@ -5,7 +5,7 @@ from marker.factories import (
     company_factory,
     comment_factory,
     person_factory,
-    tender_factory,
+    investment_factory,
     user_factory,
     document_factory,
 )
@@ -113,13 +113,13 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_tenders",
-        r"/company/{company_id:\d+}/{slug}/tenders",
+        "company_investments",
+        r"/company/{company_id:\d+}/{slug}/investments",
         factory=company_factory,
     )
     config.add_route(
-        "company_tenders_more",
-        r"/company/{company_id:\d+}/{slug}/tenders/more",
+        "company_investments_more",
+        r"/company/{company_id:\d+}/{slug}/investments/more",
         factory=company_factory,
     )
     config.add_route(
@@ -202,43 +202,49 @@ def includeme(config):
         "person_results_more", "/person/results/more", factory=default_factory
     )
 
-    config.add_route("tender_all", "/tender", factory=default_factory)
-    config.add_route("tender_more", "/tender/more", factory=default_factory)
-    config.add_route("tender_add", "/tender/add", factory=default_factory)
+    config.add_route("investment_all", "/investment", factory=default_factory)
     config.add_route(
-        "tender_search", "/tender/search", factory=default_factory
+        "investment_more", "/investment/more", factory=default_factory
     )
     config.add_route(
-        "tender_results", "/tender/results", factory=default_factory
+        "investment_add", "/investment/add", factory=default_factory
     )
     config.add_route(
-        "tender_results_more", "/tender/results/more", factory=default_factory
+        "investment_search", "/investment/search", factory=default_factory
     )
     config.add_route(
-        "tender_select", "/tender/select", factory=default_factory
+        "investment_results", "/investment/results", factory=default_factory
     )
     config.add_route(
-        "tender_export", r"/tenders/export", factory=default_factory
+        "investment_results_more",
+        "/investment/results/more",
+        factory=default_factory,
     )
     config.add_route(
-        "tender_view",
-        r"/tender/{tender_id:\d+}/{slug}",
-        factory=tender_factory,
+        "investment_select", "/investment/select", factory=default_factory
     )
     config.add_route(
-        "tender_edit",
-        r"/tender/{tender_id:\d+}/{slug}/edit",
-        factory=tender_factory,
+        "investment_export", r"/investments/export", factory=default_factory
     )
     config.add_route(
-        "tender_delete",
-        r"/tender/{tender_id:\d+}/{slug}/delete",
-        factory=tender_factory,
+        "investment_view",
+        r"/investment/{investment_id:\d+}/{slug}",
+        factory=investment_factory,
     )
     config.add_route(
-        "tender_follow",
-        r"/follow/tender/{tender_id:\d+}",
-        factory=tender_factory,
+        "investment_edit",
+        r"/investment/{investment_id:\d+}/{slug}/edit",
+        factory=investment_factory,
+    )
+    config.add_route(
+        "investment_delete",
+        r"/investment/{investment_id:\d+}/{slug}/delete",
+        factory=investment_factory,
+    )
+    config.add_route(
+        "investment_follow",
+        r"/follow/investment/{investment_id:\d+}",
+        factory=investment_factory,
     )
 
     config.add_route("user_all", "/user", factory=default_factory)
@@ -281,11 +287,13 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
-        "user_tenders", "/user/{username}/tenders", factory=user_factory
+        "user_investments",
+        "/user/{username}/investments",
+        factory=user_factory,
     )
     config.add_route(
-        "user_tenders_more",
-        "/user/{username}/tenders/more",
+        "user_investments_more",
+        "/user/{username}/investments/more",
         factory=user_factory,
     )
     config.add_route(

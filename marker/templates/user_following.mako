@@ -95,7 +95,7 @@
   </div>
 </div>
 
-<%include file="tender_table.mako"/>
+<%include file="investment_table.mako"/>
 
 <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -107,7 +107,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Wyczyścić wszystkie obserwowane przetargi?<br>Ta operacja nie usuwa przetargów z bazy danych. 
+        Wyczyścić wszystkie obserwowane inwestycje?<br>Ta operacja nie usuwa inwestycji z bazy danych. 
       </div>
       <div class="modal-footer">
         <form action="${request.route_url('user_following_clear', username=user.username)}" method="post">

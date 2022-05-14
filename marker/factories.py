@@ -55,14 +55,14 @@ def comment_factory(request):
     return resources.CommentResource(comment)
 
 
-def tender_factory(request):
-    tender_id = int(request.matchdict["tender_id"])
-    tender = request.dbsession.execute(
-        select(models.Tender).filter_by(id=tender_id)
+def investment_factory(request):
+    investment_id = int(request.matchdict["investment_id"])
+    investment = request.dbsession.execute(
+        select(models.Investment).filter_by(id=investment_id)
     ).scalar_one_or_none()
-    if not tender:
+    if not investment:
         raise HTTPNotFound
-    return resources.TenderResource(tender)
+    return resources.InvestmentResource(investment)
 
 
 def user_factory(request):

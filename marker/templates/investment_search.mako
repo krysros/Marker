@@ -2,10 +2,10 @@
 
 <div class="card">
   <div class="card-header">
-    Znajdź przetarg
+    Znajdź inwestycję
   </div>
   <div class="card-body">
-    <form action="${request.route_url('tender_results')}">
+    <form action="${request.route_url('investment_results')}">
       <div class="form-group">
         <label for="name">Nazwa</label>
         <input type="text" class="form-control" id="name" name="name">

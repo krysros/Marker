@@ -16,14 +16,14 @@ from ..models import (
     Branch,
     Company,
     Comment,
-    Tender,
+    Investment,
 )
 from deform.schema import CSRFSchema
 from zxcvbn import zxcvbn
 from ..paginator import get_paginator
 from ..export import (
     export_companies_to_xlsx,
-    export_tenders_to_xlsx,
+    export_investments_to_xlsx,
 )
 from .select import (
     ROLES,
@@ -240,17 +240,17 @@ class UserView(object):
         }
 
     @view_config(
-        route_name="user_tenders",
-        renderer="user_tenders.mako",
+        route_name="user_investments",
+        renderer="user_investments.mako",
         permission="view",
     )
-    def tenders(self):
+    def investments(self):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
         stmt = (
-            select(Tender)
-            .filter(Tender.added_by == user)
-            .order_by(Tender.added.desc())
+            select(Investment)
+            .filter(Investment.added_by == user)
+            .order_by(Investment.added.desc())
         )
 
         paginator = (
@@ -259,7 +259,7 @@ class UserView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "user_tenders_more",
+            "user_investments_more",
             username=user.username,
             _query={"page": page + 1},
         )
@@ -583,7 +583,7 @@ class UserView(object):
     )
     @view_config(
         route_name="user_following_more",
-        renderer="tender_more.mako",
+        renderer="investment_more.mako",
         permission="view",
     )
     def following(self):
@@ -595,20 +595,20 @@ class UserView(object):
         now = datetime.datetime.now()
 
         stmt = (
-            select(Tender)
+            select(Investment)
             .join(following)
             .filter(user.id == following.c.user_id)
         )
 
         if filter == "inprogress":
-            stmt = stmt.filter(Tender.deadline > now.date())
+            stmt = stmt.filter(Investment.deadline > now.date())
         elif filter == "completed":
-            stmt = stmt.filter(Tender.deadline < now.date())
+            stmt = stmt.filter(Investment.deadline < now.date())
 
         if order == "asc":
-            stmt = stmt.order_by(getattr(Tender, sort).asc())
+            stmt = stmt.order_by(getattr(Investment, sort).asc())
         elif order == "desc":
-            stmt = stmt.order_by(getattr(Tender, sort).desc())
+            stmt = stmt.order_by(getattr(Investment, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -648,25 +648,25 @@ class UserView(object):
         now = datetime.datetime.now()
 
         query = (
-            select(Tender)
+            select(Investment)
             .join(following)
             .filter(user.id == following.c.user_id)
         )
 
         if filter == "inprogress":
-            query = query.filter(Tender.deadline > now.date())
+            query = query.filter(Investment.deadline > now.date())
         elif filter == "completed":
-            query = query.filter(Tender.deadline < now.date())
+            query = query.filter(Investment.deadline < now.date())
 
         if order == "asc":
-            query = query.order_by(getattr(Tender, sort).asc())
+            query = query.order_by(getattr(Investment, sort).asc())
         elif order == "desc":
-            query = query.order_by(getattr(Tender, sort).desc())
+            query = query.order_by(getattr(Investment, sort).desc())
 
-        tenders = self.request.dbsession.execute(query).scalars()
-        response = export_tenders_to_xlsx(tenders)
+        investments = self.request.dbsession.execute(query).scalars()
+        response = export_investments_to_xlsx(investments)
         log.info(
-            f"Użytkownik {self.request.identity.username} eksportował dane obserwowanych przetargów"
+            f"Użytkownik {self.request.identity.username} eksportował dane obserwowanych inwestycji"
         )
         return response
 
@@ -679,7 +679,7 @@ class UserView(object):
         user = self.request.context.user
         user.following = []
         log.info(
-            f"Użytkownik {self.request.identity.username} wyczyścił wszystkie obserwowane przetargi"
+            f"Użytkownik {self.request.identity.username} wyczyścił wszystkie obserwowane inwestycje"
         )
         return HTTPFound(
             location=self.request.route_url(

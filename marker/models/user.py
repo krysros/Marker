@@ -35,9 +35,9 @@ following = Table(
     "following",
     Base.metadata,
     Column(
-        "tender_id",
+        "investment_id",
         Integer,
-        ForeignKey("tenders.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("investments.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
     Column(
         "user_id",
@@ -96,11 +96,11 @@ class User(Base):
     )
 
     following = relationship(
-        "Tender",
+        "Investment",
         secondary=following,
         cascade="delete",
         single_parent=True,
-        backref="tenders",
+        backref="investments",
     )
 
     marker = relationship(

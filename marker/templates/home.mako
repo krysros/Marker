@@ -1,12 +1,12 @@
 <%inherit file="layout.mako"/>
 
 <div class="jumbotron">
-  <h1>Marker <small class="text-muted">Informacje o firmach i przetargach</small></h1>
+  <h1>Marker <small class="text-muted">Informacje o firmach i inwestycjach</small></h1>
   <p class="lead">
-    Znajdź firmy o określonym profilu działalności oraz te
-    najczęściej rekomendowane. Sprawdź, które regiony są
-    najbardziej przedsiębiorcze i w jakich branżach jest
-    największa konkurencja.
+    Znajdź firmy o określonym profilu działalności, najczęściej rekomendowane
+    lub te, które zrealizowały najwięcej inwestycji.
+    Sprawdź, które regiony są najbardziej przedsiębiorcze
+    i w jakich branżach jest największa konkurencja.
   </p>
 </div>
 
@@ -28,12 +28,12 @@
       <p><a class="btn btn-secondary" href="${request.route_url('company_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
     <div class="col-sm">
-      <h2><i class="fa fa-briefcase" aria-hidden="true"></i> Przetargi</h2>
+      <h2><i class="fa fa-briefcase" aria-hidden="true"></i> Inwestycje</h2>
       <p>
-        Pokaż listę przetargów. Filtruj przetargi, aby wyświetlić te,
-        które są w trakcie lub zostały zakończone.
+        Pokaż listę inwestycji. Filtruj inwestycje, aby wyświetlić te,
+        które są w trakcie realizacji lub zostały zakończone.
       </p>
-      <p><a class="btn btn-secondary" href="${request.route_url('tender_all')}" role="button">Pokaż &raquo;</a></p>
+      <p><a class="btn btn-secondary" href="${request.route_url('investment_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
   </div>
 
@@ -42,7 +42,7 @@
       <h2><i class="fa fa-line-chart" aria-hidden="true"></i> Raporty</h2>
       <p>
         Wyświetl podsumowanie zawartości bazy danych.
-        Analizuj dane o firmach i przetargach.
+        Analizuj dane o firmach i inwestycjach.
       </p>
       <p><a class="btn btn-secondary" href="${request.route_url('report')}" role="button">Pokaż &raquo;</a></p>
     </div>

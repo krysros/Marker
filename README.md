@@ -2,11 +2,11 @@
 
 ## O aplikacji
 
-Aplikacja dla Generalnych Wykonawców usprawniającą proces ofertowania oraz kontraktowania realizacji przedsięwzięć budowlanych, analizy rynku materiałów i usług oraz przetargów i inwestycji. Stanowi bazę wiedzy (ang. knowledge base) i narzędzie do raportowania w analityce biznesowej (ang. Business Intelligence).
+Aplikacja dla Generalnych Wykonawców usprawniającą proces ofertowania oraz kontraktowania realizacji przedsięwzięć budowlanych, analizy rynku materiałów i usług oraz inwestycji. Stanowi bazę wiedzy (ang. knowledge base) i narzędzie do raportowania w analityce biznesowej (ang. Business Intelligence).
 
 ### Przeznaczenie
 
-- Obsługa informacji o firmach i przetargach oraz relacjach pomiędzy nimi
+- Obsługa informacji o firmach i inwestycjach oraz relacjach pomiędzy nimi
 - Zwiększenie wydajności i skuteczności ofertowania
 - Zmniejszenie progu wejścia dla nowych pracowników
 - Automatyzacja procesu generowania dokumentów (m.in. wzorów umów w formacie docx) na podstawie szablonów
@@ -35,7 +35,7 @@ Marker dba o to, aby wprowadzane dane były kompletne i poprawne, a dostęp do n
 Aktualnie dostępne moduły:
 - Branże
 - Firmy
-- Przetargi
+- Inwestycje
 - Użytkownicy
 - Komentarze
 - Dokumenty

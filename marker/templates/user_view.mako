@@ -42,7 +42,7 @@
         <a class="nav-link" href="${request.route_url('user_companies', username=user.username)}">Firmy</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_tenders', username=user.username)}">Przetargi</a>
+        <a class="nav-link" href="${request.route_url('user_investments', username=user.username)}">Inwestycje</a>
       </li>
     </ul>
   </div>

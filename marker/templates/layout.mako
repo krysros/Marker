@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Informacje o firmach i przetargach">
+    <meta name="description" content="Informacje o firmach i inwestycjach">
     <meta name="author" content="krysros">
     <meta name="csrf_token" content="${request.session.get_csrf_token()}">
     <link rel="shortcut icon" href="${request.static_url('marker:static/img/favicon.png')}">
@@ -66,7 +66,7 @@
             <div class="dropdown-menu" aria-labelledby="dropdown-db">
               <a class="dropdown-item" href="${request.route_url('branch_all')}"><i class="fa fa-cubes" aria-hidden="true"></i> Branże</a>
               <a class="dropdown-item" href="${request.route_url('company_all')}"><i class="fa fa-industry" aria-hidden="true"></i> Firmy</a>
-              <a class="dropdown-item" href="${request.route_url('tender_all')}"><i class="fa fa-briefcase" aria-hidden="true"></i> Przetargi</a>
+              <a class="dropdown-item" href="${request.route_url('investment_all')}"><i class="fa fa-briefcase" aria-hidden="true"></i> Inwestycje</a>
               <a class="dropdown-item" href="${request.route_url('user_all')}"><i class="fa fa-users" aria-hidden="true"></i> Użytkownicy</a>
               <a class="dropdown-item" href="${request.route_url('comment_all')}"><i class="fa fa-comments" aria-hidden="true"></i> Komentarze</a>
               <a class="dropdown-item" href="${request.route_url('document_all')}"><i class="fa fa-file-word-o" aria-hidden="true"></i> Dokumenty</a>
@@ -80,7 +80,7 @@
             <div class="dropdown-menu" aria-labelledby="dropdown-add">
               <a class="dropdown-item" href="${request.route_url('branch_add')}"><i class="fa fa-cube" aria-hidden="true"></i> branżę</a>
               <a class="dropdown-item" href="${request.route_url('company_add')}"><i class="fa fa-industry" aria-hidden="true"></i> firmę</a>
-              <a class="dropdown-item" href="${request.route_url('tender_add')}"><i class="fa fa-briefcase" aria-hidden="true"></i> przetarg</a>
+              <a class="dropdown-item" href="${request.route_url('investment_add')}"><i class="fa fa-briefcase" aria-hidden="true"></i> inwestycję</a>
               <a class="dropdown-item" href="${request.route_url('user_add')}"><i class="fa fa-user" aria-hidden="true"></i> użytkownika</a>
               <a class="dropdown-item" href="${request.route_url('document_upload')}"><i class="fa fa-file-word-o" aria-hidden="true"></i> dokument</a>
             </div>
@@ -92,7 +92,7 @@
             <div class="dropdown-menu" aria-labelledby="dropdown-search">
               <a class="dropdown-item" href="${request.route_url('branch_search')}"><i class="fa fa-cube" aria-hidden="true"></i> branżę</a>
               <a class="dropdown-item" href="${request.route_url('company_search')}"><i class="fa fa-industry" aria-hidden="true"></i> firmę</a>
-              <a class="dropdown-item" href="${request.route_url('tender_search')}"><i class="fa fa-briefcase" aria-hidden="true"></i> przetarg</a>
+              <a class="dropdown-item" href="${request.route_url('investment_search')}"><i class="fa fa-briefcase" aria-hidden="true"></i> inwestycję</a>
               <a class="dropdown-item" href="${request.route_url('person_search')}"><i class="fa fa-user-o" aria-hidden="true"></i> osobę</a>
               <a class="dropdown-item" href="${request.route_url('user_search')}"><i class="fa fa-user" aria-hidden="true"></i> użytkownika</a>
               <a class="dropdown-item" href="${request.route_url('comment_search')}"><i class="fa fa-comment" aria-hidden="true"></i> komentarz</a>

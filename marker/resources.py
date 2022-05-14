@@ -58,9 +58,9 @@ class CommentResource(DefaultResource):
         self.comment = comment
 
 
-class TenderResource(DefaultResource):
-    def __init__(self, tender):
-        self.tender = tender
+class InvestmentResource(DefaultResource):
+    def __init__(self, investment):
+        self.investment = investment
 
 
 class DocumentResource(DefaultResource):

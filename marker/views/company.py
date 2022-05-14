@@ -19,11 +19,11 @@ from ..models import (
     Comment,
     Person,
     Branch,
-    Tender,
+    Investment,
     User,
     upvotes,
     companies_comments,
-    companies_tenders,
+    companies_investments,
 )
 
 from ..paginator import get_paginator
@@ -366,11 +366,11 @@ class CompanyView(object):
             .join(upvotes)
             .filter(company.id == upvotes.c.company_id)
         )
-        c_tenders = self.request.dbsession.scalar(
+        c_investments = self.request.dbsession.scalar(
             select(func.count())
-            .select_from(Tender)
-            .join(companies_tenders)
-            .filter(company.id == companies_tenders.c.company_id)
+            .select_from(Investment)
+            .join(companies_investments)
+            .filter(company.id == companies_investments.c.company_id)
         )
         c_similar = self.request.dbsession.scalar(
             select(func.count())
@@ -387,7 +387,7 @@ class CompanyView(object):
         return dict(
             c_comments=c_comments,
             c_upvotes=c_upvotes,
-            c_tenders=c_tenders,
+            c_investments=c_investments,
             c_similar=c_similar,
             company=company,
             voivodeships=voivodeships,
@@ -466,22 +466,22 @@ class CompanyView(object):
         }
 
     @view_config(
-        route_name="company_tenders",
-        renderer="company_tenders.mako",
+        route_name="company_investments",
+        renderer="company_investments.mako",
         permission="view",
     )
     @view_config(
-        route_name="company_tenders_more",
-        renderer="tender_more.mako",
+        route_name="company_investments_more",
+        renderer="investment_more.mako",
         permission="view",
     )
-    def tenders(self):
+    def investments(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         stmt = (
-            select(Tender)
-            .join(companies_tenders)
-            .filter(company.id == companies_tenders.c.company_id)
+            select(Investment)
+            .join(companies_investments)
+            .filter(company.id == companies_investments.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -490,7 +490,7 @@ class CompanyView(object):
         )
 
         next_page = self.request.route_url(
-            "company_tenders_more",
+            "company_investments_more",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},

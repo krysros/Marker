@@ -134,7 +134,7 @@ def upgrade():
         sa.PrimaryKeyConstraint("id", name=op.f("pk_documents")),
     )
     op.create_table(
-        "tenders",
+        "investments",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.Unicode(length=200), nullable=True),
         sa.Column("city", sa.Unicode(length=100), nullable=True),
@@ -148,16 +148,16 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["editor_id"],
             ["users.id"],
-            name=op.f("fk_tenders_editor_id_users"),
+            name=op.f("fk_investments_editor_id_users"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["submitter_id"],
             ["users.id"],
-            name=op.f("fk_tenders_submitter_id_users"),
+            name=op.f("fk_investments_submitter_id_users"),
             ondelete="SET NULL",
         ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_tenders")),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_investments")),
     )
     op.create_table(
         "companies_branches",
@@ -198,6 +198,25 @@ def upgrade():
         ),
     )
     op.create_table(
+        "companies_investments",
+        sa.Column("company_id", sa.Integer(), nullable=True),
+        sa.Column("investment_id", sa.Integer(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["company_id"],
+            ["companies.id"],
+            name=op.f("fk_companies_investments_company_id_companies"),
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["investment_id"],
+            ["investments.id"],
+            name=op.f("fk_companies_investments_investment_id_investments"),
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
+    )
+    op.create_table(
         "companies_persons",
         sa.Column("company_id", sa.Integer(), nullable=True),
         sa.Column("person_id", sa.Integer(), nullable=True),
@@ -217,32 +236,13 @@ def upgrade():
         ),
     )
     op.create_table(
-        "companies_tenders",
-        sa.Column("company_id", sa.Integer(), nullable=True),
-        sa.Column("tender_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["company_id"],
-            ["companies.id"],
-            name=op.f("fk_companies_tenders_company_id_companies"),
-            onupdate="CASCADE",
-            ondelete="CASCADE",
-        ),
-        sa.ForeignKeyConstraint(
-            ["tender_id"],
-            ["tenders.id"],
-            name=op.f("fk_companies_tenders_tender_id_tenders"),
-            onupdate="CASCADE",
-            ondelete="CASCADE",
-        ),
-    )
-    op.create_table(
         "following",
-        sa.Column("tender_id", sa.Integer(), nullable=True),
+        sa.Column("investment_id", sa.Integer(), nullable=True),
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["tender_id"],
-            ["tenders.id"],
-            name=op.f("fk_following_tender_id_tenders"),
+            ["investment_id"],
+            ["investments.id"],
+            name=op.f("fk_following_investment_id_investments"),
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
@@ -300,11 +300,11 @@ def downgrade():
     op.drop_table("upvotes")
     op.drop_table("marker")
     op.drop_table("following")
-    op.drop_table("companies_tenders")
     op.drop_table("companies_persons")
+    op.drop_table("companies_investments")
     op.drop_table("companies_comments")
     op.drop_table("companies_branches")
-    op.drop_table("tenders")
+    op.drop_table("investments")
     op.drop_table("documents")
     op.drop_table("companies")
     op.drop_table("comments")

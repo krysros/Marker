@@ -11,12 +11,12 @@ from .user import marker  # flake8: noqa
 from .user import following  # flake8: noqa
 from .branch import Branch  # flake8: noqa
 from .company import Company  # flake8: noqa
-from .tender import Tender  # flake8: noqa
+from .investment import Investment  # flake8: noqa
 from .person import Person  # flake8: noqa
 from .comment import Comment  # flake8: noqa
 from .document import Document  # flake8: noqa
 from .company import companies_comments  # flake8: noqa
-from .tender import companies_tenders  # flake8: noqa
+from .investment import companies_investments  # flake8: noqa
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.

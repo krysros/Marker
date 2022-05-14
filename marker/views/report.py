@@ -17,11 +17,11 @@ from ..models import (
     User,
     Branch,
     Company,
-    Tender,
+    Investment,
 )
 
 from ..models.company import companies_branches
-from ..models.tender import companies_tenders
+from ..models.investment import companies_investments
 from ..models.user import upvotes, following
 
 from ..paginator import get_paginator
@@ -114,16 +114,18 @@ class ReportView(object):
         elif rel == "tv":
             stmt = (
                 select(
-                    Tender.voivodeship,
-                    func.count(Tender.voivodeship).label("tv"),
+                    Investment.voivodeship,
+                    func.count(Investment.voivodeship).label("tv"),
                 )
-                .group_by(Tender.voivodeship)
+                .group_by(Investment.voivodeship)
                 .order_by(desc("tv"))
             )
         elif rel == "tc":
             stmt = (
-                select(Tender.city, func.count(Tender.city).label("tc"))
-                .group_by(Tender.city)
+                select(
+                    Investment.city, func.count(Investment.city).label("tc")
+                )
+                .group_by(Investment.city)
                 .order_by(desc("tc"))
             )
         elif rel == "uc":
@@ -138,9 +140,10 @@ class ReportView(object):
         elif rel == "ut":
             stmt = (
                 select(
-                    User.username, func.count(Tender.submitter_id).label("ut")
+                    User.username,
+                    func.count(Investment.submitter_id).label("ut"),
                 )
-                .join(Tender.added_by)
+                .join(Investment.added_by)
                 .group_by(User.username)
                 .order_by(desc("ut"))
             )
@@ -148,9 +151,9 @@ class ReportView(object):
             stmt = (
                 select(
                     Company.name,
-                    func.count(companies_tenders.c.company_id).label("ct"),
+                    func.count(companies_investments.c.company_id).label("ct"),
                 )
-                .join(companies_tenders)
+                .join(companies_investments)
                 .group_by(Company)
                 .order_by(desc("ct"))
             )
@@ -166,10 +169,11 @@ class ReportView(object):
         elif rel == "tf":
             stmt = (
                 select(
-                    Tender.name, func.count(following.c.tender_id).label("tf")
+                    Investment.name,
+                    func.count(following.c.investment_id).label("tf"),
                 )
                 .join(following)
-                .group_by(Tender)
+                .group_by(Investment)
                 .order_by(desc("tf"))
             )
         else:
