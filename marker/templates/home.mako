@@ -31,7 +31,7 @@
       <h2><i class="fa fa-briefcase" aria-hidden="true"></i> Inwestycje</h2>
       <p>
         Pokaż listę inwestycji. Filtruj inwestycje, aby wyświetlić te,
-        które są w trakcie realizacji lub zostały zakończone.
+        które są w trakcie lub zostały zakończone.
       </p>
       <p><a class="btn btn-secondary" href="${request.route_url('investment_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
