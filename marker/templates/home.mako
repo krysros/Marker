@@ -3,9 +3,9 @@
 <div class="jumbotron">
   <h1>Marker <small class="text-muted">Informacje o firmach i inwestycjach</small></h1>
   <p class="lead">
-    Znajdź najczęściej rekomendowane firmy o określonym profilu działalności 
-    z wybranego miasta lub województwa. Przeglądaj i analizuj dane inwestycji.
-    Sprawdź, które regiony są najbardziej przedsiębiorcze
+    Znajdź najczęściej rekomendowane firmy o określonym profilu działalności.
+    Sprawdź, które firmy zrealizowały największą liczbę inwestycji,
+    które regiony są najbardziej przedsiębiorcze
     i w jakich branżach jest największa konkurencja.
   </p>
 </div>
