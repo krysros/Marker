@@ -22,16 +22,15 @@
     <div class="col-sm">
       <h2><i class="fa fa-industry" aria-hidden="true"></i> Firmy</h2>
       <p>
-        Wyświetl listę firm ostatnio dodanych do bazy danych.
-        Pokaż firmy, których dane zostały ostatnio zmienione.
+        Wyświetl listę firm ostatnio dodanych do bazy danych
+        wg kategorii wybranej kategorii.
       </p>
       <p><a class="btn btn-secondary" href="${request.route_url('company_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
     <div class="col-sm">
       <h2><i class="fa fa-briefcase" aria-hidden="true"></i> Inwestycje</h2>
       <p>
-        Pokaż listę inwestycji. Filtruj inwestycje, aby wyświetlić te,
-        które są w trakcie lub zostały zakończone.
+        Pokaż listę realizowanych lub zakończonych inwestycji.
       </p>
       <p><a class="btn btn-secondary" href="${request.route_url('investment_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
@@ -51,6 +50,7 @@
       <p>
         Generuj dokumenty w postaci plików Worda wykorzystując szablony i dane z bazy.
       </p>
+      <p><a class="btn btn-secondary" href="${request.route_url('document_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
     <div class="col-sm">
       <h2><i class="fa fa-file-excel-o" aria-hidden="true"></i> Eksport</h2>
