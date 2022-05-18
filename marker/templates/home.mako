@@ -22,8 +22,7 @@
     <div class="col-sm">
       <h2><i class="fa fa-industry" aria-hidden="true"></i> Firmy</h2>
       <p>
-        Wyświetl listę firm ostatnio dodanych do bazy danych
-        wg kategorii wybranej kategorii.
+        Wyświetl listę firm ostatnio dodanych do bazy danych wg wybranej kategorii.
       </p>
       <p><a class="btn btn-secondary" href="${request.route_url('company_all')}" role="button">Pokaż &raquo;</a></p>
     </div>
