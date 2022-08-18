@@ -13,9 +13,7 @@ class AccountView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(
-        route_name="account", renderer="account.mako", permission="edit"
-    )
+    @view_config(route_name="account", renderer="account.mako", permission="edit")
     def account_edit(self):
         user = self.request.identity
         form = Account(self.request.POST, user)
@@ -23,9 +21,7 @@ class AccountView(object):
         if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             form.populate_obj(user)
-            self.request.session.flash(
-                "success:Zmiany zostały zapisane"
-            )
+            self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił swoje dane")
             return HTTPFound(location=self.request.current_route_url())
 
@@ -34,9 +30,7 @@ class AccountView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="password", renderer="password.mako", permission="edit"
-    )
+    @view_config(route_name="password", renderer="password.mako", permission="edit")
     def password_edit(self):
         user = self.request.identity
         form = ChangePassword(self.request.POST, user)
@@ -44,9 +38,7 @@ class AccountView(object):
         if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             form.populate_obj(user)
-            self.request.session.flash(
-                "success:Zmiany zostały zapisane"
-            )
+            self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił hasło")
             return HTTPFound(location=self.request.current_route_url())
 

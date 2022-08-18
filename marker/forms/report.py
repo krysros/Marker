@@ -4,5 +4,5 @@ from marker.forms.select import REPORTS
 
 
 class ReportForm(Form):
-    report = SelectField('Raport', choices=REPORTS)
-    submit = SubmitField('Pokaż')
+    report = SelectField("Raport", choices=REPORTS)
+    submit = SubmitField("Pokaż")

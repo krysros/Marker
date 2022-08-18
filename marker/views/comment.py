@@ -33,9 +33,7 @@ class CommentView(object):
             .scalars()
             .all()
         )
-        next_page = self.request.route_url(
-            "comment_more", _query={"page": page + 1}
-        )
+        next_page = self.request.route_url("comment_more", _query={"page": page + 1})
         return {"paginator": paginator, "next_page": next_page}
 
     @view_config(
@@ -45,7 +43,7 @@ class CommentView(object):
         company = self.request.context.company
         form = CommentForm(self.request.POST)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             comment = Comment(comment=form.comment.data)
             comment.created_by = self.request.identity
@@ -67,9 +65,7 @@ class CommentView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="comment_delete", request_method="GET", permission="edit"
-    )
+    @view_config(route_name="comment_delete", request_method="GET", permission="edit")
     def delete(self):
         comment = self.request.context.comment
         query = self.request.params["from"]

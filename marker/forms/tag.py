@@ -6,8 +6,19 @@ from .filters import strip_filter
 
 
 class TagForm(Form):
-    name = StringField('Nazwa', validators=[InputRequired('Podaj tag'), Length(min=3, max=50, message='Długość musi zawierać się w przedziale %(min)d-%(max)d')], filters=[strip_filter])
-    submit = SubmitField('Zapisz')
+    name = StringField(
+        "Nazwa",
+        validators=[
+            InputRequired("Podaj tag"),
+            Length(
+                min=3,
+                max=50,
+                message="Długość musi zawierać się w przedziale %(min)d-%(max)d",
+            ),
+        ],
+        filters=[strip_filter],
+    )
+    submit = SubmitField("Zapisz")
 
     def __init__(self, *args, dbsession, **kwargs):
         super().__init__(*args, **kwargs)
@@ -18,4 +29,4 @@ class TagForm(Form):
             select(Tag).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists:
-            raise ValidationError('Ta nazwa jest już zajęta')
+            raise ValidationError("Ta nazwa jest już zajęta")

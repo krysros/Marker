@@ -38,12 +38,8 @@ class UserView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(
-        route_name="user_all", renderer="user_all.mako", permission="view"
-    )
-    @view_config(
-        route_name="user_more", renderer="user_more.mako", permission="view"
-    )
+    @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
+    @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
     def all(self):
         page = int(self.request.params.get("page", 1))
         role = self.request.params.get("filter", "all")
@@ -87,9 +83,7 @@ class UserView(object):
             "next_page": next_page,
         }
 
-    @view_config(
-        route_name="user_view", renderer="user_view.mako", permission="view"
-    )
+    @view_config(route_name="user_view", renderer="user_view.mako", permission="view")
     def view(self):
         user = self.request.context.user
         return {"user": user}
@@ -138,9 +132,7 @@ class UserView(object):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
         stmt = (
-            select(Tag)
-            .filter(Tag.created_by == user)
-            .order_by(Tag.created_at.desc())
+            select(Tag).filter(Tag.created_by == user).order_by(Tag.created_at.desc())
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -223,13 +215,11 @@ class UserView(object):
             "next_page": next_page,
         }
 
-    @view_config(
-        route_name="user_add", renderer="user_form.mako", permission="admin"
-    )
+    @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
     def add(self):
         form = UserForm(self.request.POST, dbsession=self.request.dbsession)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             user = User(
                 name=form.name.data,
@@ -251,14 +241,17 @@ class UserView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="user_edit", renderer="user_form.mako", permission="admin"
-    )
+    @view_config(route_name="user_edit", renderer="user_form.mako", permission="admin")
     def edit(self):
         user = self.request.context.user
-        form = UserForm(self.request.POST, user, dbsession=self.request.dbsession, username=user.name)
+        form = UserForm(
+            self.request.POST,
+            user,
+            dbsession=self.request.dbsession,
+            username=user.name,
+        )
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             form.populate_obj(user)
             self.request.session.flash("success:Zmiany zostały zapisane")
@@ -273,9 +266,7 @@ class UserView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="user_delete", request_method="POST", permission="admin"
-    )
+    @view_config(route_name="user_delete", request_method="POST", permission="admin")
     def delete(self):
         user = self.request.context.user
         user_username = user.name
@@ -379,9 +370,7 @@ class UserView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        query = (
-            select(Company).join(checked).filter(user.id == checked.c.user_id)
-        )
+        query = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
         if order == "asc":
             query = query.order_by(getattr(Company, sort).asc())
@@ -403,13 +392,9 @@ class UserView(object):
     def clear_checked(self):
         user = self.request.context.user
         user.checked = []
-        log.info(
-            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy")
         return HTTPFound(
-            location=self.request.route_url(
-                "user_checked", username=user.name
-            )
+            location=self.request.route_url("user_checked", username=user.name)
         )
 
     @view_config(
@@ -430,9 +415,7 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
 
-        stmt = (
-            select(Company).join(recomended).filter(user.id == recomended.c.user_id)
-        )
+        stmt = select(Company).join(recomended).filter(user.id == recomended.c.user_id)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -472,9 +455,7 @@ class UserView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        query = (
-            select(Company).join(recomended).filter(user.id == recomended.c.user_id)
-        )
+        query = select(Company).join(recomended).filter(user.id == recomended.c.user_id)
 
         if order == "asc":
             query = query.order_by(getattr(Company, sort).asc())
@@ -496,13 +477,9 @@ class UserView(object):
     def clear_recomended(self):
         user = self.request.context.user
         user.recomended = []
-        log.info(
-            f"Użytkownik {self.request.identity.name} wyczyścił rekomendacje"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} wyczyścił rekomendacje")
         return HTTPFound(
-            location=self.request.route_url(
-                "user_recomended", username=user.name
-            )
+            location=self.request.route_url("user_recomended", username=user.name)
         )
 
     @view_config(
@@ -527,11 +504,7 @@ class UserView(object):
         states = dict(STATES)
         now = datetime.datetime.now()
 
-        stmt = (
-            select(Project)
-            .join(watched)
-            .filter(user.id == watched.c.user_id)
-        )
+        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
         if filter == "inprogress":
             stmt = stmt.filter(Project.deadline > now.date())
@@ -584,11 +557,7 @@ class UserView(object):
         order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()
 
-        query = (
-            select(Project)
-            .join(watched)
-            .filter(user.id == watched.c.user_id)
-        )
+        query = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
         if filter == "inprogress":
             query = query.filter(Project.deadline > now.date())
@@ -619,7 +588,5 @@ class UserView(object):
             f"Użytkownik {self.request.identity.name} wyczyścił obserwowane projekty"
         )
         return HTTPFound(
-            location=self.request.route_url(
-                "user_watched", username=user.name
-            )
+            location=self.request.route_url("user_watched", username=user.name)
         )

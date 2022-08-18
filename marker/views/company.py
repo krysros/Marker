@@ -1,4 +1,3 @@
-
 import logging
 from sqlalchemy import (
     select,
@@ -164,9 +163,7 @@ class CompanyView(object):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         stmt = (
-            select(User)
-            .join(recomended)
-            .filter(company.id == recomended.c.company_id)
+            select(User).join(recomended).filter(company.id == recomended.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -194,7 +191,7 @@ class CompanyView(object):
     def add_tag(self):
         new_csrf_token(self.request)
         company = self.request.context.company
-        name = self.request.POST.get('name')
+        name = self.request.POST.get("name")
         if name:
             tag = self.request.dbsession.execute(
                 select(Tag).filter_by(name=name)
@@ -217,10 +214,10 @@ class CompanyView(object):
     def add_person(self):
         new_csrf_token(self.request)
         company = self.request.context.company
-        name = self.request.POST.get('name')
-        position = self.request.POST.get('position')
-        phone = self.request.POST.get('phone')
-        email = self.request.POST.get('email')
+        name = self.request.POST.get("name")
+        position = self.request.POST.get("position")
+        phone = self.request.POST.get("phone")
+        email = self.request.POST.get("email")
         if name:
             person = Person(name=name, position=position, phone=phone, email=email)
             if person not in company.people:
@@ -334,11 +331,7 @@ class CompanyView(object):
                 )
             )
             .group_by(Company)
-            .order_by(
-                func.count(
-                    Tag.companies.any(Company.id == company.id)
-                ).desc()
-            )
+            .order_by(func.count(Tag.companies.any(Company.id == company.id)).desc())
         )
 
         if filter in list(states):
@@ -386,7 +379,7 @@ class CompanyView(object):
     def add(self):
         form = CompanyForm(self.request.POST)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             company = Company(
                 name=form.name.data,
                 street=form.street.data,
@@ -420,7 +413,7 @@ class CompanyView(object):
     def edit(self):
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company)
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
             company.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
@@ -437,17 +430,13 @@ class CompanyView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="company_delete", request_method="POST", permission="edit"
-    )
+    @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
         company = self.request.context.company
         company_name = company.name
         self.request.dbsession.delete(company)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(
-            f"Użytkownik {self.request.identity.name} usunął firmę {company_name}"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} usunął firmę {company_name}")
         next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
@@ -484,19 +473,6 @@ class CompanyView(object):
         else:
             checked.append(company)
             return {"checked": True}
-
-    # @view_config(
-    #     route_name="company_select",
-    #     request_method="GET",
-    #     renderer="json",
-    # )
-    # def select(self):
-    #     term = self.request.params.get("term")
-    #     items = self.request.dbsession.execute(
-    #         select(Company).filter(Company.name.ilike("%" + term + "%"))
-    #     ).scalars()
-    #     data = [i.name for i in items]
-    #     return data
 
     @view_config(
         route_name="company_select",
@@ -629,9 +605,7 @@ class CompanyView(object):
         )
         return {"paginator": paginator, "next_page": next_page}
 
-    @view_config(
-        route_name="person_vcard", request_method="POST", permission="view"
-    )
+    @view_config(route_name="person_vcard", request_method="POST", permission="view")
     def vcard(self):
         person = self.request.context.person
         response = export_vcard(person)
@@ -645,8 +619,8 @@ class CompanyView(object):
     )
     def delete_tag(self):
         new_csrf_token(self.request)
-        company_id = int(self.request.matchdict['company_id'])
-        tag_id = int(self.request.matchdict['tag_id'])
+        company_id = int(self.request.matchdict["company_id"])
+        tag_id = int(self.request.matchdict["tag_id"])
 
         company = self.request.dbsession.execute(
             select(Company).filter_by(id=company_id)
@@ -672,19 +646,17 @@ class CompanyView(object):
         return ""
 
     @view_config(
-        route_name='person_delete',
-        request_method='POST',
-        permission='edit',
-        renderer='string',
+        route_name="person_delete",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
     )
     def delete_person(self):
         new_csrf_token(self.request)
         person = self.request.context.person
         person_name = person.name
         self.request.dbsession.delete(person)
-        log.info(
-            f"Użytkownik {self.request.identity.name} usunął osobę {person_name}"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} usunął osobę {person_name}")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         return ""

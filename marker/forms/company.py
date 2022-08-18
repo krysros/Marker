@@ -20,6 +20,7 @@ def _check_sum_9(digits):
     else:
         return False
 
+
 def _check_sum_14(digits):
     weights14 = (2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8)
     check_sum = sum(map(mul, digits[0:13], weights14)) % 11
@@ -32,18 +33,82 @@ def _check_sum_14(digits):
 
 
 class CompanyForm(Form):
-    name = StringField('Nazwa', validators=[InputRequired('Podaj nazwę'), Length(max=100, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter])
-    street = StringField('Ulica', validators=[Length(max=100, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter])
-    postcode = StringField('Kod pocztowy', validators=[Length(max=10, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter, dash_filter, remove_multiple_spaces])
-    city = StringField('Miasto', validators=[Length(max=100, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter])
-    state = SelectField('Województwo', choices=STATES)
-    WWW = StringField('WWW', validators=[Length(max=100, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter])
-    NIP = StringField('NIP', validators=[Length(max=20, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter, dash_filter, remove_multiple_spaces, remove_dashes_and_spaces])
-    REGON = StringField('REGON', validators=[Length(max=20, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter, dash_filter, remove_multiple_spaces, remove_dashes_and_spaces])
-    KRS = StringField('KRS', validators=[Length(max=20, message='Długość nie może przekraczać %(max)d znaków')], filters=[strip_filter, dash_filter, remove_multiple_spaces, remove_dashes_and_spaces])
-    court = SelectField('Sąd', choices=COURTS)
-    color = SelectField('Kolor', choices=COLORS)
-    submit = SubmitField('Zapisz')
+    name = StringField(
+        "Nazwa",
+        validators=[
+            InputRequired("Podaj nazwę"),
+            Length(max=100, message="Długość nie może przekraczać %(max)d znaków"),
+        ],
+        filters=[strip_filter],
+    )
+    street = StringField(
+        "Ulica",
+        validators=[
+            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[strip_filter],
+    )
+    postcode = StringField(
+        "Kod pocztowy",
+        validators=[
+            Length(max=10, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[strip_filter, dash_filter, remove_multiple_spaces],
+    )
+    city = StringField(
+        "Miasto",
+        validators=[
+            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[strip_filter],
+    )
+    state = SelectField("Województwo", choices=STATES)
+    WWW = StringField(
+        "WWW",
+        validators=[
+            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[strip_filter],
+    )
+    NIP = StringField(
+        "NIP",
+        validators=[
+            Length(max=20, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[
+            strip_filter,
+            dash_filter,
+            remove_multiple_spaces,
+            remove_dashes_and_spaces,
+        ],
+    )
+    REGON = StringField(
+        "REGON",
+        validators=[
+            Length(max=20, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[
+            strip_filter,
+            dash_filter,
+            remove_multiple_spaces,
+            remove_dashes_and_spaces,
+        ],
+    )
+    KRS = StringField(
+        "KRS",
+        validators=[
+            Length(max=20, message="Długość nie może przekraczać %(max)d znaków")
+        ],
+        filters=[
+            strip_filter,
+            dash_filter,
+            remove_multiple_spaces,
+            remove_dashes_and_spaces,
+        ],
+    )
+    court = SelectField("Sąd", choices=COURTS)
+    color = SelectField("Kolor", choices=COLORS)
+    submit = SubmitField("Zapisz")
 
     def validate_NIP(form, field):
         if not field.data:

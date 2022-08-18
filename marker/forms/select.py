@@ -1,28 +1,28 @@
 DROPDOWN_SORT = [
-    ('name', 'wg nazwy'),
-    ('created_at', 'wg daty dodania'),
-    ('updated_at', 'wg daty edycji'),
+    ("name", "wg nazwy"),
+    ("created_at", "wg daty dodania"),
+    ("updated_at", "wg daty edycji"),
 ]
 
 
 DROPDOWN_EXT_SORT = [
-    ('name', 'wg nazwy'),
-    ('city', 'wg miasta'),
-    ('state', 'wg województwa'),
-    ('created_at', 'wg daty dodania'),
-    ('updated_at', 'wg daty edycji'),
+    ("name", "wg nazwy"),
+    ("city", "wg miasta"),
+    ("state", "wg województwa"),
+    ("created_at", "wg daty dodania"),
+    ("updated_at", "wg daty edycji"),
 ]
 
 
 DROPDOWN_ORDER = [
-    ('asc', 'rosnąco'),
-    ('desc', 'malejąco'),
+    ("asc", "rosnąco"),
+    ("desc", "malejąco"),
 ]
 
 
 DROPDOWN_PROGRESS = [
-    ('inprogress', 'w trakcie'),
-    ('completed', 'zakończone'),
+    ("inprogress", "w trakcie"),
+    ("completed", "zakończone"),
 ]
 
 

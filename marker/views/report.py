@@ -36,9 +36,7 @@ class ReportView(object):
 
         if self.request.method == "POST" and form.validate():
             report = form.report.data
-            next_url = self.request.route_url(
-                "report_results", rel=report
-            )
+            next_url = self.request.route_url("report_results", rel=report)
             return HTTPSeeOther(location=next_url)
 
         return dict(
@@ -47,9 +45,7 @@ class ReportView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="report_results", renderer="report.mako", permission="view"
-    )
+    @view_config(route_name="report_results", renderer="report.mako", permission="view")
     @view_config(
         route_name="report_more",
         renderer="report_more.mako",
@@ -97,17 +93,13 @@ class ReportView(object):
             )
         elif rel == "tc":
             stmt = (
-                select(
-                    Project.city, func.count(Project.city).label("tc")
-                )
+                select(Project.city, func.count(Project.city).label("tc"))
                 .group_by(Project.city)
                 .order_by(desc("tc"))
             )
         elif rel == "uc":
             stmt = (
-                select(
-                    User.name, func.count(Company.creator_id).label("uc")
-                )
+                select(User.name, func.count(Company.creator_id).label("uc"))
                 .join(Company.created_by)
                 .group_by(User.name)
                 .order_by(desc("uc"))
@@ -134,9 +126,7 @@ class ReportView(object):
             )
         elif rel == "cu":
             stmt = (
-                select(
-                    Company.name, func.count(recomended.c.company_id).label("cu")
-                )
+                select(Company.name, func.count(recomended.c.company_id).label("cu"))
                 .join(recomended)
                 .group_by(Company)
                 .order_by(desc("cu"))
@@ -154,9 +144,7 @@ class ReportView(object):
         else:
             raise HTTPNotFound
 
-        paginator = self.request.dbsession.execute(
-            get_paginator(stmt, page=page)
-        ).all()
+        paginator = self.request.dbsession.execute(get_paginator(stmt, page=page)).all()
         next_page = self.request.route_url(
             "report_more",
             rel=rel,

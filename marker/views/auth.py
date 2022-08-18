@@ -27,7 +27,7 @@ def login(request):
 
     form = LoginForm(request.POST)
 
-    if request.method == 'POST' and form.validate():
+    if request.method == "POST" and form.validate():
         username = form.username.data
         password = form.password.data
         user = request.dbsession.execute(

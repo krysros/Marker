@@ -82,7 +82,7 @@ class ProjectView(object):
             sort=sort,
             order=order,
             dropdown_progress=dropdown_progress,
-            dropdown_order = dropdown_order,
+            dropdown_order=dropdown_order,
             dropdown_sort=dropdown_sort,
             states=states,
             paginator=paginator,
@@ -105,7 +105,7 @@ class ProjectView(object):
     def add(self):
         form = ProjectForm(self.request.POST)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             project = Project(
                 name=form.name.data,
                 street=form.street.data,
@@ -139,7 +139,7 @@ class ProjectView(object):
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
             project.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
@@ -173,21 +173,6 @@ class ProjectView(object):
         )
         next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
-
-    # @view_config(
-    #     route_name="project_select",
-    #     request_method="GET",
-    #     renderer="json",
-    # )
-    # def select(self):
-    #     term = self.request.params.get("term")
-    #     items = self.request.dbsession.execute(
-    #         select(Project).query.filter(
-    #             Project.name.ilike("%" + term + "%")
-    #         )
-    #     ).scalars()
-    #     data = [i.name for i in items]
-    #     return data
 
     @view_config(
         route_name="project_search",

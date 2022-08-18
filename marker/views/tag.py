@@ -16,7 +16,7 @@ from ..models import (
 from ..forms import TagForm
 from ..paginator import get_paginator
 from ..export import export_companies_to_xlsx
-from ..forms.select import  (
+from ..forms.select import (
     DROPDOWN_SORT,
     DROPDOWN_ORDER,
 )
@@ -28,9 +28,7 @@ class TagView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(
-        route_name="tag_all", renderer="tag_all.mako", permission="view"
-    )
+    @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
     @view_config(
         route_name="tag_more",
         renderer="tag_more.mako",
@@ -97,28 +95,24 @@ class TagView(object):
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(recomended)
                     .group_by(Company)
-                    .order_by(
-                        func.count(recomended.c.company_id).asc(), Company.id
-                    )
+                    .order_by(func.count(recomended.c.company_id).asc(), Company.id)
                 )
             elif order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(recomended)
                     .group_by(Company)
-                    .order_by(
-                        func.count(recomended.c.company_id).desc(), Company.id
-                    )
+                    .order_by(func.count(recomended.c.company_id).desc(), Company.id)
                 )
         else:
             if order == "asc":
-                stmt = stmt.filter(
-                    Company.tags.any(name=tag.name)
-                ).order_by(getattr(Company, sort).asc(), Company.id)
+                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
+                    getattr(Company, sort).asc(), Company.id
+                )
             elif order == "desc":
-                stmt = stmt.filter(
-                    Company.tags.any(name=tag.name)
-                ).order_by(getattr(Company, sort).desc(), Company.id)
+                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
+                    getattr(Company, sort).desc(), Company.id
+                )
 
         if filter in list(states):
             stmt = stmt.filter(Company.state == filter)
@@ -153,9 +147,7 @@ class TagView(object):
             title=tag.name,
         )
 
-    @view_config(
-        route_name="tag_export", request_method="POST", permission="view"
-    )
+    @view_config(route_name="tag_export", request_method="POST", permission="view")
     def export(self):
         from ..forms.select import STATES
 
@@ -172,28 +164,24 @@ class TagView(object):
                     query.filter(Company.tags.any(name=tag.name))
                     .join(recomended)
                     .group_by(Company)
-                    .order_by(
-                        func.count(recomended.c.company_id).asc(), Company.id
-                    )
+                    .order_by(func.count(recomended.c.company_id).asc(), Company.id)
                 )
             elif order == "desc":
                 query = (
                     query.filter(Company.tags.any(name=tag.name))
                     .join(recomended)
                     .group_by(Company)
-                    .order_by(
-                        func.count(recomended.c.company_id).desc(), Company.id
-                    )
+                    .order_by(func.count(recomended.c.company_id).desc(), Company.id)
                 )
         else:
             if order == "asc":
-                query = query.filter(
-                    Company.tags.any(name=tag.name)
-                ).order_by(getattr(Company, sort).asc(), Company.id)
+                query = query.filter(Company.tags.any(name=tag.name)).order_by(
+                    getattr(Company, sort).asc(), Company.id
+                )
             elif order == "desc":
-                query = query.filter(
-                    Company.tags.any(name=tag.name)
-                ).order_by(getattr(Company, sort).desc(), Company.id)
+                query = query.filter(Company.tags.any(name=tag.name)).order_by(
+                    getattr(Company, sort).desc(), Company.id
+                )
 
         if filter in list(states):
             query = query.filter(Company.state == filter)
@@ -205,21 +193,17 @@ class TagView(object):
         )
         return response
 
-    @view_config(
-        route_name="tag_add", renderer="tag_form.mako", permission="edit"
-    )
+    @view_config(route_name="tag_add", renderer="tag_form.mako", permission="edit")
     def add(self):
         form = TagForm(self.request.POST, dbsession=self.request.dbsession)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             tag = Tag(form.name.data)
             tag.created_by = self.request.identity
             self.request.dbsession.add(tag)
             self.request.session.flash("success:Dodano do bazy danych")
-            log.info(
-                f"Użytkownik {self.request.identity.name} dodał tag {tag.name}"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} dodał tag {tag.name}")
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
 
@@ -228,14 +212,12 @@ class TagView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="tag_edit", renderer="tag_form.mako", permission="edit"
-    )
+    @view_config(route_name="tag_edit", renderer="tag_form.mako", permission="edit")
     def edit(self):
         tag = self.request.context.tag
         form = TagForm(self.request.POST, tag, dbsession=self.request.dbsession)
 
-        if self.request.method == 'POST' and form.validate():
+        if self.request.method == "POST" and form.validate():
             new_csrf_token(self.request)
             form.populate_obj(tag)
             tag.updated_by = self.request.identity
@@ -251,17 +233,13 @@ class TagView(object):
             form=form,
         )
 
-    @view_config(
-        route_name="tag_delete", request_method="POST", permission="edit"
-    )
+    @view_config(route_name="tag_delete", request_method="POST", permission="edit")
     def delete(self):
         tag = self.request.context.tag
         tag_name = tag.name
         self.request.dbsession.delete(tag)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(
-            f"Użytkownik {self.request.identity.name} usunął tag {tag_name}"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} usunął tag {tag_name}")
         next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
@@ -300,11 +278,7 @@ class TagView(object):
     def results(self):
         name = self.request.params.get("name")
         page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Tag)
-            .filter(Tag.name.ilike("%" + name + "%"))
-            .order_by(Tag.name)
-        )
+        stmt = select(Tag).filter(Tag.name.ilike("%" + name + "%")).order_by(Tag.name)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
