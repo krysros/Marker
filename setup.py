@@ -12,7 +12,6 @@ requires = [
     'plaster_pastedeploy',
     'pyramid',
     'pyramid_mako',
-    'pyramid_chameleon',
     # 'pyramid_debugtoolbar',
     'pyramid_retry',
     'pyramid_tm',
@@ -21,18 +20,13 @@ requires = [
     'zope.sqlalchemy',
     'psycopg2',
     'waitress',
-    'passlib',
-    'bcrypt',
-    'deform @ git+https://github.com/krysros/deform@fix-seq-widgets#egg=deform',
+    'argon2-cffi',
+    'WTForms',
     'python-slugify',
     'xlsxwriter',
     'alembic',
-    'babel',
-    'docxtpl',
-    'slownie',
     'zxcvbn',
     'Unidecode',
-    'pyramid_storage',
     ]
 
 tests_require = [
@@ -43,7 +37,7 @@ tests_require = [
     ]
 
 setup(name='marker',
-      version='1.21',
+      version='2.0a1',
       description='marker',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

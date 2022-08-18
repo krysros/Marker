@@ -13,7 +13,7 @@ def setup_models(dbsession):
 
     """
     model = models.user.User(
-        username="admin",
+        name="admin",
         password="admin",
         fullname="Jan Kowalski",
         email="admin@example.com",

@@ -6,7 +6,6 @@ Requirements
 
 - Python 3
 - PostgreSQL
-- Git
 
 Create database
 ---------------

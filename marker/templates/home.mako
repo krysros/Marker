@@ -1,62 +1,81 @@
 <%inherit file="layout.mako"/>
 
-<div class="jumbotron">
-  <h1>Marker <small class="text-muted">Informacje o firmach i inwestycjach</small></h1>
-  <p class="lead">
-    Znajdź najczęściej rekomendowane firmy o określonym profilu działalności.
-    Sprawdź, które firmy zrealizowały największą liczbę inwestycji,
-    które regiony są najbardziej przedsiębiorcze
-    i w jakich branżach jest największa konkurencja.
-  </p>
+<div class="p-4 mb-4 bg-light rounded-3">
+  <div class="container">
+    <h1>Marker <small class="text-muted">Informacje o firmach i projektach</small></h1>
+    <p class="fs-4">
+      Znajdź najczęściej rekomendowane firmy o określonym profilu działalności.
+      Sprawdź, które firmy zrealizowały największą liczbę projektów,
+      które regiony są najbardziej przedsiębiorcze
+      i w jakich branżach jest największa konkurencja.
+    </p>
+  </div>
 </div>
 
 <div class="container">
   <div class="row">
-    <div class="col-sm">
-      <h2><i class="fa fa-cubes" aria-hidden="true"></i> Branże</h2>
+    <div class="col">
+      <h2><i class="bi bi-building"></i> Firmy</h2>
       <p>
-        Pokaż listę branż oraz firmy o określonym profilu działalności.
+        Ostatnio dodane firmy wg wybranej kategorii.
       </p>
-      <p><a class="btn btn-secondary" href="${request.route_url('branch_all')}" role="button">Pokaż &raquo;</a></p>
+      <p>
+        <a class="btn btn-secondary" href="${request.route_url('company_all')}" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="${request.route_url('company_search')}" role="button">Szukaj</a>
+        <a class="btn btn-success" href="${request.route_url('company_add')}" role="button">Dodaj</a>
+      </p>
     </div>
-    <div class="col-sm">
-      <h2><i class="fa fa-industry" aria-hidden="true"></i> Firmy</h2>
+    <div class="col">
+      <h2><i class="bi bi-briefcase"></i> Projekty</h2>
       <p>
-        Wyświetl listę firm ostatnio dodanych do bazy danych wg wybranej kategorii.
+        Realizowane lub zakończone projekty.
       </p>
-      <p><a class="btn btn-secondary" href="${request.route_url('company_all')}" role="button">Pokaż &raquo;</a></p>
+      <p>
+        <a class="btn btn-secondary" href="${request.route_url('project_all')}" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="${request.route_url('project_search')}" role="button">Szukaj</a>
+        <a class="btn btn-success" href="${request.route_url('project_add')}" role="button">Dodaj</a>
+      </p>
     </div>
-    <div class="col-sm">
-      <h2><i class="fa fa-briefcase" aria-hidden="true"></i> Inwestycje</h2>
+    <div class="col">
+      <h2><i class="bi bi-tags"></i> Tagi</h2>
       <p>
-        Pokaż listę realizowanych lub zakończonych inwestycji.
+        Tagi określają profil działalności firmy.
       </p>
-      <p><a class="btn btn-secondary" href="${request.route_url('investment_all')}" role="button">Pokaż &raquo;</a></p>
+      <p>
+        <a class="btn btn-secondary" href="${request.route_url('tag_all')}" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="${request.route_url('tag_search')}" role="button">Szukaj</a>
+        <a class="btn btn-success" href="${request.route_url('tag_add')}" role="button">Dodaj</a>
+      </p>
     </div>
   </div>
-
   <div class="row">
-    <div class="col-sm">
-      <h2><i class="fa fa-line-chart" aria-hidden="true"></i> Raporty</h2>
+    <div class="col">
+      <h2><i class="bi bi-people"></i> Użytkownicy</h2>
       <p>
-        Wyświetl podsumowanie zawartości bazy danych.
-        Analizuj dane o firmach i inwestycjach.
+        Użytkownicy aplikacji.
       </p>
-      <p><a class="btn btn-secondary" href="${request.route_url('report')}" role="button">Pokaż &raquo;</a></p>
+      <p>
+        <a class="btn btn-secondary" href="${request.route_url('user_all')}" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="${request.route_url('user_search')}" role="button">Szukaj</a>
+        <a class="btn btn-success" href="${request.route_url('user_add')}" role="button">Dodaj</a>
+      </p>
     </div>
-    <div class="col-sm">
-      <h2><i class="fa fa-file-word-o" aria-hidden="true"></i> Dokumenty</h2>
+    <div class="col">
+      <h2><i class="bi bi-chat-left-text"></i> Komentarze</h2>
       <p>
-        Generuj dokumenty w postaci plików Worda wykorzystując szablony i dane z bazy.
+        Komentarze dotyczące firm.
       </p>
-      <p><a class="btn btn-secondary" href="${request.route_url('document_all')}" role="button">Pokaż &raquo;</a></p>
+      <p>
+        <a class="btn btn-secondary" href="${request.route_url('comment_all')}" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="${request.route_url('comment_search')}" role="button">Szukaj</a>
+      </p>
     </div>
-    <div class="col-sm">
-      <h2><i class="fa fa-file-excel-o" aria-hidden="true"></i> Eksport</h2>
+    <div class="col">
+      <h2><i class="bi bi-bar-chart"></i> Raporty</h2>
       <p>
-        Wyeksportuj wybrane dane kontaktowe do Excela.
-        Skorzystaj z korespondencji seryjnej.
+        Podsumowanie informacji o firmach i projektach.
       </p>
+      <p><a class="btn btn-secondary" href="${request.route_url('report')}" role="button">Pokaż</a></p>
     </div>
   </div>
 </div>

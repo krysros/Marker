@@ -6,51 +6,43 @@
   </div>
   <div class="card-body">
     <form action="${request.route_url('company_results')}">
-      <div class="form-group">
+      <div class="mb-3">
         <label for="name">Nazwa</label>
         <input type="text" class="form-control" id="name" name="name">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="street">Ulica</label> 
         <input type="text" class="form-control" id="street" name="street">
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <label for="city">Miasto</label> 
         <input type="text" class="form-control" id="city" name="city">
       </div>
-      <div class="form-group">
-        <label for="voivodeship">Województwo</label>
-        <select class="form-control" id="voivodeship" name="voivodeship">
-          % for k, v in voivodeships.items():
+      <div class="mb-3">
+        <label for="state">Województwo</label>
+        <select class="form-control" id="state" name="state">
+          % for k, v in states.items():
             <option value="${k}">${v}</option>
           % endfor
         </select>
       </div>
-      <div class="form-group">
-        <label for="phone">Telefon</label> 
-        <input type="text" class="form-control" id="phone" name="phone">
+      <div class="mb-3">
+        <label for="WWW">WWW</label>
+        <input type="text" class="form-control" id="WWW" name="WWW">
       </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" class="form-control" id="email" name="email">
+      <div class="mb-3">
+        <label for="NIP">NIP</label>
+        <input type="text" class="form-control" id="NIP" name="NIP">
       </div>
-      <div class="form-group">
-        <label for="www">WWW</label>
-        <input type="text" class="form-control" id="www" name="www">
+      <div class="mb-3">
+        <label for="REGON">REGON</label>
+        <input type="text" class="form-control" id="REGON" name="REGON">
       </div>
-      <div class="form-group">
-        <label for="nip">NIP</label>
-        <input type="text" class="form-control" id="nip" name="nip">
+      <div class="mb-3">
+        <label for="KRS">KRS</label>
+        <input type="text" class="form-control" id="KRS" name="KRS">
       </div>
-      <div class="form-group">
-        <label for="regon">REGON</label>
-        <input type="text" class="form-control" id="regon" name="regon">
-      </div>
-      <div class="form-group">
-        <label for="krs">KRS</label>
-        <input type="text" class="form-control" id="krs" name="krs">
-      </div>
-      <div class="form-group"> 
+      <div class="mb-3"> 
         <button type="submit" class="btn btn-primary">Szukaj</button>
       </div>
     </form>

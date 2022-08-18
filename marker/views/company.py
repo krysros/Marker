@@ -1,36 +1,34 @@
-import re
+
 import logging
-from operator import mul
 from sqlalchemy import (
     select,
     func,
 )
 from sqlalchemy import and_
 
+from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPSeeOther
-
-import deform
-from deform.schema import CSRFSchema
-import colander
+from pyramid.httpexceptions import HTTPSeeOther, HTTPNotFound
 
 from ..models import (
     Company,
     Comment,
     Person,
-    Branch,
-    Investment,
+    Tag,
+    Project,
     User,
-    upvotes,
+    recomended,
     companies_comments,
-    companies_investments,
+    companies_projects,
 )
-
+from ..forms import CompanyForm
 from ..paginator import get_paginator
-from .select import (
-    VOIVODESHIPS,
-    CATEGORIES,
+from ..forms.select import (
+    STATES,
+    COLORS,
     COURTS,
+    DROPDOWN_EXT_SORT,
+    DROPDOWN_ORDER,
 )
 from ..export import export_vcard
 
@@ -38,259 +36,9 @@ from ..export import export_vcard
 log = logging.getLogger(__name__)
 
 
-def strip_whitespace(v):
-    """Removes whitespace, newlines, and tabs from the beginning/end of a string."""
-    return v.strip(" \t\n\r") if v is not colander.null else v
-
-
-def remove_multiple_spaces(v):
-    """Replaces multiple spaces with a single space."""
-    return re.sub(" +", " ", v) if v is not colander.null else v
-
-
-def remove_dashes_and_spaces(v):
-    """Removes dashes and spaces from a string."""
-    return v.replace("-", "").replace(" ", "") if v is not colander.null else v
-
-
-def remove_mailto(v):
-    """Removes "mailto:" from a string."""
-    if v is not colander.null and v.startswith("mailto:"):
-        return v[7:]
-    else:
-        return v
-
-
-def extract_postcode(city):
-    # Remove spaces at the beginning and at the end of the string
-    city = city.strip()
-    # Replace em dash, en dash, minus sign, hyphen-minus with a hypen
-    city = (
-        city.replace("\u2014", "-")
-        .replace("\u2013", "-")
-        .replace("\u2212", "-")
-        .replace("\u002D", "-")
-    )
-    # Extract postcode and city
-    p = re.compile(r"\d{2}\s*-\s*\d{3}")
-    postcode = p.findall(city)
-    if postcode:
-        postcode = postcode[0]
-        city = city.replace(postcode, "").strip()
-        postcode = postcode.replace("\t", "").replace(" ", "")
-    else:
-        postcode = ""
-    return postcode, city
-
-
 class CompanyView(object):
     def __init__(self, request):
         self.request = request
-
-    @property
-    def company_form(self):
-        def check_name(node, value):
-            exists = self.request.dbsession.execute(
-                select(Company).filter_by(name=value)
-            ).scalar_one_or_none()
-            current_id = self.request.matchdict.get("company_id", None)
-            if current_id:
-                current_id = int(current_id)
-            if exists and current_id != exists.id:
-                raise colander.Invalid(node, "Ta nazwa firmy jest już zajęta")
-
-        def validate_nip(node, value):
-            if len(value) != 10 or not value.isdigit():
-                raise colander.Invalid(
-                    node, "Numer NIP powinien się składać z 10 cyfr"
-                )
-
-            digits = list(map(int, value))
-            weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
-            check_sum = sum(map(mul, digits[0:9], weights)) % 11
-            if check_sum != digits[9]:
-                raise colander.Invalid(node, "Nieprawidłowy numer NIP")
-
-        def _check_sum_9(digits):
-            weights9 = (8, 9, 2, 3, 4, 5, 6, 7)
-            check_sum = sum(map(mul, digits[0:8], weights9)) % 11
-            if check_sum == 10:
-                check_sum = 0
-            if check_sum == digits[8]:
-                return True
-            else:
-                return False
-
-        def _check_sum_14(digits):
-            weights14 = (2, 4, 8, 5, 0, 9, 7, 3, 6, 1, 2, 4, 8)
-            check_sum = sum(map(mul, digits[0:13], weights14)) % 11
-            if check_sum == 10:
-                check_sum = 0
-            if check_sum == digits[13]:
-                return True
-            else:
-                return False
-
-        def validate_regon(node, value):
-            if len(value) != 9 and len(value) != 14 or not value.isdigit():
-                raise colander.Invalid(
-                    node, "Numer REGON powinien się składać z 9 lub 14 cyfr"
-                )
-            digits = list(map(int, value))
-
-            if len(value) == 9:
-                valid = _check_sum_9(digits)
-            else:
-                valid = _check_sum_9(digits) and _check_sum_14(digits)
-
-            if not valid:
-                raise colander.Invalid(node, "Nieprawidłowy numer REGON")
-
-        def validate_krs(node, value):
-            if len(value) != 10 or not value.isdigit():
-                raise colander.Invalid(
-                    node, "Numer KRS powinien się składać z 10 cyfr"
-                )
-
-        widget = deform.widget.AutocompleteInputWidget(
-            values=self.request.route_url("branch_select"),
-        )
-
-        class Branches(colander.SequenceSchema):
-            name = colander.SchemaNode(
-                colander.String(),
-                title="Branża",
-                widget=widget,
-                validator=colander.Length(min=3, max=50),
-            )
-
-        class Persons(colander.Schema):
-            fullname = colander.SchemaNode(
-                colander.String(),
-                title="Imię i nazwisko",
-                validator=colander.Length(max=50),
-            )
-            position = colander.SchemaNode(
-                colander.String(),
-                title="Stanowisko",
-                missing="",
-                validator=colander.Length(max=50),
-            )
-            phone = colander.SchemaNode(
-                colander.String(),
-                title="Telefon",
-                missing="",
-                validator=colander.Length(max=50),
-            )
-            email = colander.SchemaNode(
-                colander.String(),
-                title="Email",
-                missing="",
-                preparer=[strip_whitespace, remove_mailto],
-                validator=colander.Email(),
-            )
-
-        class People(colander.SequenceSchema):
-            person = Persons(title="Nowy kontakt")
-
-        class Schema(CSRFSchema):
-            name = colander.SchemaNode(
-                colander.String(),
-                title="Nazwa firmy",
-                validator=colander.All(
-                    colander.Length(min=3, max=100), check_name
-                ),
-            )
-            street = colander.SchemaNode(
-                colander.String(),
-                title="Ulica",
-                missing="",
-                validator=colander.Length(max=100),
-            )
-            city = colander.SchemaNode(
-                colander.String(),
-                title="Miasto",
-                missing="",
-                validator=colander.Length(max=100),
-            )
-            voivodeship = colander.SchemaNode(
-                colander.String(),
-                title="Województwo",
-                missing="",
-                widget=deform.widget.SelectWidget(values=VOIVODESHIPS),
-            )
-            phone = colander.SchemaNode(
-                colander.String(),
-                title="Telefon",
-                missing="",
-                validator=colander.Length(max=50),
-            )
-            email = colander.SchemaNode(
-                colander.String(),
-                title="Email",
-                missing="",
-                preparer=[strip_whitespace, remove_mailto],
-                validator=colander.Email(),
-            )
-            www = colander.SchemaNode(
-                colander.String(),
-                title="WWW",
-                missing="",
-                validator=colander.Length(max=50),
-            )
-            nip = colander.SchemaNode(
-                colander.String(),
-                title="NIP",
-                missing="",
-                preparer=[
-                    strip_whitespace,
-                    remove_multiple_spaces,
-                    remove_dashes_and_spaces,
-                ],
-                validator=validate_nip,
-            )
-            regon = colander.SchemaNode(
-                colander.String(),
-                title="REGON",
-                missing="",
-                preparer=[
-                    strip_whitespace,
-                    remove_multiple_spaces,
-                    remove_dashes_and_spaces,
-                ],
-                validator=validate_regon,
-            )
-            krs = colander.SchemaNode(
-                colander.String(),
-                title="KRS",
-                missing="",
-                preparer=[
-                    strip_whitespace,
-                    remove_multiple_spaces,
-                    remove_dashes_and_spaces,
-                ],
-                validator=validate_krs,
-            )
-            court = colander.SchemaNode(
-                colander.String(),
-                title="Sąd",
-                missing="",
-                widget=deform.widget.SelectWidget(values=COURTS),
-            )
-            category = colander.SchemaNode(
-                colander.String(),
-                title="Kategoria",
-                missing="",
-                widget=deform.widget.SelectWidget(values=CATEGORIES),
-            )
-            branches = Branches(title="Branże")
-            people = People(title="Osoby do kontaktu")
-
-        schema = Schema().bind(request=self.request)
-        submit_btn = deform.form.Button(name="submit", title="Zapisz")
-        form = deform.Form(schema, buttons=(submit_btn,))
-        form["branches"].widget = deform.widget.SequenceWidget(min_len=1)
-        return form
 
     @view_config(
         route_name="company_all",
@@ -307,12 +55,14 @@ class CompanyView(object):
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
-        voivodeships = dict(VOIVODESHIPS)
+        colors = dict(COLORS)
+        states = dict(STATES)
+        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
 
-        for k, _ in CATEGORIES:
-            if filter == k:
-                stmt = stmt.filter(Company.category == k)
+        if filter in list(colors):
+            stmt = stmt.filter(Company.color == filter)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -341,7 +91,10 @@ class CompanyView(object):
             sort=sort,
             order=order,
             paginator=paginator,
-            voivodeships=voivodeships,
+            states=states,
+            colors=colors,
+            dropdown_sort=dropdown_sort,
+            dropdown_order=dropdown_order,
         )
 
     @view_config(
@@ -351,7 +104,7 @@ class CompanyView(object):
     )
     def view(self):
         company = self.request.context.company
-        voivodeships = dict(VOIVODESHIPS)
+        states = dict(STATES)
         courts = dict(COURTS)
 
         # Counters
@@ -361,25 +114,25 @@ class CompanyView(object):
             .join(companies_comments)
             .filter(company.id == companies_comments.c.company_id)
         )
-        c_upvotes = self.request.dbsession.scalar(
+        c_recomended = self.request.dbsession.scalar(
             select(func.count())
             .select_from(User)
-            .join(upvotes)
-            .filter(company.id == upvotes.c.company_id)
+            .join(recomended)
+            .filter(company.id == recomended.c.company_id)
         )
-        c_investments = self.request.dbsession.scalar(
+        c_projects = self.request.dbsession.scalar(
             select(func.count())
-            .select_from(Investment)
-            .join(companies_investments)
-            .filter(company.id == companies_investments.c.company_id)
+            .select_from(Project)
+            .join(companies_projects)
+            .filter(company.id == companies_projects.c.company_id)
         )
         c_similar = self.request.dbsession.scalar(
             select(func.count())
             .select_from(Company)
-            .join(Branch, Company.branches)
+            .join(Tag, Company.tags)
             .filter(
                 and_(
-                    Branch.companies.any(Company.id == company.id),
+                    Tag.companies.any(Company.id == company.id),
                     Company.id != company.id,
                 )
             )
@@ -387,32 +140,33 @@ class CompanyView(object):
 
         return dict(
             c_comments=c_comments,
-            c_upvotes=c_upvotes,
-            c_investments=c_investments,
+            c_recomended=c_recomended,
+            c_projects=c_projects,
             c_similar=c_similar,
             company=company,
-            voivodeships=voivodeships,
+            states=states,
             courts=courts,
             title=company.name,
+            tags=[],  # require to render tag_datalist.mako included in current template
         )
 
     @view_config(
-        route_name="company_upvotes",
-        renderer="company_upvotes.mako",
+        route_name="company_recomended",
+        renderer="company_recomended.mako",
         permission="view",
     )
     @view_config(
-        route_name="company_upvotes_more",
+        route_name="company_recomended_more",
         renderer="user_more.mako",
         permission="view",
     )
-    def upvotes(self):
+    def recomended(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         stmt = (
             select(User)
-            .join(upvotes)
-            .filter(company.id == upvotes.c.company_id)
+            .join(recomended)
+            .filter(company.id == recomended.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -420,7 +174,7 @@ class CompanyView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "company_upvotes_more",
+            "company_recomended_more",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},
@@ -430,6 +184,51 @@ class CompanyView(object):
             "next_page": next_page,
             "company": company,
         }
+
+    @view_config(
+        route_name="company_tags",
+        renderer="company_tags.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_tag(self):
+        new_csrf_token(self.request)
+        company = self.request.context.company
+        name = self.request.POST.get('name')
+        if name:
+            tag = self.request.dbsession.execute(
+                select(Tag).filter_by(name=name)
+            ).scalar_one_or_none()
+            if not tag:
+                tag = Tag(name)
+            if tag not in company.tags:
+                company.tags.append(tag)
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        return {"company": company}
+
+    @view_config(
+        route_name="company_people",
+        renderer="company_people.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_person(self):
+        new_csrf_token(self.request)
+        company = self.request.context.company
+        name = self.request.POST.get('name')
+        position = self.request.POST.get('position')
+        phone = self.request.POST.get('phone')
+        email = self.request.POST.get('email')
+        if name:
+            person = Person(name=name, position=position, phone=phone, email=email)
+            if person not in company.people:
+                company.people.append(person)
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        return {"company": company}
 
     @view_config(
         route_name="company_comments",
@@ -468,22 +267,23 @@ class CompanyView(object):
         }
 
     @view_config(
-        route_name="company_investments",
-        renderer="company_investments.mako",
+        route_name="company_projects",
+        renderer="company_projects.mako",
         permission="view",
     )
     @view_config(
-        route_name="company_investments_more",
-        renderer="investment_more.mako",
+        route_name="company_projects_more",
+        renderer="project_more.mako",
         permission="view",
     )
-    def investments(self):
+    def projects(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
+        states = dict(STATES)
         stmt = (
-            select(Investment)
-            .join(companies_investments)
-            .filter(company.id == companies_investments.c.company_id)
+            select(Project)
+            .join(companies_projects)
+            .filter(company.id == companies_projects.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -492,7 +292,7 @@ class CompanyView(object):
         )
 
         next_page = self.request.route_url(
-            "company_investments_more",
+            "company_projects_more",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},
@@ -501,6 +301,7 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
+            "states": states,
         }
 
     @view_config(
@@ -517,27 +318,36 @@ class CompanyView(object):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
-        voivodeships = dict(VOIVODESHIPS)
+        sort = self.request.params.get("sort", "created_at")
+        order = self.request.params.get("order", "desc")
+        states = dict(STATES)
+        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
 
         stmt = (
             select(Company)
-            .join(Branch, Company.branches)
+            .join(Tag, Company.tags)
             .filter(
                 and_(
-                    Branch.companies.any(Company.id == company.id),
+                    Tag.companies.any(Company.id == company.id),
                     Company.id != company.id,
                 )
             )
             .group_by(Company)
             .order_by(
                 func.count(
-                    Branch.companies.any(Company.id == company.id)
+                    Tag.companies.any(Company.id == company.id)
                 ).desc()
             )
         )
 
-        if filter in list(voivodeships):
-            stmt = stmt.filter(Company.voivodeship == filter)
+        if filter in list(states):
+            stmt = stmt.filter(Company.state == filter)
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Company, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Company, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -551,7 +361,9 @@ class CompanyView(object):
             slug=company.slug,
             _query={
                 "filter": filter,
-                "voivodeships": voivodeships,
+                "sort": sort,
+                "order": order,
+                "states": states,
                 "page": page + 1,
             },
         )
@@ -559,172 +371,70 @@ class CompanyView(object):
         return dict(
             company=company,
             filter=filter,
+            sort=sort,
+            order=order,
             paginator=paginator,
             next_page=next_page,
-            voivodeships=voivodeships,
+            states=states,
+            dropdown_sort=dropdown_sort,
+            dropdown_order=dropdown_order,
         )
 
-    def _get_branches(self, appstruct):
-        branches = []
-        for b in appstruct["branches"]:
-            branch = self.request.dbsession.execute(
-                select(Branch).filter_by(name=b)
-            ).scalar_one_or_none()
-            if not branch:
-                branch = Branch(name=b)
-            if branch not in branches:
-                branches.append(branch)
-        return branches
-
-    def _get_people(self, appstruct):
-        people = []
-        for p in appstruct["people"]:
-            person = Person(
-                fullname=p["fullname"],
-                position=p["position"],
-                phone=p["phone"],
-                email=p["email"],
-            )
-            people.append(person)
-        return people
-
     @view_config(
-        route_name="company_add", renderer="form.mako", permission="edit"
+        route_name="company_add", renderer="company_form.mako", permission="edit"
     )
     def add(self):
-        form = self.company_form
-        appstruct = {}
-        rendered_form = None
+        form = CompanyForm(self.request.POST)
 
-        if "submit" in self.request.params:
-            controls = self.request.POST.items()
-            try:
-                appstruct = form.validate(controls)
-            except deform.exception.ValidationFailure as e:
-                rendered_form = e.render()
-            else:
-                postcode, city = extract_postcode(appstruct["city"])
-                company = Company(
-                    name=appstruct["name"],
-                    street=appstruct["street"],
-                    postcode=postcode,
-                    city=city,
-                    voivodeship=appstruct["voivodeship"],
-                    phone=appstruct["phone"],
-                    email=appstruct["email"],
-                    www=appstruct["www"],
-                    nip=appstruct["nip"],
-                    regon=appstruct["regon"],
-                    krs=appstruct["krs"],
-                    court=appstruct["court"],
-                    category=appstruct["category"],
-                    branches=self._get_branches(appstruct),
-                    people=self._get_people(appstruct),
-                )
-                company.created_by = self.request.identity
-                self.request.dbsession.add(company)
-                self.request.session.flash("success:Dodano do bazy danych")
-                log.info(
-                    f"Użytkownik {self.request.identity.username} dodał firmę {company.name}"
-                )
-                next_url = self.request.route_url("company_all")
-                return HTTPSeeOther(location=next_url)
-
-        if rendered_form is None:
-            rendered_form = form.render(appstruct=appstruct)
-        reqts = form.get_widget_resources()
+        if self.request.method == 'POST' and form.validate():
+            company = Company(
+                name=form.name.data,
+                street=form.street.data,
+                postcode=form.postcode.data,
+                city=form.city.data,
+                state=form.state.data,
+                WWW=form.WWW.data,
+                NIP=form.NIP.data,
+                REGON=form.REGON.data,
+                KRS=form.KRS.data,
+                court=form.court.data,
+                color=form.color.data,
+            )
+            company.created_by = self.request.identity
+            self.request.dbsession.add(company)
+            self.request.session.flash("success:Dodano do bazy danych")
+            log.info(
+                f"Użytkownik {self.request.identity.name} dodał firmę {company.name}"
+            )
+            next_url = self.request.route_url("company_all")
+            return HTTPSeeOther(location=next_url)
 
         return dict(
             heading="Dodaj firmę",
-            rendered_form=rendered_form,
-            css_links=reqts["css"],
-            js_links=reqts["js"],
+            form=form,
         )
 
     @view_config(
-        route_name="company_edit", renderer="form.mako", permission="edit"
+        route_name="company_edit", renderer="company_form.mako", permission="edit"
     )
     def edit(self):
         company = self.request.context.company
-        form = self.company_form
-        rendered_form = None
-
-        if "submit" in self.request.params:
-            controls = self.request.POST.items()
-            try:
-                appstruct = form.validate(controls)
-            except deform.exception.ValidationFailure as e:
-                rendered_form = e.render()
-            else:
-                postcode, city = extract_postcode(appstruct["city"])
-                company.name = appstruct["name"]
-                company.street = appstruct["street"]
-                company.postcode = postcode
-                company.city = city
-                company.voivodeship = appstruct["voivodeship"]
-                company.phone = appstruct["phone"]
-                company.email = appstruct["email"]
-                company.www = appstruct["www"]
-                company.nip = appstruct["nip"]
-                company.regon = appstruct["regon"]
-                company.krs = appstruct["krs"]
-                company.court = appstruct["court"]
-                company.category = appstruct["category"]
-                company.branches = self._get_branches(appstruct)
-                company.people = self._get_people(appstruct)
-                company.updated_by = self.request.identity
-                self.request.session.flash("success:Zmiany zostały zapisane")
-                next_url = self.request.route_url(
-                    "company_view", company_id=company.id, slug=company.slug
-                )
-                log.info(
-                    f"Użytkownik {self.request.identity.username} zmienił dane firmy {company.name}"
-                )
-                return HTTPSeeOther(location=next_url)
-
-        branches = []
-        for b in company.branches:
-            branches.append(b.name)
-
-        people = []
-        for p in company.people:
-            people.append(
-                {
-                    "fullname": p.fullname,
-                    "position": p.position,
-                    "phone": p.phone,
-                    "email": p.email,
-                }
+        form = CompanyForm(self.request.POST, company)
+        if self.request.method == 'POST' and form.validate():
+            form.populate_obj(company)
+            company.updated_by = self.request.identity
+            self.request.session.flash("success:Zmiany zostały zapisane")
+            next_url = self.request.route_url(
+                "company_view", company_id=company.id, slug=company.slug
             )
-
-        appstruct = dict(
-            name=company.name,
-            street=company.street,
-            city=f"{company.postcode} {company.city}"
-            if company.postcode
-            else company.city,
-            voivodeship=company.voivodeship,
-            phone=company.phone,
-            email=company.email,
-            www=company.www,
-            nip=company.nip,
-            regon=company.regon,
-            krs=company.krs,
-            court=company.court,
-            category=company.category,
-            branches=branches,
-            people=people,
-        )
-
-        if rendered_form is None:
-            rendered_form = form.render(appstruct=appstruct)
-        reqts = form.get_widget_resources()
+            log.info(
+                f"Użytkownik {self.request.identity.name} zmienił dane firmy {company.name}"
+            )
+            return HTTPSeeOther(location=next_url)
 
         return dict(
             heading="Edytuj dane firmy",
-            rendered_form=rendered_form,
-            css_links=reqts["css"],
-            js_links=reqts["js"],
+            form=form,
         )
 
     @view_config(
@@ -732,62 +442,75 @@ class CompanyView(object):
     )
     def delete(self):
         company = self.request.context.company
-        company_id = company.id
         company_name = company.name
         self.request.dbsession.delete(company)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
-            f"Użytkownik {self.request.identity.username} usunął firmę {company_name}"
+            f"Użytkownik {self.request.identity.name} usunął firmę {company_name}"
         )
         next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
     @view_config(
-        route_name="company_upvote",
+        route_name="company_recommend",
         request_method="POST",
         renderer="string",
         permission="view",
     )
-    def upvote(self):
+    def recommend(self):
         company = self.request.context.company
-        upvoted = self.request.identity.upvotes
+        recomended = self.request.identity.recomended
 
-        if company in upvoted:
-            upvoted.remove(company)
-            return '<span class="fa fa-thumbs-o-up fa-lg"></span>'
+        if company in recomended:
+            recomended.remove(company)
+            return '<i class="bi bi-hand-thumbs-up"></i>'
         else:
-            upvoted.append(company)
-            return '<span class="fa fa-thumbs-up fa-lg"></span>'
+            recomended.append(company)
+            return '<i class="bi bi-hand-thumbs-up-fill"></i>'
 
     @view_config(
-        route_name="company_mark",
+        route_name="company_check",
         request_method="POST",
         renderer="json",
         permission="view",
     )
     def mark(self):
         company = self.request.context.company
-        marked = self.request.identity.marker
+        checked = self.request.identity.checked
 
-        if company in marked:
-            marked.remove(company)
-            return {"marked": False}
+        if company in checked:
+            checked.remove(company)
+            return {"checked": False}
         else:
-            marked.append(company)
-            return {"marked": True}
+            checked.append(company)
+            return {"checked": True}
+
+    # @view_config(
+    #     route_name="company_select",
+    #     request_method="GET",
+    #     renderer="json",
+    # )
+    # def select(self):
+    #     term = self.request.params.get("term")
+    #     items = self.request.dbsession.execute(
+    #         select(Company).filter(Company.name.ilike("%" + term + "%"))
+    #     ).scalars()
+    #     data = [i.name for i in items]
+    #     return data
 
     @view_config(
         route_name="company_select",
+        renderer="company_datalist.mako",
         request_method="GET",
-        renderer="json",
     )
     def select(self):
-        term = self.request.params.get("term")
-        items = self.request.dbsession.execute(
-            select(Company).filter(Company.name.ilike("%" + term + "%"))
-        ).scalars()
-        data = [i.name for i in items]
-        return data
+        company = self.request.params.get("company")
+        companies = []
+        if company:
+            companies = self.request.dbsession.execute(
+                select(Company).filter(Company.name.ilike("%" + company + "%"))
+            ).scalars()
+        return {"companies": companies}
 
     @view_config(
         route_name="company_search",
@@ -795,8 +518,8 @@ class CompanyView(object):
         permission="view",
     )
     def company_search(self):
-        voivodeships = dict(VOIVODESHIPS)
-        return {"voivodeships": voivodeships}
+        states = dict(STATES)
+        return {"states": states}
 
     @view_config(
         route_name="company_results",
@@ -812,27 +535,23 @@ class CompanyView(object):
         name = self.request.params.get("name")
         street = self.request.params.get("street")
         city = self.request.params.get("city")
-        voivodeship = self.request.params.get("voivodeship")
-        phone = self.request.params.get("phone")
-        email = self.request.params.get("email")
-        www = self.request.params.get("www")
-        nip = self.request.params.get("nip")
-        regon = self.request.params.get("regon")
-        krs = self.request.params.get("krs")
+        state = self.request.params.get("state")
+        WWW = self.request.params.get("WWW")
+        NIP = self.request.params.get("NIP")
+        REGON = self.request.params.get("REGON")
+        KRS = self.request.params.get("KRS")
         page = int(self.request.params.get("page", 1))
-        voivodeships = dict(VOIVODESHIPS)
+        states = dict(STATES)
         stmt = (
             select(Company)
             .filter(Company.name.ilike("%" + name + "%"))
             .filter(Company.street.ilike("%" + street + "%"))
             .filter(Company.city.ilike("%" + city + "%"))
-            .filter(Company.voivodeship.ilike("%" + voivodeship + "%"))
-            .filter(Company.phone.ilike("%" + phone + "%"))
-            .filter(Company.email.ilike("%" + email + "%"))
-            .filter(Company.www.ilike("%" + www + "%"))
-            .filter(Company.nip.ilike("%" + nip + "%"))
-            .filter(Company.regon.ilike("%" + regon + "%"))
-            .filter(Company.krs.ilike("%" + krs + "%"))
+            .filter(Company.state.ilike("%" + state + "%"))
+            .filter(Company.WWW.ilike("%" + WWW + "%"))
+            .filter(Company.NIP.ilike("%" + NIP + "%"))
+            .filter(Company.REGON.ilike("%" + REGON + "%"))
+            .filter(Company.KRS.ilike("%" + KRS + "%"))
             .order_by(Company.name)
         )
         paginator = (
@@ -846,13 +565,11 @@ class CompanyView(object):
                 "name": name,
                 "street": street,
                 "city": city,
-                "voivodeship": voivodeship,
-                "phone": phone,
-                "email": email,
-                "www": www,
-                "nip": nip,
-                "regon": regon,
-                "krs": krs,
+                "state": state,
+                "WWW": WWW,
+                "NIP": NIP,
+                "REGON": REGON,
+                "KRS": KRS,
                 "page": page + 1,
             },
         )
@@ -860,7 +577,7 @@ class CompanyView(object):
         return dict(
             paginator=paginator,
             next_page=next_page,
-            voivodeships=voivodeships,
+            states=states,
         )
 
     @view_config(
@@ -882,18 +599,18 @@ class CompanyView(object):
         permission="view",
     )
     def person_results(self):
-        fullname = self.request.params.get("fullname")
+        name = self.request.params.get("name")
         position = self.request.params.get("position")
         phone = self.request.params.get("phone")
         email = self.request.params.get("email")
         page = int(self.request.params.get("page", 1))
         stmt = (
             select(Person)
-            .filter(Person.fullname.ilike("%" + fullname + "%"))
+            .filter(Person.name.ilike("%" + name + "%"))
             .filter(Person.position.ilike("%" + position + "%"))
             .filter(Person.phone.ilike("%" + phone + "%"))
             .filter(Person.email.ilike("%" + email + "%"))
-            .order_by(Person.fullname)
+            .order_by(Person.name)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -903,7 +620,7 @@ class CompanyView(object):
         next_page = self.request.route_url(
             "person_results_more",
             _query={
-                "fullname": fullname,
+                "name": name,
                 "position": position,
                 "phone": phone,
                 "email": email,
@@ -919,3 +636,55 @@ class CompanyView(object):
         person = self.request.context.person
         response = export_vcard(person)
         return response
+
+    @view_config(
+        route_name="delete_tag_from_company",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_tag(self):
+        new_csrf_token(self.request)
+        company_id = int(self.request.matchdict['company_id'])
+        tag_id = int(self.request.matchdict['tag_id'])
+
+        company = self.request.dbsession.execute(
+            select(Company).filter_by(id=company_id)
+        ).scalar_one_or_none()
+        if not company:
+            raise HTTPNotFound
+
+        tag = self.request.dbsession.execute(
+            select(Tag).filter_by(id=tag_id)
+        ).scalar_one_or_none()
+        if not tag:
+            raise HTTPNotFound
+
+        company_name = company.name
+        tag_name = tag.name
+
+        company.tags.remove(tag)
+        log.info(
+            f"Użytkownik {self.request.identity.name} usunął tag {tag_name} z firmy {company_name}"
+        )
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        return ""
+
+    @view_config(
+        route_name='person_delete',
+        request_method='POST',
+        permission='edit',
+        renderer='string',
+    )
+    def delete_person(self):
+        new_csrf_token(self.request)
+        person = self.request.context.person
+        person_name = person.name
+        self.request.dbsession.delete(person)
+        log.info(
+            f"Użytkownik {self.request.identity.name} usunął osobę {person_name}"
+        )
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        return ""

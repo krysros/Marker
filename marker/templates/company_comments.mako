@@ -2,8 +2,8 @@
 
 <div class="card">
   <div class="card-body">
-    <div class="float-right">
-      <a href="${request.route_url('comment_add', company_id=company.id)}" class="btn btn-info" role="button"><i class="fa fa-comment" aria-hidden="true"></i><div class="d-none d-sm-block"> Dodaj</div></a>
+    <div class="float-end">
+      <a href="${request.route_url('comment_add', company_id=company.id)}" class="btn btn-success" role="button">Dodaj</a>
     </div>
   </div>
 </div>

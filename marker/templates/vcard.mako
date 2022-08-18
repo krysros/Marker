@@ -1,6 +1,6 @@
 BEGIN:VCARD
 VERSION:4.0
-FN:${person.fullname}
+FN:${person.name}
 % if person.position:
 ROLE:${person.position}
 % endif

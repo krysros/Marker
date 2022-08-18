@@ -6,7 +6,7 @@
 % else:
 <tr>
 % endif
-  <td>${person.fullname}</td>
+  <td>${person.name}</td>
   % if person.company:
   <td><a href="${request.route_url('company_view', company_id=person.company.id, slug=person.company.slug)}">${person.company.name}</a></td>
   % else:

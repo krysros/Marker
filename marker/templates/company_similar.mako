@@ -1,30 +1,9 @@
 <%inherit file="layout.mako"/>
+<%namespace name="dropdown" file="dropdown.mako"/>
 
 <div class="card">
   <div class="card-body">
-    <div class="btn-group">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="sortByVoivodeship" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-filter" aria-hidden="true"></i> Filtruj
-      </button>
-      <div class="dropdown-menu" aria-labelledby="sortByVoivodeship">
-        % for abbrev, name in voivodeships.items():
-        <a class="dropdown-item" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug, _query={'filter': abbrev})}">
-          % if filter == abbrev:
-          <strong>${name}</strong>
-          % else:
-          ${name}
-          % endif
-        </a>
-        % endfor
-        <a class="dropdown-item" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug, _query={'filter': 'all'})}">
-          % if filter == 'all':
-          <strong>wszystkie</strong>
-          % else:
-          wszystkie
-          % endif
-        </a>
-      </div>
-    </div>
+    ${dropdown.filter_button('company_similar', states, filter=filter, sort=None, order=None, company_id=company.id, slug=company.slug)}
   </div>
 </div>
 

@@ -2,7 +2,7 @@ from marker import models
 
 def test_my_view_success(testapp, dbsession):
     model = models.user.User(
-        username='admin',
+        name='admin',
         password='admin',
         fullname='Jan Kowalski',
         email='jan.kowalski@example.com',

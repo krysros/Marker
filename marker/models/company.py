@@ -6,6 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     Sequence,
     Integer,
+    Float,
     Unicode,
     DateTime,
     select,
@@ -20,11 +21,11 @@ from sqlalchemy.orm import (
 
 from slugify import slugify
 from .meta import Base
-from .user import upvotes
+from .user import recomended
 
 
-companies_branches = Table(
-    "companies_branches",
+companies_tags = Table(
+    "companies_tags",
     Base.metadata,
     Column(
         "company_id",
@@ -32,9 +33,9 @@ companies_branches = Table(
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
     Column(
-        "branch_id",
+        "tag_id",
         Integer,
-        ForeignKey("branches.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
 )
 
@@ -76,18 +77,16 @@ class Company(Base):
     street = Column(Unicode(100))
     postcode = Column(Unicode(10))
     city = Column(Unicode(100))
-    voivodeship = Column(Unicode(2))
-    phone = Column(Unicode(50))
-    email = Column(Unicode(100))
-    www = Column(Unicode(100))
-    nip = Column(Unicode(20))
-    regon = Column(Unicode(20))
-    krs = Column(Unicode(20))
+    state = Column(Unicode(2))
+    latitude = Column(Float)
+    longitude = Column(Float)
+    WWW = Column(Unicode(100))
+    NIP = Column(Unicode(20))
+    REGON = Column(Unicode(20))
+    KRS = Column(Unicode(20))
     court = Column(Unicode(100))
-    category = Column(Unicode(10))
-    branches = relationship(
-        "Branch", secondary=companies_branches, backref="companies"
-    )
+    color = Column(Unicode(10))
+    tags = relationship("Tag", secondary=companies_tags, backref="companies")
     people = relationship(
         "Person",
         secondary=companies_persons,
@@ -119,42 +118,34 @@ class Company(Base):
         street,
         postcode,
         city,
-        voivodeship,
-        phone,
-        email,
-        www,
-        nip,
-        regon,
-        krs,
+        state,
+        WWW,
+        NIP,
+        REGON,
+        KRS,
         court,
-        category,
-        branches,
-        people,
+        color,
     ):
         self.name = name
         self.street = street
         self.postcode = postcode
         self.city = city
-        self.voivodeship = voivodeship
-        self.phone = phone
-        self.email = email
-        self.www = www
-        self.nip = nip
-        self.regon = regon
-        self.krs = krs
+        self.state = state
+        self.WWW = WWW
+        self.NIP = NIP
+        self.REGON = REGON
+        self.KRS = KRS
         self.court = court
-        self.category = category
-        self.branches = branches
-        self.people = people
+        self.color = color
 
     @property
     def slug(self):
         return slugify(self.name)
 
     @property
-    def upvote_count(self):
+    def count_recomended(self):
         return object_session(self).scalar(
-            select([func.count(upvotes.c.company_id)]).where(
-                upvotes.c.company_id == self.id
+            select([func.count(recomended.c.company_id)]).where(
+                recomended.c.company_id == self.id
             )
         )

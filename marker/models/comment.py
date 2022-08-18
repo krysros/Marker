@@ -17,8 +17,13 @@ class Comment(Base):
     id = Column(Integer, primary_key=True)
     comment = Column(Text())
     created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(
+        DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
+    )
     creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     created_by = relationship("User", foreign_keys=[creator_id])
+    updated_by = relationship("User", foreign_keys=[editor_id])
 
     def __init__(self, comment):
         self.comment = comment

@@ -1,24 +1,23 @@
 <%inherit file="layout.mako"/>
+<%namespace name="modal" file="modal.mako"/>
 
 <div class="card">
   <div class="card-body">
-    <div class="float-right">
-      <a href="${request.route_url('user_edit', username=user.username)}" class="btn btn-warning" role="button"><i class="fa fa-edit" aria-hidden="true"></i><div class="d-none d-sm-block"> Edytuj</div></a>
-      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
-        <i class="fa fa-trash" aria-hidden="true"></i><div class="d-none d-sm-block"> Usuń</div>
-      </button>
+    <div class="float-end">
+      <a href="${request.route_url('user_edit', username=user.name)}" class="btn btn-warning" role="button">Edytuj</a>
+      ${modal.danger_dialog('user_delete', 'Usuń', 'Czy na pewno chcesz usunąć użytkownika z bazy danych?', username=user.name)}
     </div>
   </div>
 </div>
 
 <div class="card">
   <div class="card-header">
-    <i class="fa fa-user" aria-hidden="true"></i> Użytkownik
+    <i class="bi bi-person"></i> Użytkownik
   </div>
   <div class="card-body">
     <dl class="row">
       <dt class="col-sm-2">Nazwa użytkownika</dt>
-      <dd class="col-sm-10">${user.username}</dd>
+      <dd class="col-sm-10">${user.name}</dd>
 
       <dt class="col-sm-2">Imię i nazwisko</dt>
       <dd class="col-sm-10">${user.fullname}</dd>
@@ -33,40 +32,17 @@
   <div class="card-footer">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_comments', username=user.username)}">Komentarze</a>
+        <a class="nav-link" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_branches', username=user.username)}">Branże</a>
+        <a class="nav-link" href="${request.route_url('user_tags', username=user.name)}">Tagi</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_companies', username=user.username)}">Firmy</a>
+        <a class="nav-link" href="${request.route_url('user_companies', username=user.name)}">Firmy</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_investments', username=user.username)}">Inwestycje</a>
+        <a class="nav-link" href="${request.route_url('user_projects', username=user.name)}">Projekty</a>
       </li>
     </ul>
-  </div>
-</div>
-
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Usuń</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Czy na pewno chcesz usunąć użytkownika z bazy danych?
-      </div>
-      <div class="modal-footer">
-        <form action="${request.route_url('user_delete', username=user.username)}" method="post">
-          <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Nie</button>
-          <button type="submit" class="btn btn-primary" name="submit" value="delete">Tak</button>
-        </form>
-      </div>
-    </div>
   </div>
 </div>

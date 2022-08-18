@@ -12,11 +12,13 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from .meta import Base
-from passlib.apps import custom_app_context as pwd_context
+import argon2
+
+ph = argon2.PasswordHasher()
 
 
-upvotes = Table(
-    "upvotes",
+recomended = Table(
+    "recomended",
     Base.metadata,
     Column(
         "company_id",
@@ -31,13 +33,13 @@ upvotes = Table(
 )
 
 
-following = Table(
-    "following",
+watched = Table(
+    "watched",
     Base.metadata,
     Column(
-        "investment_id",
+        "project_id",
         Integer,
-        ForeignKey("investments.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
     Column(
         "user_id",
@@ -47,8 +49,8 @@ following = Table(
 )
 
 
-marker = Table(
-    "marker",
+checked = Table(
+    "checked",
     Base.metadata,
     Column(
         "company_id",
@@ -66,7 +68,7 @@ marker = Table(
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
-    username = Column(Unicode(30), unique=True)
+    name = Column(Unicode(30), unique=True)
     fullname = Column(Unicode(50))
     email = Column(Unicode(50))
     role = Column(Unicode(20))
@@ -82,31 +84,37 @@ class User(Base):
 
     @password.setter
     def password(self, pw):
-        self._password = pwd_context.hash(pw)
+        self._password = ph.hash(pw)
 
     def check_password(self, pw):
-        return pwd_context.verify(pw, self._password)
+        try:
+            ph.verify(self.password, pw)
+            if ph.check_needs_rehash(self.password):
+                self.password = pw
+            return True
+        except argon2.exceptions.VerifyMismatchError as error:
+            return False
 
-    upvotes = relationship(
+    recomended = relationship(
         "Company",
-        secondary=upvotes,
+        secondary=recomended,
         cascade="delete",
         single_parent=True,
         backref="companies",
     )
 
-    following = relationship(
-        "Investment",
-        secondary=following,
+    watched = relationship(
+        "Project",
+        secondary=watched,
         cascade="delete",
         single_parent=True,
-        backref="investments",
+        backref="projects",
     )
 
-    marker = relationship(
+    checked = relationship(
         "Company",
-        secondary=marker,
+        secondary=checked,
         cascade="delete",
         single_parent=True,
-        backref="marker_companies",
+        backref="checked_companies",
     )

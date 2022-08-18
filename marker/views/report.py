@@ -9,67 +9,42 @@ from sqlalchemy.sql import (
     func,
     select,
 )
-import deform
-from deform.schema import CSRFSchema
-import colander
 
 from ..models import (
     User,
-    Branch,
+    Tag,
     Company,
-    Investment,
+    Project,
 )
 
-from ..models.company import companies_branches
-from ..models.investment import companies_investments
-from ..models.user import upvotes, following
+from ..models.company import companies_tags
+from ..models.project import companies_projects
+from ..models.user import recomended, watched
 
 from ..paginator import get_paginator
-from .select import VOIVODESHIPS, REPORTS
+from ..forms.select import STATES, REPORTS
+from ..forms import ReportForm
 
 
 class ReportView(object):
     def __init__(self, request):
         self.request = request
 
-    @property
-    def report_form(self):
-        class Schema(CSRFSchema):
-            rel = colander.SchemaNode(
-                colander.String(),
-                title="Relacja",
-                widget=deform.widget.SelectWidget(values=REPORTS),
-            )
-
-        schema = Schema().bind(request=self.request)
-        submit_btn = deform.form.Button(name="submit", title="Pokaż")
-        form = deform.Form(schema, buttons=(submit_btn,))
-        return form
-
-    @view_config(route_name="report", renderer="form.mako", permission="view")
+    @view_config(route_name="report", renderer="report_form.mako", permission="view")
     def view(self):
-        form = self.report_form
-        appstruct = {}
-        rendered_form = None
+        form = ReportForm(self.request.POST)
 
-        if "submit" in self.request.params:
-            controls = self.request.POST.items()
-            try:
-                appstruct = form.validate(controls)
-            except deform.exception.ValidationFailure as e:
-                rendered_form = e.render()
-            else:
-                next_url = self.request.route_url(
-                    "report_results", rel=appstruct["rel"]
-                )
-                return HTTPSeeOther(location=next_url)
-
-        if rendered_form is None:
-            rendered_form = form.render(appstruct=appstruct)
+        if self.request.method == "POST" and form.validate():
+            report = form.report.data
+            next_url = self.request.route_url(
+                "report_results", rel=report
+            )
+            return HTTPSeeOther(location=next_url)
 
         return dict(
-            heading="Wybór raportu",
-            rendered_form=rendered_form,
+            url=self.request.route_url("report"),
+            heading="Raport",
+            form=form,
         )
 
     @view_config(
@@ -83,26 +58,26 @@ class ReportView(object):
     def results(self):
         rel = self.request.matchdict.get("rel", "cb")
         page = int(self.request.params.get("page", 1))
-        voivodeships = dict(VOIVODESHIPS)
+        states = dict(STATES)
         reports = dict(REPORTS)
 
         if rel == "cb":
             stmt = (
                 select(
-                    Branch.name,
-                    func.count(companies_branches.c.company_id).label("cb"),
+                    Tag.name,
+                    func.count(companies_tags.c.company_id).label("cb"),
                 )
-                .join(companies_branches)
-                .group_by(Branch)
+                .join(companies_tags)
+                .group_by(Tag)
                 .order_by(desc("cb"))
             )
         elif rel == "cv":
             stmt = (
                 select(
-                    Company.voivodeship,
-                    func.count(Company.voivodeship).label("cv"),
+                    Company.state,
+                    func.count(Company.state).label("cv"),
                 )
-                .group_by(Company.voivodeship)
+                .group_by(Company.state)
                 .order_by(desc("cv"))
             )
         elif rel == "cc":
@@ -114,66 +89,66 @@ class ReportView(object):
         elif rel == "tv":
             stmt = (
                 select(
-                    Investment.voivodeship,
-                    func.count(Investment.voivodeship).label("tv"),
+                    Project.state,
+                    func.count(Project.state).label("tv"),
                 )
-                .group_by(Investment.voivodeship)
+                .group_by(Project.state)
                 .order_by(desc("tv"))
             )
         elif rel == "tc":
             stmt = (
                 select(
-                    Investment.city, func.count(Investment.city).label("tc")
+                    Project.city, func.count(Project.city).label("tc")
                 )
-                .group_by(Investment.city)
+                .group_by(Project.city)
                 .order_by(desc("tc"))
             )
         elif rel == "uc":
             stmt = (
                 select(
-                    User.username, func.count(Company.creator_id).label("uc")
+                    User.name, func.count(Company.creator_id).label("uc")
                 )
                 .join(Company.created_by)
-                .group_by(User.username)
+                .group_by(User.name)
                 .order_by(desc("uc"))
             )
         elif rel == "ut":
             stmt = (
                 select(
-                    User.username,
-                    func.count(Investment.creator_id).label("ut"),
+                    User.name,
+                    func.count(Project.creator_id).label("ut"),
                 )
-                .join(Investment.created_by)
-                .group_by(User.username)
+                .join(Project.created_by)
+                .group_by(User.name)
                 .order_by(desc("ut"))
             )
         elif rel == "ct":
             stmt = (
                 select(
                     Company.name,
-                    func.count(companies_investments.c.company_id).label("ct"),
+                    func.count(companies_projects.c.company_id).label("ct"),
                 )
-                .join(companies_investments)
+                .join(companies_projects)
                 .group_by(Company)
                 .order_by(desc("ct"))
             )
         elif rel == "cu":
             stmt = (
                 select(
-                    Company.name, func.count(upvotes.c.company_id).label("cu")
+                    Company.name, func.count(recomended.c.company_id).label("cu")
                 )
-                .join(upvotes)
+                .join(recomended)
                 .group_by(Company)
                 .order_by(desc("cu"))
             )
         elif rel == "tf":
             stmt = (
                 select(
-                    Investment.name,
-                    func.count(following.c.investment_id).label("tf"),
+                    Project.name,
+                    func.count(watched.c.project_id).label("tf"),
                 )
-                .join(following)
-                .group_by(Investment)
+                .join(watched)
+                .group_by(Project)
                 .order_by(desc("tf"))
             )
         else:
@@ -185,13 +160,13 @@ class ReportView(object):
         next_page = self.request.route_url(
             "report_more",
             rel=rel,
-            _query={"voivodeships": voivodeships, "page": page + 1},
+            _query={"states": states, "page": page + 1},
         )
 
         return dict(
             rel=rel,
             lead=reports[rel],
-            voivodeships=voivodeships,
+            states=states,
             paginator=paginator,
             next_page=next_page,
         )

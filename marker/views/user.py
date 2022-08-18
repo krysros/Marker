@@ -1,33 +1,34 @@
 import logging
 import datetime
+from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 
 from sqlalchemy import select
 
-import deform
-import colander
-
 from ..models import (
     User,
-    marker,
-    upvotes,
-    following,
-    Branch,
+    checked,
+    recomended,
+    watched,
+    Tag,
     Company,
     Comment,
-    Investment,
+    Project,
 )
-from deform.schema import CSRFSchema
-from zxcvbn import zxcvbn
+from ..forms import UserForm
 from ..paginator import get_paginator
 from ..export import (
     export_companies_to_xlsx,
-    export_investments_to_xlsx,
+    export_projects_to_xlsx,
 )
-from .select import (
+from ..forms.select import (
+    DROPDOWN_PROGRESS,
     ROLES,
-    VOIVODESHIPS,
+    STATES,
+    DROPDOWN_SORT,
+    DROPDOWN_EXT_SORT,
+    DROPDOWN_ORDER,
 )
 
 log = logging.getLogger(__name__)
@@ -36,60 +37,6 @@ log = logging.getLogger(__name__)
 class UserView(object):
     def __init__(self, request):
         self.request = request
-
-    @property
-    def user_form(self):
-        def check_name(node, value):
-            exists = self.request.dbsession.execute(
-                select(User).filter_by(username=value)
-            ).scalar_one_or_none()
-            username = self.request.matchdict.get("username", None)
-            if exists and username != exists.username:
-                raise colander.Invalid(
-                    node, "Ta nazwa użytkownika jest już zajęta"
-                )
-
-        def password_strength_estimator(node, value):
-            results = zxcvbn(value)
-            if results["score"] < 3:
-                raise colander.Invalid(node, "Zbyt proste hasło!")
-
-        class Schema(CSRFSchema):
-            username = colander.SchemaNode(
-                colander.String(),
-                title="Nazwa użytkownika",
-                validator=colander.All(
-                    colander.Length(min=3, max=30), check_name
-                ),
-            )
-            fullname = colander.SchemaNode(
-                colander.String(),
-                title="Imię i nazwisko",
-                validator=colander.Length(min=5, max=50),
-            )
-            email = colander.SchemaNode(
-                colander.String(),
-                title="Adres email",
-                validator=colander.Email(),
-            )
-            role = colander.SchemaNode(
-                colander.String(),
-                title="Rola",
-                widget=deform.widget.SelectWidget(values=ROLES),
-            )
-            password = colander.SchemaNode(
-                colander.String(),
-                title="Hasło",
-                validator=colander.All(
-                    colander.Length(min=5, max=100),
-                    password_strength_estimator,
-                ),
-                widget=deform.widget.PasswordWidget(),
-            )
-
-        schema = Schema().bind(request=self.request)
-        submit_btn = deform.form.Button(name="submit", title="Zapisz")
-        return deform.Form(schema, buttons=(submit_btn,))
 
     @view_config(
         route_name="user_all", renderer="user_all.mako", permission="view"
@@ -103,6 +50,8 @@ class UserView(object):
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         roles = dict(ROLES)
+        dropdown_sort = dict(DROPDOWN_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(User)
 
         if role in list(roles):
@@ -128,6 +77,9 @@ class UserView(object):
             },
         )
         return {
+            "roles": roles,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
             "filter": role,
             "sort": sort,
             "order": order,
@@ -167,28 +119,28 @@ class UserView(object):
         )
         next_page = self.request.route_url(
             "user_comments_more",
-            username=user.username,
+            username=user.name,
             _query={"page": page + 1},
         )
         return {"user": user, "paginator": paginator, "next_page": next_page}
 
     @view_config(
-        route_name="user_branches",
-        renderer="user_branches.mako",
+        route_name="user_tags",
+        renderer="user_tags.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_branches_more",
-        renderer="branch_more.mako",
+        route_name="user_tags_more",
+        renderer="tag_more.mako",
         permission="view",
     )
-    def branches(self):
+    def tags(self):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
         stmt = (
-            select(Branch)
-            .filter(Branch.created_by == user)
-            .order_by(Branch.created_at.desc())
+            select(Tag)
+            .filter(Tag.created_by == user)
+            .order_by(Tag.created_at.desc())
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -196,8 +148,8 @@ class UserView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "user_branches_more",
-            username=user.username,
+            "user_tags_more",
+            username=user.name,
             _query={"page": page + 1},
         )
         return {"user": user, "paginator": paginator, "next_page": next_page}
@@ -215,7 +167,7 @@ class UserView(object):
     def companies(self):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
-        voivodeships = dict(VOIVODESHIPS)
+        states = dict(STATES)
         stmt = (
             select(Company)
             .filter(Company.created_by == user)
@@ -229,28 +181,29 @@ class UserView(object):
         )
         next_page = self.request.route_url(
             "user_companies_more",
-            username=user.username,
+            username=user.name,
             _query={"page": page + 1},
         )
         return {
             "user": user,
-            "voivodeships": voivodeships,
+            "states": states,
             "paginator": paginator,
             "next_page": next_page,
         }
 
     @view_config(
-        route_name="user_investments",
-        renderer="user_investments.mako",
+        route_name="user_projects",
+        renderer="user_projects.mako",
         permission="view",
     )
-    def investments(self):
+    def projects(self):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
+        states = dict(STATES)
         stmt = (
-            select(Investment)
-            .filter(Investment.created_by == user)
-            .order_by(Investment.created_at.desc())
+            select(Project)
+            .filter(Project.created_by == user)
+            .order_by(Project.created_at.desc())
         )
 
         paginator = (
@@ -259,99 +212,65 @@ class UserView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "user_investments_more",
-            username=user.username,
+            "user_projects_more",
+            username=user.name,
             _query={"page": page + 1},
         )
         return {
             "user": user,
+            "states": states,
             "paginator": paginator,
             "next_page": next_page,
         }
 
     @view_config(
-        route_name="user_add", renderer="form.mako", permission="admin"
+        route_name="user_add", renderer="user_form.mako", permission="admin"
     )
     def add(self):
-        form = self.user_form
-        appstruct = {}
-        rendered_form = None
+        form = UserForm(self.request.POST, dbsession=self.request.dbsession)
 
-        if "submit" in self.request.params:
-            controls = self.request.POST.items()
-            try:
-                appstruct = form.validate(controls)
-            except deform.exception.ValidationFailure as e:
-                rendered_form = e.render()
-            else:
-                user = User(
-                    username=appstruct["username"],
-                    fullname=appstruct["fullname"],
-                    email=appstruct["email"],
-                    role=appstruct["role"],
-                    password=appstruct["password"],
-                )
-                self.request.dbsession.add(user)
-                self.request.session.flash("success:Dodano do bazy danych")
-                log.info(
-                    f"Użytkownik {self.request.identity.username} dodał użytkownika {user.username}"
-                )
-                return HTTPFound(location=self.request.route_url("user_all"))
-
-        if rendered_form is None:
-            rendered_form = form.render(appstruct=appstruct)
-        reqts = form.get_widget_resources()
+        if self.request.method == 'POST' and form.validate():
+            new_csrf_token(self.request)
+            user = User(
+                name=form.name.data,
+                fullname=form.fullname.data,
+                email=form.email.data,
+                role=form.role.data,
+                password=form.password.data,
+            )
+            self.request.dbsession.add(user)
+            self.request.session.flash("success:Dodano do bazy danych")
+            log.info(
+                f"Użytkownik {self.request.identity.name} dodał użytkownika {user.name}"
+            )
+            next_url = self.request.route_url("user_all")
+            return HTTPFound(location=next_url)
 
         return dict(
             heading="Dodaj użytkownika",
-            rendered_form=rendered_form,
-            css_links=reqts["css"],
-            js_links=reqts["js"],
+            form=form,
         )
 
     @view_config(
-        route_name="user_edit", renderer="form.mako", permission="admin"
+        route_name="user_edit", renderer="user_form.mako", permission="admin"
     )
     def edit(self):
         user = self.request.context.user
-        form = self.user_form
-        rendered_form = None
+        form = UserForm(self.request.POST, user, dbsession=self.request.dbsession, username=user.name)
 
-        if "submit" in self.request.params:
-            controls = self.request.POST.items()
-            try:
-                appstruct = form.validate(controls)
-            except deform.exception.ValidationFailure as e:
-                rendered_form = e.render()
-            else:
-                user.username = appstruct["username"]
-                user.fullname = appstruct["fullname"]
-                user.email = appstruct["email"]
-                user.role = appstruct["role"]
-                user.password = appstruct["password"]
-
-                self.request.session.flash("success:Zmiany zostały zapisane")
-                log.info(
-                    f"Użytkownik {self.request.identity.username} zmienił dane użytkownika {user.username}"
-                )
-                return HTTPFound(location=self.request.route_url("user_all"))
-
-        appstruct = {
-            "username": user.username,
-            "fullname": user.fullname,
-            "email": user.email,
-            "role": user.role,
-            "password": user.password,
-        }
-        if rendered_form is None:
-            rendered_form = form.render(appstruct=appstruct)
-        reqts = form.get_widget_resources()
+        if self.request.method == 'POST' and form.validate():
+            new_csrf_token(self.request)
+            form.populate_obj(user)
+            self.request.session.flash("success:Zmiany zostały zapisane")
+            log.info(
+                f"Użytkownik {self.request.identity.name} zmienił dane użytkownika {user.name}"
+            )
+            next_url = self.request.route_url("user_all")
+            return HTTPSeeOther(location=next_url)
 
         return dict(
             heading="Edytuj dane użytkownika",
-            rendered_form=rendered_form,
-            css_links=reqts["css"],
-            js_links=reqts["js"],
+            form=form,
         )
 
     @view_config(
@@ -359,12 +278,11 @@ class UserView(object):
     )
     def delete(self):
         user = self.request.context.user
-        user_id = user.id
-        user_username = user.username
+        user_username = user.name
         self.request.dbsession.delete(user)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
-            f"Użytkownik {self.request.identity.username} usunął użytkownika {user_username}"
+            f"Użytkownik {self.request.identity.name} usunął użytkownika {user_username}"
         )
         return HTTPFound(location=self.request.route_url("home"))
 
@@ -391,8 +309,8 @@ class UserView(object):
         page = int(self.request.params.get("page", 1))
         stmt = (
             select(User)
-            .filter(User.username.ilike("%" + username + "%"))
-            .order_by(User.username)
+            .filter(User.name.ilike("%" + username + "%"))
+            .order_by(User.name)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -405,36 +323,38 @@ class UserView(object):
         return {"paginator": paginator, "next_page": next_page}
 
     @view_config(
-        route_name="user_marked",
-        renderer="user_marked.mako",
+        route_name="user_checked",
+        renderer="user_checked.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_marked_more",
+        route_name="user_checked_more",
         renderer="company_more.mako",
         permission="view",
     )
-    def marked(self):
+    def checked(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
-        stmt = select(Company).join(marker).filter(user.id == marker.c.user_id)
+        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        voivodeships = dict(VOIVODESHIPS)
+        states = dict(STATES)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
         next_page = self.request.route_url(
-            "user_marked_more",
-            username=user.username,
+            "user_checked_more",
+            username=user.name,
             _query={"page": page + 1, "sort": sort, "order": order},
         )
 
@@ -442,23 +362,25 @@ class UserView(object):
             user=user,
             sort=sort,
             order=order,
+            dropdown_sort=dropdown_sort,
+            dropdown_order=dropdown_order,
             paginator=paginator,
             next_page=next_page,
-            voivodeships=voivodeships,
+            states=states,
         )
 
     @view_config(
-        route_name="user_marked_export",
+        route_name="user_checked_export",
         request_method="POST",
         permission="view",
     )
-    def export_marked(self):
+    def export_checked(self):
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
         query = (
-            select(Company).join(marker).filter(user.id == marker.c.user_id)
+            select(Company).join(checked).filter(user.id == checked.c.user_id)
         )
 
         if order == "asc":
@@ -469,42 +391,47 @@ class UserView(object):
         companies = self.request.dbsession.execute(query).scalars()
         response = export_companies_to_xlsx(companies)
         log.info(
-            f"Użytkownik {self.request.identity.username} eksportował dane zaznaczonych firm"
+            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych firm"
         )
         return response
 
     @view_config(
-        route_name="user_marked_clear",
+        route_name="user_checked_clear",
         request_method="POST",
         permission="view",
     )
-    def clear_marked(self):
+    def clear_checked(self):
         user = self.request.context.user
-        user.marker = []
+        user.checked = []
+        log.info(
+            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy"
+        )
         return HTTPFound(
             location=self.request.route_url(
-                "user_marked", username=user.username
+                "user_checked", username=user.name
             )
         )
 
     @view_config(
-        route_name="user_upvotes",
-        renderer="user_upvotes.mako",
+        route_name="user_recomended",
+        renderer="user_recomended.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_upvotes_more",
+        route_name="user_recomended_more",
         renderer="company_more.mako",
         permission="view",
     )
-    def upvotes(self):
+    def recomended(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
+        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
 
         stmt = (
-            select(Company).join(upvotes).filter(user.id == upvotes.c.user_id)
+            select(Company).join(recomended).filter(user.id == recomended.c.user_id)
         )
 
         if order == "asc":
@@ -512,15 +439,15 @@ class UserView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        voivodeships = dict(VOIVODESHIPS)
+        states = dict(STATES)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
         next_page = self.request.route_url(
-            "user_upvotes_more",
-            username=user.username,
+            "user_recomended_more",
+            username=user.name,
             _query={"page": page + 1, "sort": sort, "order": order},
         )
 
@@ -528,23 +455,25 @@ class UserView(object):
             user=user,
             sort=sort,
             order=order,
+            dropdown_sort=dropdown_sort,
+            dropdown_order=dropdown_order,
             paginator=paginator,
             next_page=next_page,
-            voivodeships=voivodeships,
+            states=states,
         )
 
     @view_config(
-        route_name="user_upvotes_export",
+        route_name="user_recomended_export",
         request_method="POST",
         permission="view",
     )
-    def export_upvotes(self):
+    def export_recomended(self):
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
         query = (
-            select(Company).join(upvotes).filter(user.id == upvotes.c.user_id)
+            select(Company).join(recomended).filter(user.id == recomended.c.user_id)
         )
 
         if order == "asc":
@@ -555,60 +484,64 @@ class UserView(object):
         companies = self.request.dbsession.execute(query).scalars()
         response = export_companies_to_xlsx(companies)
         log.info(
-            f"Użytkownik {self.request.identity.username} eksportował dane rekomendowanych firm"
+            f"Użytkownik {self.request.identity.name} eksportował dane rekomendowanych firm"
         )
         return response
 
     @view_config(
-        route_name="user_upvotes_clear",
+        route_name="user_recomended_clear",
         request_method="POST",
         permission="view",
     )
-    def clear_upvotes(self):
+    def clear_recomended(self):
         user = self.request.context.user
-        user.upvotes = []
+        user.recomended = []
         log.info(
-            f"Użytkownik {self.request.identity.username} wyczyścił wszystkie rekomendacje"
+            f"Użytkownik {self.request.identity.name} wyczyścił rekomendacje"
         )
         return HTTPFound(
             location=self.request.route_url(
-                "user_upvotes", username=user.username
+                "user_recomended", username=user.name
             )
         )
 
     @view_config(
-        route_name="user_following",
-        renderer="user_following.mako",
+        route_name="user_watched",
+        renderer="user_watched.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_following_more",
-        renderer="investment_more.mako",
+        route_name="user_watched_more",
+        renderer="project_more.mako",
         permission="view",
     )
-    def following(self):
+    def watched(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "asc")
+        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        progress = dict(DROPDOWN_PROGRESS)
+        states = dict(STATES)
         now = datetime.datetime.now()
 
         stmt = (
-            select(Investment)
-            .join(following)
-            .filter(user.id == following.c.user_id)
+            select(Project)
+            .join(watched)
+            .filter(user.id == watched.c.user_id)
         )
 
         if filter == "inprogress":
-            stmt = stmt.filter(Investment.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
-            stmt = stmt.filter(Investment.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now.date())
 
         if order == "asc":
-            stmt = stmt.order_by(getattr(Investment, sort).asc())
+            stmt = stmt.order_by(getattr(Project, sort).asc())
         elif order == "desc":
-            stmt = stmt.order_by(getattr(Investment, sort).desc())
+            stmt = stmt.order_by(getattr(Project, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -616,8 +549,8 @@ class UserView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "user_following_more",
-            username=user.username,
+            "user_watched_more",
+            username=user.name,
             _query={
                 "page": page + 1,
                 "filter": filter,
@@ -631,16 +564,20 @@ class UserView(object):
             filter=filter,
             sort=sort,
             order=order,
+            dropdown_sort=dropdown_sort,
+            dropdown_order=dropdown_order,
+            progress=progress,
+            states=states,
             paginator=paginator,
             next_page=next_page,
         )
 
     @view_config(
-        route_name="user_following_export",
+        route_name="user_watched_export",
         request_method="POST",
         permission="view",
     )
-    def export_following(self):
+    def export_watched(self):
         user = self.request.context.user
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "created_at")
@@ -648,41 +585,41 @@ class UserView(object):
         now = datetime.datetime.now()
 
         query = (
-            select(Investment)
-            .join(following)
-            .filter(user.id == following.c.user_id)
+            select(Project)
+            .join(watched)
+            .filter(user.id == watched.c.user_id)
         )
 
         if filter == "inprogress":
-            query = query.filter(Investment.deadline > now.date())
+            query = query.filter(Project.deadline > now.date())
         elif filter == "completed":
-            query = query.filter(Investment.deadline < now.date())
+            query = query.filter(Project.deadline < now.date())
 
         if order == "asc":
-            query = query.order_by(getattr(Investment, sort).asc())
+            query = query.order_by(getattr(Project, sort).asc())
         elif order == "desc":
-            query = query.order_by(getattr(Investment, sort).desc())
+            query = query.order_by(getattr(Project, sort).desc())
 
-        investments = self.request.dbsession.execute(query).scalars()
-        response = export_investments_to_xlsx(investments)
+        projects = self.request.dbsession.execute(query).scalars()
+        response = export_projects_to_xlsx(projects)
         log.info(
-            f"Użytkownik {self.request.identity.username} eksportował dane obserwowanych inwestycji"
+            f"Użytkownik {self.request.identity.name} eksportował dane obserwowanych projektów"
         )
         return response
 
     @view_config(
-        route_name="user_following_clear",
+        route_name="user_watched_clear",
         request_method="POST",
         permission="view",
     )
-    def clear_following(self):
+    def clear_watched(self):
         user = self.request.context.user
-        user.following = []
+        user.watched = []
         log.info(
-            f"Użytkownik {self.request.identity.username} wyczyścił wszystkie obserwowane inwestycje"
+            f"Użytkownik {self.request.identity.name} wyczyścił obserwowane projekty"
         )
         return HTTPFound(
             location=self.request.route_url(
-                "user_following", username=user.username
+                "user_watched", username=user.name
             )
         )

@@ -1,8 +1,12 @@
+import datetime
 from sqlalchemy import (
     Column,
     Integer,
     Unicode,
+    DateTime,
+    ForeignKey,
 )
+from sqlalchemy.orm import relationship
 
 from .meta import Base
 
@@ -10,7 +14,15 @@ from .meta import Base
 class Person(Base):
     __tablename__ = "persons"
     id = Column(Integer, primary_key=True)
-    fullname = Column(Unicode(50))
-    position = Column(Unicode(50))
+    name = Column(Unicode(100))
+    position = Column(Unicode(100))
     phone = Column(Unicode(50))
     email = Column(Unicode(50))
+    created_at = Column(DateTime, default=datetime.datetime.now)
+    updated_at = Column(
+        DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
+    )
+    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    created_by = relationship("User", foreign_keys=[creator_id])
+    updated_by = relationship("User", foreign_keys=[editor_id])

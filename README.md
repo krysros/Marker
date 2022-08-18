@@ -2,11 +2,11 @@
 
 ## O aplikacji
 
-Aplikacja dla Generalnych Wykonawców usprawniającą proces ofertowania oraz kontraktowania realizacji przedsięwzięć budowlanych, analizy rynku materiałów i usług oraz inwestycji. Stanowi bazę wiedzy (ang. knowledge base) i narzędzie do raportowania w analityce biznesowej (ang. Business Intelligence).
+Aplikacja dla Generalnych Wykonawców usprawniającą proces ofertowania oraz kontraktowania realizacji przedsięwzięć budowlanych, analizy rynku materiałów i usług oraz projektów i inwestycji. Stanowi bazę wiedzy (ang. knowledge base) i narzędzie do raportowania w analityce biznesowej (ang. Business Intelligence).
 
 ### Przeznaczenie
 
-- Obsługa informacji o firmach i inwestycjach oraz relacjach pomiędzy nimi
+- Obsługa informacji o firmach i projektach oraz relacjach pomiędzy nimi
 - Zwiększenie wydajności i skuteczności ofertowania
 - Zmniejszenie progu wejścia dla nowych pracowników
 - Automatyzacja procesu generowania dokumentów (m.in. wzorów umów w formacie docx) na podstawie szablonów
@@ -33,19 +33,18 @@ Marker dba o to, aby wprowadzane dane były kompletne i poprawne, a dostęp do n
 ## Wybrane możliwości i interfejs użytkownika
 
 Aktualnie dostępne moduły:
-- Branże
 - Firmy
-- Inwestycje
+- Projekty
+- Tagi
 - Użytkownicy
 - Komentarze
-- Dokumenty
 - Raporty
 
 Głównym założeniem jest intuicyjność obsługi i szybkość dostępu do interesujących danych. Aplikację i interfejs zrealizowano przy zastosowaniu reguł KISS i DRY.
 
 ## Pod maską
 
-Aplikacja została napisana od zera w języku programowania Python 3. Interfejs graficzny aplikacji korzysta z biblioteki Bootstrap, wszystkie formularze generowane są automatycznie przez bibliotekę deform, a szablony przez bibliotekę mako, zgodnie z filozofią: *Python is a great scripting language. Don't reinvent the wheel...your templates can handle it!* Interaktywność zapewnia htmx. Zapytania do bazy danych realizowane są przez SQLAlchemy ORM.
+Aplikacja została napisana od zera w języku programowania Python 3. Interfejs graficzny aplikacji korzysta z biblioteki Bootstrap, wszystkie formularze generowane są przez bibliotekę WTForms, a szablony przez bibliotekę mako, zgodnie z filozofią: *Python is a great scripting language. Don't reinvent the wheel...your templates can handle it!* Interaktywność zapewnia htmx. Zapytania do bazy danych realizowane są przez SQLAlchemy ORM.
 
 W rezultacie w kodzie źródłowym aplikacji wykorzystywany jest wyłącznie język Python i HTML (nie występuje np. JavaScript i SQL). Umożliwia to prostą budowę aplikacji, łatwe jej utrzymanie i testowanie, zmianę silnika bazodanowego bez modyfikacji kodu oraz szybkie dodawanie nowych możliwości.
 

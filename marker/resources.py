@@ -38,9 +38,9 @@ class UserResource(DefaultResource):
         ]
 
 
-class BranchResource(DefaultResource):
-    def __init__(self, branch):
-        self.branch = branch
+class TagResource(DefaultResource):
+    def __init__(self, tag):
+        self.tag = tag
 
 
 class CompanyResource(DefaultResource):
@@ -58,9 +58,9 @@ class CommentResource(DefaultResource):
         self.comment = comment
 
 
-class InvestmentResource(DefaultResource):
-    def __init__(self, investment):
-        self.investment = investment
+class ProjectResource(DefaultResource):
+    def __init__(self, project):
+        self.project = project
 
 
 class DocumentResource(DefaultResource):

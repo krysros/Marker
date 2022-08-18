@@ -7,7 +7,7 @@
 <tr>
 % endif
 % if rel == 'cv' or rel == 'tv':
-  <td>${voivodeships[k]}</td>
+  <td>${states[k]}</td>
 % else:
   <td>${k}</td>
 % endif

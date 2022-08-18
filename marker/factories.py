@@ -15,14 +15,14 @@ def account_factory(request):
     return resources.AccountResource(user)
 
 
-def branch_factory(request):
-    branch_id = int(request.matchdict["branch_id"])
-    branch = request.dbsession.execute(
-        select(models.Branch).filter_by(id=branch_id)
+def tag_factory(request):
+    tag_id = int(request.matchdict["tag_id"])
+    tag = request.dbsession.execute(
+        select(models.Tag).filter_by(id=tag_id)
     ).scalar_one_or_none()
-    if not branch:
+    if not tag:
         raise HTTPNotFound
-    return resources.BranchResource(branch)
+    return resources.TagResource(tag)
 
 
 def company_factory(request):
@@ -55,31 +55,21 @@ def comment_factory(request):
     return resources.CommentResource(comment)
 
 
-def investment_factory(request):
-    investment_id = int(request.matchdict["investment_id"])
-    investment = request.dbsession.execute(
-        select(models.Investment).filter_by(id=investment_id)
+def project_factory(request):
+    project_id = int(request.matchdict["project_id"])
+    project = request.dbsession.execute(
+        select(models.Project).filter_by(id=project_id)
     ).scalar_one_or_none()
-    if not investment:
+    if not project:
         raise HTTPNotFound
-    return resources.InvestmentResource(investment)
+    return resources.ProjectResource(project)
 
 
 def user_factory(request):
     username = request.matchdict["username"]
     user = request.dbsession.execute(
-        select(models.User).filter_by(username=username)
+        select(models.User).filter_by(name=username)
     ).scalar_one_or_none()
     if not user:
         raise HTTPNotFound
     return resources.UserResource(user)
-
-
-def document_factory(request):
-    document_id = int(request.matchdict["document_id"])
-    document = request.dbsession.execute(
-        select(models.Document).filter_by(id=document_id)
-    ).scalar_one_or_none()
-    if not document:
-        raise HTTPNotFound
-    return resources.DocumentResource(document)

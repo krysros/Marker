@@ -1,17 +1,31 @@
-<%inherit file="layout.mako"/>  
+<%inherit file="layout.mako"/>
+<%include file="errors.mako"/> 
 
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link active" href="${request.route_url('account', username=request.identity.username)}">Konto</a>
+    <a class="nav-link active" href="${request.route_url('account', username=request.identity.name)}">Konto</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="${request.route_url('password', username=request.identity.username)}">Hasło</a>
+    <a class="nav-link" href="${request.route_url('password', username=request.identity.name)}">Hasło</a>
   </li>
 </ul>
 
 <div class="card">
   <div class="card-header">${heading}</div>
   <div class="card-body">
-    ${rendered_form | n}
+    <form method="post" action="${request.current_route_path()}">
+      <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+      <div class="mb-3">
+        ${form.fullname.label}
+        ${form.fullname(class_="form-control")}
+      </div>
+      <div class="mb-3">
+        ${form.email.label}
+        ${form.email(class_="form-control")}
+      </div>
+      <div class="mb-3">
+        ${form.submit(class_="btn btn-primary")}
+      </div>
+    </form>
   </div>
 </div>
