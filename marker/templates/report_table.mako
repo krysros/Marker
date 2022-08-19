@@ -2,8 +2,8 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th scope="col">Opis</th>
-        <th scope="col">Liczba</th>
+        <th>Opis</th>
+        <th class="col-2">Liczba</th>
       </tr>
     </thead>
     <tbody>
