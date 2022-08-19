@@ -72,7 +72,6 @@ def export_projects_to_xlsx(projects):
         "Termin",
         "Miasto",
         "Województwo",
-        "Firma",
         "WWW",
     ]
 
@@ -86,7 +85,6 @@ def export_projects_to_xlsx(projects):
             project.deadline,
             project.city,
             project.state,
-            project.company.name,
             project.link,
         ]
         for j, col in enumerate(cols):
