@@ -194,9 +194,6 @@ def includeme(config):
         "/project/results/more",
         factory=default_factory,
     )
-    # config.add_route(
-    #     "project_select", "/project/select", factory=default_factory
-    # )
     config.add_route(
         "project_view",
         r"/project/{project_id:\d+}/{slug}",
