@@ -13,7 +13,7 @@ class ProjectForm(Form):
         "Nazwa",
         validators=[
             InputRequired("Podaj nazwę"),
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków"),
+            Length(max=200, message="Długość nie może przekraczać %(max)d znaków"),
         ],
         filters=[strip_filter],
     )
