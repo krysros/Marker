@@ -37,33 +37,24 @@ class CommentView(object):
         return {"paginator": paginator, "next_page": next_page}
 
     @view_config(
-        route_name="comment_add", renderer="comment_form.mako", permission="edit"
+        route_name="comment_add",
+        renderer="comment.mako",
+        request_method="POST",
+        permission="edit",
     )
     def add(self):
+        new_csrf_token(self.request)
         company = self.request.context.company
-        form = CommentForm(self.request.POST)
-
-        if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
-            comment = Comment(comment=form.comment.data)
+        comment = None
+        comment_text = self.request.POST.get("comment")
+        if comment_text:
+            comment = Comment(comment=comment_text)
             comment.created_by = self.request.identity
             company.comments.append(comment)
-            self.request.dbsession.add(comment)
-            self.request.session.flash("success:Dodano do bazy danych")
-            log.info(
-                f"Użytkownik {self.request.identity.name} dodał komentarz dot. firmy {company.name}"
-            )
-            return HTTPSeeOther(
-                location=self.request.route_url(
-                    "company_comments",
-                    company_id=company.id,
-                    slug=company.slug,
-                )
-            )
-        return dict(
-            heading=f"Komentarz dot. firmy {company.name}",
-            form=form,
-        )
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        return {"comment": comment}
 
     @view_config(route_name="comment_delete", request_method="GET", permission="edit")
     def delete(self):
