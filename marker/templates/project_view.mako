@@ -135,8 +135,8 @@
 
 <script>
   // Hide Company Modal
-  const modelCompanyEl = document.getElementById("add-company-modal");
-  const modalCompany = new bootstrap.Modal(modelCompanyEl);
+  const modalCompanyEl = document.getElementById("add-company-modal");
+  const modalCompany = new bootstrap.Modal(modalCompanyEl);
   document.getElementById("btn-save-company").addEventListener("click", function () {
     modalCompany.hide();
   });

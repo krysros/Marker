@@ -42,8 +42,8 @@
 
 <script>
   // Hide Comment Modal
-  const modelCommentEl = document.getElementById("add-comment-modal");
-  const modalComment = new bootstrap.Modal(modelCommentEl);
+  const modalCommentEl = document.getElementById("add-comment-modal");
+  const modalComment = new bootstrap.Modal(modalCommentEl);
   document.getElementById("btn-save-comment").addEventListener("click", function () {
     modalComment.hide();
   });

@@ -229,8 +229,8 @@
 
 <script>
   // Hide Tag Modal
-  const modelTagEl = document.getElementById("add-tag-modal");
-  const modalTag = new bootstrap.Modal(modelTagEl);
+  const modalTagEl = document.getElementById("add-tag-modal");
+  const modalTag = new bootstrap.Modal(modalTagEl);
   document.getElementById("btn-save-tag").addEventListener("click", function () {
     modalTag.hide();
   });
