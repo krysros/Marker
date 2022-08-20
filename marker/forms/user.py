@@ -32,7 +32,7 @@ class UserForm(Form):
         validators=[
             InputRequired("Podaj imię i nazwisko"),
             Length(
-                min=5,
+                min=3,
                 max=50,
                 message="Długość musi zawierać się w przedziale %(min)d-%(max)d",
             ),
