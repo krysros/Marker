@@ -48,6 +48,30 @@
       </div>
     </div>
   </div>
+##  <div class="card-footer">
+##    <ul class="nav">
+##      <li class="nav-item">
+##        % if c_comments:
+##        <a class="nav-link text-warning" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">Komentarze (${c_comments})</a>
+##        % else:
+##        <a class="nav-link" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">Komentarze (${c_comments})</a>
+##        % endif
+##      </li>
+##      <li class="nav-item">
+##        % if c_watched:
+##        <a class="nav-link text-success" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">Obserwowane (${c_watched})</a>
+##        % else:
+##        <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">Obserwowane (${c_watched)</a>
+##        % endif
+##      </li>
+##      <li class="nav-item">
+##        <a class="nav-link" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">Firmy (${c_companies})</a>
+##      </li>
+##      <li class="nav-item">
+##        <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">Podobne (${c_similar})</a>
+##      </li>
+##    </ul>
+##  </div>
 </div>
 
 <div class="card">
