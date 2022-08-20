@@ -1,10 +1,9 @@
 import logging
 from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
+from pyramid.httpexceptions import HTTPSeeOther
 from sqlalchemy import select
 from ..models import Comment
-from ..forms import CommentForm
 from ..paginator import get_paginator
 
 
@@ -59,7 +58,7 @@ class CommentView(object):
     @view_config(route_name="comment_delete", request_method="GET", permission="edit")
     def delete(self):
         comment = self.request.context.comment
-        query = self.request.params["from"]
+        query = self.request.params.get("from", None)
         company = comment.company
         self.request.dbsession.delete(comment)
         self.request.session.flash("success:Usunięto z bazy danych")
@@ -67,7 +66,7 @@ class CommentView(object):
             f"Użytkownik {self.request.identity.name} usunął komentarz dot. firmy {company.name}"
         )
         if query == "company":
-            return HTTPFound(
+            return HTTPSeeOther(
                 location=self.request.route_url(
                     "company_comments",
                     company_id=company.id,
@@ -75,13 +74,13 @@ class CommentView(object):
                 )
             )
         elif query == "user":
-            return HTTPFound(
+            return HTTPSeeOther(
                 location=self.request.route_url(
                     "user_view", username=self.request.identity.name
                 )
             )
         else:
-            return HTTPFound(location=self.request.route_url("home"))
+            return HTTPSeeOther(location=self.request.route_url("comment_all"))
 
     @view_config(
         route_name="comment_search",
