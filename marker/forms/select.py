@@ -20,7 +20,7 @@ DROPDOWN_ORDER = [
 ]
 
 
-DROPDOWN_PROGRESS = [
+DROPDOWN_STATUS = [
     ("inprogress", "w trakcie"),
     ("completed", "zakończone"),
 ]

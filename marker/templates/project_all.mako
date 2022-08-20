@@ -3,7 +3,7 @@
 
 <div class="card">
   <div class="card-body">
-    ${dropdown.filter_button('project_all', dropdown_progress, filter=filter, sort=sort, order=order)}
+    ${dropdown.filter_button('project_all', dropdown_status, filter=filter, sort=sort, order=order)}
     ${dropdown.sort_button('project_all', dropdown_sort, filter=filter, sort=sort, order=order)}
     ${dropdown.order_button('project_all', dropdown_order, filter=filter, sort=sort, order=order)}
     <div class="float-end">

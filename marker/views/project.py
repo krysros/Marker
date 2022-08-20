@@ -11,7 +11,7 @@ from ..forms.select import (
     STATES,
     DROPDOWN_ORDER,
     DROPDOWN_EXT_SORT,
-    DROPDOWN_PROGRESS,
+    DROPDOWN_STATUS,
 )
 
 from ..models import (
@@ -48,7 +48,7 @@ class ProjectView(object):
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        dropdown_progress = dict(DROPDOWN_PROGRESS)
+        dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         states = dict(STATES)
@@ -82,7 +82,7 @@ class ProjectView(object):
             filter=filter,
             sort=sort,
             order=order,
-            dropdown_progress=dropdown_progress,
+            dropdown_status=dropdown_status,
             dropdown_order=dropdown_order,
             dropdown_sort=dropdown_sort,
             states=states,

@@ -23,7 +23,7 @@ from ..export import (
     export_projects_to_xlsx,
 )
 from ..forms.select import (
-    DROPDOWN_PROGRESS,
+    DROPDOWN_STATUS,
     ROLES,
     STATES,
     DROPDOWN_SORT,
@@ -500,7 +500,7 @@ class UserView(object):
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
-        progress = dict(DROPDOWN_PROGRESS)
+        status = dict(DROPDOWN_STATUS)
         states = dict(STATES)
         now = datetime.datetime.now()
 
@@ -539,7 +539,7 @@ class UserView(object):
             order=order,
             dropdown_sort=dropdown_sort,
             dropdown_order=dropdown_order,
-            progress=progress,
+            status=status,
             states=states,
             paginator=paginator,
             next_page=next_page,
