@@ -10,7 +10,7 @@
       % for tag in company.tags:
       <tr>
         <td><a href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a></td>
-        <td class="col-2"><button class="btn btn-secondary btn-sm" hx-post="${request.route_url('delete_tag_from_company', company_id=company.id, tag_id=tag.id)}">Rozłącz</button></td>
+        <td class="col-2"><button class="btn btn-secondary btn-sm" hx-post="${request.route_url('delete_tag_from_company', company_id=company.id, tag_id=tag.id)}">Usuń</button></td>
       </tr>
       % endfor
     </tbody>
