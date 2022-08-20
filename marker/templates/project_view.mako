@@ -31,26 +31,60 @@
       <div class="col">
         <dl class="dl-horizontal">
           <dt>Adres</dt>
-            <dd>
-              ${project.street}<br>
-              % if project.postcode:
-              ${project.postcode} ${project.city}<br>
-              % else:
-              ${project.city}<br>
-              % endif
-              ${states.get(project.state)}<br>
-            </dd>
-          <dt>Firma</dt>
-            % if project.company:
-            <dd><a href="${request.route_url('company_view', company_id=project.company.id, slug=project.company.slug)}">${project.company.name}</a></dd>
+          <dd>
+            ${project.street}<br>
+            % if project.postcode:
+            ${project.postcode} ${project.city}<br>
             % else:
-            <dd>---</dd>
+            ${project.city}<br>
             % endif
+            ${states.get(project.state)}<br>
+          </dd>
           <dt>Termin</dt>
           <dd>${project.deadline}</dd>
           <dt>Link</dt>
           <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
         </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><i class="bi bi-tags"></i> Firmy</div>
+  <div class="card-body">
+    <div id="project-companies">
+      <%include file="project_companies.mako"/>
+    </div>
+    <!-- Button trigger modal -->
+    <button id="btn-add-company" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-modal">
+      Dodaj
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="add-company-modal" tabindex="-1" aria-labelledby="add-company-modal-label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form hx-post="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML">
+            <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="add-company-modal-label">Dodaj firmę</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="company-name" class="form-label">Nazwa</label>
+                <input list="companies" type="text" class="form-control" id="company-name" name="name" autocomplete="off" hx-get="${request.route_url('company_select')}" hx-target="#company-list" hx-trigger="keyup changed delay:250ms">
+                <div id="company-list">
+                  <%include file="company_datalist.mako"/>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+              <button type="submit" class="btn btn-primary" id="btn-save-company">Zapisz</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -74,3 +108,18 @@
     </p>
   </div>
 </div>
+
+<script>
+  // Hide Company Modal
+  const modelCompanyEl = document.getElementById("add-company-modal");
+  const modalCompany = new bootstrap.Modal(modelCompanyEl);
+  document.getElementById("btn-save-company").addEventListener("click", function () {
+    modalCompany.hide();
+  });
+  // Clear input fields in Company Modal
+  const btnAddCompany = document.getElementById("btn-add-company");
+  btnAddCompany.addEventListener('click', function handleClick(event) {
+    const companyName = document.getElementById("company-name");
+    companyName.value = '';
+  });
+</script>

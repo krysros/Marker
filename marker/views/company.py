@@ -480,11 +480,11 @@ class CompanyView(object):
         request_method="GET",
     )
     def select(self):
-        company = self.request.params.get("company")
+        name = self.request.params.get("name")
         companies = []
-        if company:
+        if name:
             companies = self.request.dbsession.execute(
-                select(Company).filter(Company.name.ilike("%" + company + "%"))
+                select(Company).filter(Company.name.ilike("%" + name + "%"))
             ).scalars()
         return {"companies": companies}
 

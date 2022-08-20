@@ -55,11 +55,10 @@ class Project(Base):
     editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     created_by = relationship("User", foreign_keys=[creator_id])
     updated_by = relationship("User", foreign_keys=[editor_id])
-    company = relationship(
+    companies = relationship(
         "Company",
         secondary=companies_projects,
         backref="projects",
-        uselist=False,
     )
 
     def __init__(

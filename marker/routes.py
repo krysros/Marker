@@ -147,6 +147,11 @@ def includeme(config):
         r"/company/{company_id:\d+}/tag/{tag_id:\d+}/delete",
         factory=default_factory,
     )
+    config.add_route(
+        "delete_company_from_project",
+        r"/project/{project_id:\d+}/company/{company_id:\d+}/delete",
+        factory=default_factory,
+    )
 
     config.add_route("comment_all", "/comment", factory=default_factory)
     config.add_route("comment_more", "/comment/more", factory=default_factory)
@@ -212,6 +217,11 @@ def includeme(config):
     config.add_route(
         "project_watch",
         r"/watch/project/{project_id:\d+}",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_companies",
+        r"/project/{project_id:\d+}/{slug}/companies",
         factory=project_factory,
     )
 

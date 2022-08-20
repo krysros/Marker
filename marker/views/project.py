@@ -1,7 +1,8 @@
 import datetime
 import logging
+from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.httpexceptions import HTTPSeeOther, HTTPNotFound
 from sqlalchemy import select
 
 from ..forms.project import ProjectForm
@@ -97,7 +98,12 @@ class ProjectView(object):
     def view(self):
         project = self.request.context.project
         states = dict(STATES)
-        return {"project": project, "title": project.name, "states": states}
+        return dict(
+            project=project,
+            title=project.name,
+            states=states,
+            companies=[],  # require to render company_datalist.mako included in current template
+            )
 
     @view_config(
         route_name="project_add", renderer="project_form.mako", permission="edit"
@@ -241,3 +247,58 @@ class ProjectView(object):
         else:
             self.request.identity.watched.append(project)
             return '<i class="bi bi-eye-fill"></i>'
+
+    @view_config(
+        route_name="project_companies",
+        renderer="project_companies.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_company(self):
+        new_csrf_token(self.request)
+        project = self.request.context.project
+        name = self.request.POST.get("name")
+        if name:
+            company = self.request.dbsession.execute(
+                select(Company).filter_by(name=name)
+            ).scalar_one_or_none()
+            if company not in project.companies:
+                project.companies.append(company)
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        return {"project": project}
+
+    @view_config(
+        route_name="delete_company_from_project",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_company(self):
+        new_csrf_token(self.request)
+        project_id = int(self.request.matchdict["project_id"])
+        company_id = int(self.request.matchdict["company_id"])
+
+        project = self.request.dbsession.execute(
+            select(Project).filter_by(id=project_id)
+        ).scalar_one_or_none()
+        if not project:
+            raise HTTPNotFound
+
+        company = self.request.dbsession.execute(
+            select(Company).filter_by(id=company_id)
+        ).scalar_one_or_none()
+        if not company:
+            raise HTTPNotFound
+
+        company_name = company.name
+        project_name = project.name
+
+        project.companies.remove(company)
+        log.info(
+            f"Użytkownik {self.request.identity.name} usunął firmę {company_name} z projektu {project_name}"
+        )
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        return ""
