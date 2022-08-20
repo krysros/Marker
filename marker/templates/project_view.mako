@@ -75,7 +75,7 @@
 </div>
 
 <div class="card">
-  <div class="card-header"><i class="bi bi-tags"></i> Firmy</div>
+  <div class="card-header"><i class="bi bi-building"></i> Firmy</div>
   <div class="card-body">
     <div id="project-companies">
       <%include file="project_companies.mako"/>
