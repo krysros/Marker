@@ -126,17 +126,17 @@
       <%include file="company_tags.mako"/>
     </div>
     <!-- Button trigger modal -->
-    <button id="btnAddTag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add_tag_modal">
+    <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
       Dodaj
     </button>
     <!-- Modal -->
-    <div class="modal fade" id="add_tag_modal" tabindex="-1" aria-labelledby="add_tag_modal_label" aria-hidden="true">
+    <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML">
             <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
-              <h5 class="modal-title" id="add_tag_modal_label">Dodaj tag</h5>
+              <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -150,7 +150,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-              <button type="submit" class="btn btn-primary" id="btnSaveTag">Zapisz</button>
+              <button type="submit" class="btn btn-primary" id="btn-save-tag">Zapisz</button>
             </div>
           </form>
         </div>
@@ -166,17 +166,17 @@
       <%include file="company_people.mako"/>
     </div>
     <!-- Button trigger modal -->
-    <button id="btnAddPerson" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add_person_modal">
+    <button id="btn-add-person" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-person-modal">
       Dodaj
     </button>
     <!-- Modal -->
-    <div class="modal fade" id="add_person_modal" tabindex="-1" aria-labelledby="add_person_modal_label" aria-hidden="true">
+    <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <form hx-post="${request.route_url('company_people', company_id=company.id, slug=company.slug)}" hx-target="#company-people" hx-swap="innerHTML">
             <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
-              <h5 class="modal-title" id="add_person_modal_label">Dodaj osobę</h5>
+              <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -199,7 +199,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-              <button type="submit" class="btn btn-primary" id="btnSavePerson">Zapisz</button>
+              <button type="submit" class="btn btn-primary" id="btn-save-person">Zapisz</button>
             </div>
           </form>
         </div>
@@ -229,25 +229,25 @@
 
 <script>
   // Hide Tag Modal
-  const modelTagEl = document.getElementById("add_tag_modal");
+  const modelTagEl = document.getElementById("add-tag-modal");
   const modalTag = new bootstrap.Modal(modelTagEl);
-  document.getElementById("btnSaveTag").addEventListener("click", function () {
+  document.getElementById("btn-save-tag").addEventListener("click", function () {
     modalTag.hide();
   });
   // Hide Person Modal
-  const modalPersonEl = document.getElementById("add_person_modal");
+  const modalPersonEl = document.getElementById("add-person-modal");
   const modalPerson = new bootstrap.Modal(modalPersonEl);
-  document.getElementById("btnSavePerson").addEventListener("click", function () {
+  document.getElementById("btn-save-person").addEventListener("click", function () {
     modalPerson.hide();
   });
   // Clear input fields in Tag Modal
-  const btnAddTag = document.getElementById("btnAddTag");
+  const btnAddTag = document.getElementById("btn-add-tag");
   btnAddTag.addEventListener('click', function handleClick(event) {
     const tagName = document.getElementById("tag-name");
     tagName.value = '';
   });
   // Clear input fields in Person Modal
-  const btnAddPerson = document.getElementById("btnAddPerson");
+  const btnAddPerson = document.getElementById("btn-add-person");
   btnAddPerson.addEventListener('click', function handleClick(event) {
     const inputs = document.querySelectorAll("#person-name, #position, #phone, #email");
     inputs.forEach(input => {

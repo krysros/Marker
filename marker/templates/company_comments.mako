@@ -4,17 +4,17 @@
   <div class="card-body">
     <div class="float-end">
       <!-- Button trigger modal -->
-      <button id="btnAddComment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add_comment_modal">
+      <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-comment-modal">
         Dodaj
       </button>
       <!-- Modal -->
-      <div class="modal fade" id="add_comment_modal" tabindex="-1" aria-labelledby="add_comment_modal_label" aria-hidden="true">
+      <div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal-label" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <form hx-post="${request.route_url('comment_add', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
               <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
               <div class="modal-header">
-                <h5 class="modal-title" id="add_comment_modal_label">Dodaj komentarz</h5>
+                <h5 class="modal-title" id="add-comment-modal-label">Dodaj komentarz</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
@@ -25,7 +25,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                <button type="submit" class="btn btn-primary" id="btnSaveComment">Zapisz</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-comment">Zapisz</button>
               </div>
             </form>
           </div>
@@ -42,13 +42,13 @@
 
 <script>
   // Hide Comment Modal
-  const modelCommentEl = document.getElementById("add_comment_modal");
+  const modelCommentEl = document.getElementById("add-comment-modal");
   const modalComment = new bootstrap.Modal(modelCommentEl);
-  document.getElementById("btnSaveComment").addEventListener("click", function () {
+  document.getElementById("btn-save-comment").addEventListener("click", function () {
     modalComment.hide();
   });
   // Clear input fields in Comment Modal
-  const btnAddComment = document.getElementById("btnAddComment");
+  const btnAddComment = document.getElementById("btn-add-comment");
   btnAddComment.addEventListener('click', function handleClick(event) {
     const comment = document.getElementById("comment");
     comment.value = '';
