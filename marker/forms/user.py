@@ -10,7 +10,7 @@ from wtforms import (
 from wtforms.validators import InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
 from ..models import User
-from ..forms.select import ROLES
+from .select import ROLES
 from .filters import strip_filter
 
 

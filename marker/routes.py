@@ -1,4 +1,4 @@
-from marker.factories import (
+from .factories import (
     default_factory,
     account_factory,
     tag_factory,

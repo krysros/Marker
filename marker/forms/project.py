@@ -5,7 +5,7 @@ from .filters import (
     strip_filter,
     remove_multiple_spaces,
 )
-from marker.forms.select import PROJECT_DELIVERY_METHODS, STAGES, STATES
+from .select import PROJECT_DELIVERY_METHODS, STAGES, STATES
 
 
 class ProjectForm(Form):

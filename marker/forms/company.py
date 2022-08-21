@@ -7,7 +7,7 @@ from .filters import (
     remove_dashes_and_spaces,
     remove_multiple_spaces,
 )
-from marker.forms.select import COLORS, COURTS, STATES
+from .select import COLORS, COURTS, STATES
 
 
 def _check_sum_9(digits):
