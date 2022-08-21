@@ -510,7 +510,7 @@ class CompanyView(object):
             select(Company)
             .filter(Company.name.ilike("%" + name + "%"))
             .filter(Company.street.ilike("%" + street + "%"))
-            .filter(Company.street.ilike("%" + postcode + "%"))
+            .filter(Company.postcode.ilike("%" + postcode + "%"))
             .filter(Company.city.ilike("%" + city + "%"))
             .filter(Company.state.ilike("%" + state + "%"))
             .filter(Company.WWW.ilike("%" + WWW + "%"))
