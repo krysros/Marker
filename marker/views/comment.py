@@ -4,6 +4,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
 from sqlalchemy import select
 from ..models import Comment
+from ..forms import CommentSearchForm
 from ..paginator import get_paginator
 
 
@@ -84,11 +85,17 @@ class CommentView(object):
 
     @view_config(
         route_name="comment_search",
-        renderer="comment_search.mako",
+        renderer="comment_form.mako",
         permission="view",
     )
     def search(self):
-        return {}
+        form = CommentSearchForm(self.request.POST)
+        if self.request.method == 'POST' and form.validate():
+            return HTTPSeeOther(location=self.request.route_url('comment_results', _query={'comment': form.comment.data}))
+        return dict(
+            heading='Znajdź komentarz',
+            form=form,
+        )
 
     @view_config(
         route_name="comment_results",
