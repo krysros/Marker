@@ -193,7 +193,7 @@ class TagView(object):
         )
         return response
 
-    @view_config(route_name="tag_add", renderer="tag_form.mako", permission="edit")
+    @view_config(route_name="tag_add", renderer="basic_form.mako", permission="edit")
     def add(self):
         form = TagForm(self.request.POST, dbsession=self.request.dbsession)
 
@@ -212,7 +212,7 @@ class TagView(object):
             form=form,
         )
 
-    @view_config(route_name="tag_edit", renderer="tag_form.mako", permission="edit")
+    @view_config(route_name="tag_edit", renderer="basic_form.mako", permission="edit")
     def edit(self):
         tag = self.request.context.tag
         form = TagForm(self.request.POST, tag, dbsession=self.request.dbsession)
@@ -259,7 +259,7 @@ class TagView(object):
 
     @view_config(
         route_name="tag_search",
-        renderer="tag_form.mako",
+        renderer="basic_form.mako",
         permission="view",
     )
     def search(self):

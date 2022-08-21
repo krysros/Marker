@@ -282,7 +282,7 @@ class UserView(object):
 
     @view_config(
         route_name="user_search",
-        renderer="user_search.mako",
+        renderer="basic_form.mako",
         permission="view",
     )
     def search(self):
