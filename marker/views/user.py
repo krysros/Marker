@@ -16,7 +16,10 @@ from ..models import (
     Comment,
     Project,
 )
-from ..forms import UserForm
+from ..forms import (
+    UserForm,
+    UserSearchForm,
+)
 from ..paginator import get_paginator
 from ..export import (
     export_companies_to_xlsx,
@@ -283,7 +286,13 @@ class UserView(object):
         permission="view",
     )
     def search(self):
-        return {}
+        form = UserSearchForm(self.request.POST)
+        if self.request.method == 'POST' and form.validate():
+            return HTTPSeeOther(location=self.request.route_url('user_results', _query={'username': form.name.data}))
+        return dict(
+            heading='Znajdź użytkownika',
+            form=form,
+        )
 
     @view_config(
         route_name="user_results",

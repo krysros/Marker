@@ -66,3 +66,8 @@ class UserForm(Form):
         results = zxcvbn(field.data)
         if results["score"] < 3:
             raise ValidationError("Zbyt proste hasło")
+
+
+class UserSearchForm(Form):
+    name = StringField("Nazwa", filters=[strip_filter])
+    submit = SubmitField("Szukaj")

@@ -1,17 +1,18 @@
 <%inherit file="layout.mako"/>
+<%include file="errors.mako"/>
+
 
 <div class="card">
-  <div class="card-header">
-    Znajdź użytkownika
-  </div>
+  <div class="card-header">${heading}</div>
   <div class="card-body">
-    <form action="${request.route_url('user_results')}">
+    <form method="post" action="${request.current_route_path()}">
+      <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
       <div class="mb-3">
-        <label for="name">Nazwa</label>
-        <input type="text" class="form-control" id="username" name="username">
+        ${form.name.label}
+        ${form.name(class_="form-control")}
       </div>
-      <div class="mb-3"> 
-        <button type="submit" class="btn btn-primary">Szukaj</button>
+      <div class="mb-3">
+        ${form.submit(class_="btn btn-primary")}
       </div>
     </form>
   </div>
