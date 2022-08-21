@@ -120,7 +120,7 @@
 </div>
 
 <div class="card">
-  <div class="card-header"><i class="bi bi-people"></i> Osoby do kontaktu</div>
+  <div class="card-header"><i class="bi bi-people"></i> Osoby</div>
   <div class="card-body">
     <div id="company-people">
       <%include file="company_people.mako"/>
