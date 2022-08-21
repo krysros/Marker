@@ -30,3 +30,8 @@ class TagForm(Form):
         ).scalar_one_or_none()
         if exists:
             raise ValidationError("Ta nazwa jest już zajęta")
+
+
+class TagSearchForm(Form):
+    name = StringField("Nazwa", filters=[strip_filter])
+    submit = SubmitField("Szukaj")

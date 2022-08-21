@@ -13,7 +13,7 @@ from ..models import (
     Company,
     recomended,
 )
-from ..forms import TagForm
+from ..forms import TagForm, TagSearchForm
 from ..paginator import get_paginator
 from ..export import export_companies_to_xlsx
 from ..forms.select import (
@@ -259,11 +259,17 @@ class TagView(object):
 
     @view_config(
         route_name="tag_search",
-        renderer="tag_search.mako",
+        renderer="tag_form.mako",
         permission="view",
     )
     def search(self):
-        return {}
+        form = TagSearchForm(self.request.POST)
+        if self.request.method == 'POST' and form.validate():
+            return HTTPSeeOther(location=self.request.route_url('tag_results', _query={'name': form.name.data}))
+        return dict(
+            heading='Znajdź tag',
+            form=form,
+        )
 
     @view_config(
         route_name="tag_results",

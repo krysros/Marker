@@ -7,3 +7,5 @@ from .user import UserForm  # flake8: noqa
 from .comment import CommentForm  # flake8: noqa
 from .company import CompanyForm  # flake8: noqa
 from .project import ProjectForm  # flake8: noqa
+
+from .tag import TagSearchForm  # flake8: noqa
