@@ -268,38 +268,12 @@ class CompanyView(object):
         renderer="company_projects.mako",
         permission="view",
     )
-    @view_config(
-        route_name="company_projects_more",
-        renderer="project_more.mako",
-        permission="view",
-    )
     def projects(self):
         company = self.request.context.company
-        page = int(self.request.params.get("page", 1))
-        states = dict(STATES)
-        stmt = (
-            select(Project)
-            .join(companies_projects)
-            .filter(company.id == companies_projects.c.company_id)
+        return dict(
+            company=company,
+            projects=[],  # require to render project_datalist.mako included in current template
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-
-        next_page = self.request.route_url(
-            "company_projects_more",
-            company_id=company.id,
-            slug=company.slug,
-            _query={"page": page + 1},
-        )
-        return {
-            "paginator": paginator,
-            "next_page": next_page,
-            "company": company,
-            "states": states,
-        }
 
     @view_config(
         route_name="company_similar",
@@ -612,7 +586,7 @@ class CompanyView(object):
         return response
 
     @view_config(
-        route_name="delete_tag_from_company",
+        route_name="delete_tag",
         request_method="POST",
         permission="edit",
         renderer="string",
@@ -657,6 +631,61 @@ class CompanyView(object):
         person_name = person.name
         self.request.dbsession.delete(person)
         log.info(f"Użytkownik {self.request.identity.name} usunął osobę {person_name}")
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        return ""
+
+    @view_config(
+        route_name="add_project",
+        renderer="project_list.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_project(self):
+        new_csrf_token(self.request)
+        company = self.request.context.company
+        name = self.request.POST.get("name")
+        if name:
+            project = self.request.dbsession.execute(
+                select(Project).filter_by(name=name)
+            ).scalar_one_or_none()
+            if project not in company.projects:
+                company.projects.append(project)
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        return {"company": company}
+
+    @view_config(
+        route_name="delete_project",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_project(self):
+        new_csrf_token(self.request)
+        company_id = int(self.request.matchdict["company_id"])
+        project_id = int(self.request.matchdict["project_id"])
+
+        company = self.request.dbsession.execute(
+            select(Company).filter_by(id=company_id)
+        ).scalar_one_or_none()
+        if not company:
+            raise HTTPNotFound
+
+        project = self.request.dbsession.execute(
+            select(Project).filter_by(id=project_id)
+        ).scalar_one_or_none()
+        if not project:
+            raise HTTPNotFound
+
+        company_name = company.name
+        project_name = project.name
+
+        company.projects.remove(project)
+        log.info(
+            f"Użytkownik {self.request.identity.name} usunął firmę {company_name} z projektu {project_name}"
+        )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         return ""

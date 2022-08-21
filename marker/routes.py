@@ -98,8 +98,13 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_projects_more",
-        r"/company/{company_id:\d+}/{slug}/projects/more",
+        "project_companies",
+        r"/project/{project_id:\d+}/{slug}/companies",
+        factory=project_factory,
+    )
+    config.add_route(
+        "add_project",
+        r"/company/{company_id:\d+}/{slug}/projects-table",
         factory=company_factory,
     )
     config.add_route(
@@ -143,13 +148,13 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "delete_tag_from_company",
-        r"/company/{company_id:\d+}/tag/{tag_id:\d+}/delete",
+        "delete_project",
+        r"/company/{company_id:\d+}/project/{project_id:\d+}/delete",
         factory=default_factory,
     )
     config.add_route(
-        "delete_company_from_project",
-        r"/project/{project_id:\d+}/company/{company_id:\d+}/delete",
+        "delete_tag",
+        r"/company/{company_id:\d+}/tag/{tag_id:\d+}/delete",
         factory=default_factory,
     )
 
@@ -220,10 +225,11 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "project_companies",
-        r"/project/{project_id:\d+}/{slug}/companies",
+        "add_company",
+        r"/project/{project_id:\d+}/{slug}/companies-table",
         factory=project_factory,
     )
+    config.add_route("project_select", "/project/select", factory=default_factory)
 
     config.add_route("user_all", "/user", factory=default_factory)
     config.add_route("user_more", "/user/more", factory=default_factory)
