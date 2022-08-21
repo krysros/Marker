@@ -120,46 +120,6 @@
 </div>
 
 <div class="card">
-  <div class="card-header"><i class="bi bi-tags"></i> Tagi</div>
-  <div class="card-body">
-    <div id="company-tags">
-      <%include file="company_tags.mako"/>
-    </div>
-    <!-- Button trigger modal -->
-    <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
-      Dodaj
-    </button>
-    <!-- Modal -->
-    <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML">
-            <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
-            <div class="modal-header">
-              <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="tag-name" class="form-label">Nazwa</label>
-                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-trigger="keyup changed delay:250ms">
-                <div id="tag-list">
-                  <%include file="tag_datalist.mako"/>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-              <button type="submit" class="btn btn-primary" id="btn-save-tag">Zapisz</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="card">
   <div class="card-header"><i class="bi bi-people"></i> Osoby do kontaktu</div>
   <div class="card-body">
     <div id="company-people">
@@ -200,6 +160,46 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
               <button type="submit" class="btn btn-primary" id="btn-save-person">Zapisz</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><i class="bi bi-tags"></i> Tagi</div>
+  <div class="card-body">
+    <div id="company-tags">
+      <%include file="company_tags.mako"/>
+    </div>
+    <!-- Button trigger modal -->
+    <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
+      Dodaj
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML">
+            <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="tag-name" class="form-label">Nazwa</label>
+                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-trigger="keyup changed delay:250ms">
+                <div id="tag-list">
+                  <%include file="tag_datalist.mako"/>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+              <button type="submit" class="btn btn-primary" id="btn-save-tag">Zapisz</button>
             </div>
           </form>
         </div>
