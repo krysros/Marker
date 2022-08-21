@@ -12,3 +12,4 @@ from .tag import TagSearchForm  # flake8: noqa
 from .user import UserSearchForm  # flake8: noqa
 from .company import CompanySearchForm  # flake8: noqa
 from .comment import CommentSearchForm  # flake8: noqa
+from .project import ProjectSearchForm  # flake8: noqa

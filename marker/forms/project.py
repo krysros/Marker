@@ -1,5 +1,5 @@
 from wtforms import Form, StringField, SelectField, DateField, SubmitField
-from wtforms.validators import InputRequired, Length
+from wtforms.validators import InputRequired, Length, Optional
 from .filters import (
     dash_filter,
     strip_filter,
@@ -46,9 +46,24 @@ class ProjectForm(Form):
         ],
         filters=[strip_filter],
     )
-    deadline = DateField("Termin")
+    deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
     project_delivery_method = SelectField(
         "Sposób realizacji", choices=PROJECT_DELIVERY_METHODS
     )
     submit = SubmitField("Zapisz")
+
+
+class ProjectSearchForm(Form):
+    name = StringField("Nazwa", filters=[strip_filter])
+    street = StringField("Ulica", filters=[strip_filter])
+    postcode = StringField("Kod pocztowy", filters=[strip_filter])
+    city = StringField("Miasto", filters=[strip_filter])
+    state = SelectField("Województwo", choices=STATES)
+    link = StringField("Link", filters=[strip_filter])
+    deadline = DateField("Termin", validators=[Optional()])
+    stage = SelectField("Etap", choices=STAGES)
+    project_delivery_method = SelectField(
+        "Sposób realizacji", choices=PROJECT_DELIVERY_METHODS
+    )
+    submit = SubmitField("Szukaj")

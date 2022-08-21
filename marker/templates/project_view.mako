@@ -41,7 +41,11 @@
             ${states.get(project.state)}<br>
           </dd>
           <dt>Termin</dt>
+          % if project.deadline:
           <dd>${project.deadline}</dd>
+          % else:
+          <dd>---</dd>
+          % endif
           <dt>Link</dt>
           <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
         </dl>

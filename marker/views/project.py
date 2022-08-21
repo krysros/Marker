@@ -5,7 +5,10 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
 from sqlalchemy import select, func
 
-from ..forms.project import ProjectForm
+from ..forms.project import (
+    ProjectForm,
+    ProjectSearchForm,
+)
 
 from ..forms.select import (
     STATES,
@@ -20,6 +23,7 @@ from ..models import (
     companies_projects,
 )
 from ..paginator import get_paginator
+from marker.forms import project
 
 log = logging.getLogger(__name__)
 
@@ -205,12 +209,17 @@ class ProjectView(object):
 
     @view_config(
         route_name="project_search",
-        renderer="project_search.mako",
+        renderer="project_form.mako",
         permission="view",
     )
     def search(self):
-        states = dict(STATES)
-        return {"states": states}
+        form = ProjectSearchForm(self.request.POST)
+        if self.request.method == 'POST' and form.validate():
+            return HTTPSeeOther(location=self.request.route_url('project_results', _query={'name': form.name.data, 'street': form.street.data, 'postcode': form.postcode.data, 'city': form.city.data, 'state': form.state.data, 'link': form.link.data, 'deadline': form.deadline.data, 'stage': form.stage.data, 'project_delivery_method': form.project_delivery_method.data}))
+        return dict(
+            heading="Znajdź projekt",
+            form=form,
+        )
 
     @view_config(
         route_name="project_results",
@@ -224,17 +233,31 @@ class ProjectView(object):
     )
     def results(self):
         name = self.request.params.get("name")
+        street = self.request.params.get("street")
+        postcode = self.request.params.get("postcode")
         city = self.request.params.get("city")
         state = self.request.params.get("state")
+        link = self.request.params.get("link")
+        deadline = self.request.params.get("deadline")
+        stage = self.request.params.get("stage")
+        project_delivery_method = self.request.params.get("project_delivery_method")
         page = int(self.request.params.get("page", 1))
         states = dict(STATES)
         stmt = (
             select(Project)
             .filter(Project.name.ilike("%" + name + "%"))
+            .filter(Project.street.ilike("%" + street + "%"))
+            .filter(Project.postcode.ilike("%" + postcode + "%"))
             .filter(Project.city.ilike("%" + city + "%"))
             .filter(Project.state.ilike("%" + state + "%"))
-            .order_by(Project.name)
+            .filter(Project.link.ilike("%" + link + "%"))
+            .filter(Project.stage.ilike("%" + stage + "%"))
+            .filter(Project.project_delivery_method.ilike("%" + project_delivery_method + "%"))
         )
+        if deadline:
+            stmt = stmt.filter(Project.deadline <= deadline)
+
+        stmt = stmt.order_by(Project.name)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -245,8 +268,14 @@ class ProjectView(object):
             "project_results_more",
             _query={
                 "name": name,
+                "street": street,
+                "postcode": postcode,
                 "city": city,
                 "state": state,
+                "link": link,
+                "deadline": deadline,
+                "stage": stage,
+                "project_delivery_method": project_delivery_method,
                 "page": page + 1,
             },
         )
