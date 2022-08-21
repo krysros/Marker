@@ -10,3 +10,4 @@ from .project import ProjectForm  # flake8: noqa
 
 from .tag import TagSearchForm  # flake8: noqa
 from .user import UserSearchForm  # flake8: noqa
+from .company import CompanySearchForm  # flake8: noqa

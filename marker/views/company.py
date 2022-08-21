@@ -7,7 +7,10 @@ from sqlalchemy import and_
 
 from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPSeeOther, HTTPNotFound
+from pyramid.httpexceptions import (
+    HTTPSeeOther,
+    HTTPNotFound,
+)
 
 from ..models import (
     Company,
@@ -20,7 +23,10 @@ from ..models import (
     companies_comments,
     companies_projects,
 )
-from ..forms import CompanyForm
+from ..forms import (
+    CompanyForm,
+    CompanySearchForm,
+)
 from ..paginator import get_paginator
 from ..forms.select import (
     STATES,
@@ -464,12 +470,17 @@ class CompanyView(object):
 
     @view_config(
         route_name="company_search",
-        renderer="company_search.mako",
+        renderer="company_form.mako",
         permission="view",
     )
     def company_search(self):
-        states = dict(STATES)
-        return {"states": states}
+        form = CompanySearchForm(self.request.POST)
+        if self.request.method == 'POST' and form.validate():
+            return HTTPSeeOther(location=self.request.route_url('company_results', _query={'name': form.name.data, 'street': form.street.data, 'postcode': form.postcode.data, 'city': form.city.data, 'state': form.state.data, 'WWW': form.WWW.data, 'NIP': form.NIP.data, 'REGON': form.REGON.data, 'KRS': form.KRS.data, 'court': form.court.data, 'color': form.color.data}))
+        return dict(
+            heading="Znajdź firmę",
+            form=form,
+        )
 
     @view_config(
         route_name="company_results",
@@ -484,24 +495,30 @@ class CompanyView(object):
     def company_results(self):
         name = self.request.params.get("name")
         street = self.request.params.get("street")
+        postcode = self.request.params.get("postcode")
         city = self.request.params.get("city")
         state = self.request.params.get("state")
         WWW = self.request.params.get("WWW")
         NIP = self.request.params.get("NIP")
         REGON = self.request.params.get("REGON")
         KRS = self.request.params.get("KRS")
+        court = self.request.params.get("court")
+        color = self.request.params.get("color")
         page = int(self.request.params.get("page", 1))
         states = dict(STATES)
         stmt = (
             select(Company)
             .filter(Company.name.ilike("%" + name + "%"))
             .filter(Company.street.ilike("%" + street + "%"))
+            .filter(Company.street.ilike("%" + postcode + "%"))
             .filter(Company.city.ilike("%" + city + "%"))
             .filter(Company.state.ilike("%" + state + "%"))
             .filter(Company.WWW.ilike("%" + WWW + "%"))
             .filter(Company.NIP.ilike("%" + NIP + "%"))
             .filter(Company.REGON.ilike("%" + REGON + "%"))
             .filter(Company.KRS.ilike("%" + KRS + "%"))
+            .filter(Company.court.ilike("%" + court + "%"))
+            .filter(Company.color.ilike("%" + color + "%"))
             .order_by(Company.name)
         )
         paginator = (
@@ -514,12 +531,15 @@ class CompanyView(object):
             _query={
                 "name": name,
                 "street": street,
+                "postcode": postcode,
                 "city": city,
                 "state": state,
                 "WWW": WWW,
                 "NIP": NIP,
                 "REGON": REGON,
                 "KRS": KRS,
+                "court": court,
+                "color": color,
                 "page": page + 1,
             },
         )

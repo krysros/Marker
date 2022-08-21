@@ -145,3 +145,18 @@ class CompanyForm(Form):
 
         if len(field.data) != 10 or not field.data.isdigit():
             raise ValidationError("Numer KRS powinien się składać z 10 cyfr")
+
+
+class CompanySearchForm(Form):
+    name = StringField("Nazwa", filters=[strip_filter])
+    street = StringField("Ulica", filters=[strip_filter])
+    postcode = StringField("Kod pocztowy", filters=[strip_filter])
+    city = StringField("Miasto", filters=[strip_filter])
+    state = SelectField("Województwo", choices=STATES)
+    WWW = StringField("WWW", filters=[strip_filter])
+    NIP = StringField("NIP", filters=[strip_filter])
+    REGON = StringField("REGON", filters=[strip_filter])
+    KRS = StringField("KRS", filters=[strip_filter])
+    court = SelectField("Sąd", choices=COURTS)
+    color = SelectField("Kolor", choices=COLORS)
+    submit = SubmitField("Szukaj")
