@@ -130,7 +130,7 @@ class ProjectView(object):
             states=states,
             c_companies=c_companies,
             companies=[],  # require to render company_datalist.mako included in current template
-            )
+        )
 
     @view_config(
         route_name="project_add", renderer="project_form.mako", permission="edit"
@@ -214,8 +214,23 @@ class ProjectView(object):
     )
     def search(self):
         form = ProjectSearchForm(self.request.POST)
-        if self.request.method == 'POST' and form.validate():
-            return HTTPSeeOther(location=self.request.route_url('project_results', _query={'name': form.name.data, 'street': form.street.data, 'postcode': form.postcode.data, 'city': form.city.data, 'state': form.state.data, 'link': form.link.data, 'deadline': form.deadline.data, 'stage': form.stage.data, 'project_delivery_method': form.project_delivery_method.data}))
+        if self.request.method == "POST" and form.validate():
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "project_results",
+                    _query={
+                        "name": form.name.data,
+                        "street": form.street.data,
+                        "postcode": form.postcode.data,
+                        "city": form.city.data,
+                        "state": form.state.data,
+                        "link": form.link.data,
+                        "deadline": form.deadline.data,
+                        "stage": form.stage.data,
+                        "project_delivery_method": form.project_delivery_method.data,
+                    },
+                )
+            )
         return dict(
             heading="Znajdź projekt",
             form=form,
@@ -252,7 +267,11 @@ class ProjectView(object):
             .filter(Project.state.ilike("%" + state + "%"))
             .filter(Project.link.ilike("%" + link + "%"))
             .filter(Project.stage.ilike("%" + stage + "%"))
-            .filter(Project.project_delivery_method.ilike("%" + project_delivery_method + "%"))
+            .filter(
+                Project.project_delivery_method.ilike(
+                    "%" + project_delivery_method + "%"
+                )
+            )
         )
         if deadline:
             stmt = stmt.filter(Project.deadline <= deadline)

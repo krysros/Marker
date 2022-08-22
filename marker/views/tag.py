@@ -264,10 +264,14 @@ class TagView(object):
     )
     def search(self):
         form = TagSearchForm(self.request.POST)
-        if self.request.method == 'POST' and form.validate():
-            return HTTPSeeOther(location=self.request.route_url('tag_results', _query={'name': form.name.data}))
+        if self.request.method == "POST" and form.validate():
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "tag_results", _query={"name": form.name.data}
+                )
+            )
         return dict(
-            heading='Znajdź tag',
+            heading="Znajdź tag",
             form=form,
         )
 

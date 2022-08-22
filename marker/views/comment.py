@@ -90,10 +90,14 @@ class CommentView(object):
     )
     def search(self):
         form = CommentSearchForm(self.request.POST)
-        if self.request.method == 'POST' and form.validate():
-            return HTTPSeeOther(location=self.request.route_url('comment_results', _query={'comment': form.comment.data}))
+        if self.request.method == "POST" and form.validate():
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "comment_results", _query={"comment": form.comment.data}
+                )
+            )
         return dict(
-            heading='Znajdź komentarz',
+            heading="Znajdź komentarz",
             form=form,
         )
 

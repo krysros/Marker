@@ -287,10 +287,14 @@ class UserView(object):
     )
     def search(self):
         form = UserSearchForm(self.request.POST)
-        if self.request.method == 'POST' and form.validate():
-            return HTTPSeeOther(location=self.request.route_url('user_results', _query={'username': form.name.data}))
+        if self.request.method == "POST" and form.validate():
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "user_results", _query={"username": form.name.data}
+                )
+            )
         return dict(
-            heading='Znajdź użytkownika',
+            heading="Znajdź użytkownika",
             form=form,
         )
 

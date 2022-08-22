@@ -476,8 +476,25 @@ class CompanyView(object):
     )
     def company_search(self):
         form = CompanySearchForm(self.request.POST)
-        if self.request.method == 'POST' and form.validate():
-            return HTTPSeeOther(location=self.request.route_url('company_results', _query={'name': form.name.data, 'street': form.street.data, 'postcode': form.postcode.data, 'city': form.city.data, 'state': form.state.data, 'WWW': form.WWW.data, 'NIP': form.NIP.data, 'REGON': form.REGON.data, 'KRS': form.KRS.data, 'court': form.court.data, 'color': form.color.data}))
+        if self.request.method == "POST" and form.validate():
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "company_results",
+                    _query={
+                        "name": form.name.data,
+                        "street": form.street.data,
+                        "postcode": form.postcode.data,
+                        "city": form.city.data,
+                        "state": form.state.data,
+                        "WWW": form.WWW.data,
+                        "NIP": form.NIP.data,
+                        "REGON": form.REGON.data,
+                        "KRS": form.KRS.data,
+                        "court": form.court.data,
+                        "color": form.color.data,
+                    },
+                )
+            )
         return dict(
             heading="Znajdź firmę",
             form=form,
@@ -558,8 +575,18 @@ class CompanyView(object):
     )
     def person_search(self):
         form = PersonSearchForm(self.request.POST)
-        if self.request.method == 'POST' and form.validate():
-            return HTTPSeeOther(location=self.request.route_url('person_results', _query={'name': form.name.data, 'position': form.position.data, 'phone': form.phone.data, 'email': form.email.data}))
+        if self.request.method == "POST" and form.validate():
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "person_results",
+                    _query={
+                        "name": form.name.data,
+                        "position": form.position.data,
+                        "phone": form.phone.data,
+                        "email": form.email.data,
+                    },
+                )
+            )
         return dict(
             heading="Znajdź osobę",
             form=form,
