@@ -26,7 +26,6 @@ from ..models import (
 from ..forms import (
     CompanyForm,
     CompanySearchForm,
-    PersonSearchForm,
 )
 from ..paginator import get_paginator
 from ..forms.select import (
@@ -36,7 +35,6 @@ from ..forms.select import (
     DROPDOWN_EXT_SORT,
     DROPDOWN_ORDER,
 )
-from ..export import export_vcard
 
 
 log = logging.getLogger(__name__)
@@ -567,77 +565,6 @@ class CompanyView(object):
             next_page=next_page,
             states=states,
         )
-
-    @view_config(
-        route_name="person_search",
-        renderer="person_form.mako",
-        permission="view",
-    )
-    def person_search(self):
-        form = PersonSearchForm(self.request.POST)
-        if self.request.method == "POST" and form.validate():
-            return HTTPSeeOther(
-                location=self.request.route_url(
-                    "person_results",
-                    _query={
-                        "name": form.name.data,
-                        "position": form.position.data,
-                        "phone": form.phone.data,
-                        "email": form.email.data,
-                    },
-                )
-            )
-        return dict(
-            heading="Znajdź osobę",
-            form=form,
-        )
-
-    @view_config(
-        route_name="person_results",
-        renderer="person_results.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="person_results_more",
-        renderer="person_more.mako",
-        permission="view",
-    )
-    def person_results(self):
-        name = self.request.params.get("name")
-        position = self.request.params.get("position")
-        phone = self.request.params.get("phone")
-        email = self.request.params.get("email")
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Person)
-            .filter(Person.name.ilike("%" + name + "%"))
-            .filter(Person.position.ilike("%" + position + "%"))
-            .filter(Person.phone.ilike("%" + phone + "%"))
-            .filter(Person.email.ilike("%" + email + "%"))
-            .order_by(Person.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "person_results_more",
-            _query={
-                "name": name,
-                "position": position,
-                "phone": phone,
-                "email": email,
-                "page": page + 1,
-            },
-        )
-        return {"paginator": paginator, "next_page": next_page}
-
-    @view_config(route_name="person_vcard", request_method="POST", permission="view")
-    def vcard(self):
-        person = self.request.context.person
-        response = export_vcard(person)
-        return response
 
     @view_config(
         route_name="delete_tag",
