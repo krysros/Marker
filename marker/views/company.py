@@ -26,6 +26,7 @@ from ..models import (
 from ..forms import (
     CompanyForm,
     CompanySearchForm,
+    PersonSearchForm,
 )
 from ..paginator import get_paginator
 from ..forms.select import (
@@ -552,11 +553,17 @@ class CompanyView(object):
 
     @view_config(
         route_name="person_search",
-        renderer="person_search.mako",
+        renderer="person_form.mako",
         permission="view",
     )
     def person_search(self):
-        return {}
+        form = PersonSearchForm(self.request.POST)
+        if self.request.method == 'POST' and form.validate():
+            return HTTPSeeOther(location=self.request.route_url('person_results', _query={'name': form.name.data, 'position': form.position.data, 'phone': form.phone.data, 'email': form.email.data}))
+        return dict(
+            heading="Znajdź osobę",
+            form=form,
+        )
 
     @view_config(
         route_name="person_results",
