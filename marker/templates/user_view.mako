@@ -12,7 +12,7 @@
 
 <div class="card">
   <div class="card-header">
-    <i class="bi bi-person"></i> Użytkownik
+    <i class="bi bi-person-circle"></i> Użytkownik
   </div>
   <div class="card-body">
     <dl class="row">

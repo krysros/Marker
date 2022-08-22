@@ -50,7 +50,7 @@
   </div>
   <div class="row">
     <div class="col">
-      <h2><i class="bi bi-people"></i> Użytkownicy</h2>
+      <h2><i class="bi bi-person-circle"></i> Użytkownicy</h2>
       <p>
         Użytkownicy aplikacji.
       </p>

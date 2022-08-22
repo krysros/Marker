@@ -12,7 +12,18 @@
   % else:
   <td>---</td>
   % endif
+  <td>${person.position}</td>
   <td>${person.phone}</td>
   <td><a href="mailto:${person.email}">${person.email}</a></td>
+  % if person.created_at:
+  <td>${person.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  % else:
+  <td>---</td>
+  % endif
+  % if person.updated_at:
+  <td>${person.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  % else:
+  <td>---</td>
+  % endif
 </tr>
 % endfor

@@ -188,6 +188,8 @@ def includeme(config):
         r"/person/{person_id:\d+}/delete",
         factory=person_factory,
     )
+    config.add_route("person_all", "/person", factory=default_factory)
+    config.add_route("person_more", "/person/more", factory=default_factory)
     config.add_route("person_search", "/person/search", factory=default_factory)
     config.add_route("person_results", "/person/results", factory=default_factory)
     config.add_route(
