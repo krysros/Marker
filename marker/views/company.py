@@ -674,7 +674,7 @@ class CompanyView(object):
         return ""
 
     @view_config(
-        route_name="person_delete",
+        route_name="person_delete_from_company",
         request_method="POST",
         permission="edit",
         renderer="string",

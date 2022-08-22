@@ -184,8 +184,23 @@ def includeme(config):
         factory=person_factory,
     )
     config.add_route(
+        "person_view",
+        r"/person/{person_id:\d+}",
+        factory=person_factory,
+    )
+    config.add_route(
+        "person_edit",
+        r"/person/{person_id:\d+}/edit",
+        factory=person_factory,
+    )
+    config.add_route(
         "person_delete",
         r"/person/{person_id:\d+}/delete",
+        factory=person_factory,
+    )
+    config.add_route(
+        "person_delete_from_company",
+        r"/person/{person_id:\d+}/delete-from-company",
         factory=person_factory,
     )
     config.add_route("person_all", "/person", factory=default_factory)
