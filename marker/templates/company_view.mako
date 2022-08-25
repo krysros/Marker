@@ -142,7 +142,7 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label for="person-name" class="form-label">Nazwa</label>
-                <input type="text" class="form-control" id="person-name" name="name">
+                <input type="text" class="form-control" id="person-name" name="name" required>
               </div>
               <div class="mb-3">
                 <label for="position" class="form-label">Stanowisko</label>
@@ -191,7 +191,7 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label for="tag-name" class="form-label">Nazwa</label>
-                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-trigger="keyup changed delay:250ms">
+                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-trigger="keyup changed delay:250ms" required>
                 <div id="tag-list">
                   <%include file="tag_datalist.mako"/>
                 </div>
@@ -231,14 +231,21 @@
   // Hide Tag Modal
   const modalTagEl = document.getElementById("add-tag-modal");
   const modalTag = new bootstrap.Modal(modalTagEl);
+  const tagName = document.getElementById("tag-name");
   document.getElementById("btn-save-tag").addEventListener("click", function () {
-    modalTag.hide();
+    if (tagName.checkValidity()) {
+      modalTag.hide();
+    };
   });
   // Hide Person Modal
   const modalPersonEl = document.getElementById("add-person-modal");
   const modalPerson = new bootstrap.Modal(modalPersonEl);
+  const personName = document.getElementById("person-name");
+  const personEmail = document.getElementById("email");
   document.getElementById("btn-save-person").addEventListener("click", function () {
-    modalPerson.hide();
+    if (personName.checkValidity() && personEmail.checkValidity()) {
+      modalPerson.hide();
+    };
   });
   // Clear input fields in Tag Modal
   const btnAddTag = document.getElementById("btn-add-tag");
