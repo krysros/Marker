@@ -6,8 +6,8 @@
     ${dropdown.sort_button('tag_all', dropdown_sort, filter=None, sort=sort, order=order)}
     ${dropdown.order_button('tag_all', dropdown_order, filter=None, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" href="${request.route_url('tag_search')}" role="button">Szukaj</a>
-      <a class="btn btn-success" href="${request.route_url('tag_add')}" role="button">Dodaj</a>
+      <a class="btn btn-primary" hx-get="${request.route_url('tag_search')}" role="button">Szukaj</a>
+      <a class="btn btn-success" hx-get="${request.route_url('tag_add')}" role="button">Dodaj</a>
     </div>
   </div>
 </div>

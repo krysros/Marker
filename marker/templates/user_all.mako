@@ -7,8 +7,8 @@
     ${dropdown.sort_button('user_all', dropdown_sort, filter=filter, sort=sort, order=order)}
     ${dropdown.order_button('user_all', dropdown_order, filter=filter, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" href="${request.route_url('user_search')}" role="button">Szukaj</a>
-      <a class="btn btn-success" href="${request.route_url('user_add')}" role="button">Dodaj</a>
+      <a class="btn btn-primary" hx-get="${request.route_url('user_search')}" role="button">Szukaj</a>
+      <a class="btn btn-success" hx-get="${request.route_url('user_add')}" role="button">Dodaj</a>
     </div>
   </div>
 </div>
