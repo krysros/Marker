@@ -202,7 +202,7 @@ class CompanyView(object):
                 select(Tag).filter_by(name=name)
             ).scalar_one_or_none()
             if not tag:
-                tag = Tag(name)
+                tag = Tag(name[:50])
                 tag.created_by = self.request.identity
             if tag not in company.tags:
                 company.tags.append(tag)
@@ -228,7 +228,7 @@ class CompanyView(object):
         phone = self.request.POST.get("phone")
         email = self.request.POST.get("email")
         if name:
-            person = Person(name=name, position=position, phone=phone, email=email)
+            person = Person(name=name[:100], position=position[:100], phone=phone[:50], email=email[:50])
             person.created_by = self.request.identity
             if person not in company.people:
                 company.people.append(person)
