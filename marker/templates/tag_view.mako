@@ -16,7 +16,7 @@
     ${dropdown.order_button('tag_view', dropdown_order, filter=filter, sort=sort, order=order, tag_id=tag.id, slug=tag.slug)}
     <div class="float-end">
       <button type="submit" class="btn btn-primary" form="tag_export" value="submit">Eksportuj</button>
-      <a href="${request.route_url('tag_edit', tag_id=tag.id, slug=tag.slug)}" class="btn btn-warning" role="button">Edytuj</a>
+      <a hx-get="${request.route_url('tag_edit', tag_id=tag.id, slug=tag.slug)}" class="btn btn-warning" role="button">Edytuj</a>
       ${modal.danger_dialog('tag_delete', 'Usuń', 'Czy na pewno chcesz usunąć tag z bazy danych?', tag_id=tag.id, slug=tag.slug)}
     </div>
   </div>

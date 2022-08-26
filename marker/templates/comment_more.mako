@@ -10,7 +10,7 @@
   <div class="card-header">
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>
     % if comment.created_by == request.identity or request.identity.name == 'admin':
-    <span style="float:right;"><a href="${request.route_url('comment_delete', comment_id=comment.id)}">Usuń</a></span>
+    <span style="float:right;"><a hx-get="${request.route_url('comment_delete', comment_id=comment.id)}">Usuń</a></span>
     % endif
   </div>
   <div class="card-body">
