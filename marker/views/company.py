@@ -203,8 +203,12 @@ class CompanyView(object):
             ).scalar_one_or_none()
             if not tag:
                 tag = Tag(name)
+                tag.created_by = self.request.identity
             if tag not in company.tags:
                 company.tags.append(tag)
+                log.info(
+                    f"Użytkownik {self.request.identity.name} dodał tag {tag.name} do firmy {company.name}"
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -225,8 +229,12 @@ class CompanyView(object):
         email = self.request.POST.get("email")
         if name:
             person = Person(name=name, position=position, phone=phone, email=email)
+            person.created_by = self.request.identity
             if person not in company.people:
                 company.people.append(person)
+                log.info(
+                    f"Użytkownik {self.request.identity.name} dodał osobę {person.name} do firmy {company.name}"
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
