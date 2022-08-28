@@ -17,7 +17,7 @@ class CommentView(object):
 
     @view_config(
         route_name="comment_all",
-        renderer="comment_all.mako",
+        renderer="comment_more.mako",
         permission="view",
     )
     @view_config(
