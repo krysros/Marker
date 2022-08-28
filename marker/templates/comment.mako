@@ -3,7 +3,7 @@
   <div class="card-header">
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>
     % if comment.created_by == request.identity or request.identity.name == 'admin':
-    <span style="float:right;"><a hx-get="${request.route_url('comment_delete', comment_id=comment.id, _query={'from': 'company'})}">Usuń</a></span>
+    <span style="float:right;"><a class="btn btn-danger btn-sm" role="button" hx-get="${request.route_url('comment_delete', comment_id=comment.id, _query={'from': 'company'})}" hx-target="#main-container">Usuń</a></span>
     % endif
   </div>
   <div class="card-body">

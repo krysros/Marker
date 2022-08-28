@@ -1,10 +1,9 @@
-<%inherit file="layout.mako"/>
 <%include file="errors.mako"/> 
 
 <div class="card">
   <div class="card-header">${heading}</div>
   <div class="card-body">
-    <form method="post" action="${url}">
+    <form hx-post="${url}" hx-target="#main-container">
       <div class="mb-3">
         ${form.report.label}
         ${form.report(class_="form-control")}

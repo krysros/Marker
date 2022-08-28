@@ -13,7 +13,7 @@
           % endif
         </div>
       </button>
-      <a hx-get="${request.route_url('company_edit', company_id=company.id, slug=company.slug)}" class="btn btn-warning" role="button">Edytuj</a>
+      <a class="btn btn-warning" role="button" hx-get="${request.route_url('company_edit', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Edytuj</a>
       ${modal.danger_dialog('company_delete', 'Usuń', 'Czy na pewno chcesz usunąć firmę z bazy danych?', company_id=company.id, slug=company.slug)}
     </div>
   </div>

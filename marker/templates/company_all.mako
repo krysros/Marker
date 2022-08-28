@@ -1,4 +1,3 @@
-<%inherit file="layout.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
 
 <div class="card">
@@ -7,8 +6,8 @@
     ${dropdown.sort_button('company_all', dropdown_sort, filter=filter, sort=sort, order=order)}
     ${dropdown.order_button('company_all', dropdown_order, filter=filter, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" hx-get="${request.route_url('company_search')}" role="button">Szukaj</a>
-      <a class="btn btn-success" hx-get="${request.route_url('company_add')}" role="button">Dodaj</a>
+      <a class="btn btn-primary" role="button" hx-get="${request.route_url('company_search')}" hx-target="#main-container">Szukaj</a>
+      <a class="btn btn-success" role="button" hx-get="${request.route_url('company_add')}" hx-target="#main-container">Dodaj</a>
     </div>
   </div>
 </div>

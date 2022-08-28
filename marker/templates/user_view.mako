@@ -4,7 +4,7 @@
 <div class="card">
   <div class="card-body">
     <div class="float-end">
-      <a hx-get="${request.route_url('user_edit', username=user.name)}" class="btn btn-warning" role="button">Edytuj</a>
+      <a class="btn btn-warning" role="button" hx-get="${request.route_url('user_edit', username=user.name)}" hx-target="#main-container">Edytuj</a>
       ${modal.danger_dialog('user_delete', 'Usuń', 'Czy na pewno chcesz usunąć użytkownika z bazy danych?', username=user.name)}
     </div>
   </div>

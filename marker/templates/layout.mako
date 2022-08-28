@@ -46,25 +46,25 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('company_all')}"><i class="bi bi-building"></i> Firmy</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('company_all')}" hx-target="#main-container"><i class="bi bi-building"></i> Firmy</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('project_all')}"><i class="bi bi-briefcase"></i> Projekty</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('project_all')}" hx-target="#main-container"><i class="bi bi-briefcase"></i> Projekty</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> Tagi</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('tag_all')}" hx-target="#main-container"><i class="bi bi-tags"></i> Tagi</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('person_all')}"><i class="bi bi-people"></i> Osoby</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('person_all')}" hx-target="#main-container"><i class="bi bi-people"></i> Osoby</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> Użytkownicy</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('user_all')}" hx-target="#main-container"><i class="bi bi-person-circle"></i> Użytkownicy</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('comment_all')}"><i class="bi bi-chat-left-text"></i> Komentarze</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('comment_all')}" hx-target="#main-container"><i class="bi bi-chat-left-text"></i> Komentarze</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="${request.route_url('report')}"><i class="bi bi-bar-chart"></i> Raporty</a>
+              <a class="nav-link" role="button" hx-get="${request.route_url('report')}" hx-target="#main-container"><i class="bi bi-bar-chart"></i> Raporty</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
@@ -79,23 +79,23 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <a class="dropdown-item" href="${request.route_url('user_checked', username=request.identity.name)}">
+                  <a class="dropdown-item" role="button" hx-get="${request.route_url('user_checked', username=request.identity.name)}" hx-target="#main-container">
                     <i class="bi bi-check-square"></i> Zaznaczone
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="${request.route_url('user_recomended', username=request.identity.name)}">
+                  <a class="dropdown-item" role="button" hx-get="${request.route_url('user_recomended', username=request.identity.name)}" hx-target="#main-container">
                     <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="${request.route_url('user_watched', username=request.identity.name)}">
+                  <a class="dropdown-item" role="button" hx-get="${request.route_url('user_watched', username=request.identity.name)}" hx-target="#main-container">
                     <i class="bi bi-eye"></i> Obserwowane
                   </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <a class="dropdown-item" href="${request.route_url('account', username=request.identity.name)}">
+                  <a class="dropdown-item" role="button" hx-get="${request.route_url('account', username=request.identity.name)}" hx-target="#main-container">
                     Konto
                   </a>
                 </li>
@@ -114,7 +114,7 @@
     </nav>
 
     <main role="main">
-      <div class="container">
+      <div id="main-container" class="container">
         % if request.session.peek_flash():
           % for message in request.session.pop_flash():
             <div class="alert alert-${message.split(':')[0]}" role="alert">
@@ -123,11 +123,11 @@
           % endfor
         % endif
         ${self.body()}
-        <hr>
       </div>
     </main>
 
     <footer class="container">
+      <hr>
       <p>
         <div class="d-flex">
           <div class="p-2 flex-grow-1">© KR 2022</div>
