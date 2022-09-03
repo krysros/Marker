@@ -339,11 +339,11 @@ class CompanyView(object):
             "company_similar_more",
             company_id=company.id,
             slug=company.slug,
+            states=states,
             _query={
                 "filter": filter,
                 "sort": sort,
                 "order": order,
-                "states": states,
                 "page": page + 1,
             },
         )

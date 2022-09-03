@@ -148,7 +148,8 @@ class ReportView(object):
         next_page = self.request.route_url(
             "report_more",
             rel=rel,
-            _query={"states": states, "page": page + 1},
+            states=states,
+            _query={"page": page + 1},
         )
 
         return dict(
