@@ -6,6 +6,7 @@
     <div class="card-body">
     <form method="post" action="${url}">
       <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
+      <input type="hidden" name="next" value="${next_url}">
       <div class="mb-3">
         ${form.username.label}
         ${form.username(class_="form-control")}
