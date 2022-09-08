@@ -10,7 +10,7 @@
   % if project in request.identity.watched:
     <i class="bi bi-eye-fill"></i>
   % endif
-    <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
+    <a href="#top" hx-get="${request.route_url('project_view', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML">${project.name}</a>
   </td>
   <td>${project.deadline}</td>
   <td>${project.city}</td>

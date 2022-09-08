@@ -1,11 +1,12 @@
+<%include file="navbar.mako"/>
 <%include file="errors.mako"/>
 
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link" hx-get="${request.route_url('account', username=request.identity.name)}" hx-target="#main-container">Konto</a>
+    <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('account', username=request.identity.name)}" hx-target="#main-container">Konto</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link active" hx-get="${request.route_url('password', username=request.identity.name)}" hx-target="#main-container">Hasło</a>
+    <a class="nav-link active" role="button" href="#top" hx-get="${request.route_url('password', username=request.identity.name)}" hx-target="#main-container">Hasło</a>
   </li>
 </ul>
 

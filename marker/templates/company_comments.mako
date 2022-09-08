@@ -1,4 +1,4 @@
-<%inherit file="layout.mako"/>
+<%include file="navbar.mako"/>
 
 <div class="card">
   <div class="card-body">
@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<p class="lead">Komentarze nt. firmy <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a></p>
+<p class="lead">Komentarze nt. firmy <a href="#top" hx-get="${request.route_url('company_view', company_id=company.id, slug=company.slug)}" hx-target="#main-container">${company.name}</a></p>
 
 <div id="last-comment"></div>
 <%include file="comment_more.mako"/>

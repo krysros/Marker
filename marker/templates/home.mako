@@ -1,8 +1,9 @@
 <%inherit file="layout.mako"/>
+<%include file="navbar.mako"/>
 
 <div class="p-4 mb-4 bg-light rounded-3">
   <div class="container">
-    <h1>Marker <small class="text-muted">Informacje o firmach i projektach</small></h1>
+    <h1>${project} <small class="text-muted">Informacje o firmach i projektach</small></h1>
     <p class="fs-4">
       Znajdź najczęściej rekomendowane firmy o określonym profilu działalności.
       Sprawdź, które firmy zrealizowały największą liczbę projektów,
@@ -20,9 +21,9 @@
         Ostatnio dodane firmy wg wybranej kategorii.
       </p>
       <p>
-        <a class="btn btn-secondary" hx-get="${request.route_url('company_all')}" hx-target="#main-container" role="button">Pokaż</a>
-        <a class="btn btn-primary" hx-get="${request.route_url('company_search')}" hx-target="#main-container" role="button">Szukaj</a>
-        <a class="btn btn-success" hx-get="${request.route_url('company_add')}" hx-target="#main-container" role="button">Dodaj</a>
+        <a class="btn btn-secondary" href="#top" hx-get="${request.route_url('company_all')}" hx-target="#main-container" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="#top" hx-get="${request.route_url('company_search')}" hx-target="#main-container" role="button">Szukaj</a>
+        <a class="btn btn-success" href="#top" hx-get="${request.route_url('company_add')}" hx-target="#main-container" role="button">Dodaj</a>
       </p>
     </div>
     <div class="col">
@@ -31,9 +32,9 @@
         Realizowane lub zakończone projekty.
       </p>
       <p>
-        <a class="btn btn-secondary" hx-get="${request.route_url('project_all')}" hx-target="#main-container" role="button">Pokaż</a>
-        <a class="btn btn-primary" hx-get="${request.route_url('project_search')}" hx-target="#main-container" role="button">Szukaj</a>
-        <a class="btn btn-success" hx-get="${request.route_url('project_add')}" hx-target="#main-container" role="button">Dodaj</a>
+        <a class="btn btn-secondary" href="#top" hx-get="${request.route_url('project_all')}" hx-target="#main-container" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="#top" hx-get="${request.route_url('project_search')}" hx-target="#main-container" role="button">Szukaj</a>
+        <a class="btn btn-success" href="#top" hx-get="${request.route_url('project_add')}" hx-target="#main-container" role="button">Dodaj</a>
       </p>
     </div>
     <div class="col">
@@ -42,9 +43,9 @@
         Tagi określają profil działalności firmy.
       </p>
       <p>
-        <a class="btn btn-secondary" hx-get="${request.route_url('tag_all')}" hx-target="#main-container" role="button">Pokaż</a>
-        <a class="btn btn-primary" hx-get="${request.route_url('tag_search')}" hx-target="#main-container" role="button">Szukaj</a>
-        <a class="btn btn-success" hx-get="${request.route_url('tag_add')}" hx-target="#main-container" role="button">Dodaj</a>
+        <a class="btn btn-secondary" href="#top" hx-get="${request.route_url('tag_all')}" hx-target="#main-container" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="#top" hx-get="${request.route_url('tag_search')}" hx-target="#main-container" role="button">Szukaj</a>
+        <a class="btn btn-success" href="#top" hx-get="${request.route_url('tag_add')}" hx-target="#main-container" role="button">Dodaj</a>
       </p>
     </div>
   </div>
@@ -55,9 +56,9 @@
         Użytkownicy aplikacji.
       </p>
       <p>
-        <a class="btn btn-secondary" hx-get="${request.route_url('user_all')}" hx-target="#main-container" role="button">Pokaż</a>
-        <a class="btn btn-primary" hx-get="${request.route_url('user_search')}" hx-target="#main-container" role="button">Szukaj</a>
-        <a class="btn btn-success" hx-get="${request.route_url('user_add')}" hx-target="#main-container" role="button">Dodaj</a>
+        <a class="btn btn-secondary" href="#top" hx-get="${request.route_url('user_all')}" hx-target="#main-container" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="#top" hx-get="${request.route_url('user_search')}" hx-target="#main-container" role="button">Szukaj</a>
+        <a class="btn btn-success" href="#top" hx-get="${request.route_url('user_add')}" hx-target="#main-container" role="button">Dodaj</a>
       </p>
     </div>
     <div class="col">
@@ -66,8 +67,8 @@
         Komentarze dotyczące firm.
       </p>
       <p>
-        <a class="btn btn-secondary" hx-get="${request.route_url('comment_all')}" hx-target="#main-container" role="button">Pokaż</a>
-        <a class="btn btn-primary" hx-get="${request.route_url('comment_search')}" hx-target="#main-container" role="button">Szukaj</a>
+        <a class="btn btn-secondary" href="#top" hx-get="${request.route_url('comment_all')}" hx-target="#main-container" role="button">Pokaż</a>
+        <a class="btn btn-primary" href="#top" hx-get="${request.route_url('comment_search')}" hx-target="#main-container" role="button">Szukaj</a>
       </p>
     </div>
     <div class="col">
@@ -75,7 +76,7 @@
       <p>
         Podsumowanie informacji o firmach i projektach.
       </p>
-      <p><a class="btn btn-secondary" hx-get="${request.route_url('report')}" hx-target="#main-container" role="button">Pokaż</a></p>
+      <p><a class="btn btn-secondary" href="#top" hx-get="${request.route_url('report')}" hx-target="#main-container" role="button">Pokaż</a></p>
     </div>
   </div>
 </div>

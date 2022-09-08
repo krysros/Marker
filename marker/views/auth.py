@@ -64,7 +64,4 @@ def logout(request):
 def forbidden_view(request):
     next_url = request.route_url("login", _query={"next": request.url})
     request.session.flash("warning:Brak wymaganych uprawnień")
-    response = request.response
-    response.headers = {"HX-Redirect": next_url}
-    response.status_code = 303
-    return response
+    return HTTPSeeOther(location=next_url)

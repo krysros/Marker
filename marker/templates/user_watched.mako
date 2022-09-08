@@ -1,3 +1,4 @@
+<%include file="navbar.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="modal" file="modal.mako"/>
 

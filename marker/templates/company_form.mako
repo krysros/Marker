@@ -1,3 +1,4 @@
+<%include file="navbar.mako"/>
 <%include file="errors.mako"/>
 
 <div class="card">
