@@ -45,15 +45,15 @@
 
 <script>
   // Hide Project Modal
-  const modalProjectEl = document.getElementById("add-project-modal");
-  const modalProject = new bootstrap.Modal(modalProjectEl);
+  var modalProjectEl = document.getElementById("add-project-modal");
+  var modalProject = new bootstrap.Modal(modalProjectEl);
   document.getElementById("btn-save-project").addEventListener("click", function () {
     modalProject.hide();
   });
   // Clear input fields in Project Modal
-  const btnAddProject = document.getElementById("btn-add-project");
+  var btnAddProject = document.getElementById("btn-add-project");
   btnAddProject.addEventListener('click', function handleClick(event) {
-    const projectName = document.getElementById("project-name");
+    var projectName = document.getElementById("project-name");
     projectName.value = '';
   });
 </script> 

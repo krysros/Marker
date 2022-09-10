@@ -229,34 +229,35 @@
 
 <script>
   // Hide Tag Modal
-  const modalTagEl = document.getElementById("add-tag-modal");
-  const modalTag = new bootstrap.Modal(modalTagEl);
-  const tagName = document.getElementById("tag-name");
+  var modalTagEl = document.getElementById("add-tag-modal");
+  var modalTag = new bootstrap.Modal(modalTagEl);
+  var tagName = document.getElementById("tag-name");
   document.getElementById("btn-save-tag").addEventListener("click", function () {
     if (tagName.checkValidity()) {
       modalTag.hide();
     };
   });
+  // Clear input fields in Tag Modal
+  var btnAddTag = document.getElementById("btn-add-tag");
+  btnAddTag.addEventListener('click', function handleClick(event) {
+    var tagName = document.getElementById("tag-name");
+    tagName.value = '';
+  });
+
   // Hide Person Modal
-  const modalPersonEl = document.getElementById("add-person-modal");
-  const modalPerson = new bootstrap.Modal(modalPersonEl);
-  const personName = document.getElementById("person-name");
-  const personEmail = document.getElementById("email");
+  var modalPersonEl = document.getElementById("add-person-modal");
+  var modalPerson = new bootstrap.Modal(modalPersonEl);
+  var personName = document.getElementById("person-name");
+  var personEmail = document.getElementById("email");
   document.getElementById("btn-save-person").addEventListener("click", function () {
     if (personName.checkValidity() && personEmail.checkValidity()) {
       modalPerson.hide();
     };
   });
-  // Clear input fields in Tag Modal
-  const btnAddTag = document.getElementById("btn-add-tag");
-  btnAddTag.addEventListener('click', function handleClick(event) {
-    const tagName = document.getElementById("tag-name");
-    tagName.value = '';
-  });
   // Clear input fields in Person Modal
-  const btnAddPerson = document.getElementById("btn-add-person");
+  var btnAddPerson = document.getElementById("btn-add-person");
   btnAddPerson.addEventListener('click', function handleClick(event) {
-    const inputs = document.querySelectorAll("#person-name, #position, #phone, #email");
+    var inputs = document.querySelectorAll("#person-name, #position, #phone, #email");
     inputs.forEach(input => {
       input.value = '';
     });

@@ -42,15 +42,15 @@
 
 <script>
   // Hide Comment Modal
-  const modalCommentEl = document.getElementById("add-comment-modal");
-  const modalComment = new bootstrap.Modal(modalCommentEl);
+  var modalCommentEl = document.getElementById("add-comment-modal");
+  var modalComment = new bootstrap.Modal(modalCommentEl);
   document.getElementById("btn-save-comment").addEventListener("click", function () {
     modalComment.hide();
   });
   // Clear input fields in Comment Modal
-  const btnAddComment = document.getElementById("btn-add-comment");
+  var btnAddComment = document.getElementById("btn-add-comment");
   btnAddComment.addEventListener('click', function handleClick(event) {
-    const comment = document.getElementById("comment");
+    var comment = document.getElementById("comment");
     comment.value = '';
   });
 </script>
