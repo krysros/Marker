@@ -37,6 +37,12 @@
   <td>${states.get(company.state)}</td>
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td><a href="#top" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML">Pokaż</a> (${company.count_recomended})</td>
+  <td>
+    % if company.count_recomended > 0:
+    <span class="badge text-bg-success" role="button" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML">${company.count_recomended}</span>
+    % else:
+    <span class="badge text-bg-secondary">0</span>
+    % endif
+  </td>
 </tr>
 % endfor
