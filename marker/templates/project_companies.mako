@@ -56,4 +56,4 @@
     const companyName = document.getElementById("company-name");
     companyName.value = '';
   });
-</script> 
+</script>
