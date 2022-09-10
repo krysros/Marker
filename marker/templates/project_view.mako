@@ -96,18 +96,3 @@
     </p>
   </div>
 </div>
-
-<script>
-  // Hide Company Modal
-  const modalCompanyEl = document.getElementById("add-company-modal");
-  const modalCompany = new bootstrap.Modal(modalCompanyEl);
-  document.getElementById("btn-save-company").addEventListener("click", function () {
-    modalCompany.hide();
-  });
-  // Clear input fields in Company Modal
-  const btnAddCompany = document.getElementById("btn-add-company");
-  btnAddCompany.addEventListener('click', function handleClick(event) {
-    const companyName = document.getElementById("company-name");
-    companyName.value = '';
-  });
-</script>
