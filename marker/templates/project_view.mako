@@ -61,13 +61,13 @@
 ##        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Komentarze (${c_comments})</a>
 ##        % endif
 ##      </li>
-##      <li class="nav-item">
-##        % if c_watched:
-##        <a class="nav-link text-success" role="button" href="#top" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Obserwowane (${c_watched})</a>
-##        % else:
-##        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Obserwowane (${c_watched)</a>
-##        % endif
-##      </li>
+      <li class="nav-item">
+        % if c_watched:
+        <a class="nav-link text-success" role="button" href="#top" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Obserwacje (${c_watched})</a>
+        % else:
+        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Obserwacje (${c_watched})</a>
+        % endif
+      </li>
       <li class="nav-item">
         <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Firmy (${c_companies})</a>
       </li>

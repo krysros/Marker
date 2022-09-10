@@ -242,6 +242,16 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
+        "project_watched",
+        r"/project/{project_id:\d+}/{slug}/watched",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_watched_more",
+        r"/project/{project_id:\d+}/{slug}/watched/more",
+        factory=project_factory,
+    )
+    config.add_route(
         "add_company",
         r"/project/{project_id:\d+}/{slug}/companies-table",
         factory=project_factory,

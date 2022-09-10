@@ -20,10 +20,11 @@ from ..forms.select import (
 from ..models import (
     Company,
     Project,
+    User,
     companies_projects,
+    watched,
 )
 from ..paginator import get_paginator
-from marker.forms import project
 
 log = logging.getLogger(__name__)
 
@@ -123,12 +124,18 @@ class ProjectView(object):
             .join(companies_projects)
             .filter(project.id == companies_projects.c.project_id)
         )
-
+        c_watched = self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(User)
+            .join(watched)
+            .filter(project.id == watched.c.project_id)
+        )
         return dict(
             project=project,
             title=project.name,
             states=states,
             c_companies=c_companies,
+            c_watched=c_watched,
             companies=[],  # require to render company_datalist.mako included in current template
         )
 
@@ -318,6 +325,39 @@ class ProjectView(object):
         else:
             self.request.identity.watched.append(project)
             return '<i class="bi bi-eye-fill"></i>'
+
+    @view_config(
+        route_name="project_watched",
+        renderer="project_watched.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_watched_more",
+        renderer="user_more.mako",
+        permission="view",
+    )
+    def watched(self):
+        project = self.request.context.project
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(User).join(watched).filter(project.id == watched.c.project_id)
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "project_watched_more",
+            project_id=project.id,
+            slug=project.slug,
+            _query={"page": page + 1},
+        )
+        return {
+            "paginator": paginator,
+            "next_page": next_page,
+            "project": project,
+        }
 
     @view_config(
         route_name="add_company",

@@ -8,6 +8,7 @@
         <th>Województwo</th>
         <th>Utworzono</th>
         <th>Zmodyfikowano</th>
+        <th>Obserwacje</th>
       </tr>
     </thead>
     <tbody>

@@ -9,12 +9,18 @@ from sqlalchemy import (
     Unicode,
     DateTime,
     Date,
+    select,
+    func,
 )
 
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import (
+    relationship,
+    object_session,
+)
 
 from slugify import slugify
 from .meta import Base
+from .user import watched
 
 
 companies_projects = Table(
@@ -86,3 +92,11 @@ class Project(Base):
     @property
     def slug(self):
         return slugify(self.name)
+
+    @property
+    def count_watched(self):
+        return object_session(self).scalar(
+            select([func.count(watched.c.project_id)]).where(
+                watched.c.project_id == self.id
+            )
+        )
