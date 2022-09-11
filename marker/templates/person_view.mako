@@ -4,7 +4,7 @@
 <div class="card">
   <div class="card-body">
     <div class="float-end">
-      <a class="btn btn-warning" role="button" href="#top" hx-get="${request.route_url('person_edit', person_id=person.id)}"  hx-target="#main-container">Edytuj</a>
+      <a class="btn btn-warning" role="button" href="#" hx-get="${request.route_url('person_edit', person_id=person.id)}"  hx-target="#main-container" hx-swap="innerHTML show:window:top">Edytuj</a>
       ${modal.danger_dialog('person_delete', 'Usuń', 'Czy na pewno chcesz usunąć osobę z bazy danych?', person_id=person.id)}
     </div>
   </div>
@@ -38,14 +38,14 @@
       % if person.created_at:
         Utworzono: ${person.created_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if person.created_by:
-          przez <a href="#top" hx-get="${request.route_url('user_view', username=person.created_by.name, what='info')}" hx-target="#main-container">${person.created_by.name}</a>
+          przez <a href="#" hx-get="${request.route_url('user_view', username=person.created_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.created_by.name}</a>
         % endif
       % endif
       <br>
       % if person.updated_at:
         Zmodyfikowano: ${person.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if person.updated_by:
-          przez <a href="#top" hx-get="${request.route_url('user_view', username=person.updated_by.name, what='info')}" hx-target="#main-container">${person.updated_by.name}</a>
+          przez <a href="#" hx-get="${request.route_url('user_view', username=person.updated_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.updated_by.name}</a>
         % endif
       % endif
     </p>

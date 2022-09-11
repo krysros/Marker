@@ -13,7 +13,7 @@
           % endif
         </div>
       </button>
-      <a class="btn btn-warning" role="button" href="#top" hx-get="${request.route_url('company_edit', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Edytuj</a>
+      <a class="btn btn-warning" role="button" href="#" hx-get="${request.route_url('company_edit', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Edytuj</a>
       ${modal.danger_dialog('company_delete', 'Usuń', 'Czy na pewno chcesz usunąć firmę z bazy danych?', company_id=company.id, slug=company.slug)}
     </div>
   </div>
@@ -97,23 +97,23 @@
     <ul class="nav">
       <li class="nav-item">
         % if c_comments:
-        <a class="nav-link text-warning" role="button" href="#top" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Komentarze (${c_comments})</a>
+        <a class="nav-link text-warning" role="button" href="#" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
         % else:
-        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Komentarze (${c_comments})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
         % endif
       </li>
       <li class="nav-item">
         % if c_recomended:
-        <a class="nav-link text-success" role="button" href="#top" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Rekomendacje (${c_recomended})</a>
+        <a class="nav-link text-success" role="button" href="#" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Rekomendacje (${c_recomended})</a>
         % else:
-        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Rekomendacje (${c_recomended})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Rekomendacje (${c_recomended})</a>
         % endif
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Projekty (${c_projects})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Projekty (${c_projects})</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}" hx-target="#main-container">Podobne (${c_similar})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Podobne (${c_similar})</a>
       </li>
     </ul>
   </div>
@@ -133,7 +133,7 @@
     <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form hx-post="${request.route_url('company_people', company_id=company.id, slug=company.slug)}" hx-target="#company-people" hx-swap="innerHTML">
+          <form hx-post="${request.route_url('company_people', company_id=company.id, slug=company.slug)}" hx-target="#company-people" hx-swap="innerHTML show:window:top">
             <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
@@ -182,7 +182,7 @@
     <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML">
+          <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML show:window:top">
             <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
@@ -214,13 +214,13 @@
     <p>
       Utworzono: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if company.created_by:
-        przez <a href="#top" hx-get="${request.route_url('user_view', username=company.created_by.name, what='info')}" hx-target="#main-container">${company.created_by.name}</a>
+        przez <a href="#" hx-get="${request.route_url('user_view', username=company.created_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.created_by.name}</a>
       % endif
       <br>
       % if company.updated_at:
         Zmodyfikowano: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if company.updated_by:
-          przez <a href="#top" hx-get="${request.route_url('user_view', username=company.updated_by.name, what='info')}" hx-target="#main-container">${company.updated_by.name}</a>
+          przez <a href="#" hx-get="${request.route_url('user_view', username=company.updated_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.updated_by.name}</a>
         % endif
       % endif
     </p>

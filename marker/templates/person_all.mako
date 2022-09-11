@@ -6,7 +6,7 @@
     ${dropdown.sort_button('person_all', dropdown_sort, sort=sort, order=order)}
     ${dropdown.order_button('person_all', dropdown_order, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" role="button" href="#top" hx-get="${request.route_url('person_search')}" hx-target="#main-container">Szukaj</a>
+      <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('person_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
     </div>
   </div>
 </div>

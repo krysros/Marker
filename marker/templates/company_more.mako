@@ -31,7 +31,7 @@
     % if company in request.identity.recomended:
     <i class="bi bi-hand-thumbs-up-fill"></i>
     % endif
-    <a href="#top" hx-get="${request.route_url('company_view', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML">${company.name}</a>
+    <a href="#" hx-get="${request.route_url('company_view', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.name}</a>
   </td>
   <td>${company.city}</td>
   <td>${states.get(company.state)}</td>
@@ -39,7 +39,7 @@
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
     % if company.count_recomended > 0:
-    <span class="badge text-bg-success" role="button" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML">${company.count_recomended}</span>
+    <span class="badge text-bg-success" role="button" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.count_recomended}</span>
     % else:
     <span class="badge text-bg-secondary">0</span>
     % endif

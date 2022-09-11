@@ -3,10 +3,10 @@
 
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('account', username=request.identity.name)}" hx-target="#main-container">Konto</a>
+    <a class="nav-link" role="button" href="#" hx-get="${request.route_url('account', username=request.identity.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Konto</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link active" role="button" href="#top" hx-get="${request.route_url('password', username=request.identity.name)}" hx-target="#main-container">Hasło</a>
+    <a class="nav-link active" role="button" href="#" hx-get="${request.route_url('password', username=request.identity.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Hasło</a>
   </li>
 </ul>
 

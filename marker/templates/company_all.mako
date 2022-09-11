@@ -7,8 +7,8 @@
     ${dropdown.sort_button('company_all', dropdown_sort, filter=filter, sort=sort, order=order)}
     ${dropdown.order_button('company_all', dropdown_order, filter=filter, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" role="button" href="#top" hx-get="${request.route_url('company_search')}" hx-target="#main-container">Szukaj</a>
-      <a class="btn btn-success" role="button" href="#top" hx-get="${request.route_url('company_add')}" hx-target="#main-container">Dodaj</a>
+      <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('company_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
+      <a class="btn btn-success" role="button" href="#" hx-get="${request.route_url('company_add')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
     </div>
   </div>
 </div>

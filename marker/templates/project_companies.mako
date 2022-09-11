@@ -11,7 +11,7 @@
       <div class="modal fade" id="add-company-modal" tabindex="-1" aria-labelledby="add-company-modal-label" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
-            <form hx-post="${request.route_url('add_company', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML">
+            <form hx-post="${request.route_url('add_company', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML show:window:top">
               <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
               <div class="modal-header">
                 <h5 class="modal-title" id="add-company-modal-label">Dodaj firmę</h5>
@@ -38,7 +38,7 @@
   </div>
 </div>
 
-<p class="lead">Firmy, które brayły udział w projekcie <a href="#top" hx-get="${request.route_url('project_view', project_id=project.id, slug=project.slug)}" hx-target="#main-container">${project.name}</a></p>
+<p class="lead">Firmy, które brayły udział w projekcie <a href="#" hx-get="${request.route_url('project_view', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.name}</a></p>
 <div id="project-companies">
   <%include file="company_list.mako"/>
 </div>

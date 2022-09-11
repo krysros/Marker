@@ -13,7 +13,7 @@
         % endif
         </div>
       </button>
-      <a class="btn btn-warning" role="button" href="#top" hx-get="${request.route_url('project_edit', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Edytuj</a>
+      <a class="btn btn-warning" role="button" href="#" hx-get="${request.route_url('project_edit', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Edytuj</a>
       ${modal.danger_dialog('project_delete', 'Usuń', 'Czy na pewno chcesz usunąć projekt z bazy danych?', project_id=project.id, slug=project.slug)}
     </div>
   </div>
@@ -56,23 +56,23 @@
     <ul class="nav">
 ##      <li class="nav-item">
 ##        % if c_comments:
-##        <a class="nav-link text-warning" role="button" href="#top" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Komentarze (${c_comments})</a>
+##        <a class="nav-link text-warning" role="button" href="#" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
 ##        % else:
-##        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Komentarze (${c_comments})</a>
+##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
 ##        % endif
 ##      </li>
       <li class="nav-item">
         % if c_watched:
-        <a class="nav-link text-success" role="button" href="#top" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Obserwacje (${c_watched})</a>
+        <a class="nav-link text-success" role="button" href="#" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Obserwacje (${c_watched})</a>
         % else:
-        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Obserwacje (${c_watched})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Obserwacje (${c_watched})</a>
         % endif
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Firmy (${c_companies})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Firmy (${c_companies})</a>
       </li>
 ##      <li class="nav-item">
-##        <a class="nav-link" role="button" href="#top" hx-get="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}" hx-target="#main-container">Podobne (${c_similar})</a>
+##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Podobne (${c_similar})</a>
 ##      </li>
     </ul>
   </div>
@@ -84,13 +84,13 @@
     <p>
       Utworzono: ${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if project.created_by:
-        przez <a href="#top" hx-get="${request.route_url('user_view', username=project.created_by.name, what='info')}" hx-target="#main-container">${project.created_by.name}</a>
+        przez <a href="#" hx-get="${request.route_url('user_view', username=project.created_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.created_by.name}</a>
       % endif
       <br>
       % if project.updated_at:
         Zmodyfikowano: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if project.updated_by:
-          przez <a href="#top" hx-get="${request.route_url('user_view', username=project.updated_by.name, what='info')}" hx-target="#main-container">${project.updated_by.name}</a>
+          przez <a href="#" hx-get="${request.route_url('user_view', username=project.updated_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.updated_by.name}</a>
         % endif
       % endif
     </p>
