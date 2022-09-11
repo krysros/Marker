@@ -149,7 +149,7 @@
     <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form hx-post="${request.route_url('company_people', company_id=company.id, slug=company.slug)}" hx-target="#company-people" hx-swap="innerHTML show:window:top">
+          <form hx-post="${request.route_url('company_people', company_id=company.id, slug=company.slug)}" hx-target="#company-people" hx-swap="innerHTML">
             <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
@@ -198,7 +198,7 @@
     <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML show:window:top">
+          <form hx-post="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}" hx-target="#company-tags" hx-swap="innerHTML">
             <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
