@@ -62,7 +62,7 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item" hx-post="${request.route_url('logout')}" hx-target="#main-container" hx-role="button">
+              <a class="dropdown-item" role="button" hx-post="${request.route_url('logout')}" hx-target="#main-container">
                 Wyloguj
               </a>
             </li>
