@@ -96,24 +96,40 @@
   <div class="card-footer">
     <ul class="nav">
       <li class="nav-item">
-        % if c_comments:
-        <a class="nav-link text-warning" role="button" href="#" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+          % if c_comments > 0:
+          Komentarze <span class="badge text-bg-warning">${c_comments}</span>
+          % else:
+          Komentarze <span class="badge text-bg-secondary">0</span>
+          % endif
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+          % if c_recomended > 0:
+          Rekomendacje <span class="badge text-bg-success">${c_recomended}</span>
+          % else:
+          Rekomendacje <span class="badge text-bg-secondary">0</span>
+          % endif
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+          % if c_projects > 0:
+          Projekty <span class="badge text-bg-info">${c_projects}</span>
+          % else:
+          Projekty <span class="badge text-bg-secondary">0</span>
+          % endif
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        % if c_similar > 0:
+        Podobne <span class="badge text-bg-dark">${c_similar}</span>
         % else:
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
+        Podobne <span class="badge text-bg-secondary">0</span>
         % endif
-      </li>
-      <li class="nav-item">
-        % if c_recomended:
-        <a class="nav-link text-success" role="button" href="#" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Rekomendacje (${c_recomended})</a>
-        % else:
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Rekomendacje (${c_recomended})</a>
-        % endif
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Projekty (${c_projects})</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Podobne (${c_similar})</a>
+        </a>
       </li>
     </ul>
   </div>

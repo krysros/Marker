@@ -55,24 +55,39 @@
   <div class="card-footer">
     <ul class="nav">
 ##      <li class="nav-item">
-##        % if c_comments:
-##        <a class="nav-link text-warning" role="button" href="#" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
+##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+##        % if c_comments > 0:
+##        Komentarze <span class="badge text-bg-warning">${c_comments}</span>
 ##        % else:
-##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze (${c_comments})</a>
+##        Komentarze <span class="badge text-bg-secondary">0</span>
 ##        % endif
+##        </a>
 ##      </li>
       <li class="nav-item">
-        % if c_watched:
-        <a class="nav-link text-success" role="button" href="#" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Obserwacje (${c_watched})</a>
-        % else:
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Obserwacje (${c_watched})</a>
-        % endif
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+          % if c_watched > 0:
+          Obserwacje <span class="badge text-bg-success">${c_watched}</span></a>
+          % else:
+          Obserwacje <span class="badge text-bg-secondary">0</span></a>
+          % endif
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Firmy (${c_companies})</a>
+        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+          % if c_companies > 0:
+          Firmy <span class="badge text-bg-info">${c_companies}</span>
+          % else:
+          Firmy <span class="badge text-bg-secondary">0</span>
+          % endif
+        </a>
       </li>
 ##      <li class="nav-item">
-##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Podobne (${c_similar})</a>
+##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+##          % if c_similar > 0:
+##          Podobne <span class="badge text-bg-dark">${c_simiar}</span></a>
+##          % else:
+##          Podobne <span class="badge text-bg-secondary">0</span></a>
+##          % endif
+##        </a>
 ##      </li>
     </ul>
   </div>
