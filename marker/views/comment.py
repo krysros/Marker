@@ -56,32 +56,23 @@ class CommentView(object):
             self.request.dbsession.flush()
         return {"comment": comment}
 
-    @view_config(route_name="comment_delete", request_method="GET", permission="edit")
+    @view_config(
+        route_name="comment_delete",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+        )
     def delete(self):
+        new_csrf_token(self.request)
         comment = self.request.context.comment
-        query = self.request.params.get("from", None)
-        company = comment.company
         self.request.dbsession.delete(comment)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
-            f"Użytkownik {self.request.identity.name} usunął komentarz dot. firmy {company.name}"
+            f"Użytkownik {self.request.identity.name} usunął komentarz"
         )
-        if query == "company":
-            return HTTPSeeOther(
-                location=self.request.route_url(
-                    "company_comments",
-                    company_id=company.id,
-                    slug=company.slug,
-                )
-            )
-        elif query == "user":
-            return HTTPSeeOther(
-                location=self.request.route_url(
-                    "user_view", username=self.request.identity.name
-                )
-            )
-        else:
-            return HTTPSeeOther(location=self.request.route_url("comment_all"))
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        return ""
 
     @view_config(
         route_name="comment_search",
