@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="${request.locale_name}">
   <head>
     <meta charset="utf-8">
@@ -24,6 +24,10 @@
         margin-bottom: 20px;
       }
       tr.htmx-swapping td {
+        opacity: 0;
+        transition: opacity 1s ease-out;
+      }
+      .card.htmx-swapping {
         opacity: 0;
         transition: opacity 1s ease-out;
       }
