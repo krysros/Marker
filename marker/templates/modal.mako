@@ -16,7 +16,7 @@
         ${body}
       </div>
       <div class="modal-footer">
-        <form action="${request.route_url(route_name, **kwargs)}" method="post">
+        <form hx-post="${request.route_url(route_name, **kwargs)}" hx-target="#main-container">
           <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nie</button>
           <button type="submit" class="btn btn-primary" name="submit" value="delete">Tak</button>
