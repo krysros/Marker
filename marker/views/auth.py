@@ -1,6 +1,9 @@
 import logging
 from pyramid.csrf import new_csrf_token
-from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.httpexceptions import (
+    HTTPSeeOther,
+    HTTPException,
+)
 from pyramid.security import (
     remember,
     forget,
@@ -9,7 +12,9 @@ from pyramid.view import (
     forbidden_view_config,
     view_config,
 )
+from pyramid.renderers import render_to_response
 from sqlalchemy import select
+from mako.exceptions import TopLevelLookupException
 
 from ..models import User
 from ..forms import LoginForm
@@ -61,7 +66,18 @@ def logout(request):
 
 
 @forbidden_view_config()
-def forbidden_view(request):
-    next_url = request.route_url("login", _query={"next": request.url})
-    request.session.flash("warning:Brak wymaganych uprawnień")
-    return HTTPSeeOther(location=next_url)
+def forbidden(exc, request):
+    if not request.is_authenticated:
+        next_url = request.route_url("login", _query={"next": request.url})
+        request.session.flash("warning:Brak wymaganych uprawnień")
+        return HTTPSeeOther(location=next_url)
+    return httpexception_view(exc, request)
+
+
+@view_config(context=HTTPException)
+def httpexception_view(exc, request):
+    try:
+        response = render_to_response(f"{exc.status_code}.mako", {}, request=request)
+    except TopLevelLookupException:
+        return exc
+    return response
