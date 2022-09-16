@@ -1,5 +1,6 @@
 <%include file="navbar.mako"/>
 <%namespace name="modal" file="modal.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
@@ -13,7 +14,7 @@
         % endif
         </div>
       </button>
-      <a class="btn btn-warning" role="button" href="#" hx-get="${request.route_url('project_edit', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Edytuj</a>
+      ${button.edit('project_edit', project_id=project.id, slug=project.slug)}
       ${modal.danger_dialog('project_delete', 'Usuń', 'Czy na pewno chcesz usunąć projekt z bazy danych?', project_id=project.id, slug=project.slug)}
     </div>
   </div>

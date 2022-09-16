@@ -1,10 +1,11 @@
 <%include file="navbar.mako"/>
 <%namespace name="modal" file="modal.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
     <div class="float-end">
-      <a class="btn btn-warning" role="button" href="#" hx-get="${request.route_url('person_edit', person_id=person.id)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Edytuj</a>
+      ${button.edit('person_edit', person_id=person.id)}
       ${modal.danger_dialog('person_delete', 'Usuń', 'Czy na pewno chcesz usunąć osobę z bazy danych?', person_id=person.id)}
     </div>
   </div>

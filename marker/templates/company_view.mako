@@ -1,5 +1,6 @@
 <%include file="navbar.mako"/>
 <%namespace name="modal" file="modal.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
@@ -13,7 +14,7 @@
           % endif
         </div>
       </button>
-      <a class="btn btn-warning" role="button" href="#" hx-get="${request.route_url('company_edit', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Edytuj</a>
+      ${button.edit('company_edit', company_id=company.id, slug=company.slug)}
       ${modal.danger_dialog('company_delete', 'Usuń', 'Czy na pewno chcesz usunąć firmę z bazy danych?', company_id=company.id, slug=company.slug)}
     </div>
   </div>
@@ -141,6 +142,7 @@
     <div id="company-people">
       <%include file="company_people.mako"/>
     </div>
+    % if request.identity.role == 'editor':
     <!-- Button trigger modal -->
     <button id="btn-add-person" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-person-modal">
       Dodaj
@@ -181,6 +183,9 @@
         </div>
       </div>
     </div>
+    % else:
+    <button type="button" class="btn btn-success" disabled>Dodaj</button>
+    % endif
   </div>
 </div>
 
@@ -190,6 +195,7 @@
     <div id="company-tags">
       <%include file="company_tags.mako"/>
     </div>
+    % if request.identity.role == 'editor':
     <!-- Button trigger modal -->
     <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
       Dodaj
@@ -221,6 +227,9 @@
         </div>
       </div>
     </div>
+    % else:
+    <button type="button" class="btn btn-success" disabled>Dodaj</button>
+    % endif
   </div>
 </div>
 

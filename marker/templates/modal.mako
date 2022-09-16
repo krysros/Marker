@@ -1,4 +1,5 @@
 <%def name="danger_dialog(route_name, title, body, **kwargs)">
+% if request.identity.role == 'editor':
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#${route_name}_modal">
   ${title}
@@ -25,4 +26,7 @@
     </div>
   </div>
 </div>
+% else:
+<button type="button" class="btn btn-danger" disabled>${title}</button>
+% endif
 </%def>
