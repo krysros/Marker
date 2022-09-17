@@ -8,8 +8,7 @@
 
 <%def name="danger(route_name, title, body, **kwargs)">
 % if request.identity.role == 'editor':
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-confirm="Czy jesteś pewny?" hx-target="#main-container">
+<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-confirm="Czy jesteś pewny?" hx-target="#main-container" hx-swap="innerHTML">
   ${title}
 </button>
 % else:
