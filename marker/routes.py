@@ -104,7 +104,7 @@ def includeme(config):
     )
     config.add_route(
         "add_project",
-        r"/company/{company_id:\d+}/{slug}/projects-table",
+        r"/company/{company_id:\d+}/{slug}/add-project",
         factory=company_factory,
     )
     config.add_route(
@@ -138,13 +138,13 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_tags",
-        r"/company/{company_id:\d+}/{slug}/tags",
+        "add_tag",
+        r"/company/{company_id:\d+}/{slug}/add-tag",
         factory=company_factory,
     )
     config.add_route(
-        "company_people",
-        r"/company/{company_id:\d+}/{slug}/people",
+        "add_person",
+        r"/company/{company_id:\d+}/{slug}/add-person",
         factory=company_factory,
     )
     config.add_route(
@@ -253,7 +253,7 @@ def includeme(config):
     )
     config.add_route(
         "add_company",
-        r"/project/{project_id:\d+}/{slug}/companies-table",
+        r"/project/{project_id:\d+}/{slug}/add-company",
         factory=project_factory,
     )
     config.add_route("project_select", "/project/select", factory=default_factory)

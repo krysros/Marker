@@ -188,8 +188,8 @@ class CompanyView(object):
         }
 
     @view_config(
-        route_name="company_tags",
-        renderer="company_tags.mako",
+        route_name="add_tag",
+        renderer="tag_row.mako",
         request_method="POST",
         permission="edit",
     )
@@ -197,37 +197,42 @@ class CompanyView(object):
         new_csrf_token(self.request)
         company = self.request.context.company
         name = self.request.POST.get("name")
+        new_tag = None
         if name:
             tag = self.request.dbsession.execute(
                 select(Tag).filter_by(name=name)
             ).scalar_one_or_none()
             if not tag:
+                # TODO: Use WTForms validator
                 tag = Tag(name[:50])
                 tag.created_by = self.request.identity
             if tag not in company.tags:
                 company.tags.append(tag)
+                new_tag = tag
                 log.info(
                     f"Użytkownik {self.request.identity.name} dodał tag {tag.name} do firmy {company.name}"
                 )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        return {"company": company}
+        return {"company": company, "tag": new_tag}
 
     @view_config(
-        route_name="company_people",
-        renderer="company_people.mako",
+        route_name="add_person",
+        renderer="person_row.mako",
         request_method="POST",
         permission="edit",
     )
     def add_person(self):
         new_csrf_token(self.request)
         company = self.request.context.company
+        person = None
         name = self.request.POST.get("name")
         position = self.request.POST.get("position")
         phone = self.request.POST.get("phone")
         email = self.request.POST.get("email")
         if name:
+            # TODO: Use WTForms validator
             person = Person(name=name[:100], position=position[:100], phone=phone[:50], email=email[:50])
             person.created_by = self.request.identity
             if person not in company.people:
@@ -238,7 +243,7 @@ class CompanyView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        return {"company": company}
+        return {"person": person}
 
     @view_config(
         route_name="company_comments",
