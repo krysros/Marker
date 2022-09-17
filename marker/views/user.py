@@ -2,7 +2,7 @@ import logging
 import datetime
 from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
+from pyramid.httpexceptions import HTTPSeeOther, HTTPSeeOther
 
 from sqlalchemy import select
 
@@ -237,7 +237,7 @@ class UserView(object):
                 f"Użytkownik {self.request.identity.name} dodał użytkownika {user.name}"
             )
             next_url = self.request.route_url("user_all")
-            return HTTPFound(location=next_url)
+            return HTTPSeeOther(location=next_url)
 
         return dict(
             heading="Dodaj użytkownika",
@@ -278,7 +278,8 @@ class UserView(object):
         log.info(
             f"Użytkownik {self.request.identity.name} usunął użytkownika {user_username}"
         )
-        return HTTPFound(location=self.request.route_url("home"))
+        next_url = self.request.route_url("home")
+        return HTTPSeeOther(location=next_url)
 
     @view_config(
         route_name="user_search",
@@ -406,7 +407,7 @@ class UserView(object):
         user = self.request.context.user
         user.checked = []
         log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy")
-        return HTTPFound(
+        return HTTPSeeOther(
             location=self.request.route_url("user_checked", username=user.name)
         )
 
@@ -491,7 +492,7 @@ class UserView(object):
         user = self.request.context.user
         user.recomended = []
         log.info(f"Użytkownik {self.request.identity.name} wyczyścił rekomendacje")
-        return HTTPFound(
+        return HTTPSeeOther(
             location=self.request.route_url("user_recomended", username=user.name)
         )
 
@@ -600,6 +601,6 @@ class UserView(object):
         log.info(
             f"Użytkownik {self.request.identity.name} wyczyścił obserwowane projekty"
         )
-        return HTTPFound(
+        return HTTPSeeOther(
             location=self.request.route_url("user_watched", username=user.name)
         )
