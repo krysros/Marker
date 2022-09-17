@@ -5,3 +5,14 @@
 <button type="button" class="btn btn-warning" disabled>Edytuj</button>
 % endif
 </%def>
+
+<%def name="danger(route_name, title, body, **kwargs)">
+% if request.identity.role == 'editor':
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-confirm="Czy jesteś pewny?" hx-target="#main-container">
+  ${title}
+</button>
+% else:
+<button type="button" class="btn btn-danger" disabled>${title}</button>
+% endif
+</%def>

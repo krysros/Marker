@@ -1,6 +1,6 @@
 <%include file="navbar.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
-<%namespace name="modal" file="modal.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <form id="export-checked" action="${request.route_url('user_checked_export', username=user.name)}" method="post">
   <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
@@ -14,7 +14,7 @@
     ${dropdown.order_button('user_checked', dropdown_order, filter=None, sort=sort, order=order, username=user.name)}
     <div class="float-end">
       <button type="submit" class="btn btn-primary" form="export-checked" value="submit">Eksportuj</button>
-      ${modal.danger_dialog('user_checked_clear', 'Wyczyść', 'Wyczyścić zaznaczone pozycje? Ta operacja nie usuwa firm z bazy danych.', username=user.name)}
+      ${button.danger('user_checked_clear', 'Wyczyść', 'Wyczyścić zaznaczone pozycje? Ta operacja nie usuwa firm z bazy danych.', username=user.name)}
     </div>
   </div>
 </div>

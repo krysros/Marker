@@ -1,12 +1,11 @@
 <%include file="navbar.mako"/>
-<%namespace name="modal" file="modal.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
     <div class="float-end">
       ${button.edit('user_edit', username=user.name)}
-      ${modal.danger_dialog('user_delete', 'Usuń', 'Czy na pewno chcesz usunąć użytkownika z bazy danych?', username=user.name)}
+      ${button.danger('user_delete', 'Usuń', 'Czy na pewno chcesz usunąć użytkownika z bazy danych?', username=user.name)}
     </div>
   </div>
 </div>

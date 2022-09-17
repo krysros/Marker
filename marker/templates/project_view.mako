@@ -1,5 +1,4 @@
 <%include file="navbar.mako"/>
-<%namespace name="modal" file="modal.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
@@ -15,7 +14,7 @@
         </div>
       </button>
       ${button.edit('project_edit', project_id=project.id, slug=project.slug)}
-      ${modal.danger_dialog('project_delete', 'Usuń', 'Czy na pewno chcesz usunąć projekt z bazy danych?', project_id=project.id, slug=project.slug)}
+      ${button.danger('project_delete', 'Usuń', 'Czy na pewno chcesz usunąć projekt z bazy danych?', project_id=project.id, slug=project.slug)}
     </div>
   </div>
 </div>

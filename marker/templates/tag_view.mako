@@ -1,6 +1,5 @@
 <%include file="navbar.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
-<%namespace name="modal" file="modal.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <form id="tag_export" action="${request.route_url('tag_export', tag_id=tag.id)}" method="post">
@@ -18,7 +17,7 @@
     <div class="float-end">
       <button type="submit" class="btn btn-primary" form="tag_export" value="submit">Eksportuj</button>
       ${button.edit('tag_edit', tag_id=tag.id, slug=tag.slug)}
-      ${modal.danger_dialog('tag_delete', 'Usuń', 'Czy na pewno chcesz usunąć tag z bazy danych?', tag_id=tag.id, slug=tag.slug)}
+      ${button.danger('tag_delete', 'Usuń', 'Czy na pewno chcesz usunąć tag z bazy danych?', tag_id=tag.id, slug=tag.slug)}
     </div>
   </div>
 </div>
