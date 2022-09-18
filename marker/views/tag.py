@@ -240,7 +240,7 @@ class TagView(object):
         self.request.dbsession.delete(tag)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął tag {tag_name}")
-        next_url = self.request.route_url("home")
+        next_url = self.request.route_url("welcome")
         return HTTPSeeOther(location=next_url)
 
     @view_config(

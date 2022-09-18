@@ -211,7 +211,7 @@ class ProjectView(object):
         log.info(
             f"Użytkownik {self.request.identity.name} usunął projekt {project_name}"
         )
-        next_url = self.request.route_url("home")
+        next_url = self.request.route_url("welcome")
         return HTTPSeeOther(location=next_url)
 
     @view_config(
