@@ -3,7 +3,6 @@
 <%namespace name="button" file="button.mako"/>
 
 <form id="tag_export" action="${request.route_url('tag_export', tag_id=tag.id)}" method="post">
-  <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
   <input type="hidden" name="filter" value=${filter}>
   <input type="hidden" name="sort" value=${sort}>
   <input type="hidden" name="order" value=${order}>

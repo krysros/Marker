@@ -36,6 +36,11 @@
   <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
+    <script>
+      document.body.addEventListener("htmx:configRequest", (event) => {
+        event.detail.headers["X-CSRF-Token"] = "${request.session.get_csrf_token()}";
+      })
+    </script>
     <main role="main">
       <div id="main-container" class="container">
         % if request.session.peek_flash():

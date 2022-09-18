@@ -1,5 +1,4 @@
 import logging
-from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
 
@@ -198,7 +197,6 @@ class TagView(object):
         form = TagForm(self.request.POST, dbsession=self.request.dbsession)
 
         if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
             tag = Tag(form.name.data)
             tag.created_by = self.request.identity
             self.request.dbsession.add(tag)
@@ -218,7 +216,6 @@ class TagView(object):
         form = TagForm(self.request.POST, tag, dbsession=self.request.dbsession)
 
         if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
             form.populate_obj(tag)
             tag.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")

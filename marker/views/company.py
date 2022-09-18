@@ -5,7 +5,6 @@ from sqlalchemy import (
 )
 from sqlalchemy import and_
 
-from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
 from pyramid.httpexceptions import (
     HTTPSeeOther,
@@ -194,7 +193,6 @@ class CompanyView(object):
         permission="edit",
     )
     def add_tag(self):
-        new_csrf_token(self.request)
         company = self.request.context.company
         name = self.request.POST.get("name")
         new_tag = None
@@ -224,7 +222,6 @@ class CompanyView(object):
         permission="edit",
     )
     def add_person(self):
-        new_csrf_token(self.request)
         company = self.request.context.company
         person = None
         name = self.request.POST.get("name")
@@ -586,7 +583,6 @@ class CompanyView(object):
         renderer="string",
     )
     def delete_tag(self):
-        new_csrf_token(self.request)
         company_id = int(self.request.matchdict["company_id"])
         tag_id = int(self.request.matchdict["tag_id"])
 
@@ -620,7 +616,6 @@ class CompanyView(object):
         renderer="string",
     )
     def delete_person(self):
-        new_csrf_token(self.request)
         person = self.request.context.person
         person_name = person.name
         self.request.dbsession.delete(person)
@@ -636,7 +631,6 @@ class CompanyView(object):
         permission="edit",
     )
     def add_project(self):
-        new_csrf_token(self.request)
         company = self.request.context.company
         name = self.request.POST.get("name")
         if name:
@@ -657,7 +651,6 @@ class CompanyView(object):
         renderer="string",
     )
     def delete_project(self):
-        new_csrf_token(self.request)
         company_id = int(self.request.matchdict["company_id"])
         project_id = int(self.request.matchdict["project_id"])
 

@@ -1,6 +1,5 @@
 import logging
 import datetime
-from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther, HTTPSeeOther
 
@@ -223,7 +222,6 @@ class UserView(object):
         form = UserForm(self.request.POST, dbsession=self.request.dbsession)
 
         if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
             user = User(
                 name=form.name.data,
                 fullname=form.fullname.data,
@@ -255,7 +253,6 @@ class UserView(object):
         )
 
         if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
             form.populate_obj(user)
             self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(

@@ -1,5 +1,4 @@
 import logging
-from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 from ..forms import Account
@@ -19,7 +18,6 @@ class AccountView(object):
         form = Account(self.request.POST, user)
 
         if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
             form.populate_obj(user)
             self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił swoje dane")
@@ -36,7 +34,6 @@ class AccountView(object):
         form = ChangePassword(self.request.POST, user)
 
         if self.request.method == "POST" and form.validate():
-            new_csrf_token(self.request)
             form.populate_obj(user)
             self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił hasło")

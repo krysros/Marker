@@ -1,6 +1,5 @@
 import datetime
 import logging
-from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
 from sqlalchemy import select, func
@@ -366,7 +365,6 @@ class ProjectView(object):
         permission="edit",
     )
     def add_company(self):
-        new_csrf_token(self.request)
         project = self.request.context.project
         name = self.request.POST.get("name")
         if name:

@@ -175,7 +175,6 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <form hx-post="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
-            <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -243,7 +242,6 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <form hx-post="${request.route_url('add_tag', company_id=company.id, slug=company.slug)}" hx-target="#new-tag" hx-swap="beforeend">
-            <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

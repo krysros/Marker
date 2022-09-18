@@ -12,7 +12,6 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <form hx-post="${request.route_url('add_project', company_id=company.id, slug=company.slug)}" hx-target="#company-projects" hx-swap="innerHTML show:window:top">
-              <input type="hidden" name="csrf_token" value="${request.session.get_csrf_token()}">
               <div class="modal-header">
                 <h5 class="modal-title" id="add-project-modal-label">Dodaj projekt</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

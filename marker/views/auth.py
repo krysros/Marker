@@ -1,5 +1,4 @@
 import logging
-from pyramid.csrf import new_csrf_token
 from pyramid.httpexceptions import (
     HTTPSeeOther,
     HTTPException,
@@ -37,7 +36,6 @@ def login(request):
             select(User).filter_by(name=username)
         ).scalar_one_or_none()
         if user is not None and user.check_password(password):
-            new_csrf_token(request)
             headers = remember(request, user.id)
             request.session.flash("success:Witaj!")
             log.info(f"Użytkownik {user.name} zalogował się")
@@ -57,7 +55,6 @@ def login(request):
 def logout(request):
     next_url = request.route_url("home")
     if request.method == "POST":
-        new_csrf_token(request)
         headers = forget(request)
         request.session.flash("success:Wylogowano")
         log.info(f"Użytkownik {request.identity.name} wylogował się")

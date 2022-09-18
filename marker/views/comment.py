@@ -1,5 +1,4 @@
 import logging
-from pyramid.csrf import new_csrf_token
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
 from sqlalchemy import select
@@ -43,7 +42,6 @@ class CommentView(object):
         permission="edit",
     )
     def add(self):
-        new_csrf_token(self.request)
         company = self.request.context.company
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -63,7 +61,6 @@ class CommentView(object):
         renderer="string",
         )
     def delete(self):
-        new_csrf_token(self.request)
         comment = self.request.context.comment
         self.request.dbsession.delete(comment)
         self.request.session.flash("success:Usunięto z bazy danych")
