@@ -56,9 +56,8 @@ class MySecurityPolicy:
 
 def includeme(config):
     settings = config.get_settings()
-    print(settings)
 
     # config.set_csrf_storage_policy(CookieCSRFStoragePolicy())
-    # config.set_default_csrf_options(require_csrf=True)
+    config.set_default_csrf_options(require_csrf=True)
 
     config.set_security_policy(MySecurityPolicy(settings["auth.secret"]))
