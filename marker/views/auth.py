@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 @view_config(route_name="login", renderer="login.mako")
 def login(request):
-    next_url = request.params.get("next", request.referrer)
+    next_url = request.params.get("next")
     if not next_url:
         next_url = request.route_url("home")
 
@@ -37,11 +37,11 @@ def login(request):
         ).scalar_one_or_none()
         if user is not None and user.check_password(password):
             headers = remember(request, user.id)
-            request.session.flash("success:Witaj!")
+            # request.session.flash("success:Witaj!")
             log.info(f"Użytkownik {user.name} zalogował się")
             return HTTPSeeOther(location=next_url, headers=headers)
         request.response.status = 400
-        request.session.flash("danger:Logowanie nie powiodło się")
+        # request.session.flash("danger:Logowanie nie powiodło się")
 
     return dict(
         url=request.route_url("login"),
@@ -56,7 +56,7 @@ def logout(request):
     next_url = request.route_url("home")
     if request.method == "POST":
         headers = forget(request)
-        request.session.flash("success:Wylogowano")
+        # request.session.flash("success:Wylogowano")
         log.info(f"Użytkownik {request.identity.name} wylogował się")
         return HTTPSeeOther(location=next_url, headers=headers)
     return HTTPSeeOther(location=next_url)
@@ -66,7 +66,7 @@ def logout(request):
 def forbidden(exc, request):
     if not request.is_authenticated:
         next_url = request.route_url("login", _query={"next": request.url})
-        request.session.flash("warning:Brak wymaganych uprawnień")
+        # request.session.flash("warning:Brak wymaganych uprawnień")
         return HTTPSeeOther(location=next_url)
     return httpexception_view(exc, request)
 

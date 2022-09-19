@@ -200,7 +200,7 @@ class TagView(object):
             tag = Tag(form.name.data)
             tag.created_by = self.request.identity
             self.request.dbsession.add(tag)
-            self.request.session.flash("success:Dodano do bazy danych")
+            # self.request.session.flash("success:Dodano do bazy danych")
             log.info(f"Użytkownik {self.request.identity.name} dodał tag {tag.name}")
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
@@ -218,7 +218,7 @@ class TagView(object):
         if self.request.method == "POST" and form.validate():
             form.populate_obj(tag)
             tag.updated_by = self.request.identity
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            # self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(
                 f"Użytkownik {self.request.identity.name} zmienił nazwę tagu {tag.name}"
             )
@@ -235,9 +235,9 @@ class TagView(object):
         tag = self.request.context.tag
         tag_name = tag.name
         self.request.dbsession.delete(tag)
-        self.request.session.flash("success:Usunięto z bazy danych")
+        # self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął tag {tag_name}")
-        next_url = self.request.route_url("welcome")
+        next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
     @view_config(

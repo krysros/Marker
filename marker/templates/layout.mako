@@ -35,16 +35,19 @@
   </head>
   <body>
     <main role="main">
-      <div id="main-container" class="container">
-        % if request.session.peek_flash():
-          % for message in request.session.pop_flash():
-            <div class="alert alert-${message.split(':')[0]}" role="alert">
-              ${message.split(':')[1] | n}
+      <div class="container">
+        <div id="main-container">
+          ${self.body()}
+        </div>
+        <footer>
+          <hr>
+          <p>
+            <div class="d-flex">
+              <div class="p-2 flex-grow-1">© KR 2022</div>
+              <div class="p-2"><a href="#top"><i class="bi bi-arrow-up"></i> Do góry</a></div>
             </div>
-          % endfor
-        % endif
-        ${self.body()}
-        <%include file="footer.mako"/>
+          </p>
+        </footer>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>

@@ -19,7 +19,7 @@ class AccountView(object):
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            # self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił swoje dane")
             return HTTPFound(location=self.request.current_route_url())
 
@@ -35,7 +35,7 @@ class AccountView(object):
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            # self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił hasło")
             return HTTPFound(location=self.request.current_route_url())
 

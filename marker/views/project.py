@@ -158,7 +158,7 @@ class ProjectView(object):
             )
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
-            self.request.session.flash("success:Dodano do bazy danych")
+            # self.request.session.flash("success:Dodano do bazy danych")
             log.info(
                 f"Użytkownik {self.request.identity.name} dodał projekt {project.name}"
             )
@@ -181,7 +181,7 @@ class ProjectView(object):
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
             project.updated_by = self.request.identity
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            # self.request.session.flash("success:Zmiany zostały zapisane")
             next_url = self.request.route_url(
                 "project_view",
                 project_id=project.id,
@@ -206,11 +206,11 @@ class ProjectView(object):
         project = self.request.context.project
         project_name = project.name
         self.request.dbsession.delete(project)
-        self.request.session.flash("success:Usunięto z bazy danych")
+        # self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
             f"Użytkownik {self.request.identity.name} usunął projekt {project_name}"
         )
-        next_url = self.request.route_url("welcome")
+        next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
     @view_config(

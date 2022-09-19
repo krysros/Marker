@@ -230,7 +230,7 @@ class UserView(object):
                 password=form.password.data,
             )
             self.request.dbsession.add(user)
-            self.request.session.flash("success:Dodano do bazy danych")
+            # self.request.session.flash("success:Dodano do bazy danych")
             log.info(
                 f"Użytkownik {self.request.identity.name} dodał użytkownika {user.name}"
             )
@@ -254,7 +254,7 @@ class UserView(object):
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            # self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(
                 f"Użytkownik {self.request.identity.name} zmienił dane użytkownika {user.name}"
             )
@@ -271,11 +271,11 @@ class UserView(object):
         user = self.request.context.user
         user_username = user.name
         self.request.dbsession.delete(user)
-        self.request.session.flash("success:Usunięto z bazy danych")
+        # self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
             f"Użytkownik {self.request.identity.name} usunął użytkownika {user_username}"
         )
-        next_url = self.request.route_url("welcome")
+        next_url = self.request.route_url("home")
         return HTTPSeeOther(location=next_url)
 
     @view_config(
