@@ -274,7 +274,7 @@ class TagView(object):
 
     @view_config(
         route_name="tag_results",
-        renderer="tag_table.mako",
+        renderer="tag_results.mako",
         permission="view",
     )
     @view_config(

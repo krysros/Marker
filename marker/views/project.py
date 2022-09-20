@@ -244,7 +244,7 @@ class ProjectView(object):
 
     @view_config(
         route_name="project_results",
-        renderer="project_table.mako",
+        renderer="project_results.mako",
         permission="view",
     )
     @view_config(

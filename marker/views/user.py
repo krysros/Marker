@@ -298,7 +298,7 @@ class UserView(object):
 
     @view_config(
         route_name="user_results",
-        renderer="user_table.mako",
+        renderer="user_results.mako",
         permission="view",
     )
     @view_config(

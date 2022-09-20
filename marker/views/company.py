@@ -510,7 +510,7 @@ class CompanyView(object):
 
     @view_config(
         route_name="company_results",
-        renderer="company_table.mako",
+        renderer="company_results.mako",
         permission="view",
     )
     @view_config(

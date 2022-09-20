@@ -123,7 +123,7 @@ class PersonView(object):
 
     @view_config(
         route_name="person_results",
-        renderer="person_table.mako",
+        renderer="person_results.mako",
         permission="view",
     )
     @view_config(
