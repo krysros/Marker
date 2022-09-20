@@ -150,7 +150,6 @@ class CompanyView(object):
             states=states,
             courts=courts,
             title=company.name,
-            tags=[],  # require to render tag_datalist.mako included in current template
         )
 
     @view_config(
@@ -285,10 +284,7 @@ class CompanyView(object):
     )
     def projects(self):
         company = self.request.context.company
-        return dict(
-            company=company,
-            projects=[],  # require to render project_datalist.mako included in current template
-        )
+        return {'company': company}
 
     @view_config(
         route_name="company_similar",

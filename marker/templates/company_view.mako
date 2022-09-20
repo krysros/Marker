@@ -250,9 +250,7 @@
               <div class="mb-3">
                 <label for="tag-name" class="form-label">Nazwa</label>
                 <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required>
-                <div id="tag-list">
-                  <%include file="tag_datalist.mako"/>
-                </div>
+                <div id="tag-list"></div>
               </div>
             </div>
             <div class="modal-footer">

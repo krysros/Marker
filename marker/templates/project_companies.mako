@@ -20,9 +20,7 @@
                 <div class="mb-3">
                   <label for="company-name" class="form-label">Nazwa</label>
                   <input list="companies" type="text" class="form-control" id="company-name" name="name" autocomplete="off" hx-get="${request.route_url('company_select')}" hx-target="#company-list"  hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms">
-                  <div id="company-list">
-                    <%include file="company_datalist.mako"/>
-                  </div>
+                  <div id="company-list"></div>
                 </div>
               </div>
               <div class="modal-footer">

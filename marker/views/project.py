@@ -102,10 +102,7 @@ class ProjectView(object):
     )
     def companies(self):
         project = self.request.context.project
-        return dict(
-            project=project,
-            companies=[],  # require to render company_datalist.mako included in current template
-        )
+        return {'project': project}
 
     @view_config(
         route_name="project_view",
@@ -135,7 +132,6 @@ class ProjectView(object):
             states=states,
             c_companies=c_companies,
             c_watched=c_watched,
-            companies=[],  # require to render company_datalist.mako included in current template
         )
 
     @view_config(
@@ -168,7 +164,6 @@ class ProjectView(object):
         return dict(
             heading="Dodaj projekt",
             form=form,
-            companies=[],
         )
 
     @view_config(
