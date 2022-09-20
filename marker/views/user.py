@@ -190,6 +190,11 @@ class UserView(object):
         renderer="user_projects.mako",
         permission="view",
     )
+    @view_config(
+        route_name="user_projects_more",
+        renderer="project_more.mako",
+        permission="view",
+    )
     def projects(self):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
