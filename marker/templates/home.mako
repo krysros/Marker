@@ -66,7 +66,7 @@
         Komentarze dotyczące firm.
       </p>
       <p>
-        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('comment_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
+        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('comments')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
         <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('comment_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
       </p>
     </div>

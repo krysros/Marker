@@ -22,7 +22,7 @@
           <a class="nav-link" role="button" href="#" hx-get="${request.route_url('user_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top"><i class="bi bi-person-circle"></i> Użytkownicy</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="#" hx-get="${request.route_url('comment_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top"><i class="bi bi-chat-left-text"></i> Komentarze</a>
+          <a class="nav-link" role="button" href="#" hx-get="${request.route_url('comments')}" hx-target="#main-container" hx-swap="innerHTML show:window:top"><i class="bi bi-chat-left-text"></i> Komentarze</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="#" hx-get="${request.route_url('report')}" hx-target="#main-container" hx-swap="innerHTML show:window:top"><i class="bi bi-bar-chart"></i> Raporty</a>

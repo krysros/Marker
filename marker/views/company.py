@@ -249,7 +249,7 @@ class CompanyView(object):
     )
     @view_config(
         route_name="company_comments_more",
-        renderer="comment_more.mako",
+        renderer="comments.mako",
         permission="view",
     )
     def comments(self):
