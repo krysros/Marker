@@ -58,7 +58,7 @@ class CommentView(object):
     def delete(self):
         comment = self.request.context.comment
         self.request.dbsession.delete(comment)
-        self.request.session.flash("success:Usunięto z bazy danych")
+        # self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
             f"Użytkownik {self.request.identity.name} usunął komentarz"
         )

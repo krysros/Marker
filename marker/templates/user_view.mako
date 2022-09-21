@@ -5,7 +5,7 @@
   <div class="card-body">
     <div class="float-end">
       ${button.edit('user_edit', username=user.name)}
-      ${button.danger('user_delete', 'Usuń', 'Czy na pewno chcesz usunąć użytkownika z bazy danych?', username=user.name)}
+      ${button.danger('user_delete', 'Usuń', username=user.name)}
     </div>
   </div>
 </div>

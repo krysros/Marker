@@ -15,7 +15,7 @@
     ${dropdown.order_button('user_watched', dropdown_order, filter=filter, sort=sort, order=order, username=user.name)}
     <div class="float-end">
       <button type="submit" class="btn btn-primary" form="export-watched" value="submit">Eksportuj</button>
-      ${button.danger('user_watched_clear', 'Wyczyść', 'Wyczyścić wszystkie obserwowane projekty? Ta operacja nie usuwa projektów z bazy danych.', username=user.name)}
+      ${button.danger('user_watched_clear', 'Wyczyść', username=user.name)}
     </div>
   </div>
 </div>

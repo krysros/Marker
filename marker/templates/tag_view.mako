@@ -16,7 +16,7 @@
     <div class="float-end">
       <button type="submit" class="btn btn-primary" form="tag_export" value="submit">Eksportuj</button>
       ${button.edit('tag_edit', tag_id=tag.id, slug=tag.slug)}
-      ${button.danger('tag_delete', 'Usuń', 'Czy na pewno chcesz usunąć tag z bazy danych?', tag_id=tag.id, slug=tag.slug)}
+      ${button.danger('tag_delete', 'Usuń', tag_id=tag.id, slug=tag.slug)}
     </div>
   </div>
 </div>

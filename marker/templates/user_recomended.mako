@@ -13,7 +13,7 @@
     ${dropdown.order_button('user_recomended', dropdown_order, filter=None, sort=sort, order=order, username=user.name)}
     <div class="float-end">
       <button type="submit" class="btn btn-primary" form="export-recomended" value="submit">Eksportuj</button>
-      ${button.danger('user_recomended_clear', 'Wyczyść', 'Wyczyścić wszystkie rekomendacje? Ta operacja nie usuwa firm z bazy danych.', username=user.name)}
+      ${button.danger('user_recomended_clear', 'Wyczyść', username=user.name)}
     </div>
   </div>
 </div>

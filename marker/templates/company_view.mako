@@ -14,7 +14,7 @@
         </div>
       </button>
       ${button.edit('company_edit', company_id=company.id, slug=company.slug)}
-      ${button.danger('company_delete', 'Usuń', 'Czy na pewno chcesz usunąć firmę z bazy danych?', company_id=company.id, slug=company.slug)}
+      ${button.danger('company_delete', 'Usuń', company_id=company.id, slug=company.slug)}
     </div>
   </div>
 </div>
@@ -158,7 +158,7 @@
             <td><a href="mailto:${person.email}">${person.email}</a></td>
             <td class="col-2">
               <a class="btn btn-secondary btn-sm" href="${request.route_url('person_vcard', person_id=person.id)}">vCard</a>
-              <button class="btn btn-danger btn-sm" hx-post="${request.route_url('person_delete_from_company', person_id=person.id)}" hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s">Usuń</button>
+              ${button.del_row('person_delete_from_company', person_id=person.id)}
             </td>
           </tr>
           % endfor
@@ -226,7 +226,7 @@
           % for tag in company.tags:
           <tr>
             <td><a href="#" hx-get="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${tag.name}</a></td>
-            <td class="col-2"><button class="btn btn-secondary btn-sm" hx-post="${request.route_url('delete_tag', company_id=company.id, tag_id=tag.id)}" hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s">Usuń</button></td>
+            <td class="col-2">${button.del_row('delete_tag', company_id=company.id, tag_id=tag.id)}</td>
           </tr>
           % endfor
         </tbody>

@@ -1,5 +1,6 @@
 <%include file="navbar.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
@@ -7,8 +8,8 @@
     ${dropdown.sort_button('company_all', dropdown_sort, filter=filter, sort=sort, order=order)}
     ${dropdown.order_button('company_all', dropdown_order, filter=filter, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('company_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
-      <a class="btn btn-success" role="button" href="#" hx-get="${request.route_url('company_add')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
+      ${button.search('company_search')}
+      ${button.add('company_add')}
     </div>
   </div>
 </div>

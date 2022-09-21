@@ -1,12 +1,13 @@
 <%include file="navbar.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
     ${dropdown.sort_button('person_all', dropdown_sort, sort=sort, order=order)}
     ${dropdown.order_button('person_all', dropdown_order, sort=sort, order=order)}
     <div class="float-end">
-      <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('person_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
+      ${button.search('person_search')}
     </div>
   </div>
 </div>

@@ -1,4 +1,5 @@
 <%include file="navbar.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="p-4 mb-4 bg-light rounded-3">
   <div class="container">
@@ -20,9 +21,9 @@
         Ostatnio dodane firmy wg wybranej kategorii.
       </p>
       <p>
-        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('company_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
-        <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('company_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
-        <a class="btn btn-success" role="button" href="#" hx-get="${request.route_url('company_add')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
+        ${button.show('company_all')}
+        ${button.search('company_search')}
+        ${button.add('company_add')}
       </p>
     </div>
     <div class="col">
@@ -31,9 +32,9 @@
         Realizowane lub zakończone projekty.
       </p>
       <p>
-        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('project_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
-        <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('project_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
-        <a class="btn btn-success" role="button" href="#" hx-get="${request.route_url('project_add')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
+        ${button.show('project_all')}
+        ${button.search('project_search')}
+        ${button.add('project_add')}
       </p>
     </div>
     <div class="col">
@@ -42,9 +43,9 @@
         Tagi określają profil działalności firmy.
       </p>
       <p>
-        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('tag_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
-        <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('tag_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
-        <a class="btn btn-success" role="button" href="#" hx-get="${request.route_url('tag_add')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
+        ${button.show('tag_all')}
+        ${button.search('tag_search')}
+        ${button.add('tag_add')}
       </p>
     </div>
   </div>
@@ -55,9 +56,9 @@
         Użytkownicy aplikacji.
       </p>
       <p>
-        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('user_all')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
-        <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('user_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
-        <a class="btn btn-success" role="button" href="#" hx-get="${request.route_url('user_add')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
+        ${button.show('user_all')}
+        ${button.search('user_search')}
+        ${button.add('user_add')}
       </p>
     </div>
     <div class="col">
@@ -66,8 +67,8 @@
         Komentarze dotyczące firm.
       </p>
       <p>
-        <a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('comments')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
-        <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url('comment_search')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
+        ${button.show('comments')}
+        ${button.search('comment_search')}
       </p>
     </div>
     <div class="col">
@@ -75,7 +76,9 @@
       <p>
         Podsumowanie informacji o firmach i projektach.
       </p>
-      <p><a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url('report')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a></p>
+      <p>
+        ${button.show('report')}
+      </p>
     </div>
   </div>
 </div>

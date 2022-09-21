@@ -14,7 +14,7 @@
         </div>
       </button>
       ${button.edit('project_edit', project_id=project.id, slug=project.slug)}
-      ${button.danger('project_delete', 'Usuń', 'Czy na pewno chcesz usunąć projekt z bazy danych?', project_id=project.id, slug=project.slug)}
+      ${button.danger('project_delete', 'Usuń', project_id=project.id, slug=project.slug)}
     </div>
   </div>
 </div>
