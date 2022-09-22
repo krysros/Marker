@@ -32,9 +32,10 @@
       </li>
       <li><hr class="dropdown-divider"></li>
       <li>
-        <a class="dropdown-item" role="button" hx-post="${request.route_url('logout')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
-          Wyloguj
-        </a>
+        <form hx-post="${request.route_url('logout')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+          <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
+          <button type="submit" class="dropdown-item">Wyloguj</button>
+        </form>
       </li>
     </ul>
   </li>

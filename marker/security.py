@@ -5,7 +5,7 @@ from pyramid.authorization import (
     Everyone,
 )
 
-# from pyramid.csrf import CookieCSRFStoragePolicy
+from pyramid.csrf import CookieCSRFStoragePolicy
 from pyramid.request import RequestLocalCache
 
 from . import models
@@ -57,7 +57,7 @@ class MySecurityPolicy:
 def includeme(config):
     settings = config.get_settings()
 
-    # config.set_csrf_storage_policy(CookieCSRFStoragePolicy())
+    config.set_csrf_storage_policy(CookieCSRFStoragePolicy())
     config.set_default_csrf_options(require_csrf=True)
 
     config.set_security_policy(MySecurityPolicy(settings["auth.secret"]))

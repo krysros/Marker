@@ -5,6 +5,7 @@
   <div class="card-header">${heading}</div>
   <div class="card-body">
     <form hx-post="${url}" hx-target="#main-container">
+      <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.report.label}
         ${form.report(class_="form-control")}

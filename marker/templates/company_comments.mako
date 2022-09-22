@@ -12,6 +12,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <form hx-post="${request.route_url('comment_add', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
+              <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
               <div class="modal-header">
                 <h5 class="modal-title" id="add-comment-modal-label">Dodaj komentarz</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
