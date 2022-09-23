@@ -1,17 +1,17 @@
-<%def name="add(route_name, **kwargs)">
-% if request.is_authenticated and request.identity.role == 'editor':
-<a class="btn btn-success" role="button" href="#" hx-get="${request.route_url(route_name, **kwargs)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
-% else:
-<button type="button" class="btn btn-success" disabled>Dodaj</button>
-% endif
+<%def name="show(route_name, **kwargs)">
+<a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url(route_name, **kwargs)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
 </%def>
 
 <%def name="search(route_name, **kwargs)">
 <a class="btn btn-primary" role="button" href="#" hx-get="${request.route_url(route_name, **kwargs)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Szukaj</a>
 </%def>
 
-<%def name="show(route_name, **kwargs)">
-<a class="btn btn-secondary" role="button" href="#" hx-get="${request.route_url(route_name, **kwargs)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Pokaż</a>
+<%def name="add(route_name, **kwargs)">
+% if request.is_authenticated and request.identity.role == 'editor':
+<a class="btn btn-success" role="button" href="#" hx-get="${request.route_url(route_name, **kwargs)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Dodaj</a>
+% else:
+<button type="button" class="btn btn-success" disabled>Dodaj</button>
+% endif
 </%def>
 
 <%def name="edit(route_name, **kwargs)">
