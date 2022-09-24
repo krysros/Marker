@@ -16,7 +16,7 @@ class CommentView(object):
 
     @view_config(
         route_name="comments",
-        renderer="comments.mako",
+        renderer="comments_all.mako",
         permission="view",
     )
     def all(self):
@@ -58,7 +58,6 @@ class CommentView(object):
     def delete(self):
         comment = self.request.context.comment
         self.request.dbsession.delete(comment)
-        # self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
             f"Użytkownik {self.request.identity.name} usunął komentarz"
         )

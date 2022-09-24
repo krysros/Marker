@@ -15,7 +15,7 @@
           % if project in request.identity.watched:
             <i class="bi bi-eye-fill"></i>
           % endif
-          <a href="#" hx-get="${request.route_url('project_view', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.name}</a>
+          <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
         </td>
         <td class="col-2">${button.del_row('delete_project', company_id=company.id, project_id=project.id)}</td>
       </tr>

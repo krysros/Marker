@@ -1,8 +1,9 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <form id="export-recomended" action="${request.route_url('user_recomended_export', username=user.name)}" method="post">
+  <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
   <input type="hidden" name="sort" value=${sort}>
   <input type="hidden" name="order" value=${order}>
 </form>

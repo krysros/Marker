@@ -1,4 +1,4 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 
 <div class="card">
   <div class="card-body">
@@ -36,7 +36,7 @@
   </div>
 </div>
 
-<p class="lead">Firmy, które brały udział w projekcie <a href="#" hx-get="${request.route_url('project_view', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.name}</a></p>
+<p class="lead">Firmy, które brały udział w projekcie <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a></p>
 <div id="project-companies">
   <%include file="company_list.mako"/>
 </div>

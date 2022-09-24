@@ -1,4 +1,4 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="p-4 mb-4 bg-light rounded-3">

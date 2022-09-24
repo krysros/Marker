@@ -75,7 +75,7 @@ class PersonView(object):
         if self.request.method == "POST" and form.validate():
             form.populate_obj(person)
             person.updated_by = self.request.identity
-            # self.request.session.flash("success:Zmiany zostały zapisane")
+            self.request.session.flash("success:Zmiany zostały zapisane")
             next_url = self.request.route_url("person_view", person_id=person.id)
             log.info(
                 f"Użytkownik {self.request.identity.name} zmienił dane osoby {person.name}"
@@ -92,10 +92,13 @@ class PersonView(object):
         person = self.request.context.person
         person_name = person.name
         self.request.dbsession.delete(person)
-        # self.request.session.flash("success:Usunięto z bazy danych")
+        self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął osobę {person_name}")
         next_url = self.request.route_url("home")
-        return HTTPSeeOther(location=next_url)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
 
     @view_config(
         route_name="person_search",

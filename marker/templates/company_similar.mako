@@ -1,4 +1,4 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
 
 <div class="card">
@@ -7,5 +7,5 @@
   </div>
 </div>
 
-<p class="lead">Firmy o profilu działalności zbliżonym do <a href="#" hx-get="${request.route_url('company_view', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.name}</a></p>
+<p class="lead">Firmy o profilu działalności zbliżonym do <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a></p>
 <%include file="company_table.mako"/>

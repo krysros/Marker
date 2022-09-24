@@ -6,7 +6,7 @@
 % else:
 <tr>
 % endif
-  <td><a href="#" hx-get="${request.route_url('user_view', username=user.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${user.name}</a></td>
+  <td><a href="${request.route_url('user_view', username=user.name)}">${user.name}</a></td>
   <td>${user.fullname}</td>
   <td>${user.email}</td>
   <td>${user.role}</td>

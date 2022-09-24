@@ -1,4 +1,4 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
@@ -32,16 +32,16 @@
   <div class="card-footer">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('user_comments', username=user.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Komentarze</a>
+        <a class="nav-link" role="button" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('user_tags', username=user.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Tagi</a>
+        <a class="nav-link" role="button" href="${request.route_url('user_tags', username=user.name)}">Tagi</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('user_companies', username=user.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Firmy</a>
+        <a class="nav-link" role="button" href="${request.route_url('user_companies', username=user.name)}">Firmy</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('user_projects', username=user.name)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">Projekty</a>
+        <a class="nav-link" role="button" href="${request.route_url('user_projects', username=user.name)}">Projekty</a>
       </li>
     </ul>
   </div>

@@ -1,4 +1,4 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 

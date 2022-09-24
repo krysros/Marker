@@ -380,7 +380,7 @@ class CompanyView(object):
             )
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
-            # self.request.session.flash("success:Dodano do bazy danych")
+            self.request.session.flash("success:Dodano do bazy danych")
             log.info(
                 f"Użytkownik {self.request.identity.name} dodał firmę {company.name}"
             )
@@ -401,7 +401,7 @@ class CompanyView(object):
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
             company.updated_by = self.request.identity
-            # self.request.session.flash("success:Zmiany zostały zapisane")
+            self.request.session.flash("success:Zmiany zostały zapisane")
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
@@ -420,10 +420,13 @@ class CompanyView(object):
         company = self.request.context.company
         company_name = company.name
         self.request.dbsession.delete(company)
-        # self.request.session.flash("success:Usunięto z bazy danych")
+        self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął firmę {company_name}")
         next_url = self.request.route_url("home")
-        return HTTPSeeOther(location=next_url)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
 
     @view_config(
         route_name="company_recommend",

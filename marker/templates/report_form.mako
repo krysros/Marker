@@ -1,10 +1,10 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%include file="errors.mako"/> 
 
 <div class="card">
   <div class="card-header">${heading}</div>
   <div class="card-body">
-    <form hx-post="${url}" hx-target="#main-container">
+    <form action="${url}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.report.label}

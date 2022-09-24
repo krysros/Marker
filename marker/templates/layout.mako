@@ -36,18 +36,10 @@
   <body>
     <main role="main">
       <div class="container">
-        <div id="main-container">
-          ${self.body()}
-        </div>
-        <footer>
-          <hr>
-          <p>
-            <div class="d-flex">
-              <div class="p-2 flex-grow-1">© KR 2022</div>
-              <div class="p-2"><a href="#top"><i class="bi bi-arrow-up"></i> Do góry</a></div>
-            </div>
-          </p>
-        </footer>
+        <%include file="navbar.mako"/>
+        <%include file="flash_messages.mako"/>
+        ${self.body()}
+        <%include file="footer.mako"/>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>

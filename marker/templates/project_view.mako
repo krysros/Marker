@@ -1,10 +1,10 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
     <div class="float-end">
-      <button hx-post="${request.route_url('project_watch', project_id=project.id)}" hx-target="#watch" class="btn btn-primary">
+      <button hx-post="${request.route_url('project_watch', project_id=project.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#watch" class="btn btn-primary">
         <div id="watch">
         % if project in request.identity.watched:
           <i class="bi bi-eye-fill"></i>
@@ -55,7 +55,7 @@
   <div class="card-footer">
     <ul class="nav">
 ##      <li class="nav-item">
-##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+##        <a class="nav-link" role="button" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
 ##        % if c_comments > 0:
 ##        Komentarze <span class="badge text-bg-warning">${c_comments}</span>
 ##        % else:
@@ -64,7 +64,7 @@
 ##        </a>
 ##      </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        <a class="nav-link" role="button" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
           % if c_watched > 0:
           Obserwacje <span class="badge text-bg-success">${c_watched}</span></a>
           % else:
@@ -72,7 +72,7 @@
           % endif
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        <a class="nav-link" role="button" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
           % if c_companies > 0:
           Firmy <span class="badge text-bg-info">${c_companies}</span>
           % else:
@@ -81,7 +81,7 @@
         </a>
       </li>
 ##      <li class="nav-item">
-##        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+##        <a class="nav-link" role="button" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">
 ##          % if c_similar > 0:
 ##          Podobne <span class="badge text-bg-dark">${c_simiar}</span></a>
 ##          % else:
@@ -99,13 +99,13 @@
     <p>
       Utworzono: ${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if project.created_by:
-        przez <a href="#" hx-get="${request.route_url('user_view', username=project.created_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.created_by.name}</a>
+        przez <a href="${request.route_url('user_view', username=project.created_by.name, what='info')}">${project.created_by.name}</a>
       % endif
       <br>
       % if project.updated_at:
         Zmodyfikowano: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if project.updated_by:
-          przez <a href="#" hx-get="${request.route_url('user_view', username=project.updated_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${project.updated_by.name}</a>
+          przez <a href="${request.route_url('user_view', username=project.updated_by.name, what='info')}">${project.updated_by.name}</a>
         % endif
       % endif
     </p>

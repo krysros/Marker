@@ -1,10 +1,10 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
   <div class="card-body">
     <div class="float-end">
-      <button hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-target="#recomended" class="btn btn-primary">
+      <button hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recomended" class="btn btn-primary">
         <div id="recomended">
           % if company in request.identity.recomended:
             <i class="bi bi-hand-thumbs-up-fill"></i>
@@ -32,6 +32,7 @@
               autocomplete="off"
               checked
               hx-post="${request.route_url('company_check', company_id=company.id)}"
+              hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
               hx-trigger="click"
               hx-swap="none">
         % else:
@@ -41,6 +42,7 @@
               value="${company.id}"
               autocomplete="off"
               hx-post="${request.route_url('company_check', company_id=company.id)}"
+              hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
               hx-trigger="click"
               hx-swap="none">
         % endif
@@ -96,7 +98,7 @@
   <div class="card-footer">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        <a class="nav-link" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
           % if c_comments > 0:
           Komentarze <span class="badge text-bg-warning">${c_comments}</span>
           % else:
@@ -105,7 +107,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        <a class="nav-link" href="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}">
           % if c_recomended > 0:
           Rekomendacje <span class="badge text-bg-success">${c_recomended}</span>
           % else:
@@ -114,7 +116,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
           % if c_projects > 0:
           Projekty <span class="badge text-bg-info">${c_projects}</span>
           % else:
@@ -123,7 +125,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="#" hx-get="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">
+        <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
         % if c_similar > 0:
         Podobne <span class="badge text-bg-dark">${c_similar}</span>
         % else:
@@ -152,7 +154,7 @@
         <tbody id="new-person">
           % for person in company.people:
           <tr>
-            <td><a href="#" hx-get="${request.route_url('person_view', person_id=person.id)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.name}</a></td>
+            <td><a href="${request.route_url('person_view', person_id=person.id)}">${person.name}</a></td>
             <td>${person.position}</td>
             <td>${person.phone}</td>
             <td><a href="mailto:${person.email}">${person.email}</a></td>
@@ -174,7 +176,7 @@
     <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form hx-post="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
+          <form action="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
             <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
@@ -226,7 +228,7 @@
         <tbody id="new-tag">
           % for tag in company.tags:
           <tr>
-            <td><a href="#" hx-get="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${tag.name}</a></td>
+            <td><a href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a></td>
             <td class="col-2">${button.del_row('delete_tag', company_id=company.id, tag_id=tag.id)}</td>
           </tr>
           % endfor
@@ -275,13 +277,13 @@
     <p>
       Utworzono: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if company.created_by:
-        przez <a href="#" hx-get="${request.route_url('user_view', username=company.created_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.created_by.name}</a>
+        przez <a href="${request.route_url('user_view', username=company.created_by.name, what='info')}">${company.created_by.name}</a>
       % endif
       <br>
       % if company.updated_at:
         Zmodyfikowano: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if company.updated_by:
-          przez <a href="#" hx-get="${request.route_url('user_view', username=company.updated_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.updated_by.name}</a>
+          przez <a href="${request.route_url('user_view', username=company.updated_by.name, what='info')}">${company.updated_by.name}</a>
         % endif
       % endif
     </p>

@@ -15,7 +15,7 @@
           % if company in request.identity.recomended:
           <i class="bi bi-hand-thumbs-up-fill"></i>
           % endif
-          <a href="#" hx-get="${request.route_url('company_view', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.name}</a>
+          <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
         </td>
         <td class="col-2">${button.del_row('delete_project', company_id=company.id, project_id=project.id)}</td>
       </tr>

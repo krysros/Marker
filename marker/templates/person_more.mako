@@ -6,9 +6,9 @@
 % else:
 <tr>
 % endif
-  <td><a href="#" hx-get="${request.route_url('person_view', person_id=person.id)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.name}</a></td>
+  <td><a href="${request.route_url('person_view', person_id=person.id)}">${person.name}</a></td>
   % if person.company:
-  <td><a href="#" hx-get="${request.route_url('company_view', company_id=person.company.id, slug=person.company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.company.name}</a></td>
+  <td><a href="${request.route_url('company_view', company_id=person.company.id, slug=person.company.slug)}">${person.company.name}</a></td>
   % else:
   <td>---</td>
   % endif

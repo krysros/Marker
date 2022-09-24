@@ -1,4 +1,4 @@
-<%include file="navbar.mako"/>
+<%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
@@ -38,14 +38,14 @@
       % if person.created_at:
         Utworzono: ${person.created_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if person.created_by:
-          przez <a href="#" hx-get="${request.route_url('user_view', username=person.created_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.created_by.name}</a>
+          przez <a href="${request.route_url('user_view', username=person.created_by.name, what='info')}">${person.created_by.name}</a>
         % endif
       % endif
       <br>
       % if person.updated_at:
         Zmodyfikowano: ${person.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if person.updated_by:
-          przez <a href="#" hx-get="${request.route_url('user_view', username=person.updated_by.name, what='info')}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.updated_by.name}</a>
+          przez <a href="${request.route_url('user_view', username=person.updated_by.name, what='info')}">${person.updated_by.name}</a>
         % endif
       % endif
     </p>

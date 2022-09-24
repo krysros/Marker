@@ -15,6 +15,7 @@
            autocomplete="off"
            checked
            hx-post="${request.route_url('company_check', company_id=company.id)}"
+           hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
            hx-trigger="click"
            hx-swap="none">
     % else:
@@ -23,6 +24,7 @@
            value="${company.id}"
            autocomplete="off"
            hx-post="${request.route_url('company_check', company_id=company.id)}"
+           hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
            hx-trigger="click"
            hx-swap="none">
     % endif
@@ -31,7 +33,7 @@
     % if company in request.identity.recomended:
     <i class="bi bi-hand-thumbs-up-fill"></i>
     % endif
-    <a href="#" hx-get="${request.route_url('company_view', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.name}</a>
+    <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
   </td>
   <td>${company.city}</td>
   <td>${states.get(company.state)}</td>
@@ -39,7 +41,9 @@
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
     % if company.count_recomended > 0:
-    <span class="badge text-bg-success" role="button" hx-get="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${company.count_recomended}</span>
+    <a href="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}">
+      <span class="badge text-bg-success" role="button">${company.count_recomended}</span>
+    </a>
     % else:
     <span class="badge text-bg-secondary">0</span>
     % endif

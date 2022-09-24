@@ -2,7 +2,7 @@
 
 % if person:
 <tr>
-  <td><a href="#" hx-get="${request.route_url('person_view', person_id=person.id)}" hx-target="#main-container" hx-swap="innerHTML show:window:top">${person.name}</a></td>
+  <td><a href="${request.route_url('person_view', person_id=person.id)}">${person.name}</a></td>
   <td>${person.position}</td>
   <td>${person.phone}</td>
   <td><a href="mailto:${person.email}">${person.email}</a></td>

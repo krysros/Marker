@@ -39,11 +39,11 @@ def login(request):
         if user is not None and user.check_password(password):
             new_csrf_token(request)
             headers = remember(request, user.id)
-            # request.session.flash("success:Witaj!")
+            request.session.flash("success:Witaj!")
             log.info(f"Użytkownik {user.name} zalogował się")
             return HTTPSeeOther(location=next_url, headers=headers)
         request.response.status = 400
-        # request.session.flash("danger:Logowanie nie powiodło się")
+        request.session.flash("danger:Logowanie nie powiodło się")
 
     return dict(
         url=request.route_url("login"),
@@ -59,7 +59,7 @@ def logout(request):
     if request.method == "POST":
         new_csrf_token(request)
         headers = forget(request)
-        # request.session.flash("success:Wylogowano")
+        request.session.flash("success:Wylogowano")
         log.info(f"Użytkownik {request.identity.name} wylogował się")
         return HTTPSeeOther(location=next_url, headers=headers)
     return HTTPSeeOther(location=next_url)
@@ -69,7 +69,7 @@ def logout(request):
 def forbidden(exc, request):
     if not request.is_authenticated:
         next_url = request.route_url("login", _query={"next": request.url})
-        # request.session.flash("warning:Brak wymaganych uprawnień")
+        request.session.flash("warning:Brak wymaganych uprawnień")
         return HTTPSeeOther(location=next_url)
     return httpexception_view(exc, request)
 
