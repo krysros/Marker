@@ -172,42 +172,6 @@
     <button id="btn-add-person" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-person-modal">
       Dodaj
     </button>
-    <!-- Modal -->
-    <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form hx-post="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
-            <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
-            <div class="modal-header">
-              <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="person-name" class="form-label">Nazwa</label>
-                <input type="text" class="form-control" id="person-name" name="name" required minlength="5" maxlength="100">
-              </div>
-              <div class="mb-3">
-                <label for="position" class="form-label">Stanowisko</label>
-                <input type="text" class="form-control" id="position" name="position" maxlength="100">
-              </div>
-              <div class="mb-3">
-                <label for="phone" class="form-label">Telefon</label>
-                <input type="text" class="form-control" id="phone" name="phone" maxlength="50">
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" maxlength="50">
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-              <button type="submit" class="btn btn-primary" id="btn-save-person">Zapisz</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
     % else:
     <button type="button" class="btn btn-success" disabled>Dodaj</button>
     % endif
@@ -240,31 +204,6 @@
     <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
       Dodaj
     </button>
-    <!-- Modal -->
-    <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form hx-post="${request.route_url('add_tag', company_id=company.id, slug=company.slug)}" hx-target="#new-tag" hx-swap="beforeend">
-            <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
-            <div class="modal-header">
-              <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="tag-name" class="form-label">Nazwa</label>
-                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required minlength="3" maxlength="50">
-                <div id="tag-list"></div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-              <button type="submit" class="btn btn-primary" id="btn-save-tag">Zapisz</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
     % else:
     <button type="button" class="btn btn-success" disabled>Dodaj</button>
     % endif
@@ -287,6 +226,69 @@
         % endif
       % endif
     </p>
+  </div>
+</div>
+
+<!-- Tag Modal -->
+<div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form hx-post="${request.route_url('add_tag', company_id=company.id, slug=company.slug)}" hx-target="#new-tag" hx-swap="beforeend">
+        <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="tag-name" class="form-label">Nazwa</label>
+            <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required minlength="3" maxlength="50">
+            <div id="tag-list"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-tag">Zapisz</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Person Modal -->
+<div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form hx-post="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
+        <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
+        <div class="modal-header">
+          <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="person-name" class="form-label">Nazwa</label>
+            <input type="text" class="form-control" id="person-name" name="name" required minlength="5" maxlength="100">
+          </div>
+          <div class="mb-3">
+            <label for="position" class="form-label">Stanowisko</label>
+            <input type="text" class="form-control" id="position" name="position" maxlength="100">
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Telefon</label>
+            <input type="text" class="form-control" id="phone" name="phone" maxlength="50">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" maxlength="50">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-person">Zapisz</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
