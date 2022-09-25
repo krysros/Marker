@@ -176,7 +176,7 @@
     <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form action="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
+          <form hx-post="${request.route_url('add_person', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
             <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
             <div class="modal-header">
               <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>
@@ -185,19 +185,19 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label for="person-name" class="form-label">Nazwa</label>
-                <input type="text" class="form-control" id="person-name" name="name" required>
+                <input type="text" class="form-control" id="person-name" name="name" required minlength="5" maxlength="100">
               </div>
               <div class="mb-3">
                 <label for="position" class="form-label">Stanowisko</label>
-                <input type="text" class="form-control" id="position" name="position">
+                <input type="text" class="form-control" id="position" name="position" maxlength="100">
               </div>
               <div class="mb-3">
                 <label for="phone" class="form-label">Telefon</label>
-                <input type="text" class="form-control" id="phone" name="phone">
+                <input type="text" class="form-control" id="phone" name="phone" maxlength="50">
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email">
+                <input type="email" class="form-control" id="email" name="email" maxlength="50">
               </div>
             </div>
             <div class="modal-footer">
@@ -253,7 +253,7 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label for="tag-name" class="form-label">Nazwa</label>
-                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required>
+                <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required minlength="3" maxlength="50">
                 <div id="tag-list"></div>
               </div>
             </div>

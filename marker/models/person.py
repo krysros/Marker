@@ -26,3 +26,15 @@ class Person(Base):
     editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     created_by = relationship("User", foreign_keys=[creator_id])
     updated_by = relationship("User", foreign_keys=[editor_id])
+
+    def __init__(
+        self,
+        name,
+        position,
+        phone,
+        email,
+    ):
+        self.name = name
+        self.position = position
+        self.phone = phone
+        self.email = email

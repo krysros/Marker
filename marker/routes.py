@@ -103,11 +103,6 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "add_project",
-        r"/company/{company_id:\d+}/{slug}/add-project",
-        factory=company_factory,
-    )
-    config.add_route(
         "company_similar",
         r"/company/{company_id:\d+}/{slug}/similar",
         factory=company_factory,
@@ -145,6 +140,11 @@ def includeme(config):
     config.add_route(
         "add_person",
         r"/company/{company_id:\d+}/{slug}/add-person",
+        factory=company_factory,
+    )
+    config.add_route(
+        "add_project",
+        r"/company/{company_id:\d+}/{slug}/add-project",
         factory=company_factory,
     )
     config.add_route(
