@@ -200,7 +200,6 @@ class CompanyView(object):
                 select(Tag).filter_by(name=name)
             ).scalar_one_or_none()
             if not tag:
-                # TODO: Use WTForms validator
                 tag = Tag(name)
                 tag.created_by = self.request.identity
             if tag not in company.tags:
@@ -228,7 +227,6 @@ class CompanyView(object):
         phone = self.request.POST.get("phone")
         email = self.request.POST.get("email")
         if name:
-            # TODO: Use WTForms validator
             person = Person(name, position, phone, email)
             person.created_by = self.request.identity
             if person not in company.people:
