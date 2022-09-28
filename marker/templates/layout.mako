@@ -21,9 +21,6 @@
       body {
         padding-top: 5rem;
       }
-      .nav-tabs {
-        margin-bottom: 20px;
-      }
       .card {
         margin-bottom: 20px;
       }
