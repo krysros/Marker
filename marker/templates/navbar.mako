@@ -22,7 +22,7 @@
           <a class="nav-link" role="button" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> Użytkownicy</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('comments')}"><i class="bi bi-chat-left-text"></i> Komentarze</a>
+          <a class="nav-link" role="button" href="${request.route_url('comments_all')}"><i class="bi bi-chat-left-text"></i> Komentarze</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('report')}"><i class="bi bi-bar-chart"></i> Raporty</a>

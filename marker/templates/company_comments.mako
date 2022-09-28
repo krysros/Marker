@@ -38,7 +38,7 @@
 <p class="lead">Komentarze nt. firmy <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a></p>
 
 <div id="last-comment"></div>
-<%include file="comments.mako"/>
+<%include file="comments_more.mako"/>
 
 <script>
   // Hide Comment Modal

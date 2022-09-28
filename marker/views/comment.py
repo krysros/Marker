@@ -15,8 +15,13 @@ class CommentView(object):
         self.request = request
 
     @view_config(
-        route_name="comments",
+        route_name="comments_all",
         renderer="comments_all.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="comments_more",
+        renderer="comments_more.mako",
         permission="view",
     )
     def all(self):
@@ -27,7 +32,7 @@ class CommentView(object):
             .scalars()
             .all()
         )
-        next_page = self.request.route_url("comments", _query={"page": page + 1})
+        next_page = self.request.route_url("comments_more", _query={"page": page + 1})
         return {"paginator": paginator, "next_page": next_page}
 
     @view_config(
@@ -85,12 +90,12 @@ class CommentView(object):
 
     @view_config(
         route_name="comment_results",
-        renderer="comments.mako",
+        renderer="comments_all.mako",
         permission="view",
     )
     @view_config(
         route_name="comment_results_more",
-        renderer="comments.mako",
+        renderer="comments_more.mako",
         permission="view",
     )
     def results(self):
