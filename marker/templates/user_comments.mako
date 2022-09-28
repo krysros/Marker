@@ -4,7 +4,7 @@
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs">
       <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="${request.route_url('user_view', username=user.name)}">Dane</a>
+        <a class="nav-link" aria-current="page" href="${request.route_url('user_view', username=user.name)}">Użytkownik</a>
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
