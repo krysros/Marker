@@ -19,6 +19,19 @@
   </div>
 </div>
 
+% if project.latitude:
+<div class="card">
+  <div class="card-header"><i class="bi bi-map"></i> Mapa</div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+</div>
+% endif
+
 <div class="card">
   <div class="card-header"><i class="bi bi-briefcase"></i> Projekt</div>
   <div class="card-body">
@@ -111,3 +124,13 @@
     </p>
   </div>
 </div>
+
+<script>
+  var map = L.map('map').setView([${project.latitude}, ${project.longitude}], 13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+  }).addTo(map);
+  var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
+  marker.bindPopup("<b>${project.name}</b><br>${project.street}<br>${project.postcode} ${project.city}<br>${states.get(project.state)}<br><a href=${project.link}>${project.link}</a>").openPopup();
+</script>

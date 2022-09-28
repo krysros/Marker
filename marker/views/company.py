@@ -34,7 +34,7 @@ from ..forms.select import (
     DROPDOWN_EXT_SORT,
     DROPDOWN_ORDER,
 )
-
+from ..geo import location
 
 log = logging.getLogger(__name__)
 
@@ -376,6 +376,16 @@ class CompanyView(object):
                 court=form.court.data,
                 color=form.color.data,
             )
+            loc = location(
+                street = form.street.data,
+                city = form.city.data,
+                state = form.state.data,
+                postalcode = form.postcode.data,
+            )
+            if loc is not None:
+                company.latitude = loc["lat"]
+                company.longitude = loc["lon"]
+
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.session.flash("success:Dodano do bazy danych")
@@ -398,6 +408,16 @@ class CompanyView(object):
         form = CompanyForm(self.request.POST, company)
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
+            loc = location(
+                street = form.street.data,
+                city = form.city.data,
+                state = form.state.data,
+                postalcode = form.postcode.data,
+            )
+            if loc is not None:
+                company.latitude = loc["lat"]
+                company.longitude = loc["lon"]
+
             company.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
             next_url = self.request.route_url(

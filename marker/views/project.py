@@ -24,6 +24,7 @@ from ..models import (
     watched,
 )
 from ..paginator import get_paginator
+from ..geo import location
 
 log = logging.getLogger(__name__)
 
@@ -152,6 +153,16 @@ class ProjectView(object):
                 stage=form.stage.data,
                 project_delivery_method=form.project_delivery_method.data,
             )
+            loc = location(
+                street = form.street.data,
+                city = form.city.data,
+                state = form.state.data,
+                postalcode = form.postcode.data,
+            )
+            if loc is not None:
+                project.latitude = loc["lat"]
+                project.longitude = loc["lon"]
+
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.session.flash("success:Dodano do bazy danych")
@@ -175,6 +186,16 @@ class ProjectView(object):
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
+            loc = location(
+                street = form.street.data,
+                city = form.city.data,
+                state = form.state.data,
+                postalcode = form.postcode.data,
+            )
+            if loc is not None:
+                project.latitude = loc["lat"]
+                project.longitude = loc["lon"]
+
             project.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
             next_url = self.request.route_url(

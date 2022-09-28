@@ -19,6 +19,19 @@
   </div>
 </div>
 
+% if company.latitude:
+<div class="card">
+  <div class="card-header"><i class="bi bi-map"></i> Mapa</div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+</div>
+% endif
+
 <div class="card border-${company.color}">
   <div class="card-header">
     <i class="bi bi-building"></i> Firma
@@ -327,4 +340,14 @@
       input.value = '';
     });
   });
+</script>
+
+<script>
+  var map = L.map('map').setView([${company.latitude}, ${company.longitude}], 13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+  }).addTo(map);
+  var marker = L.marker([${company.latitude}, ${company.longitude}]).addTo(map);
+  marker.bindPopup("<b>${company.name}</b><br>${company.street}<br>${company.postcode} ${company.city}<br>${states.get(company.state)}<br><a href=${company.WWW}>${company.WWW}</a>").openPopup();
 </script>
