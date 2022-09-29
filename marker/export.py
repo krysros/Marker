@@ -1,6 +1,5 @@
 import io
 import xlsxwriter
-from pathlib import Path
 from urllib.parse import quote
 from unidecode import unidecode
 from mako.template import Template
