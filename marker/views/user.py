@@ -14,6 +14,7 @@ from ..models import (
     Company,
     Comment,
     Project,
+    Person,
 )
 from ..forms import (
     UserForm,
@@ -221,6 +222,34 @@ class UserView(object):
             "paginator": paginator,
             "next_page": next_page,
         }
+
+    @view_config(
+        route_name="user_persons",
+        renderer="user_persons.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_persons_more",
+        renderer="person_more.mako",
+        permission="view",
+    )
+    def persons(self):
+        page = int(self.request.params.get("page", 1))
+        user = self.request.context.user
+        stmt = (
+            select(Person).filter(Person.created_by == user).order_by(Person.created_at.desc())
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "user_persons_more",
+            username=user.name,
+            _query={"page": page + 1},
+        )
+        return {"user": user, "paginator": paginator, "next_page": next_page}
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
     def add(self):

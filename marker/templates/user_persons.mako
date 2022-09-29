@@ -16,15 +16,16 @@
         <a class="nav-link" href="${request.route_url('user_tags', username=user.name)}">Tagi</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_persons', username=user.name)}">Osoby</a>
+        <a class="nav-link active" aria-current="page" href="${request.route_url('user_persons', username=user.name)}">Osoby</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
+        <a class="nav-link" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
       </li>
     </ul>
   </div>
   <div class="card-body">
-    <p class="lead">Komentarze dodane przez użytkownika <a href="${request.route_url('user_view', username=user.name)}">${user.fullname}</a></p>
+    <p class="lead">Osoby dodane przez użytkownika <a href="${request.route_url('user_view', username=user.name)}">${user.fullname}</a></p>
   </div>
 </div>
-<%include file="comments_more.mako"/>
+
+<%include file="person_table.mako"/>

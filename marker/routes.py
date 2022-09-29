@@ -297,6 +297,12 @@ def includeme(config):
         "/user/{username}/projects/more",
         factory=user_factory,
     )
+    config.add_route("user_persons", "/user/{username}/persons", factory=user_factory)
+    config.add_route(
+        "user_persons_more",
+        "/user/{username}/persons/more",
+        factory=user_factory,
+    )
     config.add_route("user_checked", "/user/{username}/checked", factory=user_factory)
     config.add_route(
         "user_checked_more",
