@@ -27,17 +27,22 @@ def includeme(config):
     config.add_route("tag_more", "/tag/more", factory=default_factory)
     config.add_route(
         "tag_view",
+        r"/tag/{tag_id:\d+}/{slug}",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_companies",
         r"/tag/{tag_id:\d+}/{slug}/companies",
         factory=tag_factory,
     )
     config.add_route(
-        "tag_view_more",
+        "tag_companies_more",
         r"/tag/{tag_id:\d+}/{slug}/companies/more",
         factory=tag_factory,
     )
     config.add_route(
-        "tag_export",
-        r"/tag/{tag_id:\d+}/export",
+        "tag_companies_export",
+        r"/tag/{tag_id:\d+}/companies/export",
         factory=tag_factory,
     )
     config.add_route("tag_add", "/tag/add", factory=default_factory)

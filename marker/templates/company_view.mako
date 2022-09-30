@@ -14,7 +14,7 @@
         </div>
       </button>
       ${button.edit('company_edit', company_id=company.id, slug=company.slug)}
-      ${button.danger('company_delete', 'Usuń', company_id=company.id, slug=company.slug)}
+      ${button.delete('company_delete', company_id=company.id, slug=company.slug)}
     </div>
   </div>
 </div>
@@ -229,13 +229,13 @@
     <p>
       Utworzono: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if company.created_by:
-        przez <a href="${request.route_url('user_view', username=company.created_by.name, what='info')}">${company.created_by.name}</a>
+        przez <a href="${request.route_url('user_view', username=company.created_by.name)}">${company.created_by.name}</a>
       % endif
       <br>
       % if company.updated_at:
         Zmodyfikowano: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if company.updated_by:
-          przez <a href="${request.route_url('user_view', username=company.updated_by.name, what='info')}">${company.updated_by.name}</a>
+          przez <a href="${request.route_url('user_view', username=company.updated_by.name)}">${company.updated_by.name}</a>
         % endif
       % endif
     </p>

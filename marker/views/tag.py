@@ -70,12 +70,22 @@ class TagView(object):
         renderer="tag_view.mako",
         permission="view",
     )
+    def view(self):
+        from ..forms.select import STATES
+        tag = self.request.context.tag
+        return {"tag": tag}
+
     @view_config(
-        route_name="tag_view_more",
+        route_name="tag_companies",
+        renderer="tag_companies.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="tag_companies_more",
         renderer="company_more.mako",
         permission="view",
     )
-    def view(self):
+    def companies(self):
         from ..forms.select import STATES
 
         tag = self.request.context.tag
@@ -122,7 +132,7 @@ class TagView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "tag_view_more",
+            "tag_companies_more",
             tag_id=tag.id,
             slug=tag.slug,
             _query={
@@ -143,11 +153,10 @@ class TagView(object):
             paginator=paginator,
             next_page=next_page,
             states=states,
-            title=tag.name,
         )
 
-    @view_config(route_name="tag_export", request_method="POST", permission="view")
-    def export(self):
+    @view_config(route_name="tag_companies_export", permission="view")
+    def export_companies(self):
         from ..forms.select import STATES
 
         tag = self.request.context.tag

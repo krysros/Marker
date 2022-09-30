@@ -22,7 +22,7 @@
     <p>${comment.comment}</p>
   </div>
   <div class="card-footer">
-    ${comment.created_at.strftime('%Y-%m-%d %H:%M:%S')} przez <a href="${request.route_url('user_view', username=comment.created_by.name, what='info')}" title="${comment.created_by.fullname}">${comment.created_by.name}</a>
+    ${comment.created_at.strftime('%Y-%m-%d %H:%M:%S')} przez <a href="${request.route_url('user_view', username=comment.created_by.name)}" title="${comment.created_by.fullname}">${comment.created_by.name}</a>
   </div>
 </div>
 % endfor

@@ -410,7 +410,6 @@ class UserView(object):
 
     @view_config(
         route_name="user_checked_export",
-        request_method="POST",
         permission="view",
     )
     def export_checked(self):
@@ -497,7 +496,6 @@ class UserView(object):
 
     @view_config(
         route_name="user_recomended_export",
-        request_method="POST",
         permission="view",
     )
     def export_recomended(self):
@@ -599,7 +597,6 @@ class UserView(object):
 
     @view_config(
         route_name="user_watched_export",
-        request_method="POST",
         permission="view",
     )
     def export_watched(self):

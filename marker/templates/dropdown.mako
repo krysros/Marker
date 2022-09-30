@@ -1,7 +1,7 @@
 <%def name="filter_button(route_name, items, filter=None, sort=None, order=None, **kwargs)">
 <div class="btn-group">
   <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="btn btn-secondary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-filter"></i> Filtruj
     </a>
     <ul class="dropdown-menu">
@@ -34,7 +34,7 @@
 <%def name="sort_button(route_name, items, filter=None, sort=None, order=None, **kwargs)">
 <div class="btn-group">
   <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="btn btn-secondary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       Sortuj
     </a>
     <ul class="dropdown-menu">
@@ -57,7 +57,7 @@
 <%def name="order_button(route_name, items, filter=None, sort=None, order=None, **kwargs)">
 <div class="btn-group">
   <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="btn btn-secondary btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       Kolejność
     </a>
     <ul class="dropdown-menu">
