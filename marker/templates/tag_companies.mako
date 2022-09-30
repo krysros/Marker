@@ -11,7 +11,7 @@
             <a class="nav-link" href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">Tag</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">Firmy</a>
+            <a class="nav-link active" aria-current="page" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">Firmy</a>
           </li>
         </ul>
       </div>
