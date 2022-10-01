@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <div class="card">
@@ -24,7 +23,7 @@
     </div>
   </div>
   <div class="card-body">
-    <dl class="dl-horizontal">
+    <dl>
       <dt>Nazwa tagu</dt>
       <dd>${tag.name}</dd>
     </dl>

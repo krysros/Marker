@@ -3,7 +3,7 @@
 
 <div class="card">
   <div class="card-body">
-    ${dropdown.filter_button('company_similar', states, filter=filter, sort=None, order=None, company_id=company.id, slug=company.slug)}
+    ${dropdown.filter_button('company_similar', states, company_id=company.id, slug=company.slug)}
   </div>
 </div>
 

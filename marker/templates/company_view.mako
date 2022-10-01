@@ -71,7 +71,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <dl class="dl-horizontal">
+        <dl>
           <dt>Adres</dt>
           <dd>
             ${company.street}<br>

@@ -17,9 +17,9 @@
       </div>
       <div class="col-8">
         <div class="float-end">
-          ${dropdown.filter_button('tag_companies', states, filter=filter, sort=sort, order=order, tag_id=tag.id, slug=tag.slug)}
-          ${dropdown.sort_button('tag_companies', dropdown_sort, filter=filter, sort=sort, order=order, tag_id=tag.id, slug=tag.slug)}
-          ${dropdown.order_button('tag_companies', dropdown_order, filter=filter, sort=sort, order=order, tag_id=tag.id, slug=tag.slug)}
+          ${dropdown.filter_button('tag_companies', states, tag_id=tag.id, slug=tag.slug)}
+          ${dropdown.sort_button('tag_companies', dropdown_sort, tag_id=tag.id, slug=tag.slug)}
+          ${dropdown.order_button('tag_companies', dropdown_order, tag_id=tag.id, slug=tag.slug)}
           ${button.export('tag_companies_export', tag_id=tag.id, _query={'filter': filter, 'sort': sort, 'order': order})}
         </div>
       </div>

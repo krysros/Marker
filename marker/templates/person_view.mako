@@ -8,7 +8,7 @@
   <div class="card-body">
     <div class="d-flex">
       <div class="p-2 flex-fill">
-        <dl class="dl-horizontal">
+        <dl>
           <dt>Imię i nazwisko</dt>
           <dd>${person.name}</dd>
 

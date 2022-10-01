@@ -374,6 +374,7 @@ class UserView(object):
     def checked(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
@@ -399,6 +400,7 @@ class UserView(object):
 
         return dict(
             user=user,
+            filter=filter,
             sort=sort,
             order=order,
             dropdown_sort=dropdown_sort,
@@ -459,6 +461,7 @@ class UserView(object):
     def recomended(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
@@ -485,6 +488,7 @@ class UserView(object):
 
         return dict(
             user=user,
+            filter=filter,
             sort=sort,
             order=order,
             dropdown_sort=dropdown_sort,

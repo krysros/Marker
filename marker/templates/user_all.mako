@@ -4,9 +4,9 @@
 
 <div class="card">
   <div class="card-body">
-    ${dropdown.filter_button('user_all', roles, filter=filter, sort=sort, order=order)}
-    ${dropdown.sort_button('user_all', dropdown_sort, filter=filter, sort=sort, order=order)}
-    ${dropdown.order_button('user_all', dropdown_order, filter=filter, sort=sort, order=order)}
+    ${dropdown.filter_button('user_all', roles)}
+    ${dropdown.sort_button('user_all', dropdown_sort)}
+    ${dropdown.order_button('user_all', dropdown_order)}
     <div class="float-end">
       ${button.search('user_search')}
       ${button.add('user_add')}

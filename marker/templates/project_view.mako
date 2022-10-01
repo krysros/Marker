@@ -77,7 +77,7 @@
     </div>
   </div>
   <div class="card-body">
-    <dl class="dl-horizontal">
+    <dl>
       <dt>Nazwa</dt>
       <dd>${project.name}</dd>
       <dt>Adres</dt>

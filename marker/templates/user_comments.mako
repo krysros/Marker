@@ -24,7 +24,7 @@
     </ul>
   </div>
   <div class="card-body">
-    <p class="lead">Komentarze dodane przez użytkownika <a href="${request.route_url('user_view', username=user.name)}">${user.fullname}</a></p>
+    <p>Komentarze dodane przez użytkownika <a href="${request.route_url('user_view', username=user.name)}">${user.fullname}</a></p>
   </div>
 </div>
 <%include file="comments_more.mako"/>

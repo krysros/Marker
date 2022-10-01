@@ -29,6 +29,7 @@ class PersonView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
@@ -51,6 +52,7 @@ class PersonView(object):
         )
 
         return dict(
+            filter=filter,
             sort=sort,
             order=order,
             dropdown_sort=dropdown_sort,
