@@ -3,30 +3,36 @@
 
 <div class="card">
   <div class="card-header">
-    <i class="bi bi-person"></i> Osoba
-  </div>
-  <div class="card-body">
-    <div class="d-flex">
-      <div class="p-2 flex-fill">
-        <dl>
-          <dt>Imię i nazwisko</dt>
-          <dd>${person.name}</dd>
-
-          <dt>Stanowisko</dt>
-          <dd>${person.position}</dd>
-
-          <dt>Telefon</dt>
-          <dd>${person.phone}</dd>
-
-          <dt>Email</dt>
-          <dd><a href="mailto:${person.email}">${person.email}</a></dd>
-        </dl>
+    <div class="row">
+      <div class="col-10">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="${request.route_url('person_view', person_id=person.id)}">Osoba</a>
+          </li>
+        </ul>
       </div>
-      <div class="p-2">
-        ${button.edit('person_edit', person_id=person.id)}
-        ${button.delete('person_delete', person_id=person.id)}
+      <div class="col-2">
+        <div class="float-end">
+          ${button.edit('person_edit', person_id=person.id)}
+          ${button.delete('person_delete', person_id=person.id)}
+        </div>
       </div>
     </div>
+  </div>
+  <div class="card-body">
+    <dl>
+      <dt>Imię i nazwisko</dt>
+      <dd>${person.name}</dd>
+
+      <dt>Stanowisko</dt>
+      <dd>${person.position}</dd>
+
+      <dt>Telefon</dt>
+      <dd>${person.phone}</dd>
+
+      <dt>Email</dt>
+      <dd><a href="mailto:${person.email}">${person.email}</a></dd>
+    </dl>
   </div>
 </div>
 
