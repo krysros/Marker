@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="card-body">
-    <p>Projekt <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a> obserwują</p>
+    <p>Projekt <strong>${project.name}</strong> obserwują</p>
   </div>
 </div>
 

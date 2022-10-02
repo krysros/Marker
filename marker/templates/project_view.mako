@@ -52,6 +52,11 @@
     <div id="map"></div>
     <hr>
     % endif
+    <div class="row">
+      <div class="col">
+        
+      </div>
+    </div>
     <dl>
       <dt>Nazwa</dt>
       <dd>${project.name}</dd>

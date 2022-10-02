@@ -88,6 +88,16 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
+        "company_persons",
+        r"/company/{company_id:\d+}/{slug}/persons",
+        factory=company_factory,
+    )
+    config.add_route(
+        "company_tags",
+        r"/company/{company_id:\d+}/{slug}/tags",
+        factory=company_factory,
+    )
+    config.add_route(
         "company_comments",
         r"/company/{company_id:\d+}/{slug}/comments",
         factory=company_factory,

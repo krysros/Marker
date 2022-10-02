@@ -44,7 +44,7 @@
     </div>
   </div>
   <div class="card-body">
-    <p>Firmy, które brały udział w projekcie <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a></p>
+    <p>Firmy, które brały udział w projekcie <strong>${project.name}</strong></p>
   </div>
 </div>
 

@@ -19,6 +19,8 @@ from ..models import (
     Project,
     User,
     recomended,
+    companies_tags,
+    companies_persons,
     companies_comments,
     companies_projects,
 )
@@ -42,6 +44,59 @@ log = logging.getLogger(__name__)
 class CompanyView(object):
     def __init__(self, request):
         self.request = request
+
+    def count_tags(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Tag)
+            .join(companies_tags)
+            .filter(company.id == companies_tags.c.company_id)
+        )
+
+    def count_persons(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Person)
+            .join(companies_persons)
+            .filter(company.id == companies_persons.c.company_id)
+        )
+
+    def count_comments(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Comment)
+            .join(companies_comments)
+            .filter(company.id == companies_comments.c.company_id)
+        )
+
+    def count_recomended(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(User)
+            .join(recomended)
+            .filter(company.id == recomended.c.company_id)
+        )
+
+    def count_projects(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Project)
+            .join(companies_projects)
+            .filter(company.id == companies_projects.c.company_id)
+        )
+
+    def count_similar(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Company)
+            .join(Tag, Company.tags)
+            .filter(
+                and_(
+                    Tag.companies.any(Company.id == company.id),
+                    Company.id != company.id,
+                )
+            )
+        )
 
     @view_config(
         route_name="company_all",
@@ -110,46 +165,50 @@ class CompanyView(object):
         states = dict(STATES)
         courts = dict(COURTS)
 
-        # Counters
-        c_comments = self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Comment)
-            .join(companies_comments)
-            .filter(company.id == companies_comments.c.company_id)
-        )
-        c_recomended = self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(User)
-            .join(recomended)
-            .filter(company.id == recomended.c.company_id)
-        )
-        c_projects = self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Project)
-            .join(companies_projects)
-            .filter(company.id == companies_projects.c.company_id)
-        )
-        c_similar = self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Company)
-            .join(Tag, Company.tags)
-            .filter(
-                and_(
-                    Tag.companies.any(Company.id == company.id),
-                    Company.id != company.id,
-                )
-            )
-        )
-
         return dict(
-            c_comments=c_comments,
-            c_recomended=c_recomended,
-            c_projects=c_projects,
-            c_similar=c_similar,
+            c_persons=self.count_persons(company),
+            c_tags=self.count_tags(company),
+            c_comments=self.count_comments(company),
+            c_recomended=self.count_recomended(company),
+            c_projects=self.count_projects(company),
+            c_similar=self.count_similar(company),
             company=company,
             states=states,
             courts=courts,
-            title=company.name,
+        )
+
+    @view_config(
+        route_name="company_persons",
+        renderer="company_persons.mako",
+        permission="view",
+    )
+    def persons(self):
+        company = self.request.context.company
+        return dict(
+            c_persons=self.count_persons(company),
+            c_tags=self.count_tags(company),
+            c_comments=self.count_comments(company),
+            c_recomended=self.count_recomended(company),
+            c_projects=self.count_projects(company),
+            c_similar=self.count_similar(company),
+            company=company,
+        )
+
+    @view_config(
+        route_name="company_tags",
+        renderer="company_tags.mako",
+        permission="view",
+    )
+    def tags(self):
+        company = self.request.context.company
+        return dict(
+            c_persons=self.count_persons(company),
+            c_tags=self.count_tags(company),
+            c_comments=self.count_comments(company),
+            c_recomended=self.count_recomended(company),
+            c_projects=self.count_projects(company),
+            c_similar=self.count_similar(company),
+            company=company,
         )
 
     @view_config(
@@ -183,6 +242,12 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
         }
 
     @view_config(
@@ -273,6 +338,12 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
         }
 
     @view_config(
@@ -282,7 +353,15 @@ class CompanyView(object):
     )
     def projects(self):
         company = self.request.context.company
-        return {'company': company}
+        return {
+            "company": company,
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
+        }
 
     @view_config(
         route_name="company_similar",
@@ -354,6 +433,12 @@ class CompanyView(object):
             states=states,
             dropdown_sort=dropdown_sort,
             dropdown_order=dropdown_order,
+            c_persons=self.count_persons(company),
+            c_tags=self.count_tags(company),
+            c_comments=self.count_comments(company),
+            c_recomended=self.count_recomended(company),
+            c_projects=self.count_projects(company),
+            c_similar=self.count_similar(company),
         )
 
     @view_config(

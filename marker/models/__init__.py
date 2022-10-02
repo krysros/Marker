@@ -14,6 +14,8 @@ from .company import Company  # flake8: noqa
 from .project import Project  # flake8: noqa
 from .person import Person  # flake8: noqa
 from .comment import Comment  # flake8: noqa
+from .company import companies_tags  # flake8: noqa
+from .company import companies_persons  # flake8: noqa
 from .company import companies_comments  # flake8: noqa
 from .project import companies_projects  # flake8: noqa
 

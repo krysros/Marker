@@ -24,7 +24,7 @@
     </ul>
   </div>
   <div class="card-body">
-    <p>Osoby dodane przez użytkownika <a href="${request.route_url('user_view', username=user.name)}">${user.fullname}</a></p>
+    <p>Osoby dodane przez użytkownika <strong>${user.fullname}</strong></p>
   </div>
 </div>
 
