@@ -195,27 +195,27 @@ def includeme(config):
 
     config.add_route(
         "person_vcard",
-        r"/person/{person_id:\d+}/vcard",
+        r"/person/{person_id:\d+}/{slug}/vcard",
         factory=person_factory,
     )
     config.add_route(
         "person_view",
-        r"/person/{person_id:\d+}",
+        r"/person/{person_id:\d+}/{slug}",
         factory=person_factory,
     )
     config.add_route(
         "person_edit",
-        r"/person/{person_id:\d+}/edit",
+        r"/person/{person_id:\d+}/{slug}/edit",
         factory=person_factory,
     )
     config.add_route(
         "person_delete",
-        r"/person/{person_id:\d+}/delete",
+        r"/person/{person_id:\d+}/{slug}/delete",
         factory=person_factory,
     )
     config.add_route(
         "person_delete_from_company",
-        r"/person/{person_id:\d+}/delete-from-company",
+        r"/person/{person_id:\d+}/{slug}/delete-from-company",
         factory=person_factory,
     )
     config.add_route("person_all", "/person", factory=default_factory)

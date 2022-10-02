@@ -6,14 +6,14 @@
     <div class="col-9">
       <ul class="nav nav-pills">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="${request.route_url('person_view', person_id=person.id)}">Osoba</a>
+          <a class="nav-link active" aria-current="page" href="${request.route_url('person_view', person_id=person.id, slug=person.slug)}">Osoba</a>
         </li>
       </ul>
     </div>
     <div class="col-3">
       <div class="float-end">
-        ${button.edit('person_edit', person_id=person.id)}
-        ${button.delete('person_delete', person_id=person.id)}
+        ${button.edit('person_edit', person_id=person.id, slug=person.slug)}
+        ${button.delete('person_delete', person_id=person.id, slug=person.slug)}
       </div>
     </div>
   </div>

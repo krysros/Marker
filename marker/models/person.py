@@ -8,6 +8,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
+from slugify import slugify
 from .meta import Base
 
 
@@ -38,3 +39,7 @@ class Person(Base):
         self.position = position
         self.phone = phone
         self.email = email
+
+    @property
+    def slug(self):
+        return slugify(self.name)
