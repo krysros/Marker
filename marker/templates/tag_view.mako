@@ -1,32 +1,24 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="card">
-  <div class="card-header">
-    <div class="row">
-      <div class="col-10">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">Tag</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">Firmy</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-2">
-        <div class="float-end">
-          ${button.edit('tag_edit', tag_id=tag.id, slug=tag.slug)}
-          ${button.delete('tag_delete', tag_id=tag.id, slug=tag.slug)}    
-        </div>
+<div class="card border-0">
+  <div class="row">
+    <div class="col-9">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">Tag</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">Firmy</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-3">
+      <div class="float-end">
+        ${button.edit('tag_edit', tag_id=tag.id, slug=tag.slug)}
+        ${button.delete('tag_delete', tag_id=tag.id, slug=tag.slug)}    
       </div>
     </div>
-  </div>
-  <div class="card-body">
-    <dl>
-      <dt>Nazwa tagu</dt>
-      <dd>${tag.name}</dd>
-    </dl>
   </div>
 </div>
 

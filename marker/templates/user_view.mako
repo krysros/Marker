@@ -1,39 +1,41 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="card">
-  <div class="card-header">
-    <div class="row">
-      <div class="col-10">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="${request.route_url('user_view', username=user.name)}">Użytkownik</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('user_companies', username=user.name)}">Firmy</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('user_projects', username=user.name)}">Projekty</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('user_tags', username=user.name)}">Tagi</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('user_persons', username=user.name)}">Osoby</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-2">
-        <div class="float-end">
-          ${button.edit('user_edit', username=user.name)}
-          ${button.delete('user_delete', username=user.name)}
-        </div>
+<div class="card border-0">
+  <div class="row">
+    <div class="col-9">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="${request.route_url('user_view', username=user.name)}">Użytkownik</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${request.route_url('user_companies', username=user.name)}">Firmy</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${request.route_url('user_projects', username=user.name)}">Projekty</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${request.route_url('user_tags', username=user.name)}">Tagi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${request.route_url('user_persons', username=user.name)}">Osoby</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="${request.route_url('user_comments', username=user.name)}">Komentarze</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-3">
+      <div class="float-end">
+        ${button.edit('user_edit', username=user.name)}
+        ${button.delete('user_delete', username=user.name)}
       </div>
     </div>
   </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><i class="bi bi-person-circle"></i> Użytkownik</div>
   <div class="card-body">
     <dl>
       <dt>Nazwa użytkownika</dt>

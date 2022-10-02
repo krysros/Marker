@@ -1,24 +1,26 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="card">
-  <div class="card-header">
-    <div class="row">
-      <div class="col-10">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="${request.route_url('person_view', person_id=person.id)}">Osoba</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-2">
-        <div class="float-end">
-          ${button.edit('person_edit', person_id=person.id)}
-          ${button.delete('person_delete', person_id=person.id)}
-        </div>
+<div class="card border-0">
+  <div class="row">
+    <div class="col-9">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="${request.route_url('person_view', person_id=person.id)}">Osoba</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-3">
+      <div class="float-end">
+        ${button.edit('person_edit', person_id=person.id)}
+        ${button.delete('person_delete', person_id=person.id)}
       </div>
     </div>
   </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><i class="bi bi-person"></i> Osoba</div>
   <div class="card-body">
     <dl>
       <dt>Imię i nazwisko</dt>
