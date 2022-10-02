@@ -11,6 +11,8 @@ from ..forms.project import (
 
 from ..forms.select import (
     STATES,
+    STAGES,
+    PROJECT_DELIVERY_METHODS,
     DROPDOWN_ORDER,
     DROPDOWN_EXT_SORT,
     DROPDOWN_STATUS,
@@ -33,10 +35,21 @@ class ProjectView(object):
     def __init__(self, request):
         self.request = request
 
-    def _get_company(self, name):
-        return self.request.dbsession.execute(
-            select(Company).filter_by(name=name)
-        ).scalar_one()
+    def count_companies(self, project):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Project)
+            .join(companies_projects)
+            .filter(project.id == companies_projects.c.project_id)
+        )
+
+    def count_watched(self, project):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(User)
+            .join(watched)
+            .filter(project.id == watched.c.project_id)
+        )
 
     @view_config(
         route_name="project_all",
@@ -103,7 +116,7 @@ class ProjectView(object):
     )
     def companies(self):
         project = self.request.context.project
-        return {'project': project}
+        return {'project': project, 'c_companies': self.count_companies(project), 'c_watched': self.count_watched(project)}
 
     @view_config(
         route_name="project_view",
@@ -113,26 +126,16 @@ class ProjectView(object):
     def view(self):
         project = self.request.context.project
         states = dict(STATES)
+        stages = dict(STAGES)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
-        # Counters
-        c_companies = self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Project)
-            .join(companies_projects)
-            .filter(project.id == companies_projects.c.project_id)
-        )
-        c_watched = self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(User)
-            .join(watched)
-            .filter(project.id == watched.c.project_id)
-        )
         return dict(
             project=project,
-            title=project.name,
             states=states,
-            c_companies=c_companies,
-            c_watched=c_watched,
+            stages=stages,
+            project_delivery_methods=project_delivery_methods,
+            c_companies=self.count_companies(project),
+            c_watched=self.count_watched(project),
         )
 
     @view_config(
@@ -375,6 +378,8 @@ class ProjectView(object):
             "paginator": paginator,
             "next_page": next_page,
             "project": project,
+            "c_companies": self.count_companies(project),
+            "c_watched": self.count_watched(project),
         }
 
     @view_config(

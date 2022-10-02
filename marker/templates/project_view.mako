@@ -1,19 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-% if project.latitude:
-<div class="card">
-  <div class="card-header"><i class="bi bi-map"></i> Mapa</div>
-  <div class="card-body">
-    <div class="row">
-      <div class="col">
-        <div id="map"></div>
-      </div>
-    </div>
-  </div>
-</div>
-% endif
-
 <div class="card">
   <div class="card-header">
     <div class="row">
@@ -24,59 +11,47 @@
           </li>
         ##      <li class="nav-item">
         ##        <a class="nav-link" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-        ##        % if c_comments > 0:
-        ##        Komentarze <span class="badge text-bg-warning">${c_comments}</span>
-        ##        % else:
-        ##        Komentarze <span class="badge text-bg-secondary">0</span>
-        ##        % endif
+        ##        Komentarze <span class="badge text-bg-secondary">${c_comments}</span>
         ##        </a>
         ##      </li>
           <li class="nav-item">
             <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-              % if c_watched > 0:
-              Obserwacje <span class="badge text-bg-success">${c_watched}</span></a>
-              % else:
-              Obserwacje <span class="badge text-bg-secondary">0</span></a>
-              % endif
+              Obserwacje <span class="badge text-bg-secondary">${c_watched}</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
-              % if c_companies > 0:
-              Firmy <span class="badge text-bg-info">${c_companies}</span>
-              % else:
-              Firmy <span class="badge text-bg-secondary">0</span>
-              % endif
+              Firmy <span class="badge text-bg-secondary">${c_companies}</span>
             </a>
           </li>
         ##      <li class="nav-item">
         ##        <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">
-        ##          % if c_similar > 0:
-        ##          Podobne <span class="badge text-bg-dark">${c_simiar}</span></a>
-        ##          % else:
-        ##          Podobne <span class="badge text-bg-secondary">0</span></a>
-        ##          % endif
+        ##          Podobne <span class="badge text-bg-secondary">${c_simiar}</span></a>
         ##        </a>
         ##      </li>
         </ul>
       </div>
       <div class="col-4">
         <div class="float-end">
-        <button hx-post="${request.route_url('project_watch', project_id=project.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#watch" class="btn btn-sm btn-primary">
-          <div id="watch">
-          % if project in request.identity.watched:
-            <i class="bi bi-eye-fill"></i>
-          % else:
-            <i class="bi bi-eye"></i>
-          % endif
-          </div>
-        </button>
-        ${button.edit('project_edit', project_id=project.id, slug=project.slug)}
-        ${button.delete('project_delete', project_id=project.id, slug=project.slug)}
-      </div>
+          <button hx-post="${request.route_url('project_watch', project_id=project.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#watch" class="btn btn-sm btn-primary">
+            <div id="watch">
+            % if project in request.identity.watched:
+              <i class="bi bi-eye-fill"></i>
+            % else:
+              <i class="bi bi-eye"></i>
+            % endif
+            </div>
+          </button>
+          ${button.edit('project_edit', project_id=project.id, slug=project.slug)}
+          ${button.delete('project_delete', project_id=project.id, slug=project.slug)}
+        </div>
       </div>
     </div>
   </div>
   <div class="card-body">
+    % if project.latitude:
+    <div id="map"></div>
+    <hr>
+    % endif
     <dl>
       <dt>Nazwa</dt>
       <dd>${project.name}</dd>
@@ -90,14 +65,18 @@
         % endif
         ${states.get(project.state)}<br>
       </dd>
+      <dt>Link</dt>
+      <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
       <dt>Termin</dt>
       % if project.deadline:
       <dd>${project.deadline}</dd>
       % else:
       <dd>---</dd>
       % endif
-      <dt>Link</dt>
-      <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
+      <dt>Etap</dt>
+      <dd>${stages.get(project.stage)}</dd>
+      <dt>Sposób realizacji</dt>
+      <dd>${project_delivery_methods.get(project.project_delivery_method)}</dd>
     </dl>
   </div>
 </div>
@@ -128,5 +107,5 @@
       attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
-  marker.bindPopup("<b>${project.name}</b><br>${project.street}<br>${project.postcode} ${project.city}<br>${states.get(project.state)}<br><a href=${project.link}>${project.link}</a>").openPopup();
+  marker.bindPopup("<b>${project.name}</b><br>${project.street}<br>${project.postcode} ${project.city}<br>${states.get(project.state)}").openPopup();
 </script>
