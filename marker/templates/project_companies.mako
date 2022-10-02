@@ -14,13 +14,13 @@
         ##        </a>
         ##      </li>
           <li class="nav-item">
-            <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-              Obserwacje <span class="badge text-bg-secondary">${c_watched}</span></a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
               Firmy <span class="badge text-bg-secondary">${c_companies}</span>
             </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
+              Obserwacje <span class="badge text-bg-secondary">${c_watched}</span></a>
           </li>
         ##      <li class="nav-item">
         ##        <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">

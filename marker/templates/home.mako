@@ -51,17 +51,6 @@
   </div>
   <div class="row">
     <div class="col">
-      <h2><i class="bi bi-person-circle"></i> Użytkownicy</h2>
-      <p>
-        Użytkownicy aplikacji.
-      </p>
-      <p>
-        ${button.show('user_all')}
-        ${button.search('user_search')}
-        ${button.add('user_add')}
-      </p>
-    </div>
-    <div class="col">
       <h2><i class="bi bi-chat-left-text"></i> Komentarze</h2>
       <p>
         Komentarze dotyczące firm.
@@ -78,6 +67,17 @@
       </p>
       <p>
         ${button.show('report')}
+      </p>
+    </div>
+    <div class="col">
+      <h2><i class="bi bi-person-circle"></i> Użytkownicy</h2>
+      <p>
+        Użytkownicy aplikacji.
+      </p>
+      <p>
+        ${button.show('user_all')}
+        ${button.search('user_search')}
+        ${button.add('user_add')}
       </p>
     </div>
   </div>
