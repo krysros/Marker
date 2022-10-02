@@ -14,13 +14,13 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
-            Osoby <span class="badge text-bg-secondary">${c_persons}</span>
+          <a class="nav-link active" aria-current="page" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
+            Tagi <span class="badge text-bg-secondary">${c_tags}</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-            Tagi <span class="badge text-bg-secondary">${c_tags}</span>
+          <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
+            Osoby <span class="badge text-bg-secondary">${c_persons}</span>
           </a>
         </li>
         <li class="nav-item">
