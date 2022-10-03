@@ -59,13 +59,11 @@ class CommentView(object):
         request_method="POST",
         permission="edit",
         renderer="string",
-        )
+    )
     def delete(self):
         comment = self.request.context.comment
         self.request.dbsession.delete(comment)
-        log.info(
-            f"Użytkownik {self.request.identity.name} usunął komentarz"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} usunął komentarz")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         return ""

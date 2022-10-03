@@ -116,7 +116,11 @@ class ProjectView(object):
     )
     def companies(self):
         project = self.request.context.project
-        return {'project': project, 'c_companies': self.count_companies(project), 'c_watched': self.count_watched(project)}
+        return {
+            "project": project,
+            "c_companies": self.count_companies(project),
+            "c_watched": self.count_watched(project),
+        }
 
     @view_config(
         route_name="project_view",
@@ -157,10 +161,10 @@ class ProjectView(object):
                 project_delivery_method=form.project_delivery_method.data,
             )
             loc = location(
-                street = form.street.data,
-                city = form.city.data,
-                state = form.state.data,
-                postalcode = form.postcode.data,
+                street=form.street.data,
+                city=form.city.data,
+                state=form.state.data,
+                postalcode=form.postcode.data,
             )
             if loc is not None:
                 project.latitude = loc["lat"]
@@ -190,10 +194,10 @@ class ProjectView(object):
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
             loc = location(
-                street = form.street.data,
-                city = form.city.data,
-                state = form.state.data,
-                postalcode = form.postcode.data,
+                street=form.street.data,
+                city=form.city.data,
+                state=form.state.data,
+                postalcode=form.postcode.data,
             )
             if loc is not None:
                 project.latitude = loc["lat"]
@@ -360,9 +364,7 @@ class ProjectView(object):
     def watched(self):
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(User).join(watched).filter(project.id == watched.c.project_id)
-        )
+        stmt = select(User).join(watched).filter(project.id == watched.c.project_id)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()

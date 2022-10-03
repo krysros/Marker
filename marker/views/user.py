@@ -237,7 +237,9 @@ class UserView(object):
         page = int(self.request.params.get("page", 1))
         user = self.request.context.user
         stmt = (
-            select(Person).filter(Person.created_by == user).order_by(Person.created_at.desc())
+            select(Person)
+            .filter(Person.created_by == user)
+            .order_by(Person.created_at.desc())
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))

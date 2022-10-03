@@ -74,6 +74,7 @@ class TagView(object):
     )
     def view(self):
         from ..forms.select import STATES
+
         tag = self.request.context.tag
         return {"tag": tag}
 

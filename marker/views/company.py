@@ -462,10 +462,10 @@ class CompanyView(object):
                 color=form.color.data,
             )
             loc = location(
-                street = form.street.data,
-                city = form.city.data,
-                state = form.state.data,
-                postalcode = form.postcode.data,
+                street=form.street.data,
+                city=form.city.data,
+                state=form.state.data,
+                postalcode=form.postcode.data,
             )
             if loc is not None:
                 company.latitude = loc["lat"]
@@ -494,10 +494,10 @@ class CompanyView(object):
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
             loc = location(
-                street = form.street.data,
-                city = form.city.data,
-                state = form.state.data,
-                postalcode = form.postcode.data,
+                street=form.street.data,
+                city=form.city.data,
+                state=form.state.data,
+                postalcode=form.postcode.data,
             )
             if loc is not None:
                 company.latitude = loc["lat"]

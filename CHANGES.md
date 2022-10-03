@@ -14,3 +14,4 @@
 -----
 
 - Add maps to views
+- Add slug to person

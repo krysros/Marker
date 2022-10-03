@@ -78,7 +78,9 @@ class PersonView(object):
             form.populate_obj(person)
             person.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
-            next_url = self.request.route_url("person_view", person_id=person.id, slug=person.slug)
+            next_url = self.request.route_url(
+                "person_view", person_id=person.id, slug=person.slug
+            )
             log.info(
                 f"Użytkownik {self.request.identity.name} zmienił dane osoby {person.name}"
             )
