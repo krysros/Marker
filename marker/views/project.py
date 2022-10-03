@@ -147,6 +147,7 @@ class ProjectView(object):
     )
     def add(self):
         form = ProjectForm(self.request.POST)
+        states = dict(STATES)
 
         if self.request.method == "POST" and form.validate():
             project = Project(
@@ -163,7 +164,7 @@ class ProjectView(object):
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                state=form.state.data,
+                state=states.get(form.state.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:
@@ -186,13 +187,14 @@ class ProjectView(object):
     def edit(self):
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project)
+        states = dict(STATES)
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                state=form.state.data,
+                state=states.get(form.state.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:

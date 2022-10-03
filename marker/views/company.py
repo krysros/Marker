@@ -446,6 +446,7 @@ class CompanyView(object):
     )
     def add(self):
         form = CompanyForm(self.request.POST)
+        states = dict(STATES)
 
         if self.request.method == "POST" and form.validate():
             company = Company(
@@ -464,7 +465,7 @@ class CompanyView(object):
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                state=form.state.data,
+                state=states.get(form.state.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:
@@ -487,12 +488,13 @@ class CompanyView(object):
     def edit(self):
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company)
+        states = dict(STATES)
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                state=form.state.data,
+                state=states.get(form.state.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:
