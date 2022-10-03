@@ -22,7 +22,7 @@
         padding-top: 5rem;
       }
       .card {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
       }
       tr.htmx-swapping td {
         opacity: 0;
