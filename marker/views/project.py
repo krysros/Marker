@@ -97,17 +97,17 @@ class ProjectView(object):
                 "page": page + 1,
             },
         )
-        return dict(
-            filter=filter,
-            sort=sort,
-            order=order,
-            dropdown_status=dropdown_status,
-            dropdown_order=dropdown_order,
-            dropdown_sort=dropdown_sort,
-            states=states,
-            paginator=paginator,
-            next_page=next_page,
-        )
+        return {
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_status": dropdown_status,
+            "dropdown_order": dropdown_order,
+            "dropdown_sort": dropdown_sort,
+            "states": states,
+            "paginator": paginator,
+            "next_page": next_page,
+        }
 
     @view_config(
         route_name="project_companies",
@@ -133,14 +133,14 @@ class ProjectView(object):
         stages = dict(STAGES)
         project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
-        return dict(
-            project=project,
-            states=states,
-            stages=stages,
-            project_delivery_methods=project_delivery_methods,
-            c_companies=self.count_companies(project),
-            c_watched=self.count_watched(project),
-        )
+        return {
+            "project": project,
+            "states": states,
+            "stages": stages,
+            "project_delivery_methods": project_delivery_methods,
+            "c_companies": self.count_companies(project),
+            "c_watched": self.count_watched(project),
+        }
 
     @view_config(
         route_name="project_add", renderer="project_form.mako", permission="edit"
@@ -178,11 +178,7 @@ class ProjectView(object):
             )
             next_url = self.request.route_url("project_all")
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Dodaj projekt",
-            form=form,
-        )
+        return {"heading": "Dodaj projekt", "form": form}
 
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"
@@ -214,11 +210,7 @@ class ProjectView(object):
                 f"Użytkownik {self.request.identity.name} zmienił dane projektu {project.name}"
             )
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Edytuj dane projektu",
-            form=form,
-        )
+        return {"heading": "Edytuj dane projektu", "form": form}
 
     @view_config(
         route_name="project_delete",
@@ -263,10 +255,7 @@ class ProjectView(object):
                     },
                 )
             )
-        return dict(
-            heading="Znajdź projekt",
-            form=form,
-        )
+        return {"heading": "Znajdź projekt", "form": form}
 
     @view_config(
         route_name="project_results",

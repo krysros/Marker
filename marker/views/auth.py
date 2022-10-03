@@ -44,13 +44,12 @@ def login(request):
             return HTTPSeeOther(location=next_url, headers=headers)
         request.response.status = 400
         request.session.flash("danger:Logowanie nie powiodło się")
-
-    return dict(
-        url=request.route_url("login"),
-        next_url=next_url,
-        heading="Zaloguj się",
-        form=form,
-    )
+    return {
+        "url": request.route_url("login"),
+        "next_url": next_url,
+        "heading": "Zaloguj się",
+        "form": form,
+    }
 
 
 @view_config(route_name="logout")

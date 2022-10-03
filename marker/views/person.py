@@ -51,15 +51,15 @@ class PersonView(object):
             _query={"sort": sort, "order": order, "page": page + 1},
         )
 
-        return dict(
-            filter=filter,
-            sort=sort,
-            order=order,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            paginator=paginator,
-            next_page=next_page,
-        )
+        return {
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "paginator": paginator,
+            "next_page": next_page,
+        }
 
     @view_config(
         route_name="person_view", renderer="person_view.mako", permission="view"
@@ -85,11 +85,7 @@ class PersonView(object):
                 f"Użytkownik {self.request.identity.name} zmienił dane osoby {person.name}"
             )
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Edytuj dane osoby",
-            form=form,
-        )
+        return {"heading": "Edytuj dane osoby", "form": form}
 
     @view_config(route_name="person_delete", request_method="POST", permission="edit")
     def delete(self):
@@ -123,10 +119,7 @@ class PersonView(object):
                     },
                 )
             )
-        return dict(
-            heading="Znajdź osobę",
-            form=form,
-        )
+        return {"heading": "Znajdź osobę", "form": form}
 
     @view_config(
         route_name="person_results",

@@ -22,11 +22,7 @@ class AccountView(object):
             self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił swoje dane")
             return HTTPFound(location=self.request.current_route_url())
-
-        return dict(
-            heading="Dane użytkownika",
-            form=form,
-        )
+        return {"form": form}
 
     @view_config(route_name="password", renderer="password.mako", permission="edit")
     def password_edit(self):
@@ -38,8 +34,4 @@ class AccountView(object):
             self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(f"Użytkownik {user.name} zmienił hasło")
             return HTTPFound(location=self.request.current_route_url())
-
-        return dict(
-            heading="Zmiana hasła",
-            form=form,
-        )
+        return {"form": form}

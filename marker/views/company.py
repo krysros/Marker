@@ -143,17 +143,17 @@ class CompanyView(object):
             },
         )
 
-        return dict(
-            next_page=next_page,
-            filter=filter,
-            sort=sort,
-            order=order,
-            paginator=paginator,
-            states=states,
-            colors=colors,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-        )
+        return {
+            "next_page": next_page,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "paginator": paginator,
+            "states": states,
+            "colors": colors,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+        }
 
     @view_config(
         route_name="company_view",
@@ -165,17 +165,17 @@ class CompanyView(object):
         states = dict(STATES)
         courts = dict(COURTS)
 
-        return dict(
-            c_persons=self.count_persons(company),
-            c_tags=self.count_tags(company),
-            c_comments=self.count_comments(company),
-            c_recomended=self.count_recomended(company),
-            c_projects=self.count_projects(company),
-            c_similar=self.count_similar(company),
-            company=company,
-            states=states,
-            courts=courts,
-        )
+        return {
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
+            "company": company,
+            "states": states,
+            "courts": courts,
+        }
 
     @view_config(
         route_name="company_persons",
@@ -184,15 +184,15 @@ class CompanyView(object):
     )
     def persons(self):
         company = self.request.context.company
-        return dict(
-            c_persons=self.count_persons(company),
-            c_tags=self.count_tags(company),
-            c_comments=self.count_comments(company),
-            c_recomended=self.count_recomended(company),
-            c_projects=self.count_projects(company),
-            c_similar=self.count_similar(company),
-            company=company,
-        )
+        return {
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
+            "company": company,
+        }
 
     @view_config(
         route_name="company_tags",
@@ -201,15 +201,15 @@ class CompanyView(object):
     )
     def tags(self):
         company = self.request.context.company
-        return dict(
-            c_persons=self.count_persons(company),
-            c_tags=self.count_tags(company),
-            c_comments=self.count_comments(company),
-            c_recomended=self.count_recomended(company),
-            c_projects=self.count_projects(company),
-            c_similar=self.count_similar(company),
-            company=company,
-        )
+        return {
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
+            "company": company,
+        }
 
     @view_config(
         route_name="company_recomended",
@@ -423,23 +423,23 @@ class CompanyView(object):
             },
         )
 
-        return dict(
-            company=company,
-            filter=filter,
-            sort=sort,
-            order=order,
-            paginator=paginator,
-            next_page=next_page,
-            states=states,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            c_persons=self.count_persons(company),
-            c_tags=self.count_tags(company),
-            c_comments=self.count_comments(company),
-            c_recomended=self.count_recomended(company),
-            c_projects=self.count_projects(company),
-            c_similar=self.count_similar(company),
-        )
+        return {
+            "company": company,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "states": states,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "c_persons": self.count_persons(company),
+            "c_tags": self.count_tags(company),
+            "c_comments": self.count_comments(company),
+            "c_recomended": self.count_recomended(company),
+            "c_projects": self.count_projects(company),
+            "c_similar": self.count_similar(company),
+        }
 
     @view_config(
         route_name="company_add", renderer="company_form.mako", permission="edit"
@@ -479,11 +479,7 @@ class CompanyView(object):
             )
             next_url = self.request.route_url("company_all")
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Dodaj firmę",
-            form=form,
-        )
+        return {"heading": "Dodaj firmę", "form": form}
 
     @view_config(
         route_name="company_edit", renderer="company_form.mako", permission="edit"
@@ -512,11 +508,7 @@ class CompanyView(object):
                 f"Użytkownik {self.request.identity.name} zmienił dane firmy {company.name}"
             )
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Edytuj dane firmy",
-            form=form,
-        )
+        return {"heading": "Edytuj dane firmy", "form": form}
 
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
@@ -605,10 +597,7 @@ class CompanyView(object):
                     },
                 )
             )
-        return dict(
-            heading="Znajdź firmę",
-            form=form,
-        )
+        return {"heading": "Znajdź firmę", "form": form}
 
     @view_config(
         route_name="company_results",
@@ -671,12 +660,7 @@ class CompanyView(object):
                 "page": page + 1,
             },
         )
-
-        return dict(
-            paginator=paginator,
-            next_page=next_page,
-            states=states,
-        )
+        return {"paginator": paginator, "next_page": next_page, "states": states}
 
     @view_config(
         route_name="delete_tag",

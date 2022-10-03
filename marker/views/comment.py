@@ -81,10 +81,7 @@ class CommentView(object):
                     "comment_results", _query={"comment": form.comment.data}
                 )
             )
-        return dict(
-            heading="Znajdź komentarz",
-            form=form,
-        )
+        return {"heading": "Znajdź komentarz", "form": form}
 
     @view_config(
         route_name="comment_results",

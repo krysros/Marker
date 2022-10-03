@@ -57,15 +57,15 @@ class TagView(object):
             _query={"sort": sort, "order": order, "page": page + 1},
         )
 
-        return dict(
-            filter=filter,
-            sort=sort,
-            order=order,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            paginator=paginator,
-            next_page=next_page,
-        )
+        return {
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "paginator": paginator,
+            "next_page": next_page,
+        }
 
     @view_config(
         route_name="tag_view",
@@ -146,17 +146,17 @@ class TagView(object):
             },
         )
 
-        return dict(
-            tag=tag,
-            sort=sort,
-            order=order,
-            filter=filter,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            paginator=paginator,
-            next_page=next_page,
-            states=states,
-        )
+        return {
+            "tag": tag,
+            "sort": sort,
+            "order": order,
+            "filter": filter,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "states": states,
+        }
 
     @view_config(route_name="tag_companies_export", permission="view")
     def export_companies(self):
@@ -217,10 +217,7 @@ class TagView(object):
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
 
-        return dict(
-            heading="Dodaj tag",
-            form=form,
-        )
+        return {"heading": "Dodaj tag", "form": form}
 
     @view_config(route_name="tag_edit", renderer="basic_form.mako", permission="edit")
     def edit(self):
@@ -236,11 +233,7 @@ class TagView(object):
             )
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Edytuj tag",
-            form=form,
-        )
+        return {"heading": "Edytuj tag", "form": form}
 
     @view_config(route_name="tag_delete", request_method="POST", permission="edit")
     def delete(self):
@@ -282,10 +275,7 @@ class TagView(object):
                     "tag_results", _query={"name": form.name.data}
                 )
             )
-        return dict(
-            heading="Znajdź tag",
-            form=form,
-        )
+        return {"heading": "Znajdź tag", "form": form}
 
     @view_config(
         route_name="tag_results",

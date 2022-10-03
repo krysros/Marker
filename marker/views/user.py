@@ -273,10 +273,7 @@ class UserView(object):
             next_url = self.request.route_url("user_all")
             return HTTPSeeOther(location=next_url)
 
-        return dict(
-            heading="Dodaj użytkownika",
-            form=form,
-        )
+        return {"heading": "Dodaj użytkownika", "form": form}
 
     @view_config(route_name="user_edit", renderer="user_form.mako", permission="admin")
     def edit(self):
@@ -287,7 +284,6 @@ class UserView(object):
             dbsession=self.request.dbsession,
             username=user.name,
         )
-
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)
             self.request.session.flash("success:Zmiany zostały zapisane")
@@ -296,11 +292,7 @@ class UserView(object):
             )
             next_url = self.request.route_url("user_all")
             return HTTPSeeOther(location=next_url)
-
-        return dict(
-            heading="Edytuj dane użytkownika",
-            form=form,
-        )
+        return {"heading": "Edytuj dane użytkownika", "form": form}
 
     @view_config(route_name="user_delete", request_method="POST", permission="admin")
     def delete(self):
@@ -330,10 +322,7 @@ class UserView(object):
                     "user_results", _query={"username": form.name.data}
                 )
             )
-        return dict(
-            heading="Znajdź użytkownika",
-            form=form,
-        )
+        return {"heading": "Znajdź użytkownika", "form": form}
 
     @view_config(
         route_name="user_results",
@@ -400,17 +389,17 @@ class UserView(object):
             _query={"page": page + 1, "sort": sort, "order": order},
         )
 
-        return dict(
-            user=user,
-            filter=filter,
-            sort=sort,
-            order=order,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            paginator=paginator,
-            next_page=next_page,
-            states=states,
-        )
+        return {
+            "user": user,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "states": states,
+        }
 
     @view_config(
         route_name="user_checked_export",
@@ -488,17 +477,17 @@ class UserView(object):
             _query={"page": page + 1, "sort": sort, "order": order},
         )
 
-        return dict(
-            user=user,
-            filter=filter,
-            sort=sort,
-            order=order,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            paginator=paginator,
-            next_page=next_page,
-            states=states,
-        )
+        return {
+            "user": user,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "states": states,
+        }
 
     @view_config(
         route_name="user_recomended_export",
@@ -588,18 +577,18 @@ class UserView(object):
             },
         )
 
-        return dict(
-            user=user,
-            filter=filter,
-            sort=sort,
-            order=order,
-            dropdown_sort=dropdown_sort,
-            dropdown_order=dropdown_order,
-            status=status,
-            states=states,
-            paginator=paginator,
-            next_page=next_page,
-        )
+        return {
+            "user": user,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
+            "status": status,
+            "states": states,
+            "paginator": paginator,
+            "next_page": next_page,
+        }
 
     @view_config(
         route_name="user_watched_export",

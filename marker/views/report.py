@@ -39,11 +39,11 @@ class ReportView(object):
             next_url = self.request.route_url("report_results", rel=report)
             return HTTPSeeOther(location=next_url)
 
-        return dict(
-            url=self.request.route_url("report"),
-            heading="Raport",
-            form=form,
-        )
+        return {
+            "url": self.request.route_url("report"),
+            "heading": "Raport",
+            "form": form,
+        }
 
     @view_config(route_name="report_results", renderer="report.mako", permission="view")
     @view_config(
@@ -151,11 +151,10 @@ class ReportView(object):
             states=states,
             _query={"page": page + 1},
         )
-
-        return dict(
-            rel=rel,
-            lead=reports[rel],
-            states=states,
-            paginator=paginator,
-            next_page=next_page,
-        )
+        return {
+            "rel": rel,
+            "lead": reports[rel],
+            "states": states,
+            "paginator": paginator,
+            "next_page": next_page,
+        }
