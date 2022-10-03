@@ -98,6 +98,11 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
+        "count_company_tags",
+        r"/count/company/{company_id:\d+}/{slug}/tags",
+        factory=company_factory,
+    )
+    config.add_route(
         "company_comments",
         r"/company/{company_id:\d+}/{slug}/comments",
         factory=company_factory,
@@ -149,27 +154,32 @@ def includeme(config):
     )
     config.add_route(
         "add_tag",
-        r"/company/{company_id:\d+}/{slug}/add-tag",
+        r"/add/company/{company_id:\d+}/{slug}/tag",
         factory=company_factory,
     )
     config.add_route(
         "add_person",
-        r"/company/{company_id:\d+}/{slug}/add-person",
+        r"/add/company/{company_id:\d+}/{slug}/person",
         factory=company_factory,
     )
     config.add_route(
         "add_project",
-        r"/company/{company_id:\d+}/{slug}/add-project",
+        r"/add/company/{company_id:\d+}/{slug}/project",
         factory=company_factory,
     )
     config.add_route(
+        "add_company",
+        r"/add/project/{project_id:\d+}/{slug}/company",
+        factory=project_factory,
+    )
+    config.add_route(
         "delete_project",
-        r"/company/{company_id:\d+}/project/{project_id:\d+}/delete",
+        r"/delete/company/{company_id:\d+}/project/{project_id:\d+}",
         factory=default_factory,
     )
     config.add_route(
         "delete_tag",
-        r"/company/{company_id:\d+}/tag/{tag_id:\d+}/delete",
+        r"/delete/company/{company_id:\d+}/tag/{tag_id:\d+}",
         factory=default_factory,
     )
 
@@ -214,8 +224,8 @@ def includeme(config):
         factory=person_factory,
     )
     config.add_route(
-        "person_delete_from_company",
-        r"/person/{person_id:\d+}/{slug}/delete-from-company",
+        "delete_person",
+        r"/delete/person/{person_id:\d+}/{slug}",
         factory=person_factory,
     )
     config.add_route("person_all", "/person", factory=default_factory)
@@ -264,11 +274,6 @@ def includeme(config):
     config.add_route(
         "project_watched_more",
         r"/project/{project_id:\d+}/{slug}/watched/more",
-        factory=project_factory,
-    )
-    config.add_route(
-        "add_company",
-        r"/project/{project_id:\d+}/{slug}/add-company",
         factory=project_factory,
     )
     config.add_route("project_select", "/project/select", factory=default_factory)

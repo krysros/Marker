@@ -8,7 +8,7 @@
   <td><a href="mailto:${person.email}">${person.email}</a></td>
   <td class="col-2">
     <a class="btn btn-secondary btn-sm" href="${request.route_url('person_vcard', person_id=person.id, slug=person.slug)}">vCard</a>
-    ${button.del_row('person_delete_from_company', person_id=person.id, slug=person.slug)}
+    ${button.del_row('delete_person', person_id=person.id, slug=person.slug)}
   </td>
 </tr>
 % endif

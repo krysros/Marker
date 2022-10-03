@@ -15,7 +15,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-            Tagi <span class="badge text-bg-secondary">${c_tags}</span>
+            Tagi <span class="badge text-bg-secondary"><div id="counter-company-tags" hx-get="${request.route_url('count_company_tags', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${c_tags}</div></span>
           </a>
         </li>
         <li class="nav-item">
@@ -76,8 +76,7 @@
 <div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('add_tag', company_id=company.id, slug=company.slug)}" hx-target="#new-tag" hx-swap="beforeend">
-        <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
+      <form hx-post="${request.route_url('add_tag', company_id=company.id, slug=company.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#new-tag" hx-swap="beforeend">
         <div class="modal-header">
           <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
