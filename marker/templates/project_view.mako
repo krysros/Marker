@@ -117,5 +117,4 @@
       attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
-  // marker.bindPopup("<b>${project.name}</b><br>${project.street}<br>${project.postcode} ${project.city}<br>${states.get(project.state)}").openPopup();
 </script>
