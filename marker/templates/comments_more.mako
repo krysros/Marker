@@ -1,3 +1,5 @@
+<%namespace name="button" file="button.mako"/>
+
 % for comment in paginator:
 % if loop.last:
 <div class="card"
@@ -11,10 +13,7 @@
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>
     % if comment.created_by == request.identity or request.identity.name == 'admin':
     <span style="float:right;">
-      <form hx-post="${request.route_url('comment_delete', comment_id=comment.id)}" hx-confirm="Czy jesteś pewny?" hx-target="closest .card" hx-swap="outerHTML swap:1s">
-        <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
-        <button type="submit" class="btn btn-danger btn-sm">Usuń</button>
-      </form>
+      ${button.del_card('comment_delete', comment_id=comment.id)}
     </span>
     % endif
   </div>
