@@ -52,6 +52,7 @@ class CommentView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "commentCompanyEvent"}
         return {"comment": comment}
 
     @view_config(
@@ -66,6 +67,7 @@ class CommentView(object):
         log.info(f"Użytkownik {self.request.identity.name} usunął komentarz")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "commentCompanyEvent"}
         return ""
 
     @view_config(

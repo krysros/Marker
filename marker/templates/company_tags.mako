@@ -15,7 +15,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-            Tagi <span class="badge text-bg-secondary"><div id="company-tags-counter" hx-get="${request.route_url('count_company_tags', company_id=company.id, slug=company.slug)}" hx-trigger="addTagToCompany from:body">${c_tags}</div></span>
+            Tagi <span class="badge text-bg-secondary"><div id="company-tags-counter" hx-get="${request.route_url('count_company_tags', company_id=company.id, slug=company.slug)}" hx-trigger="tagCompanyEvent from:body">${c_tags}</div></span>
           </a>
         </li>
         <li class="nav-item">

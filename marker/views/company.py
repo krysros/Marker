@@ -45,6 +45,14 @@ class CompanyView(object):
     def __init__(self, request):
         self.request = request
 
+    def count_projects(self, company):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Project)
+            .join(companies_projects)
+            .filter(company.id == companies_projects.c.company_id)
+        )
+
     def count_tags(self, company):
         return self.request.dbsession.scalar(
             select(func.count())
@@ -75,14 +83,6 @@ class CompanyView(object):
             .select_from(User)
             .join(recomended)
             .filter(company.id == recomended.c.company_id)
-        )
-
-    def count_projects(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Project)
-            .join(companies_projects)
-            .filter(company.id == companies_projects.c.company_id)
         )
 
     def count_similar(self, company):
@@ -221,6 +221,33 @@ class CompanyView(object):
         return self.count_tags(company)
 
     @view_config(
+        route_name="count_company_projects",
+        renderer="json",
+        permission="view",
+    )
+    def count_company_projects(self):
+        company = self.request.context.company
+        return self.count_projects(company)
+
+    @view_config(
+        route_name="count_company_persons",
+        renderer="json",
+        permission="view",
+    )
+    def count_company_persons(self):
+        company = self.request.context.company
+        return self.count_persons(company)
+
+    @view_config(
+        route_name="count_company_comments",
+        renderer="json",
+        permission="view",
+    )
+    def count_company_comments(self):
+        company = self.request.context.company
+        return self.count_comments(company)
+
+    @view_config(
         route_name="company_recomended",
         renderer="company_recomended.mako",
         permission="view",
@@ -285,7 +312,7 @@ class CompanyView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "addTagToCompany"}
+        self.request.response.headers = {"HX-Trigger": "tagCompanyEvent"}
         return {"company": company, "tag": new_tag}
 
     @view_config(
@@ -312,6 +339,7 @@ class CompanyView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "personCompanyEvent"}
         return {"person": person}
 
     @view_config(
@@ -705,7 +733,7 @@ class CompanyView(object):
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": "addTagToCompany"}
+        self.request.response.headers = {"HX-Trigger": "tagCompanyEvent"}
         return ""
 
     @view_config(
@@ -721,6 +749,7 @@ class CompanyView(object):
         log.info(f"Użytkownik {self.request.identity.name} usunął osobę {person_name}")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "personCompanyEvent"}
         return ""
 
     @view_config(
@@ -741,6 +770,7 @@ class CompanyView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
         return {"company": company}
 
     @view_config(
@@ -774,4 +804,5 @@ class CompanyView(object):
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
         return ""
