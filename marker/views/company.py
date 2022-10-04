@@ -285,7 +285,7 @@ class CompanyView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "tagEvent"}
+        self.request.response.headers = {"HX-Trigger": "addTagToCompany"}
         return {"company": company, "tag": new_tag}
 
     @view_config(
@@ -705,7 +705,7 @@ class CompanyView(object):
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": "tagEvent"}
+        self.request.response.headers = {"HX-Trigger": "addTagToCompany"}
         return ""
 
     @view_config(
