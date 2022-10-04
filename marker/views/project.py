@@ -123,6 +123,24 @@ class ProjectView(object):
         }
 
     @view_config(
+        route_name="count_project_companies",
+        renderer="json",
+        permission="view",
+    )
+    def count_project_companies(self):
+        project = self.request.context.project
+        return self.count_companies(project)
+
+    @view_config(
+        route_name="count_project_watched",
+        renderer="json",
+        permission="view",
+    )
+    def count_project_watched(self):
+        project = self.request.context.project
+        return self.count_watched(project)
+
+    @view_config(
         route_name="project_view",
         renderer="project_view.mako",
         permission="view",
@@ -337,9 +355,11 @@ class ProjectView(object):
         project = self.request.context.project
         if project in self.request.identity.watched:
             self.request.identity.watched.remove(project)
+            self.request.response.headers = {"HX-Trigger": "watchedProjectEvent"}
             return '<i class="bi bi-eye"></i>'
         else:
             self.request.identity.watched.append(project)
+            self.request.response.headers = {"HX-Trigger": "watchedProjectEvent"}
             return '<i class="bi bi-eye-fill"></i>'
 
     @view_config(
@@ -393,6 +413,7 @@ class ProjectView(object):
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
         return {"project": project}
 
     @view_config(

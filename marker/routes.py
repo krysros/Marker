@@ -297,6 +297,16 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route("project_select", "/project/select", factory=default_factory)
+    config.add_route(
+        "count_project_companies",
+        r"/count/project/{project_id:\d+}/{slug}/companies",
+        factory=project_factory,
+    )
+    config.add_route(
+        "count_project_watched",
+        r"/count/project/{project_id:\d+}/{slug}/watched",
+        factory=project_factory,
+    )
 
     config.add_route("user_all", "/user", factory=default_factory)
     config.add_route("user_more", "/user/more", factory=default_factory)
