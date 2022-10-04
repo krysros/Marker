@@ -11,6 +11,7 @@ from ..models import (
     Tag,
     Company,
     recomended,
+    companies_tags,
 )
 from ..forms import TagForm, TagSearchForm
 from ..paginator import get_paginator
@@ -26,6 +27,14 @@ log = logging.getLogger(__name__)
 class TagView(object):
     def __init__(self, request):
         self.request = request
+
+    def count_companies(self, tag):
+        return self.request.dbsession.scalar(
+            select(func.count())
+            .select_from(Tag)
+            .join(companies_tags)
+            .filter(tag.id == companies_tags.c.tag_id)
+        )
 
     @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
     @view_config(
@@ -73,10 +82,8 @@ class TagView(object):
         permission="view",
     )
     def view(self):
-        from ..forms.select import STATES
-
         tag = self.request.context.tag
-        return {"tag": tag}
+        return {"tag": tag, "c_companies": self.count_companies(tag)}
 
     @view_config(
         route_name="tag_companies",
@@ -153,6 +160,7 @@ class TagView(object):
             "filter": filter,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
+            "c_companies": self.count_companies(tag),
             "paginator": paginator,
             "next_page": next_page,
             "states": states,
@@ -203,6 +211,15 @@ class TagView(object):
             f"Użytkownik {self.request.identity.name} eksportował dane firm otagowanych {tag.name}"
         )
         return response
+
+    @view_config(
+        route_name="count_tag_companies",
+        renderer="json",
+        permission="view",
+    )
+    def count_tag_companies(self):
+        tag = self.request.context.tag
+        return self.count_companies(tag)
 
     @view_config(route_name="tag_add", renderer="basic_form.mako", permission="edit")
     def add(self):

@@ -45,6 +45,11 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/companies/export",
         factory=tag_factory,
     )
+    config.add_route(
+        "count_tag_companies",
+        r"/count/tag/{tag_id:\d+}/{slug}/companies",
+        factory=tag_factory,
+    )
     config.add_route("tag_add", "/tag/add", factory=default_factory)
     config.add_route("tag_search", "/tag/search", factory=default_factory)
     config.add_route("tag_results", "/tag/results", factory=default_factory)
