@@ -30,7 +30,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}">
-            Rekomendacje <span class="badge text-bg-secondary">${c_recomended}</span>
+            Rekomendacje <span class="badge text-bg-secondary"><div id="company-recomended-counter" hx-get="${request.route_url('count_company_recomended', company_id=company.id, slug=company.slug)}" hx-trigger="recomendedCompanyEvent from:body">${c_recomended}</div></span>
           </a>
         </li>
         <li class="nav-item">

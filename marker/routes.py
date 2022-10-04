@@ -118,6 +118,11 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
+        "count_company_recomended",
+        r"/count/company/{company_id:\d+}/{slug}/recomended",
+        factory=company_factory,
+    )
+    config.add_route(
         "company_comments",
         r"/company/{company_id:\d+}/{slug}/comments",
         factory=company_factory,

@@ -248,6 +248,15 @@ class CompanyView(object):
         return self.count_comments(company)
 
     @view_config(
+        route_name="count_company_recomended",
+        renderer="json",
+        permission="view",
+    )
+    def count_company_recomended(self):
+        company = self.request.context.company
+        return self.count_recomended(company)
+
+    @view_config(
         route_name="company_recomended",
         renderer="company_recomended.mako",
         permission="view",
@@ -575,9 +584,11 @@ class CompanyView(object):
 
         if company in recomended:
             recomended.remove(company)
+            self.request.response.headers = {"HX-Trigger": "recomendedCompanyEvent"}
             return '<i class="bi bi-hand-thumbs-up"></i>'
         else:
             recomended.append(company)
+            self.request.response.headers = {"HX-Trigger": "recomendedCompanyEvent"}
             return '<i class="bi bi-hand-thumbs-up-fill"></i>'
 
     @view_config(
