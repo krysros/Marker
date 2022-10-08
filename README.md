@@ -9,7 +9,6 @@ Aplikacja dla Generalnych Wykonawców usprawniającą proces ofertowania oraz ko
 - Obsługa informacji o firmach i projektach oraz relacjach pomiędzy nimi
 - Zwiększenie wydajności i skuteczności ofertowania
 - Zmniejszenie progu wejścia dla nowych pracowników
-- Automatyzacja procesu generowania dokumentów (m.in. wzorów umów w formacie docx) na podstawie szablonów
 - Analiza rynku
 
 ### Co wyróżnia aplikację?
@@ -36,9 +35,10 @@ Aktualnie dostępne moduły:
 - Firmy
 - Projekty
 - Tagi
-- Użytkownicy
+- Osoby
 - Komentarze
 - Raporty
+- Użytkownicy
 
 Głównym założeniem jest intuicyjność obsługi i szybkość dostępu do interesujących danych. Aplikację i interfejs zrealizowano przy zastosowaniu reguł KISS i DRY.
 
