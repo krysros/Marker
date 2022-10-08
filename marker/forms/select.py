@@ -216,16 +216,16 @@ COURTS = [
 
 
 REPORTS = [
-    ("cb", "Najpopularniejsze tagi"),
-    ("cv", "Województwa o największej liczbie firm"),
-    ("cc", "Miasta o największej liczbie firm"),
-    ("tv", "Województwa o największej liczbie projektów"),
-    ("tc", "Miasta o największej liczbie projektów"),
-    ("uc", "Aktywność użytkowników (dodane firmy)"),
-    ("ut", "Aktywność użytkowników (dodane projekty)"),
-    ("ct", "Inwestorzy (liczba projektów)"),
-    ("cu", "Rekomendowane firmy"),
-    ("tf", "Obserwowane projekty"),
+    ("companies-tags", "Najpopularniejsze tagi wśród firm"),
+    ("companies-states", "Województwa o największej liczbie firm"),
+    ("companies-cities", "Miasta o największej liczbie firm"),
+    ("projects-states", "Województwa o największej liczbie projektów"),
+    ("projects-cities", "Miasta o największej liczbie projektów"),
+    ("users-companies", "Aktywność użytkowników (dodane firmy)"),
+    ("users-projects", "Aktywność użytkowników (dodane projekty)"),
+    ("companies-projects", "Inwestorzy (liczba projektów)"),
+    ("recommended-companies", "Rekomendowane firmy"),
+    ("watched-projects", "Obserwowane projekty"),
 ]
 
 

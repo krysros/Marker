@@ -52,94 +52,94 @@ class ReportView(object):
         permission="view",
     )
     def results(self):
-        rel = self.request.matchdict.get("rel", "cb")
+        rel = self.request.matchdict.get("rel", "companies-tags")
         page = int(self.request.params.get("page", 1))
         states = dict(STATES)
         reports = dict(REPORTS)
 
-        if rel == "cb":
+        if rel == "companies-tags":
             stmt = (
                 select(
                     Tag.name,
-                    func.count(companies_tags.c.company_id).label("cb"),
+                    func.count(companies_tags.c.company_id).label("companies-tags"),
                 )
                 .join(companies_tags)
                 .group_by(Tag)
-                .order_by(desc("cb"))
+                .order_by(desc("companies-tags"))
             )
-        elif rel == "cv":
+        elif rel == "companies-states":
             stmt = (
                 select(
                     Company.state,
-                    func.count(Company.state).label("cv"),
+                    func.count(Company.state).label("companies-states"),
                 )
                 .group_by(Company.state)
-                .order_by(desc("cv"))
+                .order_by(desc("companies-states"))
             )
-        elif rel == "cc":
+        elif rel == "companies-cities":
             stmt = (
-                select(Company.city, func.count(Company.city).label("cc"))
+                select(Company.city, func.count(Company.city).label("companies-cities"))
                 .group_by(Company.city)
-                .order_by(desc("cc"))
+                .order_by(desc("companies-cities"))
             )
-        elif rel == "tv":
+        elif rel == "projects-states":
             stmt = (
                 select(
                     Project.state,
-                    func.count(Project.state).label("tv"),
+                    func.count(Project.state).label("projects-states"),
                 )
                 .group_by(Project.state)
-                .order_by(desc("tv"))
+                .order_by(desc("projects-states"))
             )
-        elif rel == "tc":
+        elif rel == "projects-cities":
             stmt = (
-                select(Project.city, func.count(Project.city).label("tc"))
+                select(Project.city, func.count(Project.city).label("projects-cities"))
                 .group_by(Project.city)
-                .order_by(desc("tc"))
+                .order_by(desc("projects-cities"))
             )
-        elif rel == "uc":
+        elif rel == "users-companies":
             stmt = (
-                select(User.name, func.count(Company.creator_id).label("uc"))
+                select(User.name, func.count(Company.creator_id).label("users-companies"))
                 .join(Company.created_by)
                 .group_by(User.name)
-                .order_by(desc("uc"))
+                .order_by(desc("users-companies"))
             )
-        elif rel == "ut":
+        elif rel == "users-projects":
             stmt = (
                 select(
                     User.name,
-                    func.count(Project.creator_id).label("ut"),
+                    func.count(Project.creator_id).label("users-projects"),
                 )
                 .join(Project.created_by)
                 .group_by(User.name)
-                .order_by(desc("ut"))
+                .order_by(desc("users-projects"))
             )
-        elif rel == "ct":
+        elif rel == "companies-projects":
             stmt = (
                 select(
                     Company.name,
-                    func.count(companies_projects.c.company_id).label("ct"),
+                    func.count(companies_projects.c.company_id).label("companies-projects"),
                 )
                 .join(companies_projects)
                 .group_by(Company)
-                .order_by(desc("ct"))
+                .order_by(desc("companies-projects"))
             )
-        elif rel == "cu":
+        elif rel == "recommended-companies":
             stmt = (
-                select(Company.name, func.count(recomended.c.company_id).label("cu"))
+                select(Company.name, func.count(recomended.c.company_id).label("recommended-companies"))
                 .join(recomended)
                 .group_by(Company)
-                .order_by(desc("cu"))
+                .order_by(desc("recommended-companies"))
             )
-        elif rel == "tf":
+        elif rel == "watched-projects":
             stmt = (
                 select(
                     Project.name,
-                    func.count(watched.c.project_id).label("tf"),
+                    func.count(watched.c.project_id).label("watched-projects"),
                 )
                 .join(watched)
                 .group_by(Project)
-                .order_by(desc("tf"))
+                .order_by(desc("watched-projects"))
             )
         else:
             raise HTTPNotFound
