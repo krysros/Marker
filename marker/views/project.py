@@ -396,12 +396,12 @@ class ProjectView(object):
         }
 
     @view_config(
-        route_name="add_company",
-        renderer="company_list.mako",
+        route_name="add_company_to_project",
+        renderer="company_list_project.mako",
         request_method="POST",
         permission="edit",
     )
-    def add_company(self):
+    def add_company_to_project(self):
         project = self.request.context.project
         name = self.request.POST.get("name")
         if name:

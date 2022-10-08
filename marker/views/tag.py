@@ -317,3 +317,24 @@ class TagView(object):
             "tag_results_more", _query={"name": name, "page": page + 1}
         )
         return {"paginator": paginator, "next_page": next_page}
+
+    @view_config(
+        route_name="add_company_to_tag",
+        renderer="company_list_tag.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_company_to_tag(self):
+        tag = self.request.context.tag
+        name = self.request.POST.get("name")
+        if name:
+            company = self.request.dbsession.execute(
+                select(Company).filter_by(name=name)
+            ).scalar_one_or_none()
+            if company not in tag.companies:
+                tag.companies.append(company)
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "tagCompanyEvent"}
+        return {"tag": tag}

@@ -65,6 +65,11 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/{slug}/delete",
         factory=tag_factory,
     )
+    config.add_route(
+        "add_company_to_tag",
+        r"/add/tag/{tag_id:\d+}/{slug}/company",
+        factory=tag_factory,
+    )
 
     config.add_route("company_all", "/company", factory=default_factory)
     config.add_route("company_more", "/company/more", factory=default_factory)
@@ -193,7 +198,7 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "add_company",
+        "add_company_to_project",
         r"/add/project/{project_id:\d+}/{slug}/company",
         factory=project_factory,
     )

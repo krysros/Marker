@@ -31,8 +31,7 @@
     <div class="col-3">
       <div class="float-end">
         % if request.identity.role == 'editor':
-        <!-- Button trigger modal -->
-        <button id="btn-add-company" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-modal">
+        <button id="btn-add-company-to-project" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-to-project-modal">
           Dodaj
         </button>
         % else:
@@ -44,17 +43,16 @@
 </div>
 
 <div id="project-companies">
-  <%include file="company_list.mako"/>
+  <%include file="company_list_project.mako"/>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="add-company-modal" tabindex="-1" aria-labelledby="add-company-modal-label" aria-hidden="true">
+<div class="modal fade" id="add-company-to-project-modal" tabindex="-1" aria-labelledby="add-company-to-project-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('add_company', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML show:window:top">
+      <form hx-post="${request.route_url('add_company_to_project', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML show:window:top">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
-          <h5 class="modal-title" id="add-company-modal-label">Dodaj firmę</h5>
+          <h5 class="modal-title" id="add-company-to-project-modal-label">Dodaj firmę</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -75,13 +73,13 @@
 
 <script>
   // Hide Company Modal
-  var modalCompanyEl = document.getElementById("add-company-modal");
+  var modalCompanyEl = document.getElementById("add-company-to-project-modal");
   var modalCompany = new bootstrap.Modal(modalCompanyEl);
   document.getElementById("btn-save-company").addEventListener("click", function () {
     modalCompany.hide();
   });
   // Clear input fields in Company Modal
-  var btnAddCompany = document.getElementById("btn-add-company");
+  var btnAddCompany = document.getElementById("btn-add-company-to-project");
   btnAddCompany.addEventListener('click', function handleClick(event) {
     var companyName = document.getElementById("company-name");
     companyName.value = '';
