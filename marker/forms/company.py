@@ -1,4 +1,5 @@
 from operator import mul
+from sqlalchemy import select
 from wtforms import Form, StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from .filters import (
@@ -7,6 +8,7 @@ from .filters import (
     remove_dashes_and_spaces,
     remove_multiple_spaces,
 )
+from ..models import Company
 from .select import COLORS, COURTS, STATES
 
 
@@ -110,7 +112,18 @@ class CompanyForm(Form):
     color = SelectField("Kolor", choices=COLORS)
     submit = SubmitField("Zapisz")
 
-    def validate_NIP(form, field):
+    def __init__(self, *args, dbsession, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dbsession = dbsession
+
+    def validate_name(self, field):
+        exists = self.dbsession.execute(
+            select(Company).filter_by(name=field.data)
+        ).scalar_one_or_none()
+        if exists:
+            raise ValidationError("Ta nazwa jest już zajęta")
+
+    def validate_NIP(self, field):
         if not field.data:
             return
 
@@ -123,7 +136,7 @@ class CompanyForm(Form):
         if check_sum != digits[9]:
             raise ValidationError("Nieprawidłowy numer NIP")
 
-    def validate_REGON(form, field):
+    def validate_REGON(self, field):
         if not field.data:
             return
 
@@ -139,7 +152,7 @@ class CompanyForm(Form):
         if not valid:
             raise ValidationError("Nieprawidłowy numer REGON")
 
-    def validate_KRS(form, field):
+    def validate_KRS(self, field):
         if not field.data:
             return
 

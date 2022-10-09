@@ -492,7 +492,7 @@ class CompanyView(object):
         route_name="company_add", renderer="company_form.mako", permission="edit"
     )
     def add(self):
-        form = CompanyForm(self.request.POST)
+        form = CompanyForm(self.request.POST, dbsession=self.request.dbsession)
         states = dict(STATES)
 
         if self.request.method == "POST" and form.validate():
@@ -534,7 +534,7 @@ class CompanyView(object):
     )
     def edit(self):
         company = self.request.context.company
-        form = CompanyForm(self.request.POST, company)
+        form = CompanyForm(self.request.POST, company, dbsession=self.request.dbsession)
         states = dict(STATES)
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)

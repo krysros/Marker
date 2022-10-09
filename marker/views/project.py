@@ -164,7 +164,7 @@ class ProjectView(object):
         route_name="project_add", renderer="project_form.mako", permission="edit"
     )
     def add(self):
-        form = ProjectForm(self.request.POST)
+        form = ProjectForm(self.request.POST, dbsession=self.request.dbsession)
         states = dict(STATES)
 
         if self.request.method == "POST" and form.validate():
@@ -204,7 +204,7 @@ class ProjectView(object):
     )
     def edit(self):
         project = self.request.context.project
-        form = ProjectForm(self.request.POST, project)
+        form = ProjectForm(self.request.POST, project, dbsession=self.request.dbsession)
         states = dict(STATES)
 
         if self.request.method == "POST" and form.validate():
