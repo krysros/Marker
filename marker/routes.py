@@ -42,7 +42,7 @@ def includeme(config):
     )
     config.add_route(
         "tag_companies_export",
-        r"/tag/{tag_id:\d+}/companies/export",
+        r"/tag/{tag_id:\d+}/{slug}/companies/export",
         factory=tag_factory,
     )
     config.add_route(

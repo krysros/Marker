@@ -21,7 +21,7 @@
         ${dropdown.filter_button('tag_companies', states, tag_id=tag.id, slug=tag.slug)}
         ${dropdown.sort_button('tag_companies', dropdown_sort, tag_id=tag.id, slug=tag.slug)}
         ${dropdown.order_button('tag_companies', dropdown_order, tag_id=tag.id, slug=tag.slug)}
-        ${button.export('tag_companies_export', tag_id=tag.id, _query={'filter': filter, 'sort': sort, 'order': order})}
+        ${button.export('tag_companies_export', tag_id=tag.id, slug=tag.slug, _query={'filter': filter, 'sort': sort, 'order': order})}
         % if request.identity.role == 'editor':
           <button id="btn-add-company-to-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-to-tag-modal">
             Dodaj
