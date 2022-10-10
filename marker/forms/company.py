@@ -9,7 +9,7 @@ from .filters import (
     remove_multiple_spaces,
 )
 from ..models import Company
-from .select import COLORS, COURTS, STATES
+from .select import COLORS, COUNTRIES, COURTS, STATES
 
 
 def _check_sum_9(digits):
@@ -65,6 +65,7 @@ class CompanyForm(Form):
         filters=[strip_filter],
     )
     state = SelectField("Województwo", choices=STATES)
+    country = SelectField("Kraj", choices=COUNTRIES)
     WWW = StringField(
         "WWW",
         validators=[
@@ -173,6 +174,7 @@ class CompanySearchForm(Form):
     postcode = StringField("Kod pocztowy", filters=[strip_filter])
     city = StringField("Miasto", filters=[strip_filter])
     state = SelectField("Województwo", choices=STATES)
+    country = SelectField("Kraj", choices=COUNTRIES)
     WWW = StringField("WWW", filters=[strip_filter])
     NIP = StringField("NIP", filters=[strip_filter])
     REGON = StringField("REGON", filters=[strip_filter])

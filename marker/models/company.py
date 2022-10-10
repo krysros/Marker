@@ -78,6 +78,7 @@ class Company(Base):
     postcode = Column(Unicode(10))
     city = Column(Unicode(100))
     state = Column(Unicode(2))
+    country = Column(Unicode(2))
     latitude = Column(Float)
     longitude = Column(Float)
     WWW = Column(Unicode(100))
@@ -119,6 +120,7 @@ class Company(Base):
         postcode,
         city,
         state,
+        country,
         WWW,
         NIP,
         REGON,
@@ -131,6 +133,7 @@ class Company(Base):
         self.postcode = postcode
         self.city = city
         self.state = state
+        self.country = country
         self.WWW = WWW
         self.NIP = NIP
         self.REGON = REGON

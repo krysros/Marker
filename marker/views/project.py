@@ -10,6 +10,7 @@ from ..forms.project import (
 )
 
 from ..forms.select import (
+    COUNTRIES,
     STATES,
     STAGES,
     PROJECT_DELIVERY_METHODS,
@@ -149,12 +150,14 @@ class ProjectView(object):
         project = self.request.context.project
         states = dict(STATES)
         stages = dict(STAGES)
+        countries = dict(COUNTRIES)
         project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
         return {
             "project": project,
             "states": states,
             "stages": stages,
+            "countries": countries,
             "project_delivery_methods": project_delivery_methods,
             "c_companies": self.count_companies(project),
             "c_watched": self.count_watched(project),
@@ -166,6 +169,7 @@ class ProjectView(object):
     def add(self):
         form = ProjectForm(self.request.POST, dbsession=self.request.dbsession)
         states = dict(STATES)
+        countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
             project = Project(
@@ -183,6 +187,7 @@ class ProjectView(object):
                 street=form.street.data,
                 city=form.city.data,
                 state=states.get(form.state.data),
+                country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:
@@ -206,6 +211,7 @@ class ProjectView(object):
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project, dbsession=self.request.dbsession)
         states = dict(STATES)
+        countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
@@ -213,6 +219,7 @@ class ProjectView(object):
                 street=form.street.data,
                 city=form.city.data,
                 state=states.get(form.state.data),
+                country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:

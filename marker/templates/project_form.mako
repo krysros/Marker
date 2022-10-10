@@ -27,6 +27,10 @@
         ${form.state(class_="form-control")}
       </div>
       <div class="mb-3">
+        ${form.country.label}
+        ${form.country(class_="form-control")}
+      </div>
+      <div class="mb-3">
         ${form.link.label}
         ${form.link(class_="form-control")}
       </div>

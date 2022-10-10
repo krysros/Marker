@@ -27,6 +27,10 @@
         ${form.state(class_="form-control")}
       </div>
       <div class="mb-3">
+        ${form.country.label}
+        ${form.country(class_="form-control")}
+      </div>
+      <div class="mb-3">
         ${form.WWW.label}
         ${form.WWW(class_="form-control")}
       </div>

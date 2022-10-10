@@ -105,6 +105,7 @@
             ${company.city}<br>
             % endif
             ${states.get(company.state)}<br>
+            ${countries.get(company.country)}<br>
           </dd>
           <dt>Link</dt>
           <dd>

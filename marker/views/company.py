@@ -30,6 +30,7 @@ from ..forms import (
 )
 from ..paginator import get_paginator
 from ..forms.select import (
+    COUNTRIES,
     STATES,
     COLORS,
     COURTS,
@@ -164,6 +165,7 @@ class CompanyView(object):
         company = self.request.context.company
         states = dict(STATES)
         courts = dict(COURTS)
+        countries = dict(COUNTRIES)
 
         return {
             "c_persons": self.count_persons(company),
@@ -175,6 +177,7 @@ class CompanyView(object):
             "company": company,
             "states": states,
             "courts": courts,
+            "countries": countries,
         }
 
     @view_config(
@@ -494,6 +497,7 @@ class CompanyView(object):
     def add(self):
         form = CompanyForm(self.request.POST, dbsession=self.request.dbsession)
         states = dict(STATES)
+        countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
             company = Company(
@@ -513,6 +517,7 @@ class CompanyView(object):
                 street=form.street.data,
                 city=form.city.data,
                 state=states.get(form.state.data),
+                country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:
@@ -536,12 +541,15 @@ class CompanyView(object):
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, dbsession=self.request.dbsession)
         states = dict(STATES)
+        countries = dict(COUNTRIES)
+
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
                 state=states.get(form.state.data),
+                country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
             if loc is not None:

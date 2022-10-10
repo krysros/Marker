@@ -68,6 +68,7 @@
             ${project.city}<br>
             % endif
             ${states.get(project.state)}<br>
+            ${countries.get(project.country)}<br>
           </dd>
           <dt>Link</dt>
           <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>        

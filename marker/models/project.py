@@ -47,6 +47,7 @@ class Project(Base):
     postcode = Column(Unicode(10))
     city = Column(Unicode(100))
     state = Column(Unicode(2))
+    country = Column(Unicode(2))
     latitude = Column(Float)
     longitude = Column(Float)
     link = Column(Unicode(2000))
@@ -74,6 +75,7 @@ class Project(Base):
         postcode,
         city,
         state,
+        country,
         link,
         deadline,
         stage,
@@ -84,6 +86,7 @@ class Project(Base):
         self.postcode = postcode
         self.city = city
         self.state = state
+        self.country = country
         self.link = link
         self.deadline = deadline
         self.stage = stage

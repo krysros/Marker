@@ -7,7 +7,7 @@ from .filters import (
     remove_multiple_spaces,
 )
 from ..models import Project
-from .select import PROJECT_DELIVERY_METHODS, STAGES, STATES
+from .select import COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES, STATES
 
 
 class ProjectForm(Form):
@@ -41,6 +41,7 @@ class ProjectForm(Form):
         filters=[strip_filter],
     )
     state = SelectField("Województwo", choices=STATES)
+    country = SelectField("Kraj", choices=COUNTRIES)
     link = StringField(
         "Link",
         validators=[
@@ -80,6 +81,7 @@ class ProjectSearchForm(Form):
     postcode = StringField("Kod pocztowy", filters=[strip_filter])
     city = StringField("Miasto", filters=[strip_filter])
     state = SelectField("Województwo", choices=STATES)
+    country = SelectField("Kraj", choices=COUNTRIES)
     link = StringField("Link", filters=[strip_filter])
     deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
