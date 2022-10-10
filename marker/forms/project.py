@@ -57,9 +57,16 @@ class ProjectForm(Form):
 
     def __init__(self, *args, dbsession, **kwargs):
         super().__init__(*args, **kwargs)
+        try:
+            self.edited_item = args[1]
+        except IndexError:
+            self.edited_item = None
         self.dbsession = dbsession
 
     def validate_name(self, field):
+        if self.edited_item:
+            if self.edited_item.name == field.data:
+                return
         exists = self.dbsession.execute(
             select(Project).filter_by(name=field.data)
         ).scalar_one_or_none()
