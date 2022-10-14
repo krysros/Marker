@@ -15,3 +15,10 @@
 
 - Add maps to views
 - Add slug to person
+
+2.0a3
+-----
+
+- Add country do company and project
+- Update counters via events
+- Extend and improve UI
