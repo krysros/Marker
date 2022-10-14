@@ -93,7 +93,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="person-name" class="form-label">Nazwa</label>
+            <label for="person-name" class="form-label">Imię i nazwisko</label>
             <input type="text" class="form-control" id="person-name" name="name" required minlength="5" maxlength="100">
           </div>
           <div class="mb-3">
