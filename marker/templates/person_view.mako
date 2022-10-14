@@ -26,6 +26,11 @@
       <dt>Imię i nazwisko</dt>
       <dd>${person.name}</dd>
 
+      % if person.company:
+      <dt>Firma</dt>
+      <dd><a href="${request.route_url('company_view', company_id=person.company.id, slug=person.company.slug)}">${person.company.name}</a></dd>
+      % endif
+
       <dt>Stanowisko</dt>
       <dd>${person.position}</dd>
 
