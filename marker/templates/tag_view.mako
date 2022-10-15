@@ -25,6 +25,13 @@
 </div>
 
 <div class="card">
+  <div class="card-header"><i class="bi bi-tag"></i> ${tag.name}</div>
+  <div class="card-body">
+    <div id="map"></div>
+  </div>
+</div>
+
+<div class="card">
   <div class="card-header"><i class="bi bi-clock"></i> Data modyfikacji</div>
   <div class="card-body">
     <p>
@@ -42,3 +49,41 @@
     </p>
   </div>
 </div>
+
+<script>
+  navigator.geolocation.getCurrentPosition((position) => {
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
+  
+    var map = L.map('map').setView([latitude, longitude], 5);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    var markers = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+    });
+  
+    async function populate() {
+  
+      const requestURL = "${request.route_url('tag_json', tag_id=tag.id, slug=tag.slug)}";
+      const request = new Request(requestURL);
+  
+      const response = await fetch(request);
+      const items = await response.json();
+  
+      for (var i = 0; i < items.length; i++) {
+        var a = items[i];
+        var title = a[0];
+        if (a[1] != null && a[2] != null) {
+          var marker = L.marker(new L.LatLng(a[1], a[2]), { title: title });
+          marker.bindPopup(title);
+          markers.addLayer(marker);
+        }
+      }
+    }
+    populate();
+    map.addLayer(markers);
+  })
+</script>

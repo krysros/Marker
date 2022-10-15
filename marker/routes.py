@@ -31,6 +31,11 @@ def includeme(config):
         factory=tag_factory,
     )
     config.add_route(
+        "tag_json",
+        r"/tag/{tag_id:\d+}/{slug}/json",
+        factory=tag_factory,
+    )
+    config.add_route(
         "tag_companies",
         r"/tag/{tag_id:\d+}/{slug}/companies",
         factory=tag_factory,

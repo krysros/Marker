@@ -86,6 +86,18 @@ class TagView(object):
         return {"tag": tag, "c_companies": self.count_companies(tag)}
 
     @view_config(
+        route_name="tag_json",
+        renderer="json",
+        permission="view",
+    )
+    def tag_json(self):
+        tag = self.request.context.tag
+        query = select(Company).filter(Company.tags.any(name=tag.name))
+        companies = self.request.dbsession.execute(query).scalars()
+        res = [(company.name, company.latitude, company.longitude) for company in companies]
+        return res
+
+    @view_config(
         route_name="tag_companies",
         renderer="tag_companies.mako",
         permission="view",
