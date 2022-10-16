@@ -67,7 +67,7 @@
   
     async function populate() {
   
-      const requestURL = "${request.route_url('tag_json', tag_id=tag.id, slug=tag.slug)}";
+      const requestURL = "${url}";
       const request = new Request(requestURL);
   
       const response = await fetch(request);

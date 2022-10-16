@@ -83,7 +83,8 @@ class TagView(object):
     )
     def view(self):
         tag = self.request.context.tag
-        return {"tag": tag, "c_companies": self.count_companies(tag)}
+        url = self.request.route_url('tag_json', tag_id=tag.id, slug=tag.slug)
+        return {"tag": tag, "url": url, "c_companies": self.count_companies(tag)}
 
     @view_config(
         route_name="tag_json",
