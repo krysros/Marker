@@ -99,7 +99,9 @@ class ReportView(object):
             )
         elif rel == "users-companies":
             stmt = (
-                select(User.name, func.count(Company.creator_id).label("users-companies"))
+                select(
+                    User.name, func.count(Company.creator_id).label("users-companies")
+                )
                 .join(Company.created_by)
                 .group_by(User.name)
                 .order_by(desc("users-companies"))
@@ -118,7 +120,9 @@ class ReportView(object):
             stmt = (
                 select(
                     Company.name,
-                    func.count(companies_projects.c.company_id).label("companies-projects"),
+                    func.count(companies_projects.c.company_id).label(
+                        "companies-projects"
+                    ),
                 )
                 .join(companies_projects)
                 .group_by(Company)
@@ -126,7 +130,10 @@ class ReportView(object):
             )
         elif rel == "recommended-companies":
             stmt = (
-                select(Company.name, func.count(recomended.c.company_id).label("recommended-companies"))
+                select(
+                    Company.name,
+                    func.count(recomended.c.company_id).label("recommended-companies"),
+                )
                 .join(recomended)
                 .group_by(Company)
                 .order_by(desc("recommended-companies"))
