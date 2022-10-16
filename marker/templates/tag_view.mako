@@ -75,7 +75,7 @@
   
       for (var i = 0; i < items.length; i++) {
         var a = items[i];
-        var title = a.name;
+        var title = `<%text><b>${a.name}</b><br>Ulica: ${a.street}<br>Miasto: ${a.city}<br>Woj.: ${a.state}<br>Kraj: ${a.country}</%text>`;
         if (a.latitude != null && a.longitude != null) {
           var marker = L.marker(new L.LatLng(a.latitude, a.longitude), { title: title });
           marker.bindPopup(title);
