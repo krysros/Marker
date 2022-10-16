@@ -94,7 +94,26 @@ class TagView(object):
         tag = self.request.context.tag
         query = select(Company).filter(Company.tags.any(name=tag.name))
         companies = self.request.dbsession.execute(query).scalars()
-        res = [(company.name, company.latitude, company.longitude) for company in companies]
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "postcode": company.postcode,
+                "city": company.city,
+                "state": company.state,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "WWW": company.WWW,
+                "NIP": company.NIP,
+                "REGON": company.REGON,
+                "KRS": company.KRS,
+                "court": company.court,
+                "color": company.color,
+            }
+            for company in companies
+        ]
         return res
 
     @view_config(

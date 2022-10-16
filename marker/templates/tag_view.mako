@@ -75,9 +75,9 @@
   
       for (var i = 0; i < items.length; i++) {
         var a = items[i];
-        var title = a[0];
-        if (a[1] != null && a[2] != null) {
-          var marker = L.marker(new L.LatLng(a[1], a[2]), { title: title });
+        var title = a.name;
+        if (a.latitude != null && a.longitude != null) {
+          var marker = L.marker(new L.LatLng(a.latitude, a.longitude), { title: title });
           marker.bindPopup(title);
           markers.addLayer(marker);
         }
