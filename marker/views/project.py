@@ -98,6 +98,7 @@ class ProjectView(object):
                 "page": page + 1,
             },
         )
+        url = self.request.route_url('project_json')
         return {
             "filter": filter,
             "sort": sort,
@@ -108,6 +109,7 @@ class ProjectView(object):
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
+            "url": url,
         }
 
     @view_config(
@@ -122,6 +124,31 @@ class ProjectView(object):
             "c_companies": self.count_companies(project),
             "c_watched": self.count_watched(project),
         }
+
+    @view_config(
+        route_name="project_json",
+        renderer="json",
+        permission="view",
+    )
+    def project_json(self):
+        query = select(Project)
+        projects = self.request.dbsession.execute(query).scalars()
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "postcode": project.postcode,
+                "city": project.city,
+                "state": project.state,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "link": project.link,
+            }
+            for project in projects
+        ]
+        return res
 
     @view_config(
         route_name="count_project_companies",

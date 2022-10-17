@@ -16,4 +16,12 @@
   </div>
 </div>
 
+<div class="card">
+  <div class="card-header"><i class="bi bi-briefcase"></i> Projekty</div>
+  <div class="card-body">
+    <div id="map"></div>
+  </div>
+</div>
+
 <%include file="project_table.mako"/>
+<%include file="markers.mako"/>
