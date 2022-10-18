@@ -273,6 +273,8 @@ def includeme(config):
 
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
+    config.add_route("project_json", "/project/json", factory=default_factory)
+    config.add_route("project_map", "/project/map", factory=default_factory)
     config.add_route("project_add", "/project/add", factory=default_factory)
     config.add_route("project_search", "/project/search", factory=default_factory)
     config.add_route("project_results", "/project/results", factory=default_factory)
@@ -281,7 +283,6 @@ def includeme(config):
         "/project/results/more",
         factory=default_factory,
     )
-    config.add_route("project_json", "/project/json", factory=default_factory)
     config.add_route(
         "project_view",
         r"/project/{project_id:\d+}/{slug}",

@@ -98,7 +98,6 @@ class ProjectView(object):
                 "page": page + 1,
             },
         )
-        url = self.request.route_url('project_json')
         return {
             "filter": filter,
             "sort": sort,
@@ -109,7 +108,6 @@ class ProjectView(object):
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
-            "url": url,
         }
 
     @view_config(
@@ -124,6 +122,15 @@ class ProjectView(object):
             "c_companies": self.count_companies(project),
             "c_watched": self.count_watched(project),
         }
+
+    @view_config(
+        route_name="project_map",
+        renderer="project_map.mako",
+        permission="view",
+    )
+    def map(self):
+        url = self.request.route_url('project_json')
+        return {"url": url}
 
     @view_config(
         route_name="project_json",
