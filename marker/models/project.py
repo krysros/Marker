@@ -99,7 +99,7 @@ class Project(Base):
     @property
     def count_watched(self):
         return object_session(self).scalar(
-            select([func.count(watched.c.project_id)]).where(
+            select(func.count(watched.c.project_id)).where(
                 watched.c.project_id == self.id
             )
         )

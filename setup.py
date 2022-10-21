@@ -15,7 +15,7 @@ requires = [
     # 'pyramid_debugtoolbar',
     'pyramid_retry',
     'pyramid_tm',
-    'SQLAlchemy',
+    'SQLAlchemy==2.0.0b2',
     'transaction',
     'zope.sqlalchemy',
     'psycopg2',

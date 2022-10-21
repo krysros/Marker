@@ -148,7 +148,7 @@ class Company(Base):
     @property
     def count_recomended(self):
         return object_session(self).scalar(
-            select([func.count(recomended.c.company_id)]).where(
+            select(func.count(recomended.c.company_id)).where(
                 recomended.c.company_id == self.id
             )
         )
