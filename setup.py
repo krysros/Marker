@@ -18,7 +18,7 @@ requires = [
     'SQLAlchemy==2.0.0b2',
     'transaction',
     'zope.sqlalchemy',
-    'psycopg2',
+    'psycopg[binary]',
     'waitress',
     'argon2-cffi',
     'WTForms',
