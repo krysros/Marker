@@ -22,3 +22,8 @@
 - Add country do company and project
 - Update counters via events
 - Extend and improve UI
+
+2.0a4
+-----
+
+- Update psycopg (a.k.a. psycopg 3)
