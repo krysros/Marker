@@ -1,3 +1,21 @@
+2.0a4
+-----
+
+- Update psycopg (a.k.a. psycopg 3)
+
+2.0a3
+-----
+
+- Add country do company and project
+- Update counters via events
+- Extend and improve UI
+
+2.0a2
+-----
+
+- Add maps to views
+- Add slug to person
+
 2.0a1
 -----
 
@@ -9,21 +27,3 @@
 - Upgrade Bootstrap
 - Remove jQuery as dependency
 - Use htmx to issue AJAX requests directly from HTML
-
-2.0a2
------
-
-- Add maps to views
-- Add slug to person
-
-2.0a3
------
-
-- Add country do company and project
-- Update counters via events
-- Extend and improve UI
-
-2.0a4
------
-
-- Update psycopg (a.k.a. psycopg 3)
