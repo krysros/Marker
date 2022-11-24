@@ -82,7 +82,7 @@ class PersonView(object):
                 "person_view", person_id=person.id, slug=person.slug
             )
             log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane osoby {person.name}"
+                f"Użytkownik {self.request.identity.name} zmienił dane osoby"
             )
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj dane osoby", "form": form}
@@ -93,7 +93,7 @@ class PersonView(object):
         person_name = person.name
         self.request.dbsession.delete(person)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął osobę {person_name}")
+        log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}

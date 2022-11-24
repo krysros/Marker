@@ -240,7 +240,7 @@ class TagView(object):
         companies = self.request.dbsession.execute(query).scalars()
         response = export_companies_to_xlsx(companies)
         log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane firm otagowanych {tag.name}"
+            f"Użytkownik {self.request.identity.name} eksportował dane firm"
         )
         return response
 
@@ -262,7 +262,7 @@ class TagView(object):
             tag.created_by = self.request.identity
             self.request.dbsession.add(tag)
             self.request.session.flash("success:Dodano do bazy danych")
-            log.info(f"Użytkownik {self.request.identity.name} dodał tag {tag.name}")
+            log.info(f"Użytkownik {self.request.identity.name} dodał tag")
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
 
@@ -278,7 +278,7 @@ class TagView(object):
             tag.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
             log.info(
-                f"Użytkownik {self.request.identity.name} zmienił nazwę tagu {tag.name}"
+                f"Użytkownik {self.request.identity.name} zmienił nazwę tagu"
             )
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
@@ -290,7 +290,7 @@ class TagView(object):
         tag_name = tag.name
         self.request.dbsession.delete(tag)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął tag {tag_name}")
+        log.info(f"Użytkownik {self.request.identity.name} usunął tag")
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}

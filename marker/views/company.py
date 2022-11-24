@@ -319,7 +319,7 @@ class CompanyView(object):
                 company.tags.append(tag)
                 new_tag = tag
                 log.info(
-                    f"Użytkownik {self.request.identity.name} dodał tag {tag.name} do firmy {company.name}"
+                    f"Użytkownik {self.request.identity.name} dodał tag do firmy"
                 )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
@@ -346,7 +346,7 @@ class CompanyView(object):
             if person not in company.people:
                 company.people.append(person)
                 log.info(
-                    f"Użytkownik {self.request.identity.name} dodał osobę {person.name} do firmy {company.name}"
+                    f"Użytkownik {self.request.identity.name} dodał osobę do firmy"
                 )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
@@ -529,7 +529,7 @@ class CompanyView(object):
             self.request.dbsession.add(company)
             self.request.session.flash("success:Dodano do bazy danych")
             log.info(
-                f"Użytkownik {self.request.identity.name} dodał firmę {company.name}"
+                f"Użytkownik {self.request.identity.name} dodał firmę"
             )
             next_url = self.request.route_url("company_all")
             return HTTPSeeOther(location=next_url)
@@ -563,7 +563,7 @@ class CompanyView(object):
                 "company_view", company_id=company.id, slug=company.slug
             )
             log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane firmy {company.name}"
+                f"Użytkownik {self.request.identity.name} zmienił dane firmy"
             )
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj dane firmy", "form": form}
@@ -574,7 +574,7 @@ class CompanyView(object):
         company_name = company.name
         self.request.dbsession.delete(company)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął firmę {company_name}")
+        log.info(f"Użytkownik {self.request.identity.name} usunął firmę")
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -749,7 +749,7 @@ class CompanyView(object):
 
         company.tags.remove(tag)
         log.info(
-            f"Użytkownik {self.request.identity.name} usunął tag {tag_name} z firmy {company_name}"
+            f"Użytkownik {self.request.identity.name} usunął tag z firmy"
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
@@ -766,7 +766,7 @@ class CompanyView(object):
         person = self.request.context.person
         person_name = person.name
         self.request.dbsession.delete(person)
-        log.info(f"Użytkownik {self.request.identity.name} usunął osobę {person_name}")
+        log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "personCompanyEvent"}
@@ -820,7 +820,7 @@ class CompanyView(object):
 
         company.projects.remove(project)
         log.info(
-            f"Użytkownik {self.request.identity.name} usunął firmę {company_name} z projektu {project_name}"
+            f"Użytkownik {self.request.identity.name} usunął firmę z projektu"
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.

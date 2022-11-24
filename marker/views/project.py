@@ -234,7 +234,7 @@ class ProjectView(object):
             self.request.dbsession.add(project)
             self.request.session.flash("success:Dodano do bazy danych")
             log.info(
-                f"Użytkownik {self.request.identity.name} dodał projekt {project.name}"
+                f"Użytkownik {self.request.identity.name} dodał projekt"
             )
             next_url = self.request.route_url("project_all")
             return HTTPSeeOther(location=next_url)
@@ -270,7 +270,7 @@ class ProjectView(object):
                 slug=project.slug,
             )
             log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane projektu {project.name}"
+                f"Użytkownik {self.request.identity.name} zmienił dane projektu"
             )
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj dane projektu", "form": form}
@@ -286,7 +286,7 @@ class ProjectView(object):
         self.request.dbsession.delete(project)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(
-            f"Użytkownik {self.request.identity.name} usunął projekt {project_name}"
+            f"Użytkownik {self.request.identity.name} usunął projekt"
         )
         next_url = self.request.route_url("home")
         response = self.request.response
