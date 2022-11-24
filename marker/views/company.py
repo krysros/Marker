@@ -506,6 +506,7 @@ class CompanyView(object):
                 postcode=form.postcode.data,
                 city=form.city.data,
                 state=form.state.data,
+                country=form.country.data,
                 WWW=form.WWW.data,
                 NIP=form.NIP.data,
                 REGON=form.REGON.data,
