@@ -2,6 +2,8 @@
 -----
 
 - **BREAKING CHANGE**: Rename recomend table to recommend
+- **BREAKING CHANGE**: Rename WWW column to link in company
+- Add color column to project
 
 2.0a4
 -----

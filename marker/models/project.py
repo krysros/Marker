@@ -51,6 +51,7 @@ class Project(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     link = Column(Unicode(2000))
+    color = Column(Unicode(10))
     deadline = Column(Date)
     stage = Column(Unicode(100))
     project_delivery_method = Column(Unicode(100))
@@ -77,6 +78,7 @@ class Project(Base):
         state,
         country,
         link,
+        color,
         deadline,
         stage,
         project_delivery_method,
@@ -88,6 +90,7 @@ class Project(Base):
         self.state = state
         self.country = country
         self.link = link
+        self.color = color
         self.deadline = deadline
         self.stage = stage
         self.project_delivery_method = project_delivery_method
