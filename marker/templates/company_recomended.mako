@@ -28,8 +28,8 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}">
-            Rekomendacje <span class="badge text-bg-secondary">${c_recomended}</span>
+          <a class="nav-link active" aria-current="page" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
+            Rekomendacje <span class="badge text-bg-secondary">${c_recommended}</span>
           </a>
         </li>
         <li class="nav-item">

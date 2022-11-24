@@ -29,8 +29,8 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}">
-            Rekomendacje <span class="badge text-bg-secondary"><div id="company-recomended-counter" hx-get="${request.route_url('count_company_recomended', company_id=company.id, slug=company.slug)}" hx-trigger="recomendedCompanyEvent from:body">${c_recomended}</div></span>
+          <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
+            Rekomendacje <span class="badge text-bg-secondary"><div id="company-recommended-counter" hx-get="${request.route_url('count_company_recommended', company_id=company.id, slug=company.slug)}" hx-trigger="recommendedCompanyEvent from:body">${c_recommended}</div></span>
           </a>
         </li>
         <li class="nav-item">
@@ -42,9 +42,9 @@
     </div>
     <div class="col-3">
       <div class="float-end">
-        <button class="btn btn-primary" hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recomended">
-          <div id="recomended">
-            % if company in request.identity.recomended:
+        <button class="btn btn-primary" hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommended">
+          <div id="recommended">
+            % if company in request.identity.recommended:
               <i class="bi bi-hand-thumbs-up-fill"></i>
             % else:
               <i class="bi bi-hand-thumbs-up"></i>

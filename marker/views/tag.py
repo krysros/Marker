@@ -10,7 +10,7 @@ from sqlalchemy import (
 from ..models import (
     Tag,
     Company,
-    recomended,
+    recommended,
     companies_tags,
 )
 from ..forms import TagForm, TagSearchForm
@@ -140,20 +140,20 @@ class TagView(object):
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
 
-        if sort == "recomended":
+        if sort == "recommended":
             if order == "asc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
-                    .join(recomended)
+                    .join(recommended)
                     .group_by(Company)
-                    .order_by(func.count(recomended.c.company_id).asc(), Company.id)
+                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
             elif order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
-                    .join(recomended)
+                    .join(recommended)
                     .group_by(Company)
-                    .order_by(func.count(recomended.c.company_id).desc(), Company.id)
+                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
             if order == "asc":
@@ -209,20 +209,20 @@ class TagView(object):
         states = dict(STATES)
         query = select(Company)
 
-        if sort == "recomended":
+        if sort == "recommended":
             if order == "asc":
                 query = (
                     query.filter(Company.tags.any(name=tag.name))
-                    .join(recomended)
+                    .join(recommended)
                     .group_by(Company)
-                    .order_by(func.count(recomended.c.company_id).asc(), Company.id)
+                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
             elif order == "desc":
                 query = (
                     query.filter(Company.tags.any(name=tag.name))
-                    .join(recomended)
+                    .join(recommended)
                     .group_by(Company)
-                    .order_by(func.count(recomended.c.company_id).desc(), Company.id)
+                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
             if order == "asc":

@@ -32,7 +32,7 @@ def export_companies_to_xlsx(companies):
             company.name,
             company.city,
             company.state,
-            company.count_recomended,
+            company.count_recommended,
             company.WWW,
         ]
         for j, col in enumerate(cols):

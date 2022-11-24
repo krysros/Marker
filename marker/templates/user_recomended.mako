@@ -5,11 +5,11 @@
 <div class="card border-0">
   <div class="row">
     <div class="col">
-      ${dropdown.sort_button('user_recomended', dropdown_sort, username=user.name)}
-      ${dropdown.order_button('user_recomended', dropdown_order, username=user.name)}
+      ${dropdown.sort_button('user_recommended', dropdown_sort, username=user.name)}
+      ${dropdown.order_button('user_recommended', dropdown_order, username=user.name)}
       <div class="float-end">
-        ${button.export('user_recomended_export', username=user.name, _query={'filter': filter, 'sort': sort, 'order': order})}
-        ${button.clear('user_recomended_clear', username=user.name)}
+        ${button.export('user_recommended_export', username=user.name, _query={'filter': filter, 'sort': sort, 'order': order})}
+        ${button.clear('user_recommended_clear', username=user.name)}
       </div>
     </div>
   </div>

@@ -19,7 +19,7 @@ from ..models import (
 
 from ..models.company import companies_tags
 from ..models.project import companies_projects
-from ..models.user import recomended, watched
+from ..models.user import recommended, watched
 
 from ..paginator import get_paginator
 from ..forms.select import STATES, REPORTS
@@ -132,9 +132,9 @@ class ReportView(object):
             stmt = (
                 select(
                     Company.name,
-                    func.count(recomended.c.company_id).label("recommended-companies"),
+                    func.count(recommended.c.company_id).label("recommended-companies"),
                 )
-                .join(recomended)
+                .join(recommended)
                 .group_by(Company)
                 .order_by(desc("recommended-companies"))
             )

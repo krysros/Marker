@@ -8,7 +8,7 @@ from sqlalchemy import select
 from ..models import (
     User,
     checked,
-    recomended,
+    recommended,
     watched,
     Tag,
     Company,
@@ -440,16 +440,16 @@ class UserView(object):
         return response
 
     @view_config(
-        route_name="user_recomended",
-        renderer="user_recomended.mako",
+        route_name="user_recommended",
+        renderer="user_recommended.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_recomended_more",
+        route_name="user_recommended_more",
         renderer="company_more.mako",
         permission="view",
     )
-    def recomended(self):
+    def recommended(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
@@ -458,7 +458,7 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
 
-        stmt = select(Company).join(recomended).filter(user.id == recomended.c.user_id)
+        stmt = select(Company).join(recommended).filter(user.id == recommended.c.user_id)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -472,7 +472,7 @@ class UserView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "user_recomended_more",
+            "user_recommended_more",
             username=user.name,
             _query={"page": page + 1, "sort": sort, "order": order},
         )
@@ -490,15 +490,15 @@ class UserView(object):
         }
 
     @view_config(
-        route_name="user_recomended_export",
+        route_name="user_recommended_export",
         permission="view",
     )
-    def export_recomended(self):
+    def export_recommended(self):
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        query = select(Company).join(recomended).filter(user.id == recomended.c.user_id)
+        query = select(Company).join(recommended).filter(user.id == recommended.c.user_id)
 
         if order == "asc":
             query = query.order_by(getattr(Company, sort).asc())
@@ -513,15 +513,15 @@ class UserView(object):
         return response
 
     @view_config(
-        route_name="user_recomended_clear",
+        route_name="user_recommended_clear",
         request_method="POST",
         permission="view",
     )
-    def clear_recomended(self):
+    def clear_recommended(self):
         user = self.request.context.user
-        user.recomended = []
+        user.recommended = []
         log.info(f"Użytkownik {self.request.identity.name} wyczyścił rekomendacje")
-        next_url = self.request.route_url("user_recomended", username=user.name)
+        next_url = self.request.route_url("user_recommended", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303

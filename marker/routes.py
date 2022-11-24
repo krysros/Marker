@@ -133,8 +133,8 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "count_company_recomended",
-        r"/count/company/{company_id:\d+}/{slug}/recomended",
+        "count_company_recommended",
+        r"/count/company/{company_id:\d+}/{slug}/recommended",
         factory=company_factory,
     )
     config.add_route(
@@ -168,18 +168,18 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_recomended",
-        r"/company/{company_id:\d+}/{slug}/recomended",
+        "company_recommended",
+        r"/company/{company_id:\d+}/{slug}/recommended",
         factory=company_factory,
     )
     config.add_route(
-        "company_recomended_more",
-        r"/company/{company_id:\d+}/{slug}/recomended/more",
+        "company_recommended_more",
+        r"/company/{company_id:\d+}/{slug}/recommended/more",
         factory=company_factory,
     )
     config.add_route(
         "company_recommend",
-        r"/recomend/company/{company_id:\d+}",
+        r"/recommend/company/{company_id:\d+}",
         factory=company_factory,
     )
     config.add_route(
@@ -387,21 +387,21 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
-        "user_recomended", "/user/{username}/recomended", factory=user_factory
+        "user_recommended", "/user/{username}/recommended", factory=user_factory
     )
     config.add_route(
-        "user_recomended_more",
-        "/user/{username}/recomended/more",
+        "user_recommended_more",
+        "/user/{username}/recommended/more",
         factory=user_factory,
     )
     config.add_route(
-        "user_recomended_export",
-        "/user/{username}/recomended/export",
+        "user_recommended_export",
+        "/user/{username}/recommended/export",
         factory=user_factory,
     )
     config.add_route(
-        "user_recomended_clear",
-        "/user/{username}/recomended/clear",
+        "user_recommended_clear",
+        "/user/{username}/recommended/clear",
         factory=user_factory,
     )
     config.add_route("user_watched", "/user/{username}/watched", factory=user_factory)

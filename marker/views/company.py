@@ -18,7 +18,7 @@ from ..models import (
     Tag,
     Project,
     User,
-    recomended,
+    recommended,
     companies_tags,
     companies_persons,
     companies_comments,
@@ -78,12 +78,12 @@ class CompanyView(object):
             .filter(company.id == companies_comments.c.company_id)
         )
 
-    def count_recomended(self, company):
+    def count_recommended(self, company):
         return self.request.dbsession.scalar(
             select(func.count())
             .select_from(User)
-            .join(recomended)
-            .filter(company.id == recomended.c.company_id)
+            .join(recommended)
+            .filter(company.id == recommended.c.company_id)
         )
 
     def count_similar(self, company):
@@ -171,7 +171,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
             "company": company,
@@ -191,7 +191,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
             "company": company,
@@ -208,7 +208,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
             "company": company,
@@ -251,29 +251,29 @@ class CompanyView(object):
         return self.count_comments(company)
 
     @view_config(
-        route_name="count_company_recomended",
+        route_name="count_company_recommended",
         renderer="json",
         permission="view",
     )
-    def count_company_recomended(self):
+    def count_company_recommended(self):
         company = self.request.context.company
-        return self.count_recomended(company)
+        return self.count_recommended(company)
 
     @view_config(
-        route_name="company_recomended",
-        renderer="company_recomended.mako",
+        route_name="company_recommended",
+        renderer="company_recommended.mako",
         permission="view",
     )
     @view_config(
-        route_name="company_recomended_more",
+        route_name="company_recommended_more",
         renderer="user_more.mako",
         permission="view",
     )
-    def recomended(self):
+    def recommended(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         stmt = (
-            select(User).join(recomended).filter(company.id == recomended.c.company_id)
+            select(User).join(recommended).filter(company.id == recommended.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -281,7 +281,7 @@ class CompanyView(object):
             .all()
         )
         next_page = self.request.route_url(
-            "company_recomended_more",
+            "company_recommended_more",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},
@@ -293,7 +293,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
         }
@@ -391,7 +391,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
         }
@@ -408,7 +408,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
         }
@@ -486,7 +486,7 @@ class CompanyView(object):
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),
-            "c_recomended": self.count_recomended(company),
+            "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
         }
@@ -589,15 +589,15 @@ class CompanyView(object):
     )
     def recommend(self):
         company = self.request.context.company
-        recomended = self.request.identity.recomended
+        recommended = self.request.identity.recommended
 
-        if company in recomended:
-            recomended.remove(company)
-            self.request.response.headers = {"HX-Trigger": "recomendedCompanyEvent"}
+        if company in recommended:
+            recommended.remove(company)
+            self.request.response.headers = {"HX-Trigger": "recommendedCompanyEvent"}
             return '<i class="bi bi-hand-thumbs-up"></i>'
         else:
-            recomended.append(company)
-            self.request.response.headers = {"HX-Trigger": "recomendedCompanyEvent"}
+            recommended.append(company)
+            self.request.response.headers = {"HX-Trigger": "recommendedCompanyEvent"}
             return '<i class="bi bi-hand-thumbs-up-fill"></i>'
 
     @view_config(

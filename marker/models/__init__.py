@@ -6,7 +6,7 @@ import zope.sqlalchemy
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
 from .user import User  # flake8: noqa
-from .user import recomended  # flake8: noqa
+from .user import recommended  # flake8: noqa
 from .user import checked  # flake8: noqa
 from .user import watched  # flake8: noqa
 from .tag import Tag  # flake8: noqa

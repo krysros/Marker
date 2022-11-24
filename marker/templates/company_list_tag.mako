@@ -12,7 +12,7 @@
       % for company in tag.companies:
       <tr>
         <td>
-          % if company in request.identity.recomended:
+          % if company in request.identity.recommended:
           <i class="bi bi-hand-thumbs-up-fill"></i>
           % endif
           <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>

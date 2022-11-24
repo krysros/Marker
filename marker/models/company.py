@@ -21,7 +21,7 @@ from sqlalchemy.orm import (
 
 from slugify import slugify
 from .meta import Base
-from .user import recomended
+from .user import recommended
 
 
 companies_tags = Table(
@@ -146,9 +146,9 @@ class Company(Base):
         return slugify(self.name)
 
     @property
-    def count_recomended(self):
+    def count_recommended(self):
         return object_session(self).scalar(
-            select(func.count(recomended.c.company_id)).where(
-                recomended.c.company_id == self.id
+            select(func.count(recommended.c.company_id)).where(
+                recommended.c.company_id == self.id
             )
         )

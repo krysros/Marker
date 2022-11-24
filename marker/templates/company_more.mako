@@ -30,7 +30,7 @@
     % endif
   </td>
   <td>
-    % if company in request.identity.recomended:
+    % if company in request.identity.recommended:
     <i class="bi bi-hand-thumbs-up-fill"></i>
     % endif
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
@@ -40,9 +40,9 @@
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
-    % if company.count_recomended > 0:
-    <a href="${request.route_url('company_recomended', company_id=company.id, slug=company.slug)}">
-      <span class="badge text-bg-success" role="button">${company.count_recomended}</span>
+    % if company.count_recommended > 0:
+    <a href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
+      <span class="badge text-bg-success" role="button">${company.count_recommended}</span>
     </a>
     % else:
     <span class="badge text-bg-secondary">0</span>

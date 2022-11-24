@@ -45,7 +45,7 @@
               </a>
             </li>
             <li>
-              <a class="dropdown-item" role="button" href="${request.route_url('user_recomended', username=request.identity.name)}">
+              <a class="dropdown-item" role="button" href="${request.route_url('user_recommended', username=request.identity.name)}">
                 <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
               </a>
             </li>

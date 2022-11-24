@@ -17,8 +17,8 @@ import argon2
 ph = argon2.PasswordHasher()
 
 
-recomended = Table(
-    "recomended",
+recommended = Table(
+    "recommended",
     Base.metadata,
     Column(
         "company_id",
@@ -95,9 +95,9 @@ class User(Base):
         except argon2.exceptions.VerifyMismatchError as error:
             return False
 
-    recomended = relationship(
+    recommended = relationship(
         "Company",
-        secondary=recomended,
+        secondary=recommended,
         cascade="delete",
         single_parent=True,
         backref="companies",

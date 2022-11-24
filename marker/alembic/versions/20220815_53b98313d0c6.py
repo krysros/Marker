@@ -1,4 +1,4 @@
-"""Rename recomended to recomended
+"""Rename thumbs_up to recomended
 
 Revision ID: 53b98313d0c6
 Revises: 39a9144f106b

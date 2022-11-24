@@ -1,3 +1,8 @@
+2.0a5
+-----
+
+- **BREAKING CHANGE**: Rename recomend table to recommend
+
 2.0a4
 -----
 
