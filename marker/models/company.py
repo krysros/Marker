@@ -81,7 +81,7 @@ class Company(Base):
     country = Column(Unicode(2))
     latitude = Column(Float)
     longitude = Column(Float)
-    WWW = Column(Unicode(100))
+    link = Column(Unicode(100))
     NIP = Column(Unicode(20))
     REGON = Column(Unicode(20))
     KRS = Column(Unicode(20))
@@ -121,7 +121,7 @@ class Company(Base):
         city,
         state,
         country,
-        WWW,
+        link,
         NIP,
         REGON,
         KRS,
@@ -134,7 +134,7 @@ class Company(Base):
         self.city = city
         self.state = state
         self.country = country
-        self.WWW = WWW
+        self.link = link
         self.NIP = NIP
         self.REGON = REGON
         self.KRS = KRS

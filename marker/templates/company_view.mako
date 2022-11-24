@@ -109,12 +109,12 @@
           </dd>
           <dt>Link</dt>
           <dd>
-          % if company.WWW.startswith('http'):
-            <a href="${company.WWW}">
+          % if company.link.startswith('http'):
+            <a href="${company.link}">
           % else:
-            <a href="${'http://' + company.WWW}">
+            <a href="${'http://' + company.link}">
           % endif
-            ${company.WWW}</a>
+            ${company.link}</a>
           </dd>      
         </dl>
       </div>

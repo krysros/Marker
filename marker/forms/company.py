@@ -66,8 +66,8 @@ class CompanyForm(Form):
     )
     state = SelectField("Województwo", choices=STATES)
     country = SelectField("Kraj", choices=COUNTRIES)
-    WWW = StringField(
-        "WWW",
+    link = StringField(
+        "Link",
         validators=[
             Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
         ],
@@ -175,7 +175,7 @@ class CompanySearchForm(Form):
     city = StringField("Miasto", filters=[strip_filter])
     state = SelectField("Województwo", choices=STATES)
     country = SelectField("Kraj", choices=COUNTRIES)
-    WWW = StringField("WWW", filters=[strip_filter])
+    link = StringField("Link", filters=[strip_filter])
     NIP = StringField("NIP", filters=[strip_filter])
     REGON = StringField("REGON", filters=[strip_filter])
     KRS = StringField("KRS", filters=[strip_filter])

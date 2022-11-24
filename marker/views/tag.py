@@ -106,7 +106,7 @@ class TagView(object):
                 "country": company.country,
                 "latitude": company.latitude,
                 "longitude": company.longitude,
-                "WWW": company.WWW,
+                "link": company.link,
                 "NIP": company.NIP,
                 "REGON": company.REGON,
                 "KRS": company.KRS,

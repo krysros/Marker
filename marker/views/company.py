@@ -507,7 +507,7 @@ class CompanyView(object):
                 city=form.city.data,
                 state=form.state.data,
                 country=form.country.data,
-                WWW=form.WWW.data,
+                link=form.link.data,
                 NIP=form.NIP.data,
                 REGON=form.REGON.data,
                 KRS=form.KRS.data,
@@ -648,7 +648,7 @@ class CompanyView(object):
                         "postcode": form.postcode.data,
                         "city": form.city.data,
                         "state": form.state.data,
-                        "WWW": form.WWW.data,
+                        "link": form.link.data,
                         "NIP": form.NIP.data,
                         "REGON": form.REGON.data,
                         "KRS": form.KRS.data,
@@ -675,7 +675,7 @@ class CompanyView(object):
         postcode = self.request.params.get("postcode")
         city = self.request.params.get("city")
         state = self.request.params.get("state")
-        WWW = self.request.params.get("WWW")
+        link = self.request.params.get("link")
         NIP = self.request.params.get("NIP")
         REGON = self.request.params.get("REGON")
         KRS = self.request.params.get("KRS")
@@ -690,7 +690,7 @@ class CompanyView(object):
             .filter(Company.postcode.ilike("%" + postcode + "%"))
             .filter(Company.city.ilike("%" + city + "%"))
             .filter(Company.state.ilike("%" + state + "%"))
-            .filter(Company.WWW.ilike("%" + WWW + "%"))
+            .filter(Company.link.ilike("%" + link + "%"))
             .filter(Company.NIP.ilike("%" + NIP + "%"))
             .filter(Company.REGON.ilike("%" + REGON + "%"))
             .filter(Company.KRS.ilike("%" + KRS + "%"))
@@ -711,7 +711,7 @@ class CompanyView(object):
                 "postcode": postcode,
                 "city": city,
                 "state": state,
-                "WWW": WWW,
+                "link": link,
                 "NIP": NIP,
                 "REGON": REGON,
                 "KRS": KRS,

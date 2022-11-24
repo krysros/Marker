@@ -31,8 +31,8 @@
         ${form.country(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.WWW.label}
-        ${form.WWW(class_="form-control")}
+        ${form.link.label}
+        ${form.link(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.NIP.label}

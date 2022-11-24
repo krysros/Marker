@@ -20,7 +20,7 @@ def export_companies_to_xlsx(companies):
         "Miasto",
         "Województwo",
         "Rekomendacje",
-        "WWW",
+        "Link",
     ]
 
     for j, col in enumerate(header):
@@ -33,7 +33,7 @@ def export_companies_to_xlsx(companies):
             company.city,
             company.state,
             company.count_recommended,
-            company.WWW,
+            company.link,
         ]
         for j, col in enumerate(cols):
             worksheet.write(i, j, col)
@@ -71,7 +71,7 @@ def export_projects_to_xlsx(projects):
         "Termin",
         "Miasto",
         "Województwo",
-        "WWW",
+        "Link",
     ]
 
     for j, col in enumerate(header):
