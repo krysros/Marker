@@ -3,18 +3,9 @@
 
 <div class="card border-0">
   <div class="row">
-    <div class="col-3">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('project_all')}">Tabela</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="${request.route_url('project_map')}">Mapa</a>
-        </li>
-      </ul>
-    </div>
-    <div class="col-9">
+    <div class="col">
       <div class="float-end">
+        ${button.table('project_all')}
         ${button.search('project_search')}
         ${button.add('project_add')}
       </div>

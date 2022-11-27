@@ -60,6 +60,8 @@
 
 <div class="card border-${company.color}">
   <div class="card-header">
+    <i class="bi bi-building"></i> Firma
+    <div class="float-end">
     <div class="form-check">
       % if company in request.identity.checked:
       <input class="form-check-input"
@@ -83,7 +85,8 @@
             hx-trigger="click"
             hx-swap="none">
       % endif
-      <label class="form-check-label" for="mark">${company.name}</label>
+      <label class="form-check-label" for="mark">Zaznacz</label>
+      </div>
     </div>
   </div>
   <div class="card-body">

@@ -48,7 +48,7 @@
 </div>
 
 <div class="card">
-  <div class="card-header"><i class="bi bi-briefcase"></i> ${project.name}</div>
+  <div class="card-header"><i class="bi bi-briefcase"></i> Projekt</div>
   <div class="card-body">
     % if project.latitude:
     <div id="map"></div>

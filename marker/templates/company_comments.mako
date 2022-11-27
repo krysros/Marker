@@ -42,7 +42,7 @@
     <div class="col-3">
       <div class="float-end">
         <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-comment-modal">
-          Dodaj
+          <i class="bi bi-plus-lg"></i>
         </button>
       </div>
     </div>

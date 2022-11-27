@@ -32,10 +32,10 @@
       <div class="float-end">
         % if request.identity.role == 'editor':
         <button id="btn-add-company-to-project" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-to-project-modal">
-          Dodaj
+          <i class="bi bi-plus-lg"></i>
         </button>
         % else:
-        <button type="button" class="btn btn-success btn-sm" disabled>Dodaj</button>
+        <button type="button" class="btn btn-success btn-sm" disabled><i class="bi bi-plus-lg"></i></button>
         % endif
       </div>
     </div>
