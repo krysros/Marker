@@ -50,6 +50,14 @@
 % endif
 </%def>
 
+<%def name="unlink(route_name, **kwargs)">
+% if request.is_authenticated and request.identity.role == 'editor':
+<button type="button" class="btn btn-warning btn-sm" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-dash-lg"></i></button>
+% else:
+<button type="button" class="btn btn-warning btn-sm" disabled><i class="bi bi-dash-lg"></i></button>
+% endif
+</%def>
+
 <%def name="del_card(route_name, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor':
 <button type="button" class="btn btn-danger btn-sm" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest .card" hx-swap="outerHTML swap:1s"><i class="bi bi-trash"></i></button>
@@ -60,8 +68,8 @@
 
 <%def name="del_row(route_name, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor':
-<button type="button" class="btn btn-danger btn-sm" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-dash-lg"></i></button>
+<button type="button" class="btn btn-danger btn-sm" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-trash"></i></button>
 % else:
-<button type="button" class="btn btn-danger btn-sm" disabled><i class="bi bi-dash-lg"></i></button>
+<button type="button" class="btn btn-danger btn-sm" disabled><i class="bi bi-trash"></i></button>
 % endif
 </%def>

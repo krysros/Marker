@@ -723,12 +723,12 @@ class CompanyView(object):
         return {"paginator": paginator, "next_page": next_page, "states": states}
 
     @view_config(
-        route_name="delete_tag",
+        route_name="unlink_tag",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_tag(self):
+    def unlink_tag(self):
         company_id = int(self.request.matchdict["company_id"])
         tag_id = int(self.request.matchdict["tag_id"])
 
@@ -749,7 +749,7 @@ class CompanyView(object):
 
         company.tags.remove(tag)
         log.info(
-            f"Użytkownik {self.request.identity.name} usunął tag z firmy"
+            f"Użytkownik {self.request.identity.name} odpiął tag z firmy"
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
@@ -794,12 +794,12 @@ class CompanyView(object):
         return {"company": company}
 
     @view_config(
-        route_name="delete_project",
+        route_name="unlink_project",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_project(self):
+    def unlink_project(self):
         company_id = int(self.request.matchdict["company_id"])
         project_id = int(self.request.matchdict["project_id"])
 
@@ -820,7 +820,7 @@ class CompanyView(object):
 
         company.projects.remove(project)
         log.info(
-            f"Użytkownik {self.request.identity.name} usunął firmę z projektu"
+            f"Użytkownik {self.request.identity.name} odpiął firmę od projektu"
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.

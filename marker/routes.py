@@ -208,13 +208,13 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "delete_project",
-        r"/delete/company/{company_id:\d+}/project/{project_id:\d+}",
+        "unlink_project",
+        r"/unlink/company/{company_id:\d+}/project/{project_id:\d+}",
         factory=default_factory,
     )
     config.add_route(
-        "delete_tag",
-        r"/delete/company/{company_id:\d+}/tag/{tag_id:\d+}",
+        "unlink_tag",
+        r"/unlink/company/{company_id:\d+}/tag/{tag_id:\d+}",
         factory=default_factory,
     )
 
