@@ -27,8 +27,6 @@
 <div class="card">
   <div class="card-header"><i class="bi bi-tag"></i> Tag</div>
   <div class="card-body">
-    <div id="map"></div>
-    <hr>
     <div class="row">
       <div class="col">
         <dl>
@@ -58,5 +56,3 @@
     </p>
   </div>
 </div>
-
-<%include file="markers.mako"/>

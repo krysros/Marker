@@ -9,7 +9,7 @@
       ${dropdown.order_button('user_recommended', dropdown_order, username=user.name)}
       <div class="float-end">
         ${button.export('user_recommended_export', username=user.name, _query={'filter': filter, 'sort': sort, 'order': order})}
-        ${button.clear('user_recommended_clear', username=user.name)}
+        ${button.clear_recommended('user_recommended_clear', username=user.name)}
       </div>
     </div>
   </div>

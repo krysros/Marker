@@ -3,7 +3,7 @@
 
 <div class="card border-0">
   <div class="row">
-    <div class="col-9">
+    <div class="col">
       <ul class="nav nav-pills">
         <li class="nav-item">
           <a class="nav-link" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
@@ -40,10 +40,13 @@
         </li>
       </ul>
     </div>
-    <div class="col-3">
-      <div class="float-end">
-        ${dropdown.filter_button('company_similar', states, company_id=company.id, slug=company.slug)}
-      </div>
+  </div>
+</div>
+
+<div class="card border-0">
+  <div class="row">
+    <div class="col">
+      ${dropdown.filter_button('company_similar', states, company_id=company.id, slug=company.slug)}
     </div>
   </div>
 </div>

@@ -50,6 +50,22 @@
 % endif
 </%def>
 
+<%def name="clear_recommended(route_name, **kwargs)">
+% if request.is_authenticated and request.identity.role == 'editor':
+<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-hand-thumbs-up"></i></button>
+% else:
+<button type="button" class="btn btn-danger" disabled><i class="bi bi-hand-thumbs-up"></i></button>
+% endif
+</%def>
+
+<%def name="clear_watched(route_name, **kwargs)">
+% if request.is_authenticated and request.identity.role == 'editor':
+<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-eye"></i></button>
+% else:
+<button type="button" class="btn btn-danger" disabled><i class="bi bi-eye"></i></button>
+% endif
+</%def>
+
 <%def name="unlink(route_name, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor':
 <button type="button" class="btn btn-warning btn-sm" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-dash-lg"></i></button>

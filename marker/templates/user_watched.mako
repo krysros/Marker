@@ -10,7 +10,7 @@
       ${dropdown.order_button('user_watched', dropdown_order, username=user.name)}
       <div class="float-end">
         ${button.export('user_watched_export', username=user.name, _query={'filter': filter, 'sort': sort, 'order': order})}
-        ${button.clear('user_watched_clear', username=user.name)}
+        ${button.clear_watched('user_watched_clear', username=user.name)}
       </div>
     </div>
   </div>
