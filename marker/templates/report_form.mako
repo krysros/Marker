@@ -1,6 +1,9 @@
 <%inherit file="layout.mako"/>
 <%include file="errors.mako"/> 
 
+<h2><i class="bi bi-bar-chart"></i> Raporty</h2>
+<hr>
+
 <div class="card">
   <div class="card-header">${heading}</div>
   <div class="card-body">

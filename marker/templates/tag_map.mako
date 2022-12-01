@@ -17,7 +17,7 @@
     </div>
     <div class="col-3">
       <div class="float-end">
-        ${button.table('tag_companies', tag_id=tag.id, slug=tag.slug)}   
+        ${button.table('tag_companies', tag_id=tag.id, slug=tag.slug)}
       </div>
     </div>
   </div>
