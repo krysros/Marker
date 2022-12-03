@@ -5,7 +5,7 @@
 <h2>
   <i class="bi bi-check-square"></i> Zaznaczone
   <div class="float-end">
-    ${button.clear('user_checked_clear', username=user.name)}
+    ${button.clear('user_checked_clear', icon='square', username=user.name)}
   </div>
 </h2>
 <hr>

@@ -22,6 +22,10 @@
 <a class="btn btn-secondary btn-sm" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-person-vcard"></i></a>
 </%def>
 
+<%def name="a(route_name, color, size, icon, desc='', **kwargs)">
+<a class="btn btn-${color} btn-${size}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-${icon}"></i>${' ' + desc if desc else ''}</a>
+</%def>
+
 <%def name="add(route_name, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor':
 <a class="btn btn-success" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-plus-lg"></i></a>
@@ -46,27 +50,11 @@
 % endif
 </%def>
 
-<%def name="clear(route_name, **kwargs)">
+<%def name="clear(route_name, icon, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor':
-<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-square"></i></button>
+<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-${icon}"></i></button>
 % else:
-<button type="button" class="btn btn-danger" disabled><i class="bi bi-square"></i></button>
-% endif
-</%def>
-
-<%def name="clear_recommended(route_name, **kwargs)">
-% if request.is_authenticated and request.identity.role == 'editor':
-<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-hand-thumbs-up"></i></button>
-% else:
-<button type="button" class="btn btn-danger" disabled><i class="bi bi-hand-thumbs-up"></i></button>
-% endif
-</%def>
-
-<%def name="clear_watched(route_name, **kwargs)">
-% if request.is_authenticated and request.identity.role == 'editor':
-<button type="button" class="btn btn-danger" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-eye"></i></button>
-% else:
-<button type="button" class="btn btn-danger" disabled><i class="bi bi-eye"></i></button>
+<button type="button" class="btn btn-danger" disabled><i class="bi bi-${icon}"></i></button>
 % endif
 </%def>
 

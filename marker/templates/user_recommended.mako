@@ -5,7 +5,7 @@
 <h2>
   <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
   <div class="float-end">
-    ${button.clear_recommended('user_recommended_clear', username=user.name)}
+    ${button.clear('user_recommended_clear', icon='hand-thumbs-up', username=user.name)}
   </div>
 </h2>
 <hr>
