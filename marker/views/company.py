@@ -215,6 +215,40 @@ class CompanyView(object):
         }
 
     @view_config(
+        route_name="company_map",
+        renderer="company_map.mako",
+        permission="view",
+    )
+    def map(self):
+        url = self.request.route_url("company_json")
+        return {"url": url}
+
+    @view_config(
+        route_name="company_json",
+        renderer="json",
+        permission="view",
+    )
+    def company_json(self):
+        query = select(Company)
+        companies = self.request.dbsession.execute(query).scalars()
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "postcode": company.postcode,
+                "city": company.city,
+                "state": company.state,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "link": company.link,
+            }
+            for company in companies
+        ]
+        return res
+
+    @view_config(
         route_name="count_company_tags",
         renderer="json",
         permission="view",

@@ -79,6 +79,8 @@ def includeme(config):
 
     config.add_route("company_all", "/company", factory=default_factory)
     config.add_route("company_more", "/company/more", factory=default_factory)
+    config.add_route("company_json", "/company/json", factory=default_factory)
+    config.add_route("company_map", "/company/map", factory=default_factory)
     config.add_route("company_add", "/company/add", factory=default_factory)
     config.add_route("company_search", "/company/search", factory=default_factory)
     config.add_route("company_results", "/company/results", factory=default_factory)

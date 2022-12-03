@@ -5,6 +5,7 @@
 <h2>
   <i class="bi bi-building"></i> Firmy
   <div class="float-end">
+    ${button.map('company_map')}
     ${button.search('company_search')}
     ${button.add('company_add')}
   </div>
