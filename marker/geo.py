@@ -1,6 +1,7 @@
 import json
 import urllib.parse
 import urllib.request
+import urllib.error
 
 
 def location(**kwargs):
@@ -14,8 +15,11 @@ def location(**kwargs):
     else:
         params = urllib.parse.urlencode(kwargs)
         url = f"https://nominatim.openstreetmap.org/search?{params}&format=json"
-    with urllib.request.urlopen(url) as f:
-        res = json.load(f)
+    try:
+        with urllib.request.urlopen(url) as f:
+            res = json.load(f)
+    except urllib.error.URLError:
+        loc = None
     try:
         fst = res[0]
         lat = fst["lat"]
