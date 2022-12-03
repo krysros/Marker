@@ -18,6 +18,10 @@
 <a class="btn btn-secondary" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-map"></i></a>
 </%def>
 
+<%def name="vcard(route_name, **kwargs)">
+<a class="btn btn-secondary btn-sm" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-person-vcard"></i></a>
+</%def>
+
 <%def name="add(route_name, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor':
 <a class="btn btn-success" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-plus-lg"></i></a>
