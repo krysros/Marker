@@ -1,53 +1,51 @@
 <%inherit file="layout.mako"/>
 
-<div class="card border-0">
-  <div class="row">
-    <div class="col-9">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
-            Projekty <span class="badge text-bg-secondary">${c_projects}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-            Tagi <span class="badge text-bg-secondary">${c_tags}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
-            Osoby <span class="badge text-bg-secondary">${c_persons}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-            Komentarze <span class="badge text-bg-secondary"><div id="company-comments-counter" hx-get="${request.route_url('count_company_comments', company_id=company.id, slug=company.slug)}" hx-trigger="commentCompanyEvent from:body">${c_comments}</div></span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-            Rekomendacje <span class="badge text-bg-secondary">${c_recommended}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-            Podobne <span class="badge text-bg-secondary">${c_similar}</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="col-3">
-      <div class="float-end">
-        <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-comment-modal">
-          <i class="bi bi-plus-lg"></i>
-        </button>
-      </div>
-    </div>
+<div class="hstack gap-2">
+  <div class="me-auto">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
+          Projekty <span class="badge text-bg-secondary">${c_projects}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
+          Tagi <span class="badge text-bg-secondary">${c_tags}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
+          Osoby <span class="badge text-bg-secondary">${c_persons}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
+          Komentarze <span class="badge text-bg-secondary"><div id="company-comments-counter" hx-get="${request.route_url('count_company_comments', company_id=company.id, slug=company.slug)}" hx-trigger="commentCompanyEvent from:body">${c_comments}</div></span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
+          Rekomendacje <span class="badge text-bg-secondary">${c_recommended}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
+          Podobne <span class="badge text-bg-secondary">${c_similar}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-comment-modal">
+      <i class="bi bi-plus-lg"></i>
+    </button>
   </div>
 </div>
+
+<p class="lead">${company.name}</p>
 
 <div id="last-comment"></div>
 <%include file="comments_more.mako"/>

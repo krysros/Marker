@@ -1,62 +1,64 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="card border-0">
-  <div class="row">
-    <div class="col-9">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
-            Projekty <span class="badge text-bg-secondary">${c_projects}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-            Tagi <span class="badge text-bg-secondary">${c_tags}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
-            Osoby <span class="badge text-bg-secondary">${c_persons}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-            Komentarze <span class="badge text-bg-secondary">${c_comments}</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-            Rekomendacje <span class="badge text-bg-secondary"><div id="company-recommended-counter" hx-get="${request.route_url('count_company_recommended', company_id=company.id, slug=company.slug)}" hx-trigger="recommendedCompanyEvent from:body">${c_recommended}</div></span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-            Podobne <span class="badge text-bg-secondary">${c_similar}</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="col-3">
-      <div class="float-end">
-        <button class="btn btn-primary" hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommended">
-          <div id="recommended">
-            % if company in request.identity.recommended:
-              <i class="bi bi-hand-thumbs-up-fill"></i>
-            % else:
-              <i class="bi bi-hand-thumbs-up"></i>
-            % endif
-          </div>
-        </button>
-        ${button.edit('company_edit', company_id=company.id, slug=company.slug)}
-        ${button.delete('company_delete', company_id=company.id, slug=company.slug)}
-      </div>
-    </div>
+<div class="hstack gap-2">
+  <div class="me-auto">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
+          Projekty <span class="badge text-bg-secondary">${c_projects}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
+          Tagi <span class="badge text-bg-secondary">${c_tags}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
+          Osoby <span class="badge text-bg-secondary">${c_persons}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
+          Komentarze <span class="badge text-bg-secondary">${c_comments}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
+          Rekomendacje <span class="badge text-bg-secondary"><div id="company-recommended-counter" hx-get="${request.route_url('count_company_recommended', company_id=company.id, slug=company.slug)}" hx-trigger="recommendedCompanyEvent from:body">${c_recommended}</div></span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
+          Podobne <span class="badge text-bg-secondary">${c_similar}</span>
+        </a>
+      </li>
+    </ul>
   </div>
+  <div>
+    <button class="btn btn-primary" hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommended">
+      <div id="recommended">
+        % if company in request.identity.recommended:
+          <i class="bi bi-hand-thumbs-up-fill"></i>
+        % else:
+          <i class="bi bi-hand-thumbs-up"></i>
+        % endif
+      </div>
+    </button>
+  </div>
+  <div>${button.edit('company_edit', company_id=company.id, slug=company.slug)}</div>
+  <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>
 </div>
+
+<p class="lead">${company.name}</p>
+
+% if company.latitude:
+<div id="map"></div>
+% endif
 
 <div class="card border-${company.color}">
   <div class="card-header">
@@ -90,10 +92,6 @@
     </div>
   </div>
   <div class="card-body">
-    % if company.latitude:
-    <div id="map"></div>
-    <hr>
-    % endif
     <div class="row">
       <div class="col">
         <dl>
