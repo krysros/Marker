@@ -3,7 +3,10 @@ import datetime
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther, HTTPSeeOther
 
-from sqlalchemy import select
+from sqlalchemy import (
+    select,
+    func,
+)
 
 from ..models import (
     User,
@@ -40,6 +43,31 @@ log = logging.getLogger(__name__)
 class UserView(object):
     def __init__(self, request):
         self.request = request
+
+    def count_companies(self, user):
+        return self.request.dbsession.scalar(
+            select(func.count()).select_from(Company).filter(Company.created_by == user)
+        )
+
+    def count_projects(self, user):
+        return self.request.dbsession.scalar(
+            select(func.count()).select_from(Project).filter(Project.created_by == user)
+        )
+
+    def count_tags(self, user):
+        return self.request.dbsession.scalar(
+            select(func.count()).select_from(Tag).filter(Tag.created_by == user)
+        )
+
+    def count_persons(self, user):
+        return self.request.dbsession.scalar(
+            select(func.count()).select_from(Person).filter(Person.created_by == user)
+        )
+
+    def count_comments(self, user):
+        return self.request.dbsession.scalar(
+            select(func.count()).select_from(Comment).filter(Comment.created_by == user)
+        )
 
     @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
     @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
@@ -89,7 +117,14 @@ class UserView(object):
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")
     def view(self):
         user = self.request.context.user
-        return {"user": user}
+        return {
+            "user": user,
+            "c_companies": self.count_companies(user),
+            "c_projects": self.count_projects(user),
+            "c_tags": self.count_tags(user),
+            "c_persons": self.count_persons(user),
+            "c_comments": self.count_comments(user),
+        }
 
     @view_config(
         route_name="user_comments",
@@ -119,7 +154,16 @@ class UserView(object):
             username=user.name,
             _query={"page": page + 1},
         )
-        return {"user": user, "paginator": paginator, "next_page": next_page}
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "c_companies": self.count_companies(user),
+            "c_projects": self.count_projects(user),
+            "c_tags": self.count_tags(user),
+            "c_persons": self.count_persons(user),
+            "c_comments": self.count_comments(user),
+        }
 
     @view_config(
         route_name="user_tags",
@@ -147,7 +191,16 @@ class UserView(object):
             username=user.name,
             _query={"page": page + 1},
         )
-        return {"user": user, "paginator": paginator, "next_page": next_page}
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "c_companies": self.count_companies(user),
+            "c_projects": self.count_projects(user),
+            "c_tags": self.count_tags(user),
+            "c_persons": self.count_persons(user),
+            "c_comments": self.count_comments(user),
+        }
 
     @view_config(
         route_name="user_companies",
@@ -184,6 +237,11 @@ class UserView(object):
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
+            "c_companies": self.count_companies(user),
+            "c_projects": self.count_projects(user),
+            "c_tags": self.count_tags(user),
+            "c_persons": self.count_persons(user),
+            "c_comments": self.count_comments(user),
         }
 
     @view_config(
@@ -221,6 +279,11 @@ class UserView(object):
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
+            "c_companies": self.count_companies(user),
+            "c_projects": self.count_projects(user),
+            "c_tags": self.count_tags(user),
+            "c_persons": self.count_persons(user),
+            "c_comments": self.count_comments(user),
         }
 
     @view_config(
@@ -251,7 +314,16 @@ class UserView(object):
             username=user.name,
             _query={"page": page + 1},
         )
-        return {"user": user, "paginator": paginator, "next_page": next_page}
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "c_companies": self.count_companies(user),
+            "c_projects": self.count_projects(user),
+            "c_tags": self.count_tags(user),
+            "c_persons": self.count_persons(user),
+            "c_comments": self.count_comments(user),
+        }
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
     def add(self):
@@ -267,9 +339,7 @@ class UserView(object):
             )
             self.request.dbsession.add(user)
             self.request.session.flash("success:Dodano do bazy danych")
-            log.info(
-                f"Użytkownik {self.request.identity.name} dodał użytkownika"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} dodał użytkownika")
             next_url = self.request.route_url("user_all")
             return HTTPSeeOther(location=next_url)
 
@@ -300,9 +370,7 @@ class UserView(object):
         user_username = user.name
         self.request.dbsession.delete(user)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(
-            f"Użytkownik {self.request.identity.name} usunął użytkownika"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} usunął użytkownika")
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -458,7 +526,9 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
 
-        stmt = select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+        stmt = (
+            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+        )
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -498,7 +568,9 @@ class UserView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        query = select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+        query = (
+            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+        )
 
         if order == "asc":
             query = query.order_by(getattr(Company, sort).asc())

@@ -81,9 +81,7 @@ class PersonView(object):
             next_url = self.request.route_url(
                 "person_view", person_id=person.id, slug=person.slug
             )
-            log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane osoby"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} zmienił dane osoby")
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj dane osoby", "form": form}
 

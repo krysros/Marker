@@ -129,7 +129,7 @@ class ProjectView(object):
         permission="view",
     )
     def map(self):
-        url = self.request.route_url('project_json')
+        url = self.request.route_url("project_json")
         return {"url": url}
 
     @view_config(
@@ -233,9 +233,7 @@ class ProjectView(object):
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.session.flash("success:Dodano do bazy danych")
-            log.info(
-                f"Użytkownik {self.request.identity.name} dodał projekt"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} dodał projekt")
             next_url = self.request.route_url("project_all")
             return HTTPSeeOther(location=next_url)
         return {"heading": "Dodaj projekt", "form": form}
@@ -269,9 +267,7 @@ class ProjectView(object):
                 project_id=project.id,
                 slug=project.slug,
             )
-            log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane projektu"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} zmienił dane projektu")
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj dane projektu", "form": form}
 
@@ -285,9 +281,7 @@ class ProjectView(object):
         project_name = project.name
         self.request.dbsession.delete(project)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(
-            f"Użytkownik {self.request.identity.name} usunął projekt"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} usunął projekt")
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}

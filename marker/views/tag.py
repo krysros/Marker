@@ -92,7 +92,7 @@ class TagView(object):
     )
     def map(self):
         tag = self.request.context.tag
-        url = self.request.route_url('tag_json', tag_id=tag.id, slug=tag.slug)
+        url = self.request.route_url("tag_json", tag_id=tag.id, slug=tag.slug)
         return {"tag": tag, "url": url, "c_companies": self.count_companies(tag)}
 
     @view_config(
@@ -248,9 +248,7 @@ class TagView(object):
 
         companies = self.request.dbsession.execute(query).scalars()
         response = export_companies_to_xlsx(companies)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane firm"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} eksportował dane firm")
         return response
 
     @view_config(
@@ -286,9 +284,7 @@ class TagView(object):
             form.populate_obj(tag)
             tag.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
-            log.info(
-                f"Użytkownik {self.request.identity.name} zmienił nazwę tagu"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} zmienił nazwę tagu")
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj tag", "form": form}

@@ -273,7 +273,9 @@ class CompanyView(object):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         stmt = (
-            select(User).join(recommended).filter(company.id == recommended.c.company_id)
+            select(User)
+            .join(recommended)
+            .filter(company.id == recommended.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -318,9 +320,7 @@ class CompanyView(object):
             if tag not in company.tags:
                 company.tags.append(tag)
                 new_tag = tag
-                log.info(
-                    f"Użytkownik {self.request.identity.name} dodał tag do firmy"
-                )
+                log.info(f"Użytkownik {self.request.identity.name} dodał tag do firmy")
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -528,9 +528,7 @@ class CompanyView(object):
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.session.flash("success:Dodano do bazy danych")
-            log.info(
-                f"Użytkownik {self.request.identity.name} dodał firmę"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} dodał firmę")
             next_url = self.request.route_url("company_all")
             return HTTPSeeOther(location=next_url)
         return {"heading": "Dodaj firmę", "form": form}
@@ -562,9 +560,7 @@ class CompanyView(object):
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
-            log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane firmy"
-            )
+            log.info(f"Użytkownik {self.request.identity.name} zmienił dane firmy")
             return HTTPSeeOther(location=next_url)
         return {"heading": "Edytuj dane firmy", "form": form}
 
@@ -748,9 +744,7 @@ class CompanyView(object):
         tag_name = tag.name
 
         company.tags.remove(tag)
-        log.info(
-            f"Użytkownik {self.request.identity.name} odpiął tag z firmy"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} odpiął tag z firmy")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagCompanyEvent"}
@@ -819,9 +813,7 @@ class CompanyView(object):
         project_name = project.name
 
         company.projects.remove(project)
-        log.info(
-            f"Użytkownik {self.request.identity.name} odpiął firmę od projektu"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} odpiął firmę od projektu")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}

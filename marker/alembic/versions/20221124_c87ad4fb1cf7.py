@@ -10,10 +10,11 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c87ad4fb1cf7'
-down_revision = '2bb39756db52'
+revision = "c87ad4fb1cf7"
+down_revision = "2bb39756db52"
 branch_labels = None
 depends_on = None
+
 
 def upgrade():
     op.drop_constraint(op.f("fk_recomended_company_id_companies"), "recomended")
