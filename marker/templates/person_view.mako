@@ -9,7 +9,7 @@
       </li>
     </ul>
   </div>
-  <div>${button.a('person_vcard', color='secondary', size='md', icon='person-vcard', person_id=person.id, slug=person.slug)}</div>
+  <div>${button.vcard('person_vcard', person_id=person.id, slug=person.slug)}</div>
   <div>${button.edit('person_edit', person_id=person.id, slug=person.slug)}</div>
   <div>${button.delete('person_delete', person_id=person.id, slug=person.slug)}</div>
 </div>

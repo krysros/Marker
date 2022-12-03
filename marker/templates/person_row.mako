@@ -7,8 +7,8 @@
   <td>${person.phone}</td>
   <td><a href="mailto:${person.email}">${person.email}</a></td>
   <td class="col-2">
-    ${button.vcard('person_vcard', person_id=person.id, slug=person.slug)}
-    ${button.del_row('delete_person', person_id=person.id, slug=person.slug)}
+    ${button.vcard('person_vcard', person_id=person.id, slug=person.slug, size='sm')}
+    ${button.del_row('delete_person', person_id=person.id, slug=person.slug, size='sm')}
   </td>
 </tr>
 % endif

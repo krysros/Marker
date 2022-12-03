@@ -17,7 +17,7 @@
           % endif
           <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
         </td>
-        <td class="col-2">${button.unlink('unlink_tag', company_id=company.id, tag_id=tag.id)}</td>
+        <td class="col-2">${button.unlink('unlink_tag', company_id=company.id, tag_id=tag.id, size='sm')}</td>
       </tr>
       % endfor
     </tbody>
