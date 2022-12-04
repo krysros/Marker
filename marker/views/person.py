@@ -88,7 +88,6 @@ class PersonView(object):
     @view_config(route_name="person_delete", request_method="POST", permission="edit")
     def delete(self):
         person = self.request.context.person
-        person_name = person.name
         self.request.dbsession.delete(person)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
