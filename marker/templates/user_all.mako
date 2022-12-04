@@ -12,7 +12,7 @@
 
 <hr>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div>${dropdown.filter_button('user_all', roles)}</div>
   <div>${dropdown.sort_button('user_all', dropdown_sort)}</div>
   <div>${dropdown.order_button('user_all', dropdown_order)}</div>

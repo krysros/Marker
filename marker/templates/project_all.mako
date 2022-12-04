@@ -13,7 +13,7 @@
 
 <hr>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div>${dropdown.filter_button('project_all', dropdown_status)}</div>
   <div>${dropdown.sort_button('project_all', dropdown_sort)}</div>
   <div>${dropdown.order_button('project_all', dropdown_order)}</div>

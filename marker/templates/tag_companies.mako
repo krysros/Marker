@@ -2,7 +2,7 @@
 <%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div class="me-auto">
     <ul class="nav nav-pills">
       <li class="nav-item">
@@ -20,7 +20,7 @@
 
 <p class="lead">${tag.name}</p>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div>${dropdown.filter_button('tag_companies', states, tag_id=tag.id, slug=tag.slug)}</div>
   <div>${dropdown.sort_button('tag_companies', dropdown_sort, tag_id=tag.id, slug=tag.slug)}</div>
   <div class="me-auto">${dropdown.order_button('tag_companies', dropdown_order, tag_id=tag.id, slug=tag.slug)}</div>

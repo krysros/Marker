@@ -1,7 +1,7 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div class="me-auto">
     <ul class="nav nav-pills">
       <li class="nav-item">
@@ -54,42 +54,46 @@
   <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>
 </div>
 
-<p class="lead bg-${company.color} text-${'white' if company.color in ['success', 'danger'] else 'dark'}">${company.name}</p>
+<div class="hstack">
+  <div class="me-auto">
+    <p class="lead">
+      % if company in request.identity.checked:
+      <input class="form-check-input"
+            id="mark"
+            type="checkbox"
+            value="${company.id}"
+            autocomplete="off"
+            checked
+            hx-post="${request.route_url('company_check', company_id=company.id)}"
+            hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+            hx-trigger="click"
+            hx-swap="none">
+      % else:
+      <input class="form-check-input"
+            id="mark"
+            type="checkbox"
+            value="${company.id}"
+            autocomplete="off"
+            hx-post="${request.route_url('company_check', company_id=company.id)}"
+            hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+            hx-trigger="click"
+            hx-swap="none">
+      % endif
+      ${company.name}
+    </p>
+  </div>
+  % if company.color != "default":
+  <div><p class="lead"><i class="bi bi-circle-fill text-${company.color}"></i></p></div>
+  % endif
+</div>
 
 % if company.latitude:
 <div id="map"></div>
 % endif
 
-<div class="card">
+<div class="card border">
   <div class="card-header">
     <i class="bi bi-building"></i> Firma
-    <div class="float-end">
-      <div class="form-check">
-        % if company in request.identity.checked:
-        <input class="form-check-input"
-              id="mark"
-              type="checkbox"
-              value="${company.id}"
-              autocomplete="off"
-              checked
-              hx-post="${request.route_url('company_check', company_id=company.id)}"
-              hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-              hx-trigger="click"
-              hx-swap="none">
-        % else:
-        <input class="form-check-input"
-              id="mark"
-              type="checkbox"
-              value="${company.id}"
-              autocomplete="off"
-              hx-post="${request.route_url('company_check', company_id=company.id)}"
-              hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-              hx-trigger="click"
-              hx-swap="none">
-        % endif
-        <label class="form-check-label" for="mark">Zaznacz</label>
-      </div>
-    </div>
   </div>
   <div class="card-body">
     <div class="row">

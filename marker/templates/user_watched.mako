@@ -10,7 +10,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div>${dropdown.filter_button('user_watched', status, username=user.name)}</div>
   <div>${dropdown.sort_button('user_watched', dropdown_sort, username=user.name)}</div>
   <div class="me-auto">${dropdown.order_button('user_watched', dropdown_order, username=user.name)}</div>

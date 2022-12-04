@@ -11,7 +11,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div>${dropdown.sort_button('tag_all', dropdown_sort)}</div>
   <div>${dropdown.order_button('tag_all', dropdown_order)}</div>
 </div>

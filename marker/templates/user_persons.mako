@@ -2,7 +2,7 @@
 <%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div class="me-auto">
     <ul class="nav nav-pills">
       <li class="nav-item">
@@ -29,7 +29,7 @@
 
 <p class="lead">${user.fullname}</p>
 
-<div class="hstack gap-2">
+<div class="hstack gap-2 mb-4">
   <div>${dropdown.sort_button('user_persons', dropdown_sort, username=user.name)}</div>
   <div>${dropdown.order_button('user_persons', dropdown_order, username=user.name)}</div>
 </div>
