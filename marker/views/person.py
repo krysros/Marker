@@ -48,7 +48,7 @@ class PersonView(object):
         )
         next_page = self.request.route_url(
             "person_more",
-            _query={"sort": sort, "order": order, "page": page + 1},
+            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
 
         return {

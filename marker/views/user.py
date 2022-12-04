@@ -378,13 +378,20 @@ class UserView(object):
         permission="view",
     )
     def persons(self):
-        page = int(self.request.params.get("page", 1))
         user = self.request.context.user
-        stmt = (
-            select(Person)
-            .filter(Person.created_by == user)
-            .order_by(Person.created_at.desc())
-        )
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
+        sort = self.request.params.get("sort", "created_at")
+        order = self.request.params.get("order", "desc")
+        dropdown_sort = dict(DROPDOWN_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        stmt = select(Person).filter(Person.created_by == user)
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Person, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Person, sort).desc())
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -393,10 +400,15 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_persons_more",
             username=user.name,
-            _query={"page": page + 1},
+            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
         return {
             "user": user,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
             "paginator": paginator,
             "next_page": next_page,
             "c_companies": self.count_companies(user),
