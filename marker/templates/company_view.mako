@@ -79,7 +79,7 @@
             hx-trigger="click"
             hx-swap="none">
       % endif
-      ${company.name}
+      &nbsp;${company.name}
     </p>
   </div>
   % if company.color != "default":
