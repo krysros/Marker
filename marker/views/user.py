@@ -177,11 +177,20 @@ class UserView(object):
         permission="view",
     )
     def tags(self):
-        page = int(self.request.params.get("page", 1))
         user = self.request.context.user
-        stmt = (
-            select(Tag).filter(Tag.created_by == user).order_by(Tag.created_at.desc())
-        )
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
+        sort = self.request.params.get("sort", "created_at")
+        order = self.request.params.get("order", "desc")
+        dropdown_sort = dict(DROPDOWN_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        stmt = select(Tag).filter(Tag.created_by == user)
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Tag, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Tag, sort).desc())
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -190,11 +199,16 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_tags_more",
             username=user.name,
-            _query={"page": page + 1},
+            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
         return {
             "user": user,
             "paginator": paginator,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
             "next_page": next_page,
             "c_companies": self.count_companies(user),
             "c_projects": self.count_projects(user),
