@@ -91,7 +91,7 @@
 <div id="map"></div>
 % endif
 
-<div class="card border">
+<div class="card mt-4 mb-4">
   <div class="card-header">
     <i class="bi bi-building"></i> Firma
   </div>
