@@ -239,13 +239,9 @@ class UserView(object):
                 )
         else:
             if order == "asc":
-                stmt = stmt.order_by(
-                    getattr(Company, sort).asc(), Company.id
-                )
+                stmt = stmt.order_by(getattr(Company, sort).asc(), Company.id)
             elif order == "desc":
-                stmt = stmt.order_by(
-                    getattr(Company, sort).desc(), Company.id
-                )
+                stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
 
         if filter in list(states):
             stmt = stmt.filter(Company.state == filter)
@@ -315,13 +311,9 @@ class UserView(object):
                 )
         else:
             if order == "asc":
-                stmt = stmt.order_by(
-                    getattr(Project, sort).asc(), Project.id
-                )
+                stmt = stmt.order_by(getattr(Project, sort).asc(), Project.id)
             elif order == "desc":
-                stmt = stmt.order_by(
-                    getattr(Project, sort).desc(), Project.id
-                )
+                stmt = stmt.order_by(getattr(Project, sort).desc(), Project.id)
 
         if filter == "inprogress":
             stmt = stmt.filter(Project.deadline > now.date())
