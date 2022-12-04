@@ -38,16 +38,7 @@
   </div>
 </div>
 
-<div class="hstack">
-  <div class="me-auto">
-    <p class="lead">${project.name}</p>
-  </div>
-  % if project.color != "default":
-  <div>
-    <p class="lead"><i class="bi bi-circle-fill text-${project.color}"></i></p>
-  </div>
-  % endif
-</div>
+<%include file="project_p_lead.mako"/>
 
 <div id="project-companies">
   <%include file="company_list_project.mako"/>
