@@ -64,30 +64,30 @@
   <div class="card-header">
     <i class="bi bi-building"></i> Firma
     <div class="float-end">
-    <div class="form-check">
-      % if company in request.identity.checked:
-      <input class="form-check-input"
-            id="mark"
-            type="checkbox"
-            value="${company.id}"
-            autocomplete="off"
-            checked
-            hx-post="${request.route_url('company_check', company_id=company.id)}"
-            hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-            hx-trigger="click"
-            hx-swap="none">
-      % else:
-      <input class="form-check-input"
-            id="mark"
-            type="checkbox"
-            value="${company.id}"
-            autocomplete="off"
-            hx-post="${request.route_url('company_check', company_id=company.id)}"
-            hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-            hx-trigger="click"
-            hx-swap="none">
-      % endif
-      <label class="form-check-label" for="mark">Zaznacz</label>
+      <div class="form-check">
+        % if company in request.identity.checked:
+        <input class="form-check-input"
+              id="mark"
+              type="checkbox"
+              value="${company.id}"
+              autocomplete="off"
+              checked
+              hx-post="${request.route_url('company_check', company_id=company.id)}"
+              hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+              hx-trigger="click"
+              hx-swap="none">
+        % else:
+        <input class="form-check-input"
+              id="mark"
+              type="checkbox"
+              value="${company.id}"
+              autocomplete="off"
+              hx-post="${request.route_url('company_check', company_id=company.id)}"
+              hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+              hx-trigger="click"
+              hx-swap="none">
+        % endif
+        <label class="form-check-label" for="mark">Zaznacz</label>
       </div>
     </div>
   </div>
