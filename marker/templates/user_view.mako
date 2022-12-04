@@ -30,7 +30,7 @@
 
 <p class="lead">${user.fullname}</p>
 
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-person-circle"></i> Użytkownik</div>
   <div class="card-body">
     <dl>
@@ -49,7 +49,7 @@
   </div>
 </div>
 
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-clock"></i> Data modyfikacji</div>
   <div class="card-body">
     <p>

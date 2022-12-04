@@ -4,7 +4,7 @@
 <h2><i class="bi bi-bar-chart"></i> Raporty</h2>
 <hr>
 
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header">${heading}</div>
   <div class="card-body">
     <form action="${url}" method="post">

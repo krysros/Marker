@@ -7,7 +7,7 @@
   hx-trigger="revealed"
   hx-swap="afterend">
 % else:
-<div class="card">
+<div class="card mt-4 mb-4">
 % endif
   <div class="card-header">
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>

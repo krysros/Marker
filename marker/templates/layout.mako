@@ -24,10 +24,6 @@
       body {
         padding-top: 5rem;
       }
-      .card {
-        margin-top: 20px;
-        margin-bottom: 20px;
-      }
       tr.htmx-swapping td {
         opacity: 0;
         transition: opacity 1s ease-out;

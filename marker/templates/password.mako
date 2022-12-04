@@ -1,7 +1,7 @@
 <%inherit file="layout.mako"/>
 <%include file="errors.mako"/>
 
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs">
       <li class="nav-item">

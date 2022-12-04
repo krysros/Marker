@@ -1,7 +1,7 @@
 <%namespace name="button" file="button.mako"/>
 
 % if comment:
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header">
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>
     % if comment.created_by == request.identity or request.identity.name == 'admin':

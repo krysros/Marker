@@ -49,7 +49,7 @@
 <div id="map"></div>
 % endif
 
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-briefcase"></i> Projekt</div>
   <div class="card-body">
     <div class="row">
@@ -90,7 +90,7 @@
   </div>
 </div>
 
-<div class="card">
+<div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-clock"></i> Data modyfikacji</div>
   <div class="card-body">
     <p>
