@@ -54,13 +54,13 @@
   <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>
 </div>
 
-<p class="lead">${company.name}</p>
+<p class="lead bg-${company.color} text-${'white' if company.color in ['success', 'danger'] else 'dark'}">${company.name}</p>
 
 % if company.latitude:
 <div id="map"></div>
 % endif
 
-<div class="card border-${company.color}">
+<div class="card">
   <div class="card-header">
     <i class="bi bi-building"></i> Firma
     <div class="float-end">

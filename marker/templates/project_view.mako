@@ -43,7 +43,7 @@
   <div>${button.delete('project_delete', project_id=project.id, slug=project.slug)}</div>
 </div>
 
-<p class="lead">${project.name}</p>
+<p class="lead bg-${project.color} text-${'white' if project.color in ['success', 'danger'] else 'dark'}">${project.name}</p>
 
 % if project.latitude:
 <div id="map"></div>
