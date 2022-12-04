@@ -135,7 +135,7 @@ class UserView(object):
     )
     @view_config(
         route_name="user_comments_more",
-        renderer="comments_more.mako",
+        renderer="comment_more.mako",
         permission="view",
     )
     def comments(self):

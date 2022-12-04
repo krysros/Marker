@@ -27,4 +27,4 @@
 
 <p class="lead">${user.fullname}</p>
 
-<%include file="comments_more.mako"/>
+<%include file="comment_more.mako"/>

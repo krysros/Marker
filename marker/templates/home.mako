@@ -56,7 +56,7 @@
         Komentarze dotyczące firm.
       </p>
       <p>
-        ${button.show('comments_all')}
+        ${button.show('comment_all')}
         ${button.search('comment_search')}
       </p>
     </div>

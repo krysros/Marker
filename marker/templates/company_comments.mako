@@ -48,7 +48,7 @@
 <p class="lead">${company.name}</p>
 
 <div id="last-comment"></div>
-<%include file="comments_more.mako"/>
+<%include file="comment_more.mako"/>
 
 <div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal-label" aria-hidden="true">
   <div class="modal-dialog">
