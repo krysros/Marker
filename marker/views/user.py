@@ -29,11 +29,12 @@ from ..export import (
     export_projects_to_xlsx,
 )
 from ..forms.select import (
-    DROPDOWN_STATUS,
     ROLES,
     STATES,
     DROPDOWN_SORT,
+    DROPDOWN_STATUS,
     DROPDOWN_SORT_COMPANIES,
+    DROPDOWN_SORT_PROJECTS,
     DROPDOWN_ORDER,
 )
 
@@ -221,30 +222,28 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         states = dict(STATES)
-        stmt = select(Company)
+        stmt = select(Company).filter(Company.created_by == user)
 
         if sort == "recommended":
             if order == "asc":
                 stmt = (
-                    stmt.filter(Company.created_by == user)
-                    .join(recommended)
+                    stmt.join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
             elif order == "desc":
                 stmt = (
-                    stmt.filter(Company.created_by == user)
-                    .join(recommended)
+                    stmt.join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
             if order == "asc":
-                stmt = stmt.filter(Company.created_by == user).order_by(
+                stmt = stmt.order_by(
                     getattr(Company, sort).asc(), Company.id
                 )
             elif order == "desc":
-                stmt = stmt.filter(Company.created_by == user).order_by(
+                stmt = stmt.order_by(
                     getattr(Company, sort).desc(), Company.id
                 )
 
@@ -289,14 +288,45 @@ class UserView(object):
         permission="view",
     )
     def projects(self):
-        page = int(self.request.params.get("page", 1))
         user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
+        sort = self.request.params.get("sort", "created_at")
+        order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
+        dropdown_status = dict(DROPDOWN_STATUS)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
-        stmt = (
-            select(Project)
-            .filter(Project.created_by == user)
-            .order_by(Project.created_at.desc())
-        )
+        stmt = select(Project).filter(Project.created_by == user)
+
+        if sort == "watched":
+            if order == "asc":
+                stmt = (
+                    stmt.join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                )
+            elif order == "desc":
+                stmt = (
+                    stmt.join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                )
+        else:
+            if order == "asc":
+                stmt = stmt.order_by(
+                    getattr(Project, sort).asc(), Project.id
+                )
+            elif order == "desc":
+                stmt = stmt.order_by(
+                    getattr(Project, sort).desc(), Project.id
+                )
+
+        if filter == "inprogress":
+            stmt = stmt.filter(Project.deadline > now.date())
+        elif filter == "completed":
+            stmt = stmt.filter(Project.deadline < now.date())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -306,11 +336,22 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_projects_more",
             username=user.name,
-            _query={"page": page + 1},
+            _query={
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
         return {
             "user": user,
             "states": states,
+            "filter": filter,
+            "sort": sort,
+            "order": order,
+            "dropdown_status": dropdown_status,
+            "dropdown_order": dropdown_order,
+            "dropdown_sort": dropdown_sort,
             "paginator": paginator,
             "next_page": next_page,
             "c_companies": self.count_companies(user),

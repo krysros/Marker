@@ -15,7 +15,7 @@ from ..forms.select import (
     STAGES,
     PROJECT_DELIVERY_METHODS,
     DROPDOWN_ORDER,
-    DROPDOWN_EXT_SORT,
+    DROPDOWN_SORT_PROJECTS,
     DROPDOWN_STATUS,
 )
 
@@ -70,19 +70,33 @@ class ProjectView(object):
         now = datetime.datetime.now()
         dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
-        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
         stmt = select(Project)
+
+        if sort == "watched":
+            if order == "asc":
+                stmt = (
+                    stmt.join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                )
+            elif order == "desc":
+                stmt = (
+                    stmt.join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                )
+        else:
+            if order == "asc":
+                stmt = stmt.order_by(getattr(Project, sort).asc(), Project.id)
+            elif order == "desc":
+                stmt = stmt.order_by(getattr(Project, sort).desc(), Project.id)
 
         if filter == "inprogress":
             stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
             stmt = stmt.filter(Project.deadline < now.date())
-
-        if order == "asc":
-            stmt = stmt.order_by(getattr(Project, sort).asc())
-        elif order == "desc":
-            stmt = stmt.order_by(getattr(Project, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))

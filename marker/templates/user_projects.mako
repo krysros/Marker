@@ -1,4 +1,6 @@
 <%inherit file="layout.mako"/>
+<%namespace name="dropdown" file="dropdown.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="hstack gap-2">
   <div class="me-auto">
@@ -26,5 +28,11 @@
 </div>
 
 <p class="lead">${user.fullname}</p>
+
+<div class="hstack gap-2">
+  <div>${dropdown.filter_button('user_projects', dropdown_status, username=user.name)}</div>
+  <div>${dropdown.sort_button('user_projects', dropdown_sort, username=user.name)}</div>
+  <div>${dropdown.order_button('user_projects', dropdown_order, username=user.name)}</div>
+</div>
 
 <%include file="project_table.mako"/>
