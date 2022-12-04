@@ -17,6 +17,7 @@ from ..forms import TagForm, TagSearchForm
 from ..paginator import get_paginator
 from ..export import export_companies_to_xlsx
 from ..forms.select import (
+    DROPDOWN_SORT_COMPANIES,
     DROPDOWN_SORT,
     DROPDOWN_ORDER,
 )
@@ -145,7 +146,7 @@ class TagView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         states = dict(STATES)
-        dropdown_sort = dict(DROPDOWN_SORT)
+        dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
 

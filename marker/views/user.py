@@ -33,7 +33,7 @@ from ..forms.select import (
     ROLES,
     STATES,
     DROPDOWN_SORT,
-    DROPDOWN_EXT_SORT,
+    DROPDOWN_SORT_COMPANIES,
     DROPDOWN_ORDER,
 )
 
@@ -213,14 +213,43 @@ class UserView(object):
         permission="view",
     )
     def companies(self):
-        page = int(self.request.params.get("page", 1))
         user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", "all")
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+        dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
+        dropdown_order = dict(DROPDOWN_ORDER)
         states = dict(STATES)
-        stmt = (
-            select(Company)
-            .filter(Company.created_by == user)
-            .order_by(Company.created_at.desc())
-        )
+        stmt = select(Company)
+
+        if sort == "recommended":
+            if order == "asc":
+                stmt = (
+                    stmt.filter(Company.created_by == user)
+                    .join(recommended)
+                    .group_by(Company)
+                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                )
+            elif order == "desc":
+                stmt = (
+                    stmt.filter(Company.created_by == user)
+                    .join(recommended)
+                    .group_by(Company)
+                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                )
+        else:
+            if order == "asc":
+                stmt = stmt.filter(Company.created_by == user).order_by(
+                    getattr(Company, sort).asc(), Company.id
+                )
+            elif order == "desc":
+                stmt = stmt.filter(Company.created_by == user).order_by(
+                    getattr(Company, sort).desc(), Company.id
+                )
+
+        if filter in list(states):
+            stmt = stmt.filter(Company.state == filter)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -230,13 +259,18 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_companies_more",
             username=user.name,
-            _query={"page": page + 1},
+            _query={"page": page + 1, "filter": filter, "sort": sort, "order": order},
         )
         return {
             "user": user,
+            "sort": sort,
+            "order": order,
+            "filter": filter,
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
+            "dropdown_sort": dropdown_sort,
+            "dropdown_order": dropdown_order,
             "c_companies": self.count_companies(user),
             "c_projects": self.count_projects(user),
             "c_tags": self.count_tags(user),

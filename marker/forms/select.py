@@ -14,6 +14,26 @@ DROPDOWN_EXT_SORT = [
 ]
 
 
+DROPDOWN_SORT_COMPANIES = [
+    ("name", "wg nazwy"),
+    ("city", "wg miasta"),
+    ("state", "wg województwa"),
+    ("created_at", "wg daty dodania"),
+    ("updated_at", "wg daty edycji"),
+    ("recommended", "wg rekomendacji"),
+]
+
+
+DROPDOWN_SORT_PROJECTS = [
+    ("name", "wg nazwy"),
+    ("city", "wg miasta"),
+    ("state", "wg województwa"),
+    ("created_at", "wg daty dodania"),
+    ("updated_at", "wg daty edycji"),
+    ("watched", "wg obserwacji"),
+]
+
+
 DROPDOWN_ORDER = [
     ("asc", "rosnąco"),
     ("desc", "malejąco"),

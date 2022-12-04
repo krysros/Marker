@@ -35,6 +35,7 @@ from ..forms.select import (
     COLORS,
     COURTS,
     DROPDOWN_EXT_SORT,
+    DROPDOWN_SORT_COMPANIES,
     DROPDOWN_ORDER,
 )
 from ..geo import location
@@ -116,17 +117,31 @@ class CompanyView(object):
         order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         states = dict(STATES)
-        dropdown_sort = dict(DROPDOWN_EXT_SORT)
+        dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
 
+        if sort == "recommended":
+            if order == "asc":
+                stmt = (
+                    stmt.join(recommended)
+                    .group_by(Company)
+                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                )
+            elif order == "desc":
+                stmt = (
+                    stmt.join(recommended)
+                    .group_by(Company)
+                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                )
+        else:
+            if order == "asc":
+                stmt = stmt.order_by(getattr(Company, sort).asc(), Company.id)
+            elif order == "desc":
+                stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
+
         if filter in list(colors):
             stmt = stmt.filter(Company.color == filter)
-
-        if order == "asc":
-            stmt = stmt.order_by(getattr(Company, sort).asc())
-        elif order == "desc":
-            stmt = stmt.order_by(getattr(Company, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
