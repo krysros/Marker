@@ -83,7 +83,9 @@
     </p>
   </div>
   % if company.color != "default":
-  <div><p class="lead"><i class="bi bi-circle-fill text-${company.color}"></i></p></div>
+  <div>
+    <p class="lead"><i class="bi bi-circle-fill text-${company.color}"></i></p>
+  </div>
   % endif
 </div>
 

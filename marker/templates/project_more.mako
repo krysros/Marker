@@ -2,9 +2,10 @@
 % if loop.last:
 <tr hx-get="${next_page}"
     hx-trigger="revealed"
-    hx-swap="afterend">
-% else:
-<tr>
+    hx-swap="afterend"
+    class="table-${project.color}">
+    % else:
+    <tr class="table-${project.color}">
 % endif
   <td>
   % if project in request.identity.watched:
