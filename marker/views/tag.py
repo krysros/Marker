@@ -293,7 +293,6 @@ class TagView(object):
     @view_config(route_name="tag_delete", request_method="POST", permission="edit")
     def delete(self):
         tag = self.request.context.tag
-        tag_name = tag.name
         self.request.dbsession.delete(tag)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął tag")

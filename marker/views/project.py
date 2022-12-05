@@ -292,7 +292,6 @@ class ProjectView(object):
     )
     def delete(self):
         project = self.request.context.project
-        project_name = project.name
         self.request.dbsession.delete(project)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął projekt")
@@ -319,7 +318,9 @@ class ProjectView(object):
                         "postcode": form.postcode.data,
                         "city": form.city.data,
                         "state": form.state.data,
+                        "country": form.country.data,
                         "link": form.link.data,
+                        "color": form.color.data,
                         "deadline": form.deadline.data,
                         "stage": form.stage.data,
                         "project_delivery_method": form.project_delivery_method.data,
@@ -344,28 +345,43 @@ class ProjectView(object):
         postcode = self.request.params.get("postcode")
         city = self.request.params.get("city")
         state = self.request.params.get("state")
+        country = self.request.params.get("country")
         link = self.request.params.get("link")
+        color = self.request.params.get("color")
         deadline = self.request.params.get("deadline")
         stage = self.request.params.get("stage")
         project_delivery_method = self.request.params.get("project_delivery_method")
         page = int(self.request.params.get("page", 1))
         states = dict(STATES)
-        stmt = (
-            select(Project)
-            .filter(Project.name.ilike("%" + name + "%"))
-            .filter(Project.street.ilike("%" + street + "%"))
-            .filter(Project.postcode.ilike("%" + postcode + "%"))
-            .filter(Project.city.ilike("%" + city + "%"))
-            .filter(Project.state.ilike("%" + state + "%"))
-            .filter(Project.link.ilike("%" + link + "%"))
-            .filter(Project.stage.ilike("%" + stage + "%"))
-            .filter(
-                Project.project_delivery_method.ilike(
-                    "%" + project_delivery_method + "%"
-                )
-            )
+
+        stmt = select(Project)
+        stmt = stmt.filter(
+            Project.name.ilike("%" + name + "%"),
+            Project.street.ilike("%" + street + "%"),
+            Project.postcode.ilike("%" + postcode + "%"),
+            Project.city.ilike("%" + city + "%"),
+            Project.link.ilike("%" + link + "%"),
         )
+
+        if state:
+            stmt = stmt.filter(Project.state == state)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if project_delivery_method:
+            stmt = stmt.filter(
+                Project.project_delivery_method == project_delivery_method
+            )
+
         if deadline:
+            deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
             stmt = stmt.filter(Project.deadline <= deadline)
 
         stmt = stmt.order_by(Project.name)
@@ -383,7 +399,9 @@ class ProjectView(object):
                 "postcode": postcode,
                 "city": city,
                 "state": state,
+                "country": country,
                 "link": link,
+                "color": color,
                 "deadline": deadline,
                 "stage": stage,
                 "project_delivery_method": project_delivery_method,

@@ -616,7 +616,6 @@ class CompanyView(object):
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
         company = self.request.context.company
-        company_name = company.name
         self.request.dbsession.delete(company)
         self.request.session.flash("success:Usunięto z bazy danych")
         log.info(f"Użytkownik {self.request.identity.name} usunął firmę")
@@ -693,6 +692,7 @@ class CompanyView(object):
                         "postcode": form.postcode.data,
                         "city": form.city.data,
                         "state": form.state.data,
+                        "country": form.country.data,
                         "link": form.link.data,
                         "NIP": form.NIP.data,
                         "REGON": form.REGON.data,
@@ -720,6 +720,7 @@ class CompanyView(object):
         postcode = self.request.params.get("postcode")
         city = self.request.params.get("city")
         state = self.request.params.get("state")
+        country = self.request.params.get("country")
         link = self.request.params.get("link")
         NIP = self.request.params.get("NIP")
         REGON = self.request.params.get("REGON")
@@ -728,21 +729,33 @@ class CompanyView(object):
         color = self.request.params.get("color")
         page = int(self.request.params.get("page", 1))
         states = dict(STATES)
-        stmt = (
-            select(Company)
-            .filter(Company.name.ilike("%" + name + "%"))
-            .filter(Company.street.ilike("%" + street + "%"))
-            .filter(Company.postcode.ilike("%" + postcode + "%"))
-            .filter(Company.city.ilike("%" + city + "%"))
-            .filter(Company.state.ilike("%" + state + "%"))
-            .filter(Company.link.ilike("%" + link + "%"))
-            .filter(Company.NIP.ilike("%" + NIP + "%"))
-            .filter(Company.REGON.ilike("%" + REGON + "%"))
-            .filter(Company.KRS.ilike("%" + KRS + "%"))
-            .filter(Company.court.ilike("%" + court + "%"))
-            .filter(Company.color.ilike("%" + color + "%"))
-            .order_by(Company.name)
+
+        stmt = select(Company)
+        stmt = stmt.filter(
+            Company.name.ilike("%" + name + "%"),
+            Company.street.ilike("%" + street + "%"),
+            Company.postcode.ilike("%" + postcode + "%"),
+            Company.city.ilike("%" + city + "%"),
+            Company.link.ilike("%" + link + "%"),
+            Company.NIP.ilike("%" + NIP + "%"),
+            Company.REGON.ilike("%" + REGON + "%"),
+            Company.KRS.ilike("%" + KRS + "%"),
         )
+
+        if state:
+            stmt = stmt.filter(Company.state == state)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        stmt = stmt.order_by(Company.name)
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -756,6 +769,7 @@ class CompanyView(object):
                 "postcode": postcode,
                 "city": city,
                 "state": state,
+                "country": country,
                 "link": link,
                 "NIP": NIP,
                 "REGON": REGON,
@@ -765,7 +779,11 @@ class CompanyView(object):
                 "page": page + 1,
             },
         )
-        return {"paginator": paginator, "next_page": next_page, "states": states}
+        return {
+            "paginator": paginator,
+            "next_page": next_page,
+            "states": states,
+        }
 
     @view_config(
         route_name="unlink_tag",
@@ -789,9 +807,6 @@ class CompanyView(object):
         if not tag:
             raise HTTPNotFound
 
-        company_name = company.name
-        tag_name = tag.name
-
         company.tags.remove(tag)
         log.info(f"Użytkownik {self.request.identity.name} odpiął tag z firmy")
         # This request responds with empty content,
@@ -807,7 +822,6 @@ class CompanyView(object):
     )
     def delete_person(self):
         person = self.request.context.person
-        person_name = person.name
         self.request.dbsession.delete(person)
         log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
         # This request responds with empty content,
@@ -857,9 +871,6 @@ class CompanyView(object):
         ).scalar_one_or_none()
         if not project:
             raise HTTPNotFound
-
-        company_name = company.name
-        project_name = project.name
 
         company.projects.remove(project)
         log.info(f"Użytkownik {self.request.identity.name} odpiął firmę od projektu")
