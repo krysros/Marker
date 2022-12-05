@@ -49,7 +49,7 @@
   </div>
 </div>
 
-<%include file="company_p_lead_with_checkbox.mako"/>
+<%include file="company_led.mako"/>
 
 <div id="company-projects">
   <%include file="project_list.mako"/>

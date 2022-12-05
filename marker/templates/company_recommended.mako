@@ -40,5 +40,5 @@
   </div>
 </div>
 
-<%include file="company_p_lead_with_checkbox.mako"/>
+<%include file="company_led.mako"/>
 <%include file="user_table.mako"/>

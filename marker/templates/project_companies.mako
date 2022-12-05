@@ -38,7 +38,7 @@
   </div>
 </div>
 
-<%include file="project_p_lead.mako"/>
+<%include file="project_led.mako"/>
 
 <div id="project-companies">
   <%include file="company_list_project.mako"/>
