@@ -17,6 +17,7 @@ from ..forms import TagForm, TagSearchForm
 from ..paginator import get_paginator
 from ..export import export_companies_to_xlsx
 from ..forms.select import (
+    COLORS,
     DROPDOWN_SORT_COMPANIES,
     DROPDOWN_SORT,
     DROPDOWN_ORDER,
@@ -145,7 +146,7 @@ class TagView(object):
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
-        states = dict(STATES)
+        colors = dict(COLORS)
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
@@ -175,8 +176,8 @@ class TagView(object):
                     getattr(Company, sort).desc(), Company.id
                 )
 
-        if filter in list(states):
-            stmt = stmt.filter(Company.state == filter)
+        if filter in list(colors):
+            stmt = stmt.filter(Company.color == filter)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -200,12 +201,12 @@ class TagView(object):
             "sort": sort,
             "order": order,
             "filter": filter,
+            "colors": colors,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "c_companies": self.count_companies(tag),
             "paginator": paginator,
             "next_page": next_page,
-            "states": states,
         }
 
     @view_config(route_name="tag_companies_export", permission="view")

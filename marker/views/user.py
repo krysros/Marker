@@ -31,6 +31,7 @@ from ..export import (
 from ..forms.select import (
     ROLES,
     STATES,
+    COLORS,
     DROPDOWN_SORT,
     DROPDOWN_EXT_SORT,
     DROPDOWN_STATUS,
@@ -236,7 +237,7 @@ class UserView(object):
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
-        states = dict(STATES)
+        colors = dict(COLORS)
         stmt = select(Company).filter(Company.created_by == user)
 
         if sort == "recommended":
@@ -258,8 +259,8 @@ class UserView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
 
-        if filter in list(states):
-            stmt = stmt.filter(Company.state == filter)
+        if filter in list(colors):
+            stmt = stmt.filter(Company.color == filter)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -276,7 +277,7 @@ class UserView(object):
             "sort": sort,
             "order": order,
             "filter": filter,
-            "states": states,
+            "colors": colors,
             "paginator": paginator,
             "next_page": next_page,
             "dropdown_sort": dropdown_sort,
@@ -305,7 +306,7 @@ class UserView(object):
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        dropdown_status = dict(DROPDOWN_STATUS)
+        status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
@@ -356,7 +357,7 @@ class UserView(object):
             "filter": filter,
             "sort": sort,
             "order": order,
-            "dropdown_status": dropdown_status,
+            "status": status,
             "dropdown_order": dropdown_order,
             "dropdown_sort": dropdown_sort,
             "paginator": paginator,

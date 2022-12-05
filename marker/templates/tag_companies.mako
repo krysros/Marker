@@ -21,7 +21,7 @@
 <p class="lead">${tag.name}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${dropdown.filter_button('tag_companies', states, tag_id=tag.id, slug=tag.slug)}</div>
+  <div>${dropdown.filter_button('tag_companies', colors, tag_id=tag.id, slug=tag.slug)}</div>
   <div>${dropdown.sort_button('tag_companies', dropdown_sort, tag_id=tag.id, slug=tag.slug)}</div>
   <div class="me-auto">${dropdown.order_button('tag_companies', dropdown_order, tag_id=tag.id, slug=tag.slug)}</div>
   <div>${button.export('tag_companies_export', tag_id=tag.id, slug=tag.slug, _query={'filter': filter, 'sort': sort, 'order': order})}</div>

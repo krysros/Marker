@@ -44,7 +44,7 @@
 <%include file="company_led.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div>${dropdown.filter_button('company_similar', states, company_id=company.id, slug=company.slug)}</div>
+  <div>${dropdown.filter_button('company_similar', colors, company_id=company.id, slug=company.slug)}</div>
 </div>
 
 <%include file="company_table.mako"/>

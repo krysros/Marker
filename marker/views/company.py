@@ -478,7 +478,7 @@ class CompanyView(object):
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
-        states = dict(STATES)
+        colors = dict(COLORS)
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
 
@@ -495,8 +495,8 @@ class CompanyView(object):
             .order_by(func.count(Tag.companies.any(Company.id == company.id)).desc())
         )
 
-        if filter in list(states):
-            stmt = stmt.filter(Company.state == filter)
+        if filter in list(colors):
+            stmt = stmt.filter(Company.color == filter)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -513,7 +513,7 @@ class CompanyView(object):
             "company_similar_more",
             company_id=company.id,
             slug=company.slug,
-            states=states,
+            colors=colors,
             _query={
                 "filter": filter,
                 "sort": sort,
@@ -529,7 +529,7 @@ class CompanyView(object):
             "order": order,
             "paginator": paginator,
             "next_page": next_page,
-            "states": states,
+            "colors": colors,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "c_persons": self.count_persons(company),
