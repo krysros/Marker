@@ -533,6 +533,7 @@ class UserView(object):
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
+        colors = dict(COLORS)
         stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
         if order == "asc":
@@ -540,7 +541,6 @@ class UserView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        states = dict(STATES)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -561,7 +561,7 @@ class UserView(object):
             "dropdown_order": dropdown_order,
             "paginator": paginator,
             "next_page": next_page,
-            "states": states,
+            "colors": colors,
         }
 
     @view_config(
@@ -620,6 +620,7 @@ class UserView(object):
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
+        colors = dict(COLORS)
 
         stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
@@ -630,7 +631,6 @@ class UserView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        states = dict(STATES)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -651,7 +651,7 @@ class UserView(object):
             "dropdown_order": dropdown_order,
             "paginator": paginator,
             "next_page": next_page,
-            "states": states,
+            "colors": colors,
         }
 
     @view_config(
