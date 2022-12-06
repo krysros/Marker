@@ -536,6 +536,9 @@ class UserView(object):
         colors = dict(COLORS)
         stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
+        if filter in list(colors):
+            stmt = stmt.filter(Company.color == filter)
+
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
         elif order == "desc":
@@ -549,7 +552,7 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_checked_more",
             username=user.name,
-            _query={"page": page + 1, "sort": sort, "order": order},
+            _query={"page": page + 1, "filter": filter, "sort": sort, "order": order},
         )
 
         return {
@@ -573,14 +576,14 @@ class UserView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        query = select(Company).join(checked).filter(user.id == checked.c.user_id)
+        stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
         if order == "asc":
-            query = query.order_by(getattr(Company, sort).asc())
+            stmt = stmt.order_by(getattr(Company, sort).asc())
         elif order == "desc":
-            query = query.order_by(getattr(Company, sort).desc())
+            stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        companies = self.request.dbsession.execute(query).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(companies)
         log.info(
             f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych firm"
@@ -626,6 +629,9 @@ class UserView(object):
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
         )
 
+        if filter in list(colors):
+            stmt = stmt.filter(Company.color == filter)
+
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
         elif order == "desc":
@@ -639,7 +645,7 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_recommended_more",
             username=user.name,
-            _query={"page": page + 1, "sort": sort, "order": order},
+            _query={"page": page + 1, "filter": filter, "sort": sort, "order": order},
         )
 
         return {
@@ -663,16 +669,16 @@ class UserView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        query = (
+        stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
         )
 
         if order == "asc":
-            query = query.order_by(getattr(Company, sort).asc())
+            stmt = stmt.order_by(getattr(Company, sort).asc())
         elif order == "desc":
-            query = query.order_by(getattr(Company, sort).desc())
+            stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        companies = self.request.dbsession.execute(query).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(companies)
         log.info(
             f"Użytkownik {self.request.identity.name} eksportował dane rekomendowanych firm"
@@ -768,19 +774,19 @@ class UserView(object):
         order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()
 
-        query = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
         if filter == "inprogress":
-            query = query.filter(Project.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
-            query = query.filter(Project.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now.date())
 
         if order == "asc":
-            query = query.order_by(getattr(Project, sort).asc())
+            stmt = stmt.order_by(getattr(Project, sort).asc())
         elif order == "desc":
-            query = query.order_by(getattr(Project, sort).desc())
+            stmt = stmt.order_by(getattr(Project, sort).desc())
 
-        projects = self.request.dbsession.execute(query).scalars()
+        projects = self.request.dbsession.execute(stmt).scalars()
         response = export_projects_to_xlsx(projects)
         log.info(
             f"Użytkownik {self.request.identity.name} eksportował dane obserwowanych projektów"

@@ -244,8 +244,8 @@ class CompanyView(object):
         permission="view",
     )
     def company_json(self):
-        query = select(Company)
-        companies = self.request.dbsession.execute(query).scalars()
+        stmt = select(Company)
+        companies = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
                 "id": company.id,

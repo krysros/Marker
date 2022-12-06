@@ -104,8 +104,8 @@ class TagView(object):
     )
     def tag_json(self):
         tag = self.request.context.tag
-        query = select(Company).filter(Company.tags.any(name=tag.name))
-        companies = self.request.dbsession.execute(query).scalars()
+        stmt = select(Company).filter(Company.tags.any(name=tag.name))
+        companies = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
                 "id": company.id,
@@ -218,37 +218,37 @@ class TagView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         states = dict(STATES)
-        query = select(Company)
+        stmt = select(Company)
 
         if sort == "recommended":
             if order == "asc":
-                query = (
-                    query.filter(Company.tags.any(name=tag.name))
+                stmt = (
+                    stmt.filter(Company.tags.any(name=tag.name))
                     .join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
             elif order == "desc":
-                query = (
-                    query.filter(Company.tags.any(name=tag.name))
+                stmt = (
+                    stmt.filter(Company.tags.any(name=tag.name))
                     .join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
             if order == "asc":
-                query = query.filter(Company.tags.any(name=tag.name)).order_by(
+                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
                     getattr(Company, sort).asc(), Company.id
                 )
             elif order == "desc":
-                query = query.filter(Company.tags.any(name=tag.name)).order_by(
+                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
                     getattr(Company, sort).desc(), Company.id
                 )
 
         if filter in list(states):
-            query = query.filter(Company.state == filter)
+            stmt = stmt.filter(Company.state == filter)
 
-        companies = self.request.dbsession.execute(query).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(companies)
         log.info(f"Użytkownik {self.request.identity.name} eksportował dane firm")
         return response

@@ -153,8 +153,8 @@ class ProjectView(object):
         permission="view",
     )
     def project_json(self):
-        query = select(Project)
-        projects = self.request.dbsession.execute(query).scalars()
+        stmt = select(Project)
+        projects = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
                 "id": project.id,
