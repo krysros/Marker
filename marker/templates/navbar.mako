@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('company_all')}"><i class="bi bi-building"></i> Firmy</a>
+          <a class="nav-link" role="button" href="${request.route_url('company_all')}"><i class="bi bi-buildings"></i> Firmy</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('project_all')}"><i class="bi bi-briefcase"></i> Projekty</a>

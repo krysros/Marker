@@ -16,7 +16,7 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h2><i class="bi bi-building"></i> Firmy</h2>
+      <h2><i class="bi bi-buildings"></i> Firmy</h2>
       <p>
         Ostatnio dodane firmy wg wybranej kategorii.
       </p>

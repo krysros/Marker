@@ -62,7 +62,7 @@
 
 <div class="card mt-4 mb-4">
   <div class="card-header">
-    <i class="bi bi-building"></i> Firma
+    <i class="bi bi-buildings"></i> Firma
   </div>
   <div class="card-body">
     <div class="row">
