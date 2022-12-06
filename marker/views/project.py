@@ -13,6 +13,7 @@ from ..forms.select import (
     COUNTRIES,
     STATES,
     STAGES,
+    COLORS,
     PROJECT_DELIVERY_METHODS,
     DROPDOWN_ORDER,
     DROPDOWN_SORT_PROJECTS,
@@ -352,7 +353,7 @@ class ProjectView(object):
         stage = self.request.params.get("stage")
         project_delivery_method = self.request.params.get("project_delivery_method")
         page = int(self.request.params.get("page", 1))
-        states = dict(STATES)
+        colors = dict(COLORS)
 
         stmt = select(Project)
         stmt = stmt.filter(
@@ -411,7 +412,7 @@ class ProjectView(object):
         return {
             "paginator": paginator,
             "next_page": next_page,
-            "states": states,
+            "colors": colors,
         }
 
     @view_config(
