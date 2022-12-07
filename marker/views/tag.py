@@ -147,6 +147,7 @@ class TagView(object):
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
+        states = dict(STATES)
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
@@ -202,6 +203,7 @@ class TagView(object):
             "order": order,
             "filter": filter,
             "colors": colors,
+            "states": states,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "c_companies": self.count_companies(tag),
