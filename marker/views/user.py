@@ -534,6 +534,7 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
+        states = dict(STATES)
         stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
         if filter in list(colors):
@@ -565,6 +566,7 @@ class UserView(object):
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "states": states,
         }
 
     @view_config(
@@ -624,6 +626,7 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
+        states = dict(STATES)
 
         stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
@@ -658,6 +661,7 @@ class UserView(object):
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "states": states,
         }
 
     @view_config(
