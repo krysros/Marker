@@ -729,6 +729,7 @@ class CompanyView(object):
         color = self.request.params.get("color")
         page = int(self.request.params.get("page", 1))
         colors = dict(COLORS)
+        states = dict(STATES)
 
         stmt = select(Company)
         stmt = stmt.filter(
@@ -783,6 +784,7 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "states": states,
         }
 
     @view_config(
