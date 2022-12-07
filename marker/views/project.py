@@ -354,6 +354,7 @@ class ProjectView(object):
         project_delivery_method = self.request.params.get("project_delivery_method")
         page = int(self.request.params.get("page", 1))
         colors = dict(COLORS)
+        states = dict(STATES)
 
         stmt = select(Project)
         stmt = stmt.filter(
@@ -413,6 +414,7 @@ class ProjectView(object):
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "states": states,
         }
 
     @view_config(
