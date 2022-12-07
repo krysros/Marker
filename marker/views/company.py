@@ -479,6 +479,7 @@ class CompanyView(object):
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
+        states = dict(STATES)
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
 
@@ -530,6 +531,7 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "states": states,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "c_persons": self.count_persons(company),
