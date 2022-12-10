@@ -66,7 +66,7 @@ class PersonView(object):
     )
     def view(self):
         person = self.request.context.person
-        return {"person": person}
+        return {"person": person, "title": person.name}
 
     @view_config(
         route_name="person_edit", renderer="person_form.mako", permission="edit"

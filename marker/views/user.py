@@ -127,6 +127,7 @@ class UserView(object):
             "c_tags": self.count_tags(user),
             "c_persons": self.count_persons(user),
             "c_comments": self.count_comments(user),
+            "title": user.fullname,
         }
 
     @view_config(
@@ -166,6 +167,7 @@ class UserView(object):
             "c_tags": self.count_tags(user),
             "c_persons": self.count_persons(user),
             "c_comments": self.count_comments(user),
+            "title": user.fullname,
         }
 
     @view_config(
@@ -217,6 +219,7 @@ class UserView(object):
             "c_tags": self.count_tags(user),
             "c_persons": self.count_persons(user),
             "c_comments": self.count_comments(user),
+            "title": user.fullname,
         }
 
     @view_config(
@@ -238,6 +241,7 @@ class UserView(object):
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
+        states = dict(STATES)
         stmt = select(Company).filter(Company.created_by == user)
 
         if sort == "recommended":
@@ -278,6 +282,7 @@ class UserView(object):
             "order": order,
             "filter": filter,
             "colors": colors,
+            "states": states,
             "paginator": paginator,
             "next_page": next_page,
             "dropdown_sort": dropdown_sort,
@@ -287,6 +292,7 @@ class UserView(object):
             "c_tags": self.count_tags(user),
             "c_persons": self.count_persons(user),
             "c_comments": self.count_comments(user),
+            "title": user.fullname,
         }
 
     @view_config(
@@ -367,6 +373,7 @@ class UserView(object):
             "c_tags": self.count_tags(user),
             "c_persons": self.count_persons(user),
             "c_comments": self.count_comments(user),
+            "title": user.fullname,
         }
 
     @view_config(
@@ -418,6 +425,7 @@ class UserView(object):
             "c_tags": self.count_tags(user),
             "c_persons": self.count_persons(user),
             "c_comments": self.count_comments(user),
+            "title": user.fullname,
         }
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")

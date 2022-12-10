@@ -193,6 +193,7 @@ class CompanyView(object):
             "states": states,
             "courts": courts,
             "countries": countries,
+            "title": company.name,
         }
 
     @view_config(
@@ -210,6 +211,7 @@ class CompanyView(object):
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
             "company": company,
+            "title": company.name,
         }
 
     @view_config(
@@ -227,6 +229,7 @@ class CompanyView(object):
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
             "company": company,
+            "title": company.name,
         }
 
     @view_config(
@@ -347,6 +350,7 @@ class CompanyView(object):
             "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
+            "title": company.name,
         }
 
     @view_config(
@@ -443,6 +447,7 @@ class CompanyView(object):
             "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
+            "title": company.name,
         }
 
     @view_config(
@@ -460,6 +465,7 @@ class CompanyView(object):
             "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
+            "title": company.name,
         }
 
     @view_config(
@@ -540,6 +546,7 @@ class CompanyView(object):
             "c_recommended": self.count_recommended(company),
             "c_projects": self.count_projects(company),
             "c_similar": self.count_similar(company),
+            "title": company.name,
         }
 
     @view_config(

@@ -18,6 +18,7 @@ from ..paginator import get_paginator
 from ..export import export_companies_to_xlsx
 from ..forms.select import (
     COLORS,
+    STATES,
     DROPDOWN_SORT_COMPANIES,
     DROPDOWN_SORT,
     DROPDOWN_ORDER,
@@ -85,7 +86,7 @@ class TagView(object):
     )
     def view(self):
         tag = self.request.context.tag
-        return {"tag": tag, "c_companies": self.count_companies(tag)}
+        return {"tag": tag, "c_companies": self.count_companies(tag), "title": tag.name}
 
     @view_config(
         route_name="tag_map",
@@ -139,8 +140,6 @@ class TagView(object):
         permission="view",
     )
     def companies(self):
-        from ..forms.select import STATES
-
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", "all")
@@ -209,12 +208,11 @@ class TagView(object):
             "c_companies": self.count_companies(tag),
             "paginator": paginator,
             "next_page": next_page,
+            "title": tag.name,
         }
 
     @view_config(route_name="tag_companies_export", permission="view")
     def export_companies(self):
-        from ..forms.select import STATES
-
         tag = self.request.context.tag
         filter = self.request.params.get("filter", "all")
         sort = self.request.params.get("sort", "name")

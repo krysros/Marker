@@ -136,6 +136,7 @@ class ProjectView(object):
             "project": project,
             "c_companies": self.count_companies(project),
             "c_watched": self.count_watched(project),
+            "title": project.name,
         }
 
     @view_config(
@@ -210,6 +211,7 @@ class ProjectView(object):
             "project_delivery_methods": project_delivery_methods,
             "c_companies": self.count_companies(project),
             "c_watched": self.count_watched(project),
+            "title": project.name,
         }
 
     @view_config(
@@ -465,6 +467,7 @@ class ProjectView(object):
             "project": project,
             "c_companies": self.count_companies(project),
             "c_watched": self.count_watched(project),
+            "title": project.name,
         }
 
     @view_config(
