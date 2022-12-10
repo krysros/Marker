@@ -76,7 +76,8 @@ class UserView(object):
     @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
     def all(self):
         page = int(self.request.params.get("page", 1))
-        role = self.request.params.get("filter", "all")
+        username = self.request.params.get("username", None)
+        role = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         roles = dict(ROLES)
@@ -84,7 +85,10 @@ class UserView(object):
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(User)
 
-        if role in list(roles):
+        if username:
+            stmt = stmt.filter(User.name.ilike("%" + username + "%"))
+
+        if role:
             stmt = stmt.filter(User.role == role)
 
         if order == "asc":
@@ -97,9 +101,12 @@ class UserView(object):
             .scalars()
             .all()
         )
+        search_query = {"username": username}
+
         next_page = self.request.route_url(
             "user_more",
             _query={
+                **search_query,
                 "filter": role,
                 "sort": sort,
                 "order": order,
@@ -107,6 +114,7 @@ class UserView(object):
             },
         )
         return {
+            "search_query": search_query,
             "roles": roles,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
@@ -183,7 +191,7 @@ class UserView(object):
     def tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
@@ -235,7 +243,7 @@ class UserView(object):
     def companies(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
@@ -263,7 +271,7 @@ class UserView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
 
-        if filter in list(colors):
+        if filter:
             stmt = stmt.filter(Company.color == filter)
 
         paginator = (
@@ -308,7 +316,7 @@ class UserView(object):
     def projects(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -389,7 +397,7 @@ class UserView(object):
     def persons(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
@@ -490,38 +498,10 @@ class UserView(object):
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "user_results", _query={"username": form.name.data}
+                    "user_all", _query={"username": form.name.data}
                 )
             )
         return {"heading": "Znajdź użytkownika", "form": form}
-
-    @view_config(
-        route_name="user_results",
-        renderer="user_results.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="user_results_more",
-        renderer="user_more.mako",
-        permission="view",
-    )
-    def results(self):
-        username = self.request.params.get("username")
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(User)
-            .filter(User.name.ilike("%" + username + "%"))
-            .order_by(User.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_more", _query={"username": username, "page": page + 1}
-        )
-        return {"paginator": paginator, "next_page": next_page}
 
     @view_config(
         route_name="user_checked",
@@ -536,7 +516,7 @@ class UserView(object):
     def checked(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
@@ -545,7 +525,7 @@ class UserView(object):
         states = dict(STATES)
         stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
-        if filter in list(colors):
+        if filter:
             stmt = stmt.filter(Company.color == filter)
 
         if order == "asc":
@@ -628,7 +608,7 @@ class UserView(object):
     def recommended(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
@@ -640,7 +620,7 @@ class UserView(object):
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
         )
 
-        if filter in list(colors):
+        if filter:
             stmt = stmt.filter(Company.color == filter)
 
         if order == "asc":
@@ -725,7 +705,7 @@ class UserView(object):
     def watched(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "asc")
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
@@ -781,7 +761,7 @@ class UserView(object):
     )
     def export_watched(self):
         user = self.request.context.user
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()

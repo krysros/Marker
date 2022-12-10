@@ -47,12 +47,16 @@ class TagView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        name = self.request.params.get("name", None)        
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Tag)
+
+        if name:
+            stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Tag, sort).asc())
@@ -64,12 +68,14 @@ class TagView(object):
             .scalars()
             .all()
         )
+        search_query = {"name": name}
         next_page = self.request.route_url(
             "tag_more",
-            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
 
         return {
+            "search_query": search_query,
             "filter": filter,
             "sort": sort,
             "order": order,
@@ -142,7 +148,7 @@ class TagView(object):
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
@@ -176,7 +182,7 @@ class TagView(object):
                     getattr(Company, sort).desc(), Company.id
                 )
 
-        if filter in list(colors):
+        if filter:
             stmt = stmt.filter(Company.color == filter)
 
         paginator = (
@@ -214,7 +220,7 @@ class TagView(object):
     @view_config(route_name="tag_companies_export", permission="view")
     def export_companies(self):
         tag = self.request.context.tag
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         states = dict(STATES)
@@ -327,34 +333,10 @@ class TagView(object):
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "tag_results", _query={"name": form.name.data}
+                    "tag_all", _query={"name": form.name.data}
                 )
             )
         return {"heading": "Znajdź tag", "form": form}
-
-    @view_config(
-        route_name="tag_results",
-        renderer="tag_results.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="tag_results_more",
-        renderer="tag_more.mako",
-        permission="view",
-    )
-    def results(self):
-        name = self.request.params.get("name")
-        page = int(self.request.params.get("page", 1))
-        stmt = select(Tag).filter(Tag.name.ilike("%" + name + "%")).order_by(Tag.name)
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "tag_results_more", _query={"name": name, "page": page + 1}
-        )
-        return {"paginator": paginator, "next_page": next_page}
 
     @view_config(
         route_name="add_company_to_tag",

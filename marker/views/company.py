@@ -112,7 +112,19 @@ class CompanyView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        state = self.request.params.get("state", None)
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
+        color = self.request.params.get("color", None)
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
@@ -120,6 +132,45 @@ class CompanyView(object):
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
+
+        if name:
+            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+
+        if link:
+            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
+
+        if state:
+            stmt = stmt.filter(Company.state == state)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if filter:
+            stmt = stmt.filter(Company.color == filter)
 
         if sort == "recommended":
             if order == "asc":
@@ -140,18 +191,31 @@ class CompanyView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
 
-        if filter in list(colors):
-            stmt = stmt.filter(Company.color == filter)
-
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
 
+        search_query = {
+            "name": name,
+            "street": street,
+            "postcode": postcode,
+            "city": city,
+            "state": state,
+            "country": country,
+            "link": link,
+            "NIP": NIP,
+            "REGON": REGON,
+            "KRS": KRS,
+            "court": court,
+            "color": color,
+        }
+
         next_page = self.request.route_url(
             "company_more",
             _query={
+                **search_query,
                 "filter": filter,
                 "sort": sort,
                 "order": order,
@@ -160,6 +224,7 @@ class CompanyView(object):
         )
 
         return {
+            "search_query": search_query,
             "next_page": next_page,
             "filter": filter,
             "sort": sort,
@@ -481,7 +546,7 @@ class CompanyView(object):
     def similar(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
@@ -502,7 +567,7 @@ class CompanyView(object):
             .order_by(func.count(Tag.companies.any(Company.id == company.id)).desc())
         )
 
-        if filter in list(colors):
+        if filter:
             stmt = stmt.filter(Company.color == filter)
 
         if order == "asc":
@@ -694,7 +759,7 @@ class CompanyView(object):
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "company_results",
+                    "company_all",
                     _query={
                         "name": form.name.data,
                         "street": form.street.data,
@@ -712,89 +777,6 @@ class CompanyView(object):
                 )
             )
         return {"heading": "Znajdź firmę", "form": form}
-
-    @view_config(
-        route_name="company_results",
-        renderer="company_results.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="company_results_more",
-        renderer="company_more.mako",
-        permission="view",
-    )
-    def company_results(self):
-        name = self.request.params.get("name")
-        street = self.request.params.get("street")
-        postcode = self.request.params.get("postcode")
-        city = self.request.params.get("city")
-        state = self.request.params.get("state")
-        country = self.request.params.get("country")
-        link = self.request.params.get("link")
-        NIP = self.request.params.get("NIP")
-        REGON = self.request.params.get("REGON")
-        KRS = self.request.params.get("KRS")
-        court = self.request.params.get("court")
-        color = self.request.params.get("color")
-        page = int(self.request.params.get("page", 1))
-        colors = dict(COLORS)
-        states = dict(STATES)
-
-        stmt = select(Company)
-        stmt = stmt.filter(
-            Company.name.ilike("%" + name + "%"),
-            Company.street.ilike("%" + street + "%"),
-            Company.postcode.ilike("%" + postcode + "%"),
-            Company.city.ilike("%" + city + "%"),
-            Company.link.ilike("%" + link + "%"),
-            Company.NIP.ilike("%" + NIP + "%"),
-            Company.REGON.ilike("%" + REGON + "%"),
-            Company.KRS.ilike("%" + KRS + "%"),
-        )
-
-        if state:
-            stmt = stmt.filter(Company.state == state)
-
-        if country:
-            stmt = stmt.filter(Company.country == country)
-
-        if court:
-            stmt = stmt.filter(Company.court == court)
-
-        if color:
-            stmt = stmt.filter(Company.color == color)
-
-        stmt = stmt.order_by(Company.name)
-
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "company_results_more",
-            _query={
-                "name": name,
-                "street": street,
-                "postcode": postcode,
-                "city": city,
-                "state": state,
-                "country": country,
-                "link": link,
-                "NIP": NIP,
-                "REGON": REGON,
-                "KRS": KRS,
-                "court": court,
-                "color": color,
-                "page": page + 1,
-            },
-        )
-        return {
-            "paginator": paginator,
-            "next_page": next_page,
-            "colors": colors,
-            "states": states,
-        }
 
     @view_config(
         route_name="unlink_tag",

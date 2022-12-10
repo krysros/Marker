@@ -58,8 +58,6 @@ def includeme(config):
     )
     config.add_route("tag_add", "/tag/add", factory=default_factory)
     config.add_route("tag_search", "/tag/search", factory=default_factory)
-    config.add_route("tag_results", "/tag/results", factory=default_factory)
-    config.add_route("tag_results_more", "/tag/results/more", factory=default_factory)
     config.add_route("tag_select", "/tag/select", factory=default_factory)
     config.add_route(
         "tag_edit",
@@ -83,12 +81,6 @@ def includeme(config):
     config.add_route("company_map", "/company/map", factory=default_factory)
     config.add_route("company_add", "/company/add", factory=default_factory)
     config.add_route("company_search", "/company/search", factory=default_factory)
-    config.add_route("company_results", "/company/results", factory=default_factory)
-    config.add_route(
-        "company_results_more",
-        "/company/results/more",
-        factory=default_factory,
-    )
     config.add_route("company_select", "/company/select", factory=default_factory)
     config.add_route(
         "company_view",
@@ -234,12 +226,6 @@ def includeme(config):
         factory=comment_factory,
     )
     config.add_route("comment_search", "/comment/search", factory=default_factory)
-    config.add_route("comment_results", "/comment/results", factory=default_factory)
-    config.add_route(
-        "comment_results_more",
-        "/comment/results/more",
-        factory=default_factory,
-    )
 
     config.add_route(
         "person_vcard",
@@ -269,10 +255,6 @@ def includeme(config):
     config.add_route("person_all", "/person", factory=default_factory)
     config.add_route("person_more", "/person/more", factory=default_factory)
     config.add_route("person_search", "/person/search", factory=default_factory)
-    config.add_route("person_results", "/person/results", factory=default_factory)
-    config.add_route(
-        "person_results_more", "/person/results/more", factory=default_factory
-    )
 
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
@@ -280,12 +262,6 @@ def includeme(config):
     config.add_route("project_map", "/project/map", factory=default_factory)
     config.add_route("project_add", "/project/add", factory=default_factory)
     config.add_route("project_search", "/project/search", factory=default_factory)
-    config.add_route("project_results", "/project/results", factory=default_factory)
-    config.add_route(
-        "project_results_more",
-        "/project/results/more",
-        factory=default_factory,
-    )
     config.add_route(
         "project_view",
         r"/project/{project_id:\d+}/{slug}",
@@ -332,8 +308,6 @@ def includeme(config):
     config.add_route("user_more", "/user/more", factory=default_factory)
     config.add_route("user_add", "/user/add", factory=default_factory)
     config.add_route("user_search", "/user/search", factory=default_factory)
-    config.add_route("user_results", "/user/results", factory=default_factory)
-    config.add_route("user_results_more", "/user/results/more", factory=default_factory)
     config.add_route("user_view", "/user/{username}", factory=user_factory)
     config.add_route("user_edit", "/user/{username}/edit", factory=user_factory)
     config.add_route("user_delete", "/user/{username}/delete", factory=user_factory)

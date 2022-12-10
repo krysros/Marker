@@ -65,7 +65,18 @@ class ProjectView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        state = self.request.params.get("state", None)
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        color = self.request.params.get("color", None)
+        deadline = self.request.params.get("deadline", None)
+        stage = self.request.params.get("stage", None)
+        project_delivery_method = self.request.params.get("project_delivery_method", None)
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -74,6 +85,31 @@ class ProjectView(object):
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
         stmt = select(Project)
+
+
+        if name:
+            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+
+        if link:
+            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+
+        if deadline:
+            deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
+            stmt = stmt.filter(Project.deadline <= deadline)
+
+        if filter == "inprogress":
+            stmt = stmt.filter(Project.deadline > now.date())
+        elif filter == "completed":
+            stmt = stmt.filter(Project.deadline < now.date())
 
         if sort == "watched":
             if order == "asc":
@@ -94,19 +130,28 @@ class ProjectView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Project, sort).desc(), Project.id)
 
-        if filter == "inprogress":
-            stmt = stmt.filter(Project.deadline > now.date())
-        elif filter == "completed":
-            stmt = stmt.filter(Project.deadline < now.date())
-
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
+        search_query = {
+            "name": name,
+            "street": street,
+            "postcode": postcode,
+            "city": city,
+            "state": state,
+            "country": country,
+            "link": link,
+            "color": color,
+            "deadline": deadline,
+            "stage": stage,
+            "project_delivery_method": project_delivery_method,
+        }
         next_page = self.request.route_url(
             "project_more",
             _query={
+                **search_query,
                 "filter": filter,
                 "sort": sort,
                 "order": order,
@@ -114,6 +159,7 @@ class ProjectView(object):
             },
         )
         return {
+            "search_query": search_query,
             "filter": filter,
             "sort": sort,
             "order": order,
@@ -314,7 +360,7 @@ class ProjectView(object):
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "project_results",
+                    "project_all",
                     _query={
                         "name": form.name.data,
                         "street": form.street.data,
@@ -331,93 +377,6 @@ class ProjectView(object):
                 )
             )
         return {"heading": "Znajdź projekt", "form": form}
-
-    @view_config(
-        route_name="project_results",
-        renderer="project_results.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="project_results_more",
-        renderer="project_more.mako",
-        permission="view",
-    )
-    def results(self):
-        name = self.request.params.get("name")
-        street = self.request.params.get("street")
-        postcode = self.request.params.get("postcode")
-        city = self.request.params.get("city")
-        state = self.request.params.get("state")
-        country = self.request.params.get("country")
-        link = self.request.params.get("link")
-        color = self.request.params.get("color")
-        deadline = self.request.params.get("deadline")
-        stage = self.request.params.get("stage")
-        project_delivery_method = self.request.params.get("project_delivery_method")
-        page = int(self.request.params.get("page", 1))
-        colors = dict(COLORS)
-        states = dict(STATES)
-
-        stmt = select(Project)
-        stmt = stmt.filter(
-            Project.name.ilike("%" + name + "%"),
-            Project.street.ilike("%" + street + "%"),
-            Project.postcode.ilike("%" + postcode + "%"),
-            Project.city.ilike("%" + city + "%"),
-            Project.link.ilike("%" + link + "%"),
-        )
-
-        if state:
-            stmt = stmt.filter(Project.state == state)
-
-        if country:
-            stmt = stmt.filter(Project.country == country)
-
-        if color:
-            stmt = stmt.filter(Project.color == color)
-
-        if stage:
-            stmt = stmt.filter(Project.stage == stage)
-
-        if project_delivery_method:
-            stmt = stmt.filter(
-                Project.project_delivery_method == project_delivery_method
-            )
-
-        if deadline:
-            deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
-            stmt = stmt.filter(Project.deadline <= deadline)
-
-        stmt = stmt.order_by(Project.name)
-
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "project_results_more",
-            _query={
-                "name": name,
-                "street": street,
-                "postcode": postcode,
-                "city": city,
-                "state": state,
-                "country": country,
-                "link": link,
-                "color": color,
-                "deadline": deadline,
-                "stage": stage,
-                "project_delivery_method": project_delivery_method,
-                "page": page + 1,
-            },
-        )
-        return {
-            "paginator": paginator,
-            "next_page": next_page,
-            "colors": colors,
-            "states": states,
-        }
 
     @view_config(
         route_name="project_watch",

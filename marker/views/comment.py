@@ -26,14 +26,23 @@ class CommentView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        stmt = select(Comment).order_by(Comment.created_at.desc())
+        comment = self.request.params.get("comment", None)
+        stmt = select(Comment)
+
+        if comment:
+            stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
+
+        stmt = stmt.order_by(Comment.created_at.desc())
+
+        search_query = {"comment": comment}
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
-        next_page = self.request.route_url("comment_more", _query={"page": page + 1})
-        return {"paginator": paginator, "next_page": next_page}
+        next_page = self.request.route_url("comment_more", _query={**search_query, "page": page + 1})
+        return {"search_query": search_query, "paginator": paginator, "next_page": next_page}
 
     @view_config(
         route_name="comment_add",
@@ -80,36 +89,7 @@ class CommentView(object):
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "comment_results", _query={"comment": form.comment.data}
+                    "comment_all", _query={"comment": form.comment.data}
                 )
             )
         return {"heading": "Znajdź komentarz", "form": form}
-
-    @view_config(
-        route_name="comment_results",
-        renderer="comment_all.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="comment_results_more",
-        renderer="comment_more.mako",
-        permission="view",
-    )
-    def results(self):
-        comment = self.request.params.get("comment")
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Comment)
-            .filter(Comment.comment.ilike("%" + comment + "%"))
-            .order_by(Comment.id.desc())
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "comment_results_more",
-            _query={"comment": comment, "page": page + 1},
-        )
-        return {"paginator": paginator, "next_page": next_page}

@@ -29,12 +29,28 @@ class PersonView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", "all")
+        name = self.request.params.get("name", None)
+        position = self.request.params.get("position", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Person)
+
+        if name:
+            stmt = stmt.filter(Person.name.ilike("%" + name + "%"))
+
+        if position:
+            stmt = stmt.filter(Person.position.ilike("%" + position + "%"))
+
+        if phone:
+            stmt = stmt.filter(Person.phone.ilike("%" + phone + "%"))
+
+        if email:
+            stmt = stmt.filter(Person.email.ilike("%" + email + "%"))
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Person, sort).asc())
@@ -46,12 +62,15 @@ class PersonView(object):
             .scalars()
             .all()
         )
+        search_query = {"name": name, "position": position, "phone": phone, "email": email}
+
         next_page = self.request.route_url(
             "person_more",
-            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
 
         return {
+            "search_query": search_query,
             "filter": filter,
             "sort": sort,
             "order": order,
@@ -107,7 +126,7 @@ class PersonView(object):
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "person_results",
+                    "person_all",
                     _query={
                         "name": form.name.data,
                         "position": form.position.data,
@@ -117,47 +136,6 @@ class PersonView(object):
                 )
             )
         return {"heading": "Znajdź osobę", "form": form}
-
-    @view_config(
-        route_name="person_results",
-        renderer="person_results.mako",
-        permission="view",
-    )
-    @view_config(
-        route_name="person_results_more",
-        renderer="person_more.mako",
-        permission="view",
-    )
-    def person_results(self):
-        name = self.request.params.get("name")
-        position = self.request.params.get("position")
-        phone = self.request.params.get("phone")
-        email = self.request.params.get("email")
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Person)
-            .filter(Person.name.ilike("%" + name + "%"))
-            .filter(Person.position.ilike("%" + position + "%"))
-            .filter(Person.phone.ilike("%" + phone + "%"))
-            .filter(Person.email.ilike("%" + email + "%"))
-            .order_by(Person.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "person_results_more",
-            _query={
-                "name": name,
-                "position": position,
-                "phone": phone,
-                "email": email,
-                "page": page + 1,
-            },
-        )
-        return {"paginator": paginator, "next_page": next_page}
 
     @view_config(route_name="person_vcard", permission="view")
     def vcard(self):
