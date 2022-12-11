@@ -103,6 +103,21 @@ class ProjectView(object):
         if link:
             stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
 
+        if state:
+            stmt = stmt.filter(Project.state == state)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if project_delivery_method:
+            stmt = stmt.filter(Project.project_delivery_method == project_delivery_method)
+
         if deadline:
             deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
             stmt = stmt.filter(Project.deadline <= deadline)
