@@ -1,7 +1,10 @@
 import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
-from sqlalchemy import select
+from sqlalchemy import (
+    select,
+    func,
+)
 from ..models import Comment
 from ..forms import CommentSearchForm
 from ..paginator import get_paginator
@@ -34,6 +37,10 @@ class CommentView(object):
 
         stmt = stmt.order_by(Comment.created_at.desc())
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         search_query = {"comment": comment}
 
         paginator = (
@@ -41,8 +48,15 @@ class CommentView(object):
             .scalars()
             .all()
         )
-        next_page = self.request.route_url("comment_more", _query={**search_query, "page": page + 1})
-        return {"search_query": search_query, "paginator": paginator, "next_page": next_page}
+        next_page = self.request.route_url(
+            "comment_more", _query={**search_query, "page": page + 1}
+        )
+        return {
+            "search_query": search_query,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+        }
 
     @view_config(
         route_name="comment_add",

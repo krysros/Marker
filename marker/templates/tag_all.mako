@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-tags"></i> Tagi
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('tag_search')}
     ${button.add('tag_add')}

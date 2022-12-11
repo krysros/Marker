@@ -96,6 +96,10 @@ class UserView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(User, sort).desc())
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -123,6 +127,7 @@ class UserView(object):
             "order": order,
             "paginator": paginator,
             "next_page": next_page,
+            "counter": counter,
         }
 
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")

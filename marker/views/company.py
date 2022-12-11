@@ -191,6 +191,10 @@ class CompanyView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -234,6 +238,7 @@ class CompanyView(object):
             "colors": colors,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
+            "counter": counter,
         }
 
     @view_config(

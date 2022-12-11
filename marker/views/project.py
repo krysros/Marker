@@ -75,7 +75,9 @@ class ProjectView(object):
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
-        project_delivery_method = self.request.params.get("project_delivery_method", None)
+        project_delivery_method = self.request.params.get(
+            "project_delivery_method", None
+        )
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
@@ -85,7 +87,6 @@ class ProjectView(object):
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
         stmt = select(Project)
-
 
         if name:
             stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
@@ -130,6 +131,10 @@ class ProjectView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Project, sort).desc(), Project.id)
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -169,6 +174,7 @@ class ProjectView(object):
             "dropdown_sort": dropdown_sort,
             "paginator": paginator,
             "next_page": next_page,
+            "counter": counter,
         }
 
     @view_config(

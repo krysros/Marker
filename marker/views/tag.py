@@ -47,7 +47,7 @@ class TagView(object):
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
-        name = self.request.params.get("name", None)        
+        name = self.request.params.get("name", None)
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
@@ -63,15 +63,26 @@ class TagView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Tag, sort).desc())
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
+
         search_query = {"name": name}
         next_page = self.request.route_url(
             "tag_more",
-            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
 
         return {
@@ -83,6 +94,7 @@ class TagView(object):
             "dropdown_order": dropdown_order,
             "paginator": paginator,
             "next_page": next_page,
+            "counter": counter,
         }
 
     @view_config(

@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-person-circle"></i> Użytkownicy
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('user_search')}
     ${button.add('user_add')}

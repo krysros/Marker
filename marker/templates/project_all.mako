@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> Projekty
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.map('project_map')}
     ${button.search('project_search')}

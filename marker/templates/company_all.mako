@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-buildings"></i> Firmy
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.map('company_map')}
     ${button.search('company_search')}

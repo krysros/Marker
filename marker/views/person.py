@@ -1,7 +1,11 @@
 import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther
-from sqlalchemy import select
+
+from sqlalchemy import (
+    select,
+    func,
+)
 from ..models import Person
 from ..paginator import get_paginator
 from ..forms import (
@@ -57,16 +61,31 @@ class PersonView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Person, sort).desc())
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
-        search_query = {"name": name, "position": position, "phone": phone, "email": email}
+        search_query = {
+            "name": name,
+            "position": position,
+            "phone": phone,
+            "email": email,
+        }
 
         next_page = self.request.route_url(
             "person_more",
-            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
 
         return {
@@ -78,6 +97,7 @@ class PersonView(object):
             "dropdown_order": dropdown_order,
             "paginator": paginator,
             "next_page": next_page,
+            "counter": counter,
         }
 
     @view_config(

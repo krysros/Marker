@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-people"></i> Osoby
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('person_search')}
   </div>
