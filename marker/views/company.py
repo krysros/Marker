@@ -169,9 +169,6 @@ class CompanyView(object):
         if color:
             stmt = stmt.filter(Company.color == color)
 
-        if filter:
-            stmt = stmt.filter(Company.color == filter)
-
         if sort == "recommended":
             if order == "asc":
                 stmt = (
