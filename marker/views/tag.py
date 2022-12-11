@@ -185,6 +185,8 @@ class TagView(object):
         if filter:
             stmt = stmt.filter(Company.color == filter)
 
+        search_query = {}
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -195,6 +197,7 @@ class TagView(object):
             tag_id=tag.id,
             slug=tag.slug,
             _query={
+                **search_query,
                 "page": page + 1,
                 "filter": filter,
                 "sort": sort,
@@ -203,6 +206,7 @@ class TagView(object):
         )
 
         return {
+            "search_query": search_query,
             "tag": tag,
             "sort": sort,
             "order": order,

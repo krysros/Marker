@@ -575,6 +575,8 @@ class CompanyView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
+        search_query = {}
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -587,6 +589,7 @@ class CompanyView(object):
             slug=company.slug,
             colors=colors,
             _query={
+                **search_query,
                 "filter": filter,
                 "sort": sort,
                 "order": order,
@@ -595,6 +598,7 @@ class CompanyView(object):
         )
 
         return {
+            "search_query": search_query,
             "company": company,
             "filter": filter,
             "sort": sort,
