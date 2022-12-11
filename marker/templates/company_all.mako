@@ -15,7 +15,6 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${dropdown.filter_button('company_all', colors)}</div>
   <div>${dropdown.sort_button('company_all', dropdown_sort)}</div>
   <div>${dropdown.order_button('company_all', dropdown_order)}</div>
 </div>

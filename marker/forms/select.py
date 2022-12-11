@@ -41,12 +41,13 @@ DROPDOWN_ORDER = [
 
 
 DROPDOWN_STATUS = [
-    ("inprogress", "w trakcie"),
+    ("in_progress", "w trakcie"),
     ("completed", "zakończone"),
 ]
 
 
 COLORS = [
+    ("", "---"),
     ("default", "domyślny"),
     ("success", "zielony"),
     ("info", "niebieski"),

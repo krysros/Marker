@@ -122,7 +122,7 @@ class ProjectView(object):
             deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
             stmt = stmt.filter(Project.deadline <= deadline)
 
-        if filter == "inprogress":
+        if filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
             stmt = stmt.filter(Project.deadline < now.date())
