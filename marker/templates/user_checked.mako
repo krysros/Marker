@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-check-square"></i> Zaznaczone
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.clear('user_checked_clear', icon='square', username=user.name)}
   </div>

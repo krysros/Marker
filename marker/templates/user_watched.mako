@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-eye"></i> Obserwowane
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.clear('user_watched_clear', icon='eye', username=user.name)}
   </div>

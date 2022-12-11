@@ -4,6 +4,7 @@
 
 <h2>
   <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.clear('user_recommended_clear', icon='hand-thumbs-up', username=user.name)}
   </div>

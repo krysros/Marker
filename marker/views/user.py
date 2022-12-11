@@ -538,6 +538,12 @@ class UserView(object):
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        search_query = {}
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -546,10 +552,17 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_checked_more",
             username=user.name,
-            _query={"page": page + 1, "filter": filter, "sort": sort, "order": order},
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
         )
 
         return {
+            "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
@@ -560,6 +573,7 @@ class UserView(object):
             "next_page": next_page,
             "colors": colors,
             "states": states,
+            "counter": counter,
         }
 
     @view_config(
@@ -638,13 +652,27 @@ class UserView(object):
             .scalars()
             .all()
         )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        search_query = {}
+
         next_page = self.request.route_url(
             "user_recommended_more",
             username=user.name,
-            _query={"page": page + 1, "filter": filter, "sort": sort, "order": order},
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
         )
 
         return {
+            "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
@@ -655,6 +683,7 @@ class UserView(object):
             "next_page": next_page,
             "colors": colors,
             "states": states,
+            "counter": counter,
         }
 
     @view_config(
@@ -736,10 +765,18 @@ class UserView(object):
             .scalars()
             .all()
         )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        search_query = {}
+
         next_page = self.request.route_url(
             "user_watched_more",
             username=user.name,
             _query={
+                **search_query,
                 "page": page + 1,
                 "filter": filter,
                 "sort": sort,
@@ -748,6 +785,7 @@ class UserView(object):
         )
 
         return {
+            "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
@@ -758,6 +796,7 @@ class UserView(object):
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
+            "counter": counter,
         }
 
     @view_config(
