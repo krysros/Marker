@@ -43,6 +43,7 @@ class ReportView(object):
             "url": self.request.route_url("report"),
             "heading": "Raport",
             "form": form,
+            "counter": len(REPORTS),
         }
 
     @view_config(route_name="report_results", renderer="report.mako", permission="view")

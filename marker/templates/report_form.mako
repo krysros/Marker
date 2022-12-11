@@ -1,7 +1,11 @@
 <%inherit file="layout.mako"/>
 <%include file="errors.mako"/> 
 
-<h2><i class="bi bi-bar-chart"></i> Raporty</h2>
+<h2>
+  <i class="bi bi-bar-chart"></i> Raporty
+  <span class="badge bg-secondary">${counter}</span>
+</h2>
+
 <hr>
 
 <div class="card mt-4 mb-4">
