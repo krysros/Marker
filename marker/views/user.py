@@ -213,12 +213,16 @@ class UserView(object):
             .scalars()
             .all()
         )
+
+        search_query = {}
+
         next_page = self.request.route_url(
             "user_tags_more",
             username=user.name,
-            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
         return {
+            "search_query": search_query,
             "user": user,
             "paginator": paginator,
             "filter": filter,
@@ -284,12 +288,16 @@ class UserView(object):
             .scalars()
             .all()
         )
+
+        search_query = {}
+
         next_page = self.request.route_url(
             "user_companies_more",
             username=user.name,
-            _query={"page": page + 1, "filter": filter, "sort": sort, "order": order},
+            _query={**search_query, "page": page + 1, "filter": filter, "sort": sort, "order": order},
         )
         return {
+            "search_query": search_query,
             "user": user,
             "sort": sort,
             "order": order,
@@ -350,7 +358,7 @@ class UserView(object):
             elif order == "desc":
                 stmt = stmt.order_by(getattr(Project, sort).desc(), Project.id)
 
-        if filter == "inprogress":
+        if filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
             stmt = stmt.filter(Project.deadline < now.date())
@@ -360,10 +368,14 @@ class UserView(object):
             .scalars()
             .all()
         )
+
+        search_query = {}
+
         next_page = self.request.route_url(
             "user_projects_more",
             username=user.name,
             _query={
+                **search_query,
                 "filter": filter,
                 "sort": sort,
                 "order": order,
@@ -371,6 +383,7 @@ class UserView(object):
             },
         )
         return {
+            "search_query": search_query,
             "user": user,
             "states": states,
             "filter": filter,
@@ -419,12 +432,16 @@ class UserView(object):
             .scalars()
             .all()
         )
+
+        search_query = {}
+
         next_page = self.request.route_url(
             "user_persons_more",
             username=user.name,
-            _query={"filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
         return {
+            "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
@@ -750,7 +767,7 @@ class UserView(object):
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
-        if filter == "inprogress":
+        if filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
             stmt = stmt.filter(Project.deadline < now.date())
@@ -812,7 +829,7 @@ class UserView(object):
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
-        if filter == "inprogress":
+        if filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
         elif filter == "completed":
             stmt = stmt.filter(Project.deadline < now.date())

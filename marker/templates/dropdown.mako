@@ -15,16 +15,6 @@
           % endif
         </a>
       </li>
-      % else:
-      <li>
-        <a class="dropdown-item" role="button" href="${request.route_url(route_name, **kwargs, _query={**search_query, 'filter': None, 'sort': sort, 'order': order})}">
-          % if not filter:
-          <strong>wszystkie</strong>
-          % else:
-          wszystkie
-          % endif
-        </a>
-      </li>
       % endfor
     </ul>
   </div>

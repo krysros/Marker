@@ -41,6 +41,7 @@ DROPDOWN_ORDER = [
 
 
 DROPDOWN_STATUS = [
+    ("", "---"),
     ("in_progress", "w trakcie"),
     ("completed", "zakończone"),
 ]
@@ -338,6 +339,7 @@ COUNTRIES = [
 
 
 ROLES = [
+    ("", "---"),
     ("basic", "wyświetlanie"),
     ("editor", "edytowanie"),
     ("admin", "administrator"),
