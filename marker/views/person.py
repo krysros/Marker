@@ -89,8 +89,12 @@ class PersonView(object):
             },
         )
 
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,

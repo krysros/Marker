@@ -119,9 +119,15 @@ class UserView(object):
             },
         )
 
-        dd_filter = Dropdown(items=roles, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=roles, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -228,11 +234,21 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_tags_more",
             username=user.name,
-            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
 
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -309,12 +325,24 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_companies_more",
             username=user.name,
-            _query={**search_query, "page": page + 1, "filter": filter, "sort": sort, "order": order},
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
         )
 
-        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -406,9 +434,15 @@ class UserView(object):
             },
         )
 
-        dd_filter = Dropdown(items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -469,11 +503,21 @@ class UserView(object):
         next_page = self.request.route_url(
             "user_persons_more",
             username=user.name,
-            _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
 
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -616,9 +660,15 @@ class UserView(object):
             },
         )
 
-        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -733,9 +783,15 @@ class UserView(object):
             },
         )
 
-        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,
@@ -853,9 +909,15 @@ class UserView(object):
             },
         )
 
-        dd_filter = Dropdown(items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,

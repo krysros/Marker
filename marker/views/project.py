@@ -117,7 +117,9 @@ class ProjectView(object):
             stmt = stmt.filter(Project.stage == stage)
 
         if project_delivery_method:
-            stmt = stmt.filter(Project.project_delivery_method == project_delivery_method)
+            stmt = stmt.filter(
+                Project.project_delivery_method == project_delivery_method
+            )
 
         if deadline:
             deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
@@ -180,9 +182,15 @@ class ProjectView(object):
             },
         )
 
-        dd_filter = Dropdown(items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
-        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
-        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+        dd_filter = Dropdown(
+            items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+        )
 
         return {
             "search_query": search_query,

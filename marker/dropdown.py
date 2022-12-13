@@ -38,12 +38,12 @@ class Dropdown:
         if self.typ == Dd.FILTER:
             return '<i class="bi bi-filter"></i>'
         elif self.typ == Dd.SORT:
-            if self.order == 'asc':
+            if self.order == "asc":
                 return '<i class="bi bi-sort-alpha-down"></i>'
-            elif self.order == 'desc':
+            elif self.order == "desc":
                 return '<i class="bi bi-sort-alpha-down-alt"></i>'
         elif self.typ == Dd.ORDER:
-            if self.order == 'asc':
+            if self.order == "asc":
                 return '<i class="bi bi-caret-up-fill"></i>'
-            elif self.order == 'desc':
+            elif self.order == "desc":
                 return '<i class="bi bi-caret-down-fill"></i>'
