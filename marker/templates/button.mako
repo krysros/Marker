@@ -77,3 +77,37 @@
 <button type="button" class="btn btn-danger${' btn-' + size if size else ''}" disabled><i class="bi bi-trash"></i></button>
 % endif
 </%def>
+
+<%def name="dropdown(route_name, items, criterion, typ, title, **kwargs)">
+<div class="btn-group">
+  <div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      % if typ == 'filter':
+        <i class="bi bi-filter"></i> ${title}
+      % else:
+        ${title}
+      % endif
+    </a>
+    <ul class="dropdown-menu">
+      % for k, v in items.items():
+        % if typ == 'filter':
+          <% query = {**search_query, 'filter': k, 'sort': sort, 'order': order} %>
+        % elif typ == 'sort':
+          <% query = {**search_query, 'filter': filter, 'sort': k, 'order': order} %>
+        % elif typ == 'order':
+          <% query = {**search_query, 'filter': filter, 'sort': sort, 'order': k} %>
+        % endif
+      <li>
+        <a class="dropdown-item" role="button" href="${request.route_url(route_name, **kwargs, _query=query)}">
+          % if k == criterion:
+          <strong>${v}</strong>
+          % else:
+          ${v}
+          % endif
+        </a>
+      </li>
+      % endfor
+    </ul>
+  </div>
+</div>
+</%def>

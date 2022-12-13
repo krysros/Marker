@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <h2>
@@ -15,8 +14,8 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${dropdown.sort_button('company_all', dropdown_sort)}</div>
-  <div>${dropdown.order_button('company_all', dropdown_order)}</div>
+  <div>${button.dropdown('company_all', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj')}</div>
+  <div>${button.dropdown('company_all', items=dropdown_order, criterion=order, typ='order', title='Kolejność')}</div>
 </div>
 
 <%include file="company_table.mako"/>

@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%namespace name="dropdown" file="dropdown.mako"/>
 <%namespace name="button" file="button.mako"/>
 
 <h2>
@@ -15,9 +14,9 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${dropdown.filter_button('project_all', status)}</div>
-  <div>${dropdown.sort_button('project_all', dropdown_sort)}</div>
-  <div>${dropdown.order_button('project_all', dropdown_order)}</div>
+  <div>${button.dropdown('project_all', items=status, criterion=filter, typ='filter', title='Status')}</div>
+  <div>${button.dropdown('project_all', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj')}</div>
+  <div>${button.dropdown('project_all', items=dropdown_order, criterion=order, typ='order', title='Kolejność')}</div>
 </div>
 
 <%include file="project_table.mako"/>

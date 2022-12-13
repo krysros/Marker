@@ -1,5 +1,5 @@
 <%inherit file="layout.mako"/>
-<%namespace name="dropdown" file="dropdown.mako"/>
+<%namespace name="button" file="button.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">
@@ -44,7 +44,7 @@
 <%include file="company_led.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div>${dropdown.filter_button('company_similar', colors, company_id=company.id, slug=company.slug)}</div>
+  <div>${button.dropdown('company_similar', items=colors, criterion=filter, typ='filter', title='Kolor', company_id=company.id, slug=company.slug)}</div>
 </div>
 
 <%include file="company_table.mako"/>
