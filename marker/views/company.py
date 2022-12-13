@@ -39,7 +39,7 @@ from ..forms.select import (
     DROPDOWN_ORDER,
 )
 from ..geo import location
-from .helpers import Dropdown, Dd
+from ..dropdown import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 

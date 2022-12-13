@@ -29,7 +29,7 @@ from ..models import (
 )
 from ..paginator import get_paginator
 from ..geo import location
-from .helpers import Dd, Dropdown
+from ..dropdown import Dd, Dropdown
 
 log = logging.getLogger(__name__)
 

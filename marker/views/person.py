@@ -17,7 +17,7 @@ from ..forms.select import (
     DROPDOWN_ORDER,
 )
 from ..export import export_vcard
-from .helpers import Dropdown, Dd
+from ..dropdown import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 

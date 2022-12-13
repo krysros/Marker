@@ -39,7 +39,7 @@ from ..forms.select import (
     DROPDOWN_SORT_PROJECTS,
     DROPDOWN_ORDER,
 )
-from .helpers import Dropdown, Dd
+from ..dropdown import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 
