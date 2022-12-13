@@ -20,9 +20,9 @@
 <p class="lead">${tag.name}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('tag_companies', items=colors, criterion=filter, typ='filter', title='Kolor', tag_id=tag.id, slug=tag.slug)}</div>
-  <div>${button.dropdown('tag_companies', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj', tag_id=tag.id, slug=tag.slug)}</div>
-  <div class="me-auto">${button.dropdown('tag_companies', items=dropdown_order, criterion=order, typ='order', title='Kolejność', tag_id=tag.id, slug=tag.slug)}</div>
+  <div>${button.dropdown('tag_companies', dd_filter, tag_id=tag.id, slug=tag.slug)}</div>
+  <div>${button.dropdown('tag_companies', dd_sort, tag_id=tag.id, slug=tag.slug)}</div>
+  <div class="me-auto">${button.dropdown('tag_companies', dd_order, tag_id=tag.id, slug=tag.slug)}</div>
   <div>${button.export('tag_companies_export', tag_id=tag.id, slug=tag.slug, _query={'filter': filter, 'sort': sort, 'order': order})}</div>
 </div>
 

@@ -29,6 +29,7 @@ from ..models import (
 )
 from ..paginator import get_paginator
 from ..geo import location
+from .helpers import Dd, Dropdown
 
 log = logging.getLogger(__name__)
 
@@ -82,7 +83,7 @@ class ProjectView(object):
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        status = dict(DROPDOWN_STATUS)
+        dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
@@ -178,13 +179,21 @@ class ProjectView(object):
                 "page": page + 1,
             },
         )
+
+        dd_filter = Dropdown(items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "filter": filter,
             "sort": sort,
             "order": order,
-            "status": status,
             "states": states,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "dropdown_status": dropdown_status,
             "dropdown_order": dropdown_order,
             "dropdown_sort": dropdown_sort,
             "paginator": paginator,

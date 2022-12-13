@@ -11,9 +11,9 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('user_recommended', items=colors, criterion=filter, typ='filter', title='Filtruj', username=user.name)}</div>
-  <div>${button.dropdown('user_recommended', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj', username=user.name)}</div>
-  <div class="me-auto">${button.dropdown('user_recommended', items=dropdown_order, criterion=order, typ='order', title='Kolejność', username=user.name)}</div>
+  <div>${button.dropdown('user_recommended', dd_filter, username=user.name)}</div>
+  <div>${button.dropdown('user_recommended', dd_sort, username=user.name)}</div>
+  <div class="me-auto">${button.dropdown('user_recommended', dd_order, username=user.name)}</div>
   <div>${button.export('user_recommended_export', username=user.name, _query={'filter': filter, 'sort': sort, 'order': order})}</div>
 </div>
 

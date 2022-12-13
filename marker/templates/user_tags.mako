@@ -29,8 +29,8 @@
 <p class="lead">${user.fullname}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('user_tags', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj', username=user.name)}</div>
-  <div>${button.dropdown('user_tags', items=dropdown_order, criterion=order, typ='order', title='Kolejność', username=user.name)}</div>
+  <div>${button.dropdown('user_tags', dd_sort, username=user.name)}</div>
+  <div>${button.dropdown('user_tags', dd_order, username=user.name)}</div>
 </div>
 
 <%include file="tag_table.mako"/>

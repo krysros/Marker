@@ -29,9 +29,9 @@
 <p class="lead">${user.fullname}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('user_projects', items=status, criterion=filter, typ='filter', title='Filtruj', username=user.name)}</div>
-  <div>${button.dropdown('user_projects', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj', username=user.name)}</div>
-  <div>${button.dropdown('user_projects', items=dropdown_order, criterion=order, typ='order', title='Kolejność', username=user.name)}</div>
+  <div>${button.dropdown('user_projects', dd_filter, username=user.name)}</div>
+  <div>${button.dropdown('user_projects', dd_sort, username=user.name)}</div>
+  <div>${button.dropdown('user_projects', dd_order, username=user.name)}</div>
 </div>
 
 <%include file="project_table.mako"/>

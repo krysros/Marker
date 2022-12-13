@@ -14,9 +14,9 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('project_all', items=status, criterion=filter, typ='filter', title='Status')}</div>
-  <div>${button.dropdown('project_all', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj')}</div>
-  <div>${button.dropdown('project_all', items=dropdown_order, criterion=order, typ='order', title='Kolejność')}</div>
+  <div>${button.dropdown('project_all', dd_filter)}</div>
+  <div>${button.dropdown('project_all', dd_sort)}</div>
+  <div>${button.dropdown('project_all', dd_order)}</div>
 </div>
 
 <%include file="project_table.mako"/>

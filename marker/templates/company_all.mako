@@ -14,8 +14,8 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('company_all', items=dropdown_sort, criterion=sort, typ='sort', title='Sortuj')}</div>
-  <div>${button.dropdown('company_all', items=dropdown_order, criterion=order, typ='order', title='Kolejność')}</div>
+  <div>${button.dropdown('company_all', dd_sort)}</div>
+  <div>${button.dropdown('company_all', dd_order)}</div>
 </div>
 
 <%include file="company_table.mako"/>

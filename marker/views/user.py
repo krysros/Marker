@@ -39,6 +39,7 @@ from ..forms.select import (
     DROPDOWN_SORT_PROJECTS,
     DROPDOWN_ORDER,
 )
+from .helpers import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ class UserView(object):
     def all(self):
         page = int(self.request.params.get("page", 1))
         username = self.request.params.get("username", None)
-        role = self.request.params.get("filter", None)
+        filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         roles = dict(ROLES)
@@ -88,8 +89,8 @@ class UserView(object):
         if username:
             stmt = stmt.filter(User.name.ilike("%" + username + "%"))
 
-        if role:
-            stmt = stmt.filter(User.role == role)
+        if filter:
+            stmt = stmt.filter(User.role == filter)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(User, sort).asc())
@@ -111,20 +112,28 @@ class UserView(object):
             "user_more",
             _query={
                 **search_query,
-                "filter": role,
+                "filter": filter,
                 "sort": sort,
                 "order": order,
                 "page": page + 1,
             },
         )
+
+        dd_filter = Dropdown(items=roles, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "roles": roles,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
-            "filter": role,
+            "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
@@ -221,6 +230,10 @@ class UserView(object):
             username=user.name,
             _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
+
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
@@ -228,6 +241,8 @@ class UserView(object):
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "next_page": next_page,
@@ -296,12 +311,20 @@ class UserView(object):
             username=user.name,
             _query={**search_query, "page": page + 1, "filter": filter, "sort": sort, "order": order},
         )
+
+        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
+            "filter": filter,
             "sort": sort,
             "order": order,
-            "filter": filter,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "colors": colors,
             "states": states,
             "paginator": paginator,
@@ -333,7 +356,7 @@ class UserView(object):
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        status = dict(DROPDOWN_STATUS)
+        dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
@@ -382,6 +405,11 @@ class UserView(object):
                 "page": page + 1,
             },
         )
+
+        dd_filter = Dropdown(items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
@@ -389,7 +417,10 @@ class UserView(object):
             "filter": filter,
             "sort": sort,
             "order": order,
-            "status": status,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "dropdown_status": dropdown_status,
             "dropdown_order": dropdown_order,
             "dropdown_sort": dropdown_sort,
             "paginator": paginator,
@@ -440,12 +471,18 @@ class UserView(object):
             username=user.name,
             _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1},
         )
+
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "paginator": paginator,
@@ -566,6 +603,7 @@ class UserView(object):
             .scalars()
             .all()
         )
+
         next_page = self.request.route_url(
             "user_checked_more",
             username=user.name,
@@ -578,12 +616,19 @@ class UserView(object):
             },
         )
 
+        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "paginator": paginator,
@@ -688,12 +733,19 @@ class UserView(object):
             },
         )
 
+        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "paginator": paginator,
@@ -759,9 +811,9 @@ class UserView(object):
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "asc")
+        dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
-        status = dict(DROPDOWN_STATUS)
         states = dict(STATES)
         now = datetime.datetime.now()
 
@@ -801,15 +853,22 @@ class UserView(object):
             },
         )
 
+        dd_filter = Dropdown(items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "user": user,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "dropdown_status": dropdown_status,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
-            "status": status,
             "states": states,
             "paginator": paginator,
             "next_page": next_page,

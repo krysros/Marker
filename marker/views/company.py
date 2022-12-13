@@ -39,6 +39,7 @@ from ..forms.select import (
     DROPDOWN_ORDER,
 )
 from ..geo import location
+from .helpers import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 
@@ -198,6 +199,9 @@ class CompanyView(object):
             .all()
         )
 
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         search_query = {
             "name": name,
             "street": street,
@@ -230,6 +234,8 @@ class CompanyView(object):
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "paginator": paginator,
             "states": states,
             "colors": colors,
@@ -599,12 +605,15 @@ class CompanyView(object):
             },
         )
 
+        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "company": company,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_filter": dd_filter,
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,

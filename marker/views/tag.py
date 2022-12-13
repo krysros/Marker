@@ -23,6 +23,7 @@ from ..forms.select import (
     DROPDOWN_SORT,
     DROPDOWN_ORDER,
 )
+from .helpers import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +75,7 @@ class TagView(object):
         )
 
         search_query = {"name": name}
+
         next_page = self.request.route_url(
             "tag_more",
             _query={
@@ -85,11 +87,16 @@ class TagView(object):
             },
         )
 
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "paginator": paginator,
@@ -217,12 +224,19 @@ class TagView(object):
             },
         )
 
+        dd_filter = Dropdown(items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order)
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "tag": tag,
             "sort": sort,
             "order": order,
             "filter": filter,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "colors": colors,
             "states": states,
             "dropdown_sort": dropdown_sort,

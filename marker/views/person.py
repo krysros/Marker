@@ -17,6 +17,7 @@ from ..forms.select import (
     DROPDOWN_ORDER,
 )
 from ..export import export_vcard
+from .helpers import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 
@@ -88,11 +89,16 @@ class PersonView(object):
             },
         )
 
+        dd_sort = Dropdown(items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order)
+        dd_order = Dropdown(items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order)
+
         return {
             "search_query": search_query,
             "filter": filter,
             "sort": sort,
             "order": order,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
             "dropdown_sort": dropdown_sort,
             "dropdown_order": dropdown_order,
             "paginator": paginator,
