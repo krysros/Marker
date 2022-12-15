@@ -120,13 +120,13 @@ class UserView(object):
         )
 
         dd_filter = Dropdown(
-            items=roles, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=roles, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -244,10 +244,10 @@ class UserView(object):
         )
 
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -335,13 +335,13 @@ class UserView(object):
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -435,13 +435,17 @@ class UserView(object):
         )
 
         dd_filter = Dropdown(
-            items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=dropdown_status,
+            typ=Dd.FILTER,
+            _filter=filter,
+            _sort=sort,
+            _order=order,
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -513,10 +517,10 @@ class UserView(object):
         )
 
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -661,13 +665,13 @@ class UserView(object):
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -784,13 +788,13 @@ class UserView(object):
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {
@@ -910,13 +914,17 @@ class UserView(object):
         )
 
         dd_filter = Dropdown(
-            items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=dropdown_status,
+            typ=Dd.FILTER,
+            _filter=filter,
+            _sort=sort,
+            _order=order,
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {

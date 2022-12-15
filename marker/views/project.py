@@ -183,13 +183,17 @@ class ProjectView(object):
         )
 
         dd_filter = Dropdown(
-            items=dropdown_status, typ=Dd.FILTER, filter=filter, sort=sort, order=order
+            items=dropdown_status,
+            typ=Dd.FILTER,
+            _filter=filter,
+            _sort=sort,
+            _order=order,
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, filter=filter, sort=sort, order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, filter=filter, sort=sort, order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
         return {

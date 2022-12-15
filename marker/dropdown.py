@@ -8,12 +8,12 @@ class Dd(Enum):
 
 
 class Dropdown:
-    def __init__(self, items, typ, filter=None, sort=None, order=None):
+    def __init__(self, items, typ, _filter=None, _sort=None, _order=None):
         self.items = items
         self.typ = typ
-        self.filter = filter
-        self.sort = sort
-        self.order = order
+        self._filter = _filter
+        self._sort = _sort
+        self._order = _order
 
     @property
     def title(self):
@@ -27,23 +27,23 @@ class Dropdown:
     @property
     def current_item(self):
         if self.typ == Dd.FILTER:
-            return self.filter
+            return self._filter
         elif self.typ == Dd.SORT:
-            return self.sort
+            return self._sort
         elif self.typ == Dd.ORDER:
-            return self.order
+            return self._order
 
     @property
     def icon(self):
         if self.typ == Dd.FILTER:
             return '<i class="bi bi-filter"></i>'
         elif self.typ == Dd.SORT:
-            if self.order == "asc":
+            if self._order == "asc":
                 return '<i class="bi bi-sort-alpha-down"></i>'
-            elif self.order == "desc":
+            elif self._order == "desc":
                 return '<i class="bi bi-sort-alpha-down-alt"></i>'
         elif self.typ == Dd.ORDER:
-            if self.order == "asc":
+            if self._order == "asc":
                 return '<i class="bi bi-caret-up-fill"></i>'
-            elif self.order == "desc":
+            elif self._order == "desc":
                 return '<i class="bi bi-caret-down-fill"></i>'
