@@ -98,13 +98,8 @@ class PersonView(object):
 
         return {
             "search_query": search_query,
-            "filter": filter,
-            "sort": sort,
-            "order": order,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
-            "dropdown_sort": dropdown_sort,
-            "dropdown_order": dropdown_order,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,

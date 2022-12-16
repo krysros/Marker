@@ -223,28 +223,17 @@ class CompanyView(object):
 
         next_page = self.request.route_url(
             "company_more",
-            _query={
-                **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
-                "page": page + 1,
-            },
+            _query={**search_query, "page": page + 1},
         )
 
         return {
             "search_query": search_query,
             "next_page": next_page,
-            "filter": filter,
-            "sort": sort,
-            "order": order,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
             "states": states,
             "colors": colors,
-            "dropdown_sort": dropdown_sort,
-            "dropdown_order": dropdown_order,
             "counter": counter,
         }
 
@@ -563,8 +552,6 @@ class CompanyView(object):
         order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         states = dict(STATES)
-        dropdown_sort = dict(DROPDOWN_EXT_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
 
         stmt = (
             select(Company)
@@ -616,16 +603,11 @@ class CompanyView(object):
         return {
             "search_query": search_query,
             "company": company,
-            "filter": filter,
-            "sort": sort,
-            "order": order,
             "dd_filter": dd_filter,
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
             "states": states,
-            "dropdown_sort": dropdown_sort,
-            "dropdown_order": dropdown_order,
             "c_persons": self.count_persons(company),
             "c_tags": self.count_tags(company),
             "c_comments": self.count_comments(company),

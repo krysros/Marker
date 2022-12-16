@@ -198,16 +198,10 @@ class ProjectView(object):
 
         return {
             "search_query": search_query,
-            "filter": filter,
-            "sort": sort,
-            "order": order,
             "states": states,
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
-            "dropdown_status": dropdown_status,
-            "dropdown_order": dropdown_order,
-            "dropdown_sort": dropdown_sort,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
