@@ -44,7 +44,7 @@ Głównym założeniem jest intuicyjność obsługi i szybkość dostępu do int
 
 ## Pod maską
 
-Aplikacja została napisana od zera w języku programowania Python 3. Interfejs graficzny aplikacji korzysta z biblioteki Bootstrap, wszystkie formularze generowane są przez bibliotekę WTForms, a szablony przez bibliotekę mako, zgodnie z filozofią: *Python is a great scripting language. Don't reinvent the wheel...your templates can handle it!* Interaktywność zapewnia htmx. Zapytania do bazy danych realizowane są przez SQLAlchemy ORM.
+Aplikacja została napisana od zera w języku programowania Python 3. Interfejs graficzny aplikacji korzysta z biblioteki Bootstrap, formularze generowane są przez bibliotekę WTForms, a szablony przez bibliotekę mako, zgodnie z filozofią: *Python is a great scripting language. Don't reinvent the wheel...your templates can handle it!* Interaktywność zapewnia htmx. Zapytania do bazy danych realizowane są przez SQLAlchemy ORM.
 
 W rezultacie w kodzie źródłowym aplikacji wykorzystywany jest wyłącznie język Python i HTML (nie występuje np. JavaScript i SQL). Umożliwia to prostą budowę aplikacji, łatwe jej utrzymanie i testowanie, zmianę silnika bazodanowego bez modyfikacji kodu oraz szybkie dodawanie nowych możliwości.
 
