@@ -5,7 +5,11 @@ from pyramid.httpexceptions import (
     HTTPSeeOther,
     HTTPNotFound,
 )
-from sqlalchemy import select, func
+from sqlalchemy import (
+    select,
+    func,
+    and_,
+)
 
 from ..forms.project import (
     ProjectForm,
@@ -16,6 +20,7 @@ from ..forms.select import (
     COUNTRIES,
     STATES,
     STAGES,
+    COLORS,
     PROJECT_DELIVERY_METHODS,
     DROPDOWN_ORDER,
     DROPDOWN_SORT_PROJECTS,
@@ -283,6 +288,83 @@ class ProjectView(object):
             "stages": stages,
             "countries": countries,
             "delivery_methods": delivery_methods,
+            "title": project.name,
+        }
+
+    @view_config(
+        route_name="project_similar",
+        renderer="project_similar.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_similar_more",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def similar(self):
+        project = self.request.context.project
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", None)
+        order = self.request.params.get("order", None)
+        colors = dict(COLORS)
+        states = dict(STATES)
+
+        stmt = (
+            select(Project)
+            .join(Tag, Project.tags)
+            .filter(
+                and_(
+                    Tag.projects.any(Project.id == project.id),
+                    Project.id != project.id,
+                )
+            )
+            .group_by(Project)
+            .order_by(func.count(Tag.projects.any(Project.id == project.id)).desc())
+        )
+
+        if filter:
+            stmt = stmt.filter(Project.color == filter)
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Project, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Project, sort).desc())
+
+        search_query = {}
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "project_similar_more",
+            project_id=project.id,
+            slug=project.slug,
+            colors=colors,
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
+        )
+
+        dd_filter = Dropdown(
+            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
+        )
+
+        return {
+            "search_query": search_query,
+            "project": project,
+            "dd_filter": dd_filter,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "states": states,
             "title": project.name,
         }
 

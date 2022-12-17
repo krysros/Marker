@@ -151,7 +151,7 @@ class Project(Base):
             .join(Tag, Project.tags)
             .filter(
                 and_(
-                    Tag.companies.any(Project.id == self.id),
+                    Tag.projects.any(Project.id == self.id),
                     Project.id != self.id,
                 )
             )

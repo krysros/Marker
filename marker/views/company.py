@@ -455,8 +455,8 @@ class CompanyView(object):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "created_at")
-        order = self.request.params.get("order", "desc")
+        sort = self.request.params.get("sort", None)
+        order = self.request.params.get("order", None)
         colors = dict(COLORS)
         states = dict(STATES)
 
