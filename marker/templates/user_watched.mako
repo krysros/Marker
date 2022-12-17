@@ -14,7 +14,7 @@
   <div>${button.dropdown('user_watched', dd_filter, username=user.name)}</div>
   <div>${button.dropdown('user_watched', dd_sort, username=user.name)}</div>
   <div class="me-auto">${button.dropdown('user_watched', dd_order, username=user.name)}</div>
-  <div>${button.export('user_watched_export', username=user.name, _query={'filter': filter, 'sort': sort, 'order': order})}</div>
+  <div>${button.export('user_watched_export', username=user.name, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="project_table.mako"/>

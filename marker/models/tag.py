@@ -6,12 +6,18 @@ from sqlalchemy import (
     Unicode,
     DateTime,
     ForeignKey,
+    select,
+    func,
 )
 
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import (
+    relationship,
+    object_session,
+)
 
 from slugify import slugify
 from .meta import Base
+from .tables import companies_tags
 
 
 class Tag(Base):
@@ -33,3 +39,11 @@ class Tag(Base):
     @property
     def slug(self):
         return slugify(self.name)
+
+    @property
+    def count_companies(self):
+        return object_session(self).scalar(
+            select(func.count(companies_tags.c.tag_id)).where(
+                companies_tags.c.tag_id == self.id
+            )
+        )

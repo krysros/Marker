@@ -17,9 +17,9 @@ from ..models import (
     Project,
 )
 
-from ..models.company import companies_tags
-from ..models.project import companies_projects
-from ..models.user import recommended, watched
+from ..models import companies_tags
+from ..models import companies_projects
+from ..models import recommended, watched
 
 from ..paginator import get_paginator
 from ..forms.select import STATES, REPORTS

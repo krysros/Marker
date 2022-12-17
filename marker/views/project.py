@@ -13,7 +13,6 @@ from ..forms.select import (
     COUNTRIES,
     STATES,
     STAGES,
-    COLORS,
     PROJECT_DELIVERY_METHODS,
     DROPDOWN_ORDER,
     DROPDOWN_SORT_PROJECTS,
@@ -24,7 +23,6 @@ from ..models import (
     Company,
     Project,
     User,
-    companies_projects,
     watched,
 )
 from ..paginator import get_paginator
@@ -37,22 +35,6 @@ log = logging.getLogger(__name__)
 class ProjectView(object):
     def __init__(self, request):
         self.request = request
-
-    def count_companies(self, project):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Project)
-            .join(companies_projects)
-            .filter(project.id == companies_projects.c.project_id)
-        )
-
-    def count_watched(self, project):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(User)
-            .join(watched)
-            .filter(project.id == watched.c.project_id)
-        )
 
     @view_config(
         route_name="project_all",
@@ -216,8 +198,6 @@ class ProjectView(object):
         project = self.request.context.project
         return {
             "project": project,
-            "c_companies": self.count_companies(project),
-            "c_watched": self.count_watched(project),
             "title": project.name,
         }
 
@@ -262,7 +242,7 @@ class ProjectView(object):
     )
     def count_project_companies(self):
         project = self.request.context.project
-        return self.count_companies(project)
+        return project.count_companies
 
     @view_config(
         route_name="count_project_watched",
@@ -271,7 +251,7 @@ class ProjectView(object):
     )
     def count_project_watched(self):
         project = self.request.context.project
-        return self.count_watched(project)
+        return project.count_watched
 
     @view_config(
         route_name="project_view",
@@ -291,8 +271,6 @@ class ProjectView(object):
             "stages": stages,
             "countries": countries,
             "project_delivery_methods": project_delivery_methods,
-            "c_companies": self.count_companies(project),
-            "c_watched": self.count_watched(project),
             "title": project.name,
         }
 
@@ -460,8 +438,6 @@ class ProjectView(object):
             "paginator": paginator,
             "next_page": next_page,
             "project": project,
-            "c_companies": self.count_companies(project),
-            "c_watched": self.count_watched(project),
             "title": project.name,
         }
 

@@ -9,7 +9,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">
-          Firmy <span class="badge text-bg-secondary">${c_companies}</span>
+          Firmy <span class="badge text-bg-secondary">${tag.count_companies}</span>
         </a>
       </li>
     </ul>

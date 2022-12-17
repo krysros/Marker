@@ -1,68 +1,34 @@
 import datetime
 
 from sqlalchemy import (
-    Table,
     Column,
-    ForeignKey,
     Integer,
     Unicode,
     DateTime,
+    select,
+    func,
 )
 
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import (
+    relationship,
+    object_session,
+)
 
 from .meta import Base
+from .company import Company
+from .project import Project
+from .tag import Tag
+from .person import Person
+from .comment import Comment
+from .tables import (
+    checked,
+    recommended,
+    watched,
+)
+
 import argon2
 
 ph = argon2.PasswordHasher()
-
-
-recommended = Table(
-    "recommended",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "user_id",
-        Integer,
-        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
-
-
-watched = Table(
-    "watched",
-    Base.metadata,
-    Column(
-        "project_id",
-        Integer,
-        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "user_id",
-        Integer,
-        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
-
-
-checked = Table(
-    "checked",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "user_id",
-        Integer,
-        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
 
 
 class User(Base):
@@ -118,3 +84,33 @@ class User(Base):
         single_parent=True,
         backref="checked_companies",
     )
+
+    @property
+    def count_companies(self):
+        return object_session(self).scalar(
+            select(func.count()).select_from(Company).filter(Company.created_by == self)
+        )
+
+    @property
+    def count_projects(self):
+        return object_session(self).scalar(
+            select(func.count()).select_from(Project).filter(Project.created_by == self)
+        )
+
+    @property
+    def count_tags(self):
+        return object_session(self).scalar(
+            select(func.count()).select_from(Tag).filter(Tag.created_by == self)
+        )
+
+    @property
+    def count_persons(self):
+        return object_session(self).scalar(
+            select(func.count()).select_from(Person).filter(Person.created_by == self)
+        )
+
+    @property
+    def count_comments(self):
+        return object_session(self).scalar(
+            select(func.count()).select_from(Comment).filter(Comment.created_by == self)
+        )

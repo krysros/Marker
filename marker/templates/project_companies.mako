@@ -8,21 +8,21 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
-          Firmy <span class="badge text-bg-secondary"><div id="project-companies-counter" hx-get="${request.route_url('count_project_companies', project_id=project.id, slug=project.slug)}" hx-trigger="projectCompanyEvent from:body">${c_companies}</div></span>
+          Firmy <span class="badge text-bg-secondary"><div id="project-companies-counter" hx-get="${request.route_url('count_project_companies', project_id=project.id, slug=project.slug)}" hx-trigger="projectCompanyEvent from:body">${project.count_companies}</div></span>
         </a>
       </li>
     ##      <li class="nav-item">
     ##        <a class="nav-link" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-    ##        Komentarze <span class="badge text-bg-secondary">${c_comments}</span>
+    ##        Komentarze <span class="badge text-bg-secondary">${project.count_comments}</span>
     ##        </a>
     ##      </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-          Obserwacje <span class="badge text-bg-secondary">${c_watched}</span></a>
+          Obserwacje <span class="badge text-bg-secondary">${project.count_watched}</span></a>
       </li>
     ##      <li class="nav-item">
     ##        <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">
-    ##          Podobne <span class="badge text-bg-secondary">${c_simiar}</span></a>
+    ##          Podobne <span class="badge text-bg-secondary">${project.count_simiar}</span></a>
     ##        </a>
     ##      </li>
     </ul>

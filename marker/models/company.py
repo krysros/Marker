@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import (
-    Table,
     Column,
     ForeignKey,
     Sequence,
@@ -11,6 +10,7 @@ from sqlalchemy import (
     DateTime,
     select,
     func,
+    and_,
 )
 
 from sqlalchemy.orm import (
@@ -20,53 +20,15 @@ from sqlalchemy.orm import (
 )
 
 from slugify import slugify
+
 from .meta import Base
-from .user import recommended
-
-
-companies_tags = Table(
-    "companies_tags",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "tag_id",
-        Integer,
-        ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
-
-companies_persons = Table(
-    "companies_persons",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "person_id",
-        Integer,
-        ForeignKey("persons.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
-
-companies_comments = Table(
-    "companies_comments",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "comment_id",
-        Integer,
-        ForeignKey("comments.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
+from .tag import Tag
+from .tables import (
+    companies_comments,
+    companies_persons,
+    companies_projects,
+    companies_tags,
+    recommended,
 )
 
 
@@ -88,6 +50,7 @@ class Company(Base):
     court = Column(Unicode(100))
     color = Column(Unicode(10))
     tags = relationship("Tag", secondary=companies_tags, backref="companies")
+    projects = relationship("Project", secondary=companies_projects, backref="companies")
     people = relationship(
         "Person",
         secondary=companies_persons,
@@ -146,9 +109,55 @@ class Company(Base):
         return slugify(self.name)
 
     @property
+    def count_projects(self):
+        return object_session(self).scalar(
+            select(func.count(companies_projects.c.company_id)).where(
+                companies_projects.c.company_id == self.id
+            )
+        )
+
+    @property
+    def count_tags(self):
+        return object_session(self).scalar(
+            select(func.count(companies_tags.c.company_id)).where(
+                companies_tags.c.company_id == self.id
+            )
+        )
+
+    @property
+    def count_persons(self):
+        return object_session(self).scalar(
+            select(func.count(companies_persons.c.company_id)).where(
+                companies_persons.c.company_id == self.id
+            )
+        )
+
+    @property
+    def count_comments(self):
+        return object_session(self).scalar(
+            select(func.count(companies_comments.c.company_id)).where(
+                companies_comments.c.company_id == self.id
+            )
+        )
+
+    @property
     def count_recommended(self):
         return object_session(self).scalar(
             select(func.count(recommended.c.company_id)).where(
                 recommended.c.company_id == self.id
+            )
+        )
+
+    @property
+    def count_similar(self):
+        return object_session(self).scalar(
+            select(func.count())
+            .select_from(Company)
+            .join(Tag, Company.tags)
+            .filter(
+                and_(
+                    Tag.companies.any(Company.id == self.id),
+                    Company.id != self.id,
+                )
             )
         )

@@ -19,10 +19,7 @@ from ..models import (
     Project,
     User,
     recommended,
-    companies_tags,
-    companies_persons,
     companies_comments,
-    companies_projects,
 )
 from ..forms import (
     CompanyForm,
@@ -34,7 +31,6 @@ from ..forms.select import (
     STATES,
     COLORS,
     COURTS,
-    DROPDOWN_EXT_SORT,
     DROPDOWN_SORT_COMPANIES,
     DROPDOWN_ORDER,
 )
@@ -47,59 +43,6 @@ log = logging.getLogger(__name__)
 class CompanyView(object):
     def __init__(self, request):
         self.request = request
-
-    def count_projects(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Project)
-            .join(companies_projects)
-            .filter(company.id == companies_projects.c.company_id)
-        )
-
-    def count_tags(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Tag)
-            .join(companies_tags)
-            .filter(company.id == companies_tags.c.company_id)
-        )
-
-    def count_persons(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Person)
-            .join(companies_persons)
-            .filter(company.id == companies_persons.c.company_id)
-        )
-
-    def count_comments(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Comment)
-            .join(companies_comments)
-            .filter(company.id == companies_comments.c.company_id)
-        )
-
-    def count_recommended(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(User)
-            .join(recommended)
-            .filter(company.id == recommended.c.company_id)
-        )
-
-    def count_similar(self, company):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Company)
-            .join(Tag, Company.tags)
-            .filter(
-                and_(
-                    Tag.companies.any(Company.id == company.id),
-                    Company.id != company.id,
-                )
-            )
-        )
 
     @view_config(
         route_name="company_all",
@@ -249,12 +192,6 @@ class CompanyView(object):
         countries = dict(COUNTRIES)
 
         return {
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "company": company,
             "states": states,
             "courts": courts,
@@ -270,12 +207,6 @@ class CompanyView(object):
     def persons(self):
         company = self.request.context.company
         return {
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "company": company,
             "title": company.name,
         }
@@ -288,12 +219,6 @@ class CompanyView(object):
     def tags(self):
         company = self.request.context.company
         return {
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "company": company,
             "title": company.name,
         }
@@ -339,7 +264,7 @@ class CompanyView(object):
     )
     def count_company_tags(self):
         company = self.request.context.company
-        return self.count_tags(company)
+        return company.count_tags
 
     @view_config(
         route_name="count_company_projects",
@@ -348,7 +273,7 @@ class CompanyView(object):
     )
     def count_company_projects(self):
         company = self.request.context.company
-        return self.count_projects(company)
+        return company.count_projects
 
     @view_config(
         route_name="count_company_persons",
@@ -357,7 +282,7 @@ class CompanyView(object):
     )
     def count_company_persons(self):
         company = self.request.context.company
-        return self.count_persons(company)
+        return company.count_persons
 
     @view_config(
         route_name="count_company_comments",
@@ -366,7 +291,7 @@ class CompanyView(object):
     )
     def count_company_comments(self):
         company = self.request.context.company
-        return self.count_comments(company)
+        return company.count_comments
 
     @view_config(
         route_name="count_company_recommended",
@@ -375,7 +300,7 @@ class CompanyView(object):
     )
     def count_company_recommended(self):
         company = self.request.context.company
-        return self.count_recommended(company)
+        return company.count_recommended
 
     @view_config(
         route_name="company_recommended",
@@ -410,12 +335,6 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "title": company.name,
         }
 
@@ -507,12 +426,6 @@ class CompanyView(object):
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "title": company.name,
         }
 
@@ -525,12 +438,6 @@ class CompanyView(object):
         company = self.request.context.company
         return {
             "company": company,
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "title": company.name,
         }
 
@@ -608,12 +515,6 @@ class CompanyView(object):
             "next_page": next_page,
             "colors": colors,
             "states": states,
-            "c_persons": self.count_persons(company),
-            "c_tags": self.count_tags(company),
-            "c_comments": self.count_comments(company),
-            "c_recommended": self.count_recommended(company),
-            "c_projects": self.count_projects(company),
-            "c_similar": self.count_similar(company),
             "title": company.name,
         }
 

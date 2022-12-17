@@ -48,31 +48,6 @@ class UserView(object):
     def __init__(self, request):
         self.request = request
 
-    def count_companies(self, user):
-        return self.request.dbsession.scalar(
-            select(func.count()).select_from(Company).filter(Company.created_by == user)
-        )
-
-    def count_projects(self, user):
-        return self.request.dbsession.scalar(
-            select(func.count()).select_from(Project).filter(Project.created_by == user)
-        )
-
-    def count_tags(self, user):
-        return self.request.dbsession.scalar(
-            select(func.count()).select_from(Tag).filter(Tag.created_by == user)
-        )
-
-    def count_persons(self, user):
-        return self.request.dbsession.scalar(
-            select(func.count()).select_from(Person).filter(Person.created_by == user)
-        )
-
-    def count_comments(self, user):
-        return self.request.dbsession.scalar(
-            select(func.count()).select_from(Comment).filter(Comment.created_by == user)
-        )
-
     @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
     @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
     def all(self):
@@ -145,11 +120,6 @@ class UserView(object):
         user = self.request.context.user
         return {
             "user": user,
-            "c_companies": self.count_companies(user),
-            "c_projects": self.count_projects(user),
-            "c_tags": self.count_tags(user),
-            "c_persons": self.count_persons(user),
-            "c_comments": self.count_comments(user),
             "title": user.fullname,
         }
 
@@ -185,11 +155,6 @@ class UserView(object):
             "user": user,
             "paginator": paginator,
             "next_page": next_page,
-            "c_companies": self.count_companies(user),
-            "c_projects": self.count_projects(user),
-            "c_tags": self.count_tags(user),
-            "c_persons": self.count_persons(user),
-            "c_comments": self.count_comments(user),
             "title": user.fullname,
         }
 
@@ -252,11 +217,6 @@ class UserView(object):
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "next_page": next_page,
-            "c_companies": self.count_companies(user),
-            "c_projects": self.count_projects(user),
-            "c_tags": self.count_tags(user),
-            "c_persons": self.count_persons(user),
-            "c_comments": self.count_comments(user),
             "title": user.fullname,
         }
 
@@ -344,11 +304,6 @@ class UserView(object):
             "states": states,
             "paginator": paginator,
             "next_page": next_page,
-            "c_companies": self.count_companies(user),
-            "c_projects": self.count_projects(user),
-            "c_tags": self.count_tags(user),
-            "c_persons": self.count_persons(user),
-            "c_comments": self.count_comments(user),
             "title": user.fullname,
         }
 
@@ -442,11 +397,6 @@ class UserView(object):
             "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
-            "c_companies": self.count_companies(user),
-            "c_projects": self.count_projects(user),
-            "c_tags": self.count_tags(user),
-            "c_persons": self.count_persons(user),
-            "c_comments": self.count_comments(user),
             "title": user.fullname,
         }
 
@@ -509,11 +459,6 @@ class UserView(object):
             "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
-            "c_companies": self.count_companies(user),
-            "c_projects": self.count_projects(user),
-            "c_tags": self.count_tags(user),
-            "c_persons": self.count_persons(user),
-            "c_comments": self.count_comments(user),
             "title": user.fullname,
         }
 

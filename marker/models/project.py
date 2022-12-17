@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import (
-    Table,
     Column,
     ForeignKey,
     Integer,
@@ -20,22 +19,9 @@ from sqlalchemy.orm import (
 
 from slugify import slugify
 from .meta import Base
-from .user import watched
-
-
-companies_projects = Table(
-    "companies_projects",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "project_id",
-        Integer,
-        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
+from .tables import (
+    companies_projects,
+    watched,
 )
 
 
@@ -63,11 +49,6 @@ class Project(Base):
     editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     created_by = relationship("User", foreign_keys=[creator_id])
     updated_by = relationship("User", foreign_keys=[editor_id])
-    companies = relationship(
-        "Company",
-        secondary=companies_projects,
-        backref="projects",
-    )
 
     def __init__(
         self,
@@ -98,6 +79,14 @@ class Project(Base):
     @property
     def slug(self):
         return slugify(self.name)
+
+    @property
+    def count_companies(self):
+        return object_session(self).scalar(
+            select(func.count(companies_projects.c.project_id)).where(
+                companies_projects.c.project_id == self.id
+            )
+        )
 
     @property
     def count_watched(self):

@@ -11,7 +11,6 @@ from ..models import (
     Tag,
     Company,
     recommended,
-    companies_tags,
 )
 from ..forms import TagForm, TagSearchForm
 from ..paginator import get_paginator
@@ -31,14 +30,6 @@ log = logging.getLogger(__name__)
 class TagView(object):
     def __init__(self, request):
         self.request = request
-
-    def count_companies(self, tag):
-        return self.request.dbsession.scalar(
-            select(func.count())
-            .select_from(Tag)
-            .join(companies_tags)
-            .filter(tag.id == companies_tags.c.tag_id)
-        )
 
     @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
     @view_config(
@@ -110,7 +101,7 @@ class TagView(object):
     )
     def view(self):
         tag = self.request.context.tag
-        return {"tag": tag, "c_companies": self.count_companies(tag), "title": tag.name}
+        return {"tag": tag, "title": tag.name}
 
     @view_config(
         route_name="tag_map",
@@ -120,7 +111,7 @@ class TagView(object):
     def map(self):
         tag = self.request.context.tag
         url = self.request.route_url("tag_json", tag_id=tag.id, slug=tag.slug)
-        return {"tag": tag, "url": url, "c_companies": self.count_companies(tag)}
+        return {"tag": tag, "url": url}
 
     @view_config(
         route_name="tag_json",
@@ -241,7 +232,6 @@ class TagView(object):
             "dd_order": dd_order,
             "colors": colors,
             "states": states,
-            "c_companies": self.count_companies(tag),
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
@@ -253,7 +243,6 @@ class TagView(object):
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
-        states = dict(STATES)
         stmt = select(Company)
 
         if sort == "recommended":
@@ -281,8 +270,8 @@ class TagView(object):
                     getattr(Company, sort).desc(), Company.id
                 )
 
-        if filter in list(states):
-            stmt = stmt.filter(Company.state == filter)
+        if filter:
+            stmt = stmt.filter(Company.color == filter)
 
         companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(companies)
@@ -296,7 +285,7 @@ class TagView(object):
     )
     def count_tag_companies(self):
         tag = self.request.context.tag
-        return self.count_companies(tag)
+        return tag.count_companies
 
     @view_config(route_name="tag_add", renderer="basic_form.mako", permission="edit")
     def add(self):
