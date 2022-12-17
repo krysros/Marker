@@ -52,7 +52,7 @@ class ProjectForm(Form):
     color = SelectField("Kolor", choices=COLORS)
     deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
-    project_delivery_method = SelectField(
+    delivery_method = SelectField(
         "Sposób realizacji", choices=PROJECT_DELIVERY_METHODS
     )
     submit = SubmitField("Zapisz")
@@ -87,7 +87,7 @@ class ProjectSearchForm(Form):
     color = SelectField("Kolor", choices=COLORS)
     deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
-    project_delivery_method = SelectField(
+    delivery_method = SelectField(
         "Sposób realizacji", choices=PROJECT_DELIVERY_METHODS
     )
     submit = SubmitField("Szukaj")

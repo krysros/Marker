@@ -58,8 +58,8 @@ class ProjectView(object):
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
-        project_delivery_method = self.request.params.get(
-            "project_delivery_method", None
+        delivery_method = self.request.params.get(
+            "delivery_method", None
         )
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
@@ -98,9 +98,9 @@ class ProjectView(object):
         if stage:
             stmt = stmt.filter(Project.stage == stage)
 
-        if project_delivery_method:
+        if delivery_method:
             stmt = stmt.filter(
-                Project.project_delivery_method == project_delivery_method
+                Project.delivery_method == delivery_method
             )
 
         if deadline:
@@ -151,7 +151,7 @@ class ProjectView(object):
             "color": color,
             "deadline": deadline,
             "stage": stage,
-            "project_delivery_method": project_delivery_method,
+            "delivery_method": delivery_method,
         }
         next_page = self.request.route_url(
             "project_more",
@@ -263,14 +263,14 @@ class ProjectView(object):
         states = dict(STATES)
         stages = dict(STAGES)
         countries = dict(COUNTRIES)
-        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
         return {
             "project": project,
             "states": states,
             "stages": stages,
             "countries": countries,
-            "project_delivery_methods": project_delivery_methods,
+            "delivery_methods": delivery_methods,
             "title": project.name,
         }
 
@@ -294,7 +294,7 @@ class ProjectView(object):
                 color=form.color.data,
                 deadline=form.deadline.data,
                 stage=form.stage.data,
-                project_delivery_method=form.project_delivery_method.data,
+                delivery_method=form.delivery_method.data,
             )
             loc = location(
                 street=form.street.data,
@@ -386,7 +386,7 @@ class ProjectView(object):
                         "color": form.color.data,
                         "deadline": form.deadline.data,
                         "stage": form.stage.data,
-                        "project_delivery_method": form.project_delivery_method.data,
+                        "delivery_method": form.delivery_method.data,
                     },
                 )
             )

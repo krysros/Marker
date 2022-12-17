@@ -47,8 +47,8 @@
         ${form.stage(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.project_delivery_method.label}
-        ${form.project_delivery_method(class_="form-control")}
+        ${form.delivery_method.label}
+        ${form.delivery_method(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.submit(class_="btn btn-primary")}

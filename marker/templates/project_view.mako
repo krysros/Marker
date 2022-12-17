@@ -83,7 +83,7 @@
           <dt>Etap</dt>
           <dd>${stages.get(project.stage)}</dd>
           <dt>Sposób realizacji</dt>
-          <dd>${project_delivery_methods.get(project.project_delivery_method)}</dd>
+          <dd>${delivery_methods.get(project.delivery_method)}</dd>
         </dl>
       </div>
     </div>

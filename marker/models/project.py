@@ -40,7 +40,7 @@ class Project(Base):
     color = Column(Unicode(10))
     deadline = Column(Date)
     stage = Column(Unicode(100))
-    project_delivery_method = Column(Unicode(100))
+    delivery_method = Column(Unicode(100))
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
@@ -62,7 +62,7 @@ class Project(Base):
         color,
         deadline,
         stage,
-        project_delivery_method,
+        delivery_method,
     ):
         self.name = name
         self.street = street
@@ -74,7 +74,7 @@ class Project(Base):
         self.color = color
         self.deadline = deadline
         self.stage = stage
-        self.project_delivery_method = project_delivery_method
+        self.delivery_method = delivery_method
 
     @property
     def slug(self):
