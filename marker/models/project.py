@@ -24,6 +24,7 @@ from .tables import (
     companies_projects,
     projects_tags,
     projects_persons,
+    projects_comments,
     watched,
 )
 
@@ -48,6 +49,14 @@ class Project(Base):
     people = relationship(
         "Person",
         secondary=projects_persons,
+        cascade="all, delete-orphan",
+        single_parent=True,
+        lazy="select",
+        backref=backref("project", uselist=False),
+    )
+    comments = relationship(
+        "Comment",
+        secondary=projects_comments,
         cascade="all, delete-orphan",
         single_parent=True,
         lazy="select",

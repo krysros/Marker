@@ -142,3 +142,18 @@ projects_persons = Table(
         ForeignKey("persons.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
 )
+
+projects_comments = Table(
+    "projects_comments",
+    Base.metadata,
+    Column(
+        "project_id",
+        Integer,
+        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "comment_id",
+        Integer,
+        ForeignKey("comments.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
