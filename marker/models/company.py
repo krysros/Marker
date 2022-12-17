@@ -15,8 +15,8 @@ from sqlalchemy import (
 
 from sqlalchemy.orm import (
     relationship,
-    backref,
     object_session,
+    backref,
 )
 
 from slugify import slugify

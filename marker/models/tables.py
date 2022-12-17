@@ -112,3 +112,33 @@ watched = Table(
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
 )
+
+projects_tags = Table(
+    "projects_tags",
+    Base.metadata,
+    Column(
+        "project_id",
+        Integer,
+        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "tag_id",
+        Integer,
+        ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+projects_persons = Table(
+    "projects_persons",
+    Base.metadata,
+    Column(
+        "project_id",
+        Integer,
+        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "person_id",
+        Integer,
+        ForeignKey("persons.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)

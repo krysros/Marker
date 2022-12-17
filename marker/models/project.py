@@ -15,12 +15,15 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     relationship,
     object_session,
+    backref,
 )
 
 from slugify import slugify
 from .meta import Base
 from .tables import (
     companies_projects,
+    projects_tags,
+    projects_persons,
     watched,
 )
 
@@ -41,6 +44,15 @@ class Project(Base):
     deadline = Column(Date)
     stage = Column(Unicode(100))
     delivery_method = Column(Unicode(100))
+    tags = relationship("Tag", secondary=projects_tags, backref="projects")
+    people = relationship(
+        "Person",
+        secondary=projects_persons,
+        cascade="all, delete-orphan",
+        single_parent=True,
+        lazy="select",
+        backref=backref("project", uselist=False),
+    )
     created_at = Column(DateTime, default=datetime.datetime.now)
     updated_at = Column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
