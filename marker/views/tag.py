@@ -10,15 +10,21 @@ from sqlalchemy import (
 from ..models import (
     Tag,
     Company,
+    Project,
     recommended,
+    watched,
 )
 from ..forms import TagForm, TagSearchForm
 from ..paginator import get_paginator
-from ..export import export_companies_to_xlsx
+from ..export import (
+    export_companies_to_xlsx,
+    export_projects_to_xlsx,
+)
 from ..forms.select import (
     COLORS,
     STATES,
     DROPDOWN_SORT_COMPANIES,
+    DROPDOWN_SORT_PROJECTS,
     DROPDOWN_SORT,
     DROPDOWN_ORDER,
 )
@@ -287,6 +293,149 @@ class TagView(object):
         tag = self.request.context.tag
         return tag.count_companies
 
+    @view_config(
+        route_name="tag_projects",
+        renderer="tag_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="tag_projects_more",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def projects(self):
+        tag = self.request.context.tag
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+        colors = dict(COLORS)
+        states = dict(STATES)
+        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        stmt = select(Project)
+
+        if sort == "watched":
+            if order == "asc":
+                stmt = (
+                    stmt.filter(Project.tags.any(name=tag.name))
+                    .join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                )
+            elif order == "desc":
+                stmt = (
+                    stmt.filter(Project.tags.any(name=tag.name))
+                    .join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                )
+        else:
+            if order == "asc":
+                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
+                    getattr(Project, sort).asc(), Project.id
+                )
+            elif order == "desc":
+                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
+                    getattr(Project, sort).desc(), Project.id
+                )
+
+        if filter:
+            stmt = stmt.filter(Project.color == filter)
+
+        search_query = {}
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "tag_projects_more",
+            tag_id=tag.id,
+            slug=tag.slug,
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
+        )
+
+        dd_filter = Dropdown(
+            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+        )
+
+        return {
+            "search_query": search_query,
+            "tag": tag,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "colors": colors,
+            "states": states,
+            "paginator": paginator,
+            "next_page": next_page,
+            "title": tag.name,
+        }
+
+    @view_config(route_name="tag_projects_export", permission="view")
+    def export_projects(self):
+        tag = self.request.context.tag
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+        stmt = select(Project)
+
+        if sort == "watched":
+            if order == "asc":
+                stmt = (
+                    stmt.filter(Project.tags.any(name=tag.name))
+                    .join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                )
+            elif order == "desc":
+                stmt = (
+                    stmt.filter(Project.tags.any(name=tag.name))
+                    .join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                )
+        else:
+            if order == "asc":
+                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
+                    getattr(Project, sort).asc(), Project.id
+                )
+            elif order == "desc":
+                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
+                    getattr(Project, sort).desc(), Project.id
+                )
+
+        if filter:
+            stmt = stmt.filter(Project.color == filter)
+
+        projects = self.request.dbsession.execute(stmt).scalars()
+        response = export_projects_to_xlsx(projects)
+        log.info(f"Użytkownik {self.request.identity.name} eksportował dane projektów")
+        return response
+
+    @view_config(
+        route_name="count_tag_projects",
+        renderer="json",
+        permission="view",
+    )
+    def count_tag_projects(self):
+        tag = self.request.context.tag
+        return tag.count_projects
+
     @view_config(route_name="tag_add", renderer="basic_form.mako", permission="edit")
     def add(self):
         form = TagForm(self.request.POST, dbsession=self.request.dbsession)
@@ -356,24 +505,3 @@ class TagView(object):
                 )
             )
         return {"heading": "Znajdź tag", "form": form}
-
-    @view_config(
-        route_name="add_company_to_tag",
-        renderer="company_list_tag.mako",
-        request_method="POST",
-        permission="edit",
-    )
-    def add_company_to_tag(self):
-        tag = self.request.context.tag
-        name = self.request.POST.get("name")
-        if name:
-            company = self.request.dbsession.execute(
-                select(Company).filter_by(name=name)
-            ).scalar_one_or_none()
-            if company not in tag.companies:
-                tag.companies.append(company)
-            # If you want to use the id of a newly created object
-            # in the middle of a transaction, you must call dbsession.flush()
-            self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "tagCompanyEvent"}
-        return {"tag": tag}

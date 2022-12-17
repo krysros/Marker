@@ -17,7 +17,10 @@ from sqlalchemy.orm import (
 
 from slugify import slugify
 from .meta import Base
-from .tables import companies_tags
+from .tables import (
+    companies_tags,
+    projects_tags,
+)
 
 
 class Tag(Base):
@@ -45,5 +48,13 @@ class Tag(Base):
         return object_session(self).scalar(
             select(func.count(companies_tags.c.tag_id)).where(
                 companies_tags.c.tag_id == self.id
+            )
+        )
+
+    @property
+    def count_projects(self):
+        return object_session(self).scalar(
+            select(func.count(projects_tags.c.tag_id)).where(
+                projects_tags.c.tag_id == self.id
             )
         )

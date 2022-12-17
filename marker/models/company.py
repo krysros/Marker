@@ -24,10 +24,10 @@ from slugify import slugify
 from .meta import Base
 from .tag import Tag
 from .tables import (
-    companies_comments,
-    companies_persons,
     companies_projects,
     companies_tags,
+    companies_persons,
+    companies_comments,
     recommended,
 )
 

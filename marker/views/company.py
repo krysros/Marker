@@ -339,8 +339,8 @@ class CompanyView(object):
         }
 
     @view_config(
-        route_name="add_tag",
-        renderer="tag_row.mako",
+        route_name="add_tag_to_company",
+        renderer="tag_row_company.mako",
         request_method="POST",
         permission="edit",
     )
@@ -683,7 +683,7 @@ class CompanyView(object):
         return {"heading": "Znajdź firmę", "form": form}
 
     @view_config(
-        route_name="unlink_tag",
+        route_name="unlink_tag_from_company",
         request_method="POST",
         permission="edit",
         renderer="string",
@@ -728,7 +728,7 @@ class CompanyView(object):
 
     @view_config(
         route_name="add_project",
-        renderer="project_list.mako",
+        renderer="project_list_companies.mako",
         request_method="POST",
         permission="edit",
     )

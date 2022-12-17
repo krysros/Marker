@@ -52,7 +52,7 @@
 <%include file="company_led.mako"/>
 
 <div id="company-projects">
-  <%include file="project_list.mako"/>
+  <%include file="project_list_companies.mako"/>
 </div>
 
 <div class="modal fade" id="add-project-modal" tabindex="-1" aria-labelledby="add-project-modal-label" aria-hidden="true">

@@ -10,6 +10,7 @@ from sqlalchemy import (
     Date,
     select,
     func,
+    and_,
 )
 
 from sqlalchemy.orm import (
@@ -20,6 +21,7 @@ from sqlalchemy.orm import (
 
 from slugify import slugify
 from .meta import Base
+from .tag import Tag
 from .tables import (
     companies_projects,
     projects_tags,
@@ -110,9 +112,47 @@ class Project(Base):
         )
 
     @property
+    def count_tags(self):
+        return object_session(self).scalar(
+            select(func.count(projects_tags.c.project_id)).where(
+                projects_tags.c.project_id == self.id
+            )
+        )
+
+    @property
+    def count_persons(self):
+        return object_session(self).scalar(
+            select(func.count(projects_persons.c.project_id)).where(
+                projects_persons.c.project_id == self.id
+            )
+        )
+
+    @property
+    def count_comments(self):
+        return object_session(self).scalar(
+            select(func.count(projects_comments.c.project_id)).where(
+                projects_comments.c.project_id == self.id
+            )
+        )
+
+    @property
     def count_watched(self):
         return object_session(self).scalar(
             select(func.count(watched.c.project_id)).where(
                 watched.c.project_id == self.id
+            )
+        )
+
+    @property
+    def count_similar(self):
+        return object_session(self).scalar(
+            select(func.count())
+            .select_from(Project)
+            .join(Tag, Project.tags)
+            .filter(
+                and_(
+                    Tag.companies.any(Project.id == self.id),
+                    Project.id != self.id,
+                )
             )
         )

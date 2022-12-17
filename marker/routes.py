@@ -56,6 +56,26 @@ def includeme(config):
         r"/count/tag/{tag_id:\d+}/{slug}/companies",
         factory=tag_factory,
     )
+    config.add_route(
+        "tag_projects",
+        r"/tag/{tag_id:\d+}/{slug}/projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_projects_more",
+        r"/tag/{tag_id:\d+}/{slug}/projects/more",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_projects_export",
+        r"/tag/{tag_id:\d+}/{slug}/projects/export",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "count_tag_projects",
+        r"/count/tag/{tag_id:\d+}/{slug}/projects",
+        factory=tag_factory,
+    )
     config.add_route("tag_add", "/tag/add", factory=default_factory)
     config.add_route("tag_search", "/tag/search", factory=default_factory)
     config.add_route("tag_select", "/tag/select", factory=default_factory)
@@ -67,11 +87,6 @@ def includeme(config):
     config.add_route(
         "tag_delete",
         r"/tag/{tag_id:\d+}/{slug}/delete",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "add_company_to_tag",
-        r"/add/tag/{tag_id:\d+}/{slug}/company",
         factory=tag_factory,
     )
 
@@ -183,7 +198,7 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "add_tag",
+        "add_tag_to_company",
         r"/add/company/{company_id:\d+}/{slug}/tag",
         factory=company_factory,
     )
@@ -208,7 +223,7 @@ def includeme(config):
         factory=default_factory,
     )
     config.add_route(
-        "unlink_tag",
+        "unlink_tag_from_company",
         r"/unlink/company/{company_id:\d+}/tag/{tag_id:\d+}",
         factory=default_factory,
     )
@@ -262,6 +277,7 @@ def includeme(config):
     config.add_route("project_map", "/project/map", factory=default_factory)
     config.add_route("project_add", "/project/add", factory=default_factory)
     config.add_route("project_search", "/project/search", factory=default_factory)
+    config.add_route("project_select", "/project/select", factory=default_factory)
     config.add_route(
         "project_view",
         r"/project/{project_id:\d+}/{slug}",
@@ -275,6 +291,36 @@ def includeme(config):
     config.add_route(
         "project_delete",
         r"/project/{project_id:\d+}/{slug}/delete",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_persons",
+        r"/project/{project_id:\d+}/{slug}/persons",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_tags",
+        r"/project/{project_id:\d+}/{slug}/tags",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_comments",
+        r"/project/{project_id:\d+}/{slug}/comments",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_comments_more",
+        r"/project/{project_id:\d+}/{slug}/comments/more",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_similar",
+        r"/project/{project_id:\d+}/{slug}/similar",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_similar_more",
+        r"/project/{project_id:\d+}/{slug}/similar/more",
         factory=project_factory,
     )
     config.add_route(
@@ -292,16 +338,40 @@ def includeme(config):
         r"/project/{project_id:\d+}/{slug}/watched/more",
         factory=project_factory,
     )
-    config.add_route("project_select", "/project/select", factory=default_factory)
     config.add_route(
         "count_project_companies",
         r"/count/project/{project_id:\d+}/{slug}/companies",
         factory=project_factory,
     )
     config.add_route(
+        "count_project_tags",
+        r"/count/project/{project_id:\d+}/{slug}/tags",
+        factory=project_factory,
+    )
+    config.add_route(
+        "count_project_persons",
+        r"/count/project/{project_id:\d+}/{slug}/persons",
+        factory=project_factory,
+    )
+    config.add_route(
+        "count_project_comments",
+        r"/count/project/{project_id:\d+}/{slug}/comments",
+        factory=project_factory,
+    )
+    config.add_route(
         "count_project_watched",
         r"/count/project/{project_id:\d+}/{slug}/watched",
         factory=project_factory,
+    )
+    config.add_route(
+        "add_tag_to_project",
+        r"/add/project/{project_id:\d+}/{slug}/tag",
+        factory=project_factory,
+    )
+    config.add_route(
+        "unlink_tag_from_project",
+        r"/unlink/project/{project_id:\d+}/tag/{tag_id:\d+}",
+        factory=default_factory,
     )
 
     config.add_route("user_all", "/user", factory=default_factory)

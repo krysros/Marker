@@ -1,7 +1,10 @@
 import datetime
 import logging
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.httpexceptions import (
+    HTTPSeeOther,
+    HTTPNotFound,
+)
 from sqlalchemy import select, func
 
 from ..forms.project import (
@@ -23,6 +26,7 @@ from ..models import (
     Company,
     Project,
     User,
+    Tag,
     watched,
 )
 from ..paginator import get_paginator
@@ -191,6 +195,18 @@ class ProjectView(object):
         permission="view",
     )
     def companies(self):
+        project = self.request.context.project
+        return {
+            "project": project,
+            "title": project.name,
+        }
+
+    @view_config(
+        route_name="project_tags",
+        renderer="project_tags.mako",
+        permission="view",
+    )
+    def tags(self):
         project = self.request.context.project
         return {
             "project": project,
@@ -439,7 +455,7 @@ class ProjectView(object):
 
     @view_config(
         route_name="add_company_to_project",
-        renderer="company_list_project.mako",
+        renderer="company_list_projects.mako",
         request_method="POST",
         permission="edit",
     )
@@ -471,3 +487,59 @@ class ProjectView(object):
                 select(Project).filter(Project.name.ilike("%" + name + "%"))
             ).scalars()
         return {"projects": projects}
+
+    @view_config(
+        route_name="add_tag_to_project",
+        renderer="tag_row_project.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_tag(self):
+        project = self.request.context.project
+        name = self.request.POST.get("name")
+        new_tag = None
+        if name:
+            tag = self.request.dbsession.execute(
+                select(Tag).filter_by(name=name)
+            ).scalar_one_or_none()
+            if not tag:
+                tag = Tag(name)
+                tag.created_by = self.request.identity
+            if tag not in project.tags:
+                project.tags.append(tag)
+                new_tag = tag
+                log.info(f"Użytkownik {self.request.identity.name} dodał tag do projektu")
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "tagProjectEvent"}
+        return {"project": project, "tag": new_tag}
+
+    @view_config(
+        route_name="unlink_tag_from_project",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def unlink_tag(self):
+        project_id = int(self.request.matchdict["project_id"])
+        tag_id = int(self.request.matchdict["tag_id"])
+
+        project = self.request.dbsession.execute(
+            select(Project).filter_by(id=project_id)
+        ).scalar_one_or_none()
+        if not project:
+            raise HTTPNotFound
+
+        tag = self.request.dbsession.execute(
+            select(Tag).filter_by(id=tag_id)
+        ).scalar_one_or_none()
+        if not tag:
+            raise HTTPNotFound
+
+        project.tags.remove(tag)
+        log.info(f"Użytkownik {self.request.identity.name} odpiął tag z projektu")
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "tagProjectEvent"}
+        return ""
