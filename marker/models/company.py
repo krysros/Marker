@@ -50,7 +50,9 @@ class Company(Base):
     court = Column(Unicode(100))
     color = Column(Unicode(10))
     tags = relationship("Tag", secondary=companies_tags, backref="companies")
-    projects = relationship("Project", secondary=companies_projects, backref="companies")
+    projects = relationship(
+        "Project", secondary=companies_projects, backref="companies"
+    )
     people = relationship(
         "Person",
         secondary=companies_persons,
