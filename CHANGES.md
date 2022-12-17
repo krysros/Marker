@@ -1,3 +1,8 @@
+2.0a6
+-----
+
+- **BREAKING CHANGE**: Add new tables: `projects_tags` and `projects_persons`
+
 2.0a5
 -----
 
