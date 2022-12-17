@@ -52,9 +52,7 @@ class ProjectForm(Form):
     color = SelectField("Kolor", choices=COLORS)
     deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
-    delivery_method = SelectField(
-        "Sposób realizacji", choices=PROJECT_DELIVERY_METHODS
-    )
+    delivery_method = SelectField("Sposób realizacji", choices=PROJECT_DELIVERY_METHODS)
     submit = SubmitField("Zapisz")
 
     def __init__(self, *args, dbsession, **kwargs):
@@ -87,7 +85,5 @@ class ProjectSearchForm(Form):
     color = SelectField("Kolor", choices=COLORS)
     deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
-    delivery_method = SelectField(
-        "Sposób realizacji", choices=PROJECT_DELIVERY_METHODS
-    )
+    delivery_method = SelectField("Sposób realizacji", choices=PROJECT_DELIVERY_METHODS)
     submit = SubmitField("Szukaj")

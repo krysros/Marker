@@ -10,10 +10,11 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7be5a4df6711'
-down_revision = 'd19f09e154a7'
+revision = "7be5a4df6711"
+down_revision = "d19f09e154a7"
 branch_labels = None
 depends_on = None
+
 
 def upgrade():
     op.create_table(
@@ -35,6 +36,7 @@ def upgrade():
             ondelete="CASCADE",
         ),
     )
+
 
 def downgrade():
     op.drop_table("projects_persons")

@@ -58,9 +58,7 @@ class ProjectView(object):
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
-        delivery_method = self.request.params.get(
-            "delivery_method", None
-        )
+        delivery_method = self.request.params.get("delivery_method", None)
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
@@ -99,9 +97,7 @@ class ProjectView(object):
             stmt = stmt.filter(Project.stage == stage)
 
         if delivery_method:
-            stmt = stmt.filter(
-                Project.delivery_method == delivery_method
-            )
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
 
         if deadline:
             deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
