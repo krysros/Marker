@@ -61,8 +61,3 @@ class CommentResource(DefaultResource):
 class ProjectResource(DefaultResource):
     def __init__(self, project):
         self.project = project
-
-
-class DocumentResource(DefaultResource):
-    def __init__(self, document):
-        self.document = document
