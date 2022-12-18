@@ -5,36 +5,35 @@
   <div class="me-auto">
     <ul class="nav nav-pills">
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
+        <a class="nav-link" aria-current="page" href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">Projekt</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
-          Projekty <span class="badge text-bg-secondary">${company.count_projects}</span>
+        <a class="nav-link" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
+          Firmy <span class="badge text-bg-secondary">${project.count_companies}</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-          Tagi <span class="badge text-bg-secondary">${company.count_tags}</span>
+        <a class="nav-link" href="${request.route_url('project_tags', project_id=project.id, slug=project.slug)}">
+          Tagi <span class="badge text-bg-secondary">${project.count_tags}</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
-          Osoby <span class="badge text-bg-secondary"><div id="company-persons-counter" hx-get="${request.route_url('count_company_persons', company_id=company.id, slug=company.slug)}" hx-trigger="personCompanyEvent from:body">${company.count_persons}</div></span>
+        <a class="nav-link active" href="${request.route_url('project_persons', project_id=project.id, slug=project.slug)}">
+          Osoby <span class="badge text-bg-secondary">${project.count_persons}</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-          Komentarze <span class="badge text-bg-secondary">${company.count_comments}</span>
+        <a class="nav-link" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
+        Komentarze <span class="badge text-bg-secondary">${project.count_comments}</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-          Rekomendacje <span class="badge text-bg-secondary">${company.count_recommended}</span>
-        </a>
+        <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
+          Obserwacje <span class="badge text-bg-secondary"><div id="project-watched-counter" hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchedProjectEvent from:body">${project.count_watched}</div></span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-          Podobne <span class="badge text-bg-secondary">${company.count_similar}</span>
+        <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">
+          Podobne <span class="badge text-bg-secondary">${project.count_similar}</span></a>
         </a>
       </li>
     </ul>
@@ -50,7 +49,7 @@
   </div>
 </div>
 
-<%include file="company_led.mako"/>
+<%include file="project_led.mako"/>
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -64,7 +63,7 @@
       </tr>
     </thead>
     <tbody id="new-person">
-      % for person in company.people:
+      % for person in project.people:
       <tr>
         <td><a href="${request.route_url('person_view', person_id=person.id, slug=person.slug)}">${person.name}</a></td>
         <td>${person.position}</td>
@@ -83,7 +82,7 @@
 <div class="modal fade" id="add-person-modal" tabindex="-1" aria-labelledby="add-person-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('add_person_to_company', company_id=company.id, slug=company.slug)}" hx-target="#new-person" hx-swap="beforeend">
+      <form hx-post="${request.route_url('add_person_to_project', project_id=project.id, slug=project.slug)}" hx-target="#new-person" hx-swap="beforeend">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="add-person-modal-label">Dodaj osobę</h5>

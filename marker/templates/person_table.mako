@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th>Imię i nazwisko</th>
-        <th>Firma</th>
+        <th>Firma / Projekt</th>
         <th>Stanowisko</th>
         <th>Telefon</th>
         <th>Email</th>

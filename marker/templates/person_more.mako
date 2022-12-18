@@ -9,6 +9,8 @@
   <td><a href="${request.route_url('person_view', person_id=person.id, slug=person.slug)}">${person.name}</a></td>
   % if person.company:
   <td><a href="${request.route_url('company_view', company_id=person.company.id, slug=person.company.slug)}">${person.company.name}</a></td>
+  % elif person.project:
+  <td><a href="${request.route_url('project_view', project_id=person.project.id, slug=person.project.slug)}">${person.project.name}</a></td>
   % else:
   <td>---</td>
   % endif

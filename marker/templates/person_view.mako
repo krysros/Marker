@@ -28,6 +28,11 @@
       <dd><a href="${request.route_url('company_view', company_id=person.company.id, slug=person.company.slug)}">${person.company.name}</a></dd>
       % endif
 
+      % if person.project:
+      <dt>Projekt</dt>
+      <dd><a href="${request.route_url('project_view', project_id=person.project.id, slug=person.project.slug)}">${person.project.name}</a></dd>
+      % endif
+
       <dt>Stanowisko</dt>
       <dd>${person.position}</dd>
 

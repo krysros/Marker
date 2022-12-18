@@ -31,6 +31,7 @@ from ..models import (
     Company,
     Project,
     Comment,
+    Person,
     User,
     Tag,
     watched,
@@ -239,6 +240,18 @@ class ProjectView(object):
         permission="view",
     )
     def companies(self):
+        project = self.request.context.project
+        return {
+            "project": project,
+            "title": project.name,
+        }
+
+    @view_config(
+        route_name="project_persons",
+        renderer="project_persons.mako",
+        permission="view",
+    )
+    def persons(self):
         project = self.request.context.project
         return {
             "project": project,
@@ -635,6 +648,33 @@ class ProjectView(object):
             self.request.dbsession.flush()
         self.request.response.headers = {"HX-Trigger": "tagProjectEvent"}
         return {"project": project, "tag": new_tag}
+
+    @view_config(
+        route_name="add_person_to_project",
+        renderer="person_row.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_person(self):
+        project = self.request.context.project
+        person = None
+        name = self.request.POST.get("name")
+        position = self.request.POST.get("position")
+        phone = self.request.POST.get("phone")
+        email = self.request.POST.get("email")
+        if name:
+            person = Person(name, position, phone, email)
+            person.created_by = self.request.identity
+            if person not in project.people:
+                project.people.append(person)
+                log.info(
+                    f"Użytkownik {self.request.identity.name} dodał osobę do projektu"
+                )
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "personProjectEvent"}
+        return {"person": person}
 
     @view_config(
         route_name="unlink_tag_from_project",

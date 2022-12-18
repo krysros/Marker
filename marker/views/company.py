@@ -366,7 +366,7 @@ class CompanyView(object):
         return {"company": company, "tag": new_tag}
 
     @view_config(
-        route_name="add_person",
+        route_name="add_person_to_company",
         renderer="person_row.mako",
         request_method="POST",
         permission="edit",
