@@ -2,6 +2,7 @@
 -----
 
 - **BREAKING CHANGE**: Add new tables: `projects_tags`, `projects_persons`, `projects_comments`
+- **BREAKING CHANGE**: Add tags, persons, and comments to projects
 
 2.0a5
 -----
