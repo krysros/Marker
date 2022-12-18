@@ -30,9 +30,11 @@ from ..forms.select import (
 from ..models import (
     Company,
     Project,
+    Comment,
     User,
     Tag,
     watched,
+    projects_comments,
 )
 from ..paginator import get_paginator
 from ..geo import location
@@ -192,6 +194,43 @@ class ProjectView(object):
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+        }
+
+    @view_config(
+        route_name="project_comments",
+        renderer="project_comments.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_comments_more",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def comments(self):
+        project = self.request.context.project
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Comment)
+            .join(projects_comments)
+            .filter(project.id == projects_comments.c.project_id)
+            .order_by(Comment.created_at.desc())
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "project_comments_more",
+            project_id=project.id,
+            slug=project.slug,
+            _query={"page": page + 1},
+        )
+        return {
+            "paginator": paginator,
+            "next_page": next_page,
+            "project": project,
+            "title": project.name,
         }
 
     @view_config(

@@ -12,6 +12,7 @@ from .tables import companies_tags  # flake8: noqa
 from .tables import companies_persons  # flake8: noqa
 from .tables import companies_comments  # flake8: noqa
 from .tables import companies_projects  # flake8: noqa
+from .tables import projects_comments  # flake8: noqa
 from .tag import Tag  # flake8: noqa
 from .project import Project  # flake8: noqa
 from .company import Company  # flake8: noqa

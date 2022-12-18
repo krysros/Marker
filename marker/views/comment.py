@@ -59,12 +59,12 @@ class CommentView(object):
         }
 
     @view_config(
-        route_name="comment_add",
+        route_name="comment_company",
         renderer="comment.mako",
         request_method="POST",
         permission="edit",
     )
-    def add(self):
+    def add_to_company(self):
         company = self.request.context.company
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -76,6 +76,26 @@ class CommentView(object):
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
         self.request.response.headers = {"HX-Trigger": "commentCompanyEvent"}
+        return {"comment": comment}
+
+    @view_config(
+        route_name="comment_project",
+        renderer="comment.mako",
+        request_method="POST",
+        permission="edit",
+    )
+    def add_to_project(self):
+        project = self.request.context.project
+        comment = None
+        comment_text = self.request.POST.get("comment")
+        if comment_text:
+            comment = Comment(comment=comment_text)
+            comment.created_by = self.request.identity
+            project.comments.append(comment)
+            # If you want to use the id of a newly created object
+            # in the middle of a transaction, you must call dbsession.flush()
+            self.request.dbsession.flush()
+        self.request.response.headers = {"HX-Trigger": "commentProjectEvent"}
         return {"comment": comment}
 
     @view_config(

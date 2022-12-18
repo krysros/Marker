@@ -231,9 +231,14 @@ def includeme(config):
     config.add_route("comment_all", "/comment", factory=default_factory)
     config.add_route("comment_more", "/comment/more", factory=default_factory)
     config.add_route(
-        "comment_add",
-        r"/company/{company_id:\d+}/comment/add",
+        "comment_company",
+        r"/company/{company_id:\d+}/comment",
         factory=company_factory,
+    )
+    config.add_route(
+        "comment_project",
+        r"/project/{project_id:\d+}/comment",
+        factory=project_factory,
     )
     config.add_route(
         "comment_delete",
