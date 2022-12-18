@@ -22,7 +22,7 @@ from ..dropdown import Dropdown, Dd
 log = logging.getLogger(__name__)
 
 
-class PersonView(object):
+class PersonView:
     def __init__(self, request):
         self.request = request
 

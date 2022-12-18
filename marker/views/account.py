@@ -8,7 +8,7 @@ from ..forms import ChangePassword
 log = logging.getLogger(__name__)
 
 
-class AccountView(object):
+class AccountView:
     def __init__(self, request):
         self.request = request
 

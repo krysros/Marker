@@ -44,7 +44,7 @@ from ..dropdown import Dropdown, Dd
 log = logging.getLogger(__name__)
 
 
-class UserView(object):
+class UserView:
     def __init__(self, request):
         self.request = request
 

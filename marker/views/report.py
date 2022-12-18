@@ -26,7 +26,7 @@ from ..forms.select import STATES, REPORTS
 from ..forms import ReportForm
 
 
-class ReportView(object):
+class ReportView:
     def __init__(self, request):
         self.request = request
 

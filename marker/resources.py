@@ -5,7 +5,7 @@ from pyramid.authorization import (
 )
 
 
-class DefaultResource(object):
+class DefaultResource:
     def __acl__(self):
         return [
             (Allow, Authenticated, "view"),
@@ -14,7 +14,7 @@ class DefaultResource(object):
         ]
 
 
-class AccountResource(object):
+class AccountResource:
     def __init__(self, user):
         self.user = user
 

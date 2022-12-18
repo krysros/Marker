@@ -33,7 +33,7 @@ from ..dropdown import Dropdown, Dd
 log = logging.getLogger(__name__)
 
 
-class TagView(object):
+class TagView:
     def __init__(self, request):
         self.request = request
 

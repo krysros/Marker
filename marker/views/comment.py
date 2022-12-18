@@ -13,7 +13,7 @@ from ..paginator import get_paginator
 log = logging.getLogger(__name__)
 
 
-class CommentView(object):
+class CommentView:
     def __init__(self, request):
         self.request = request
 
