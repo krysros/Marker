@@ -32,20 +32,3 @@ def remove_mailto(v):
         return v[7:]
     else:
         return v
-
-
-def extract_postcode_and_city(v):
-    # Remove spaces at the beginning and at the end of the string
-    v = v.strip()
-    # Replace em dash, en dash, minus sign, hyphen-minus with a hypen
-    v = dash_filter(v)
-    # Extract postcode and city
-    p = re.compile(r"\d{2}\s*-\s*\d{3}")
-    postcode = p.findall(v)
-    if postcode:
-        postcode = postcode[0]
-        city = v.replace(postcode, "").strip()
-        postcode = postcode.replace("\t", "").replace(" ", "")
-    else:
-        postcode = ""
-    return postcode, city
