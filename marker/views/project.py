@@ -726,7 +726,7 @@ class ProjectView(object):
             raise HTTPNotFound
 
         project.tags.remove(tag)
-        log.info(f"Użytkownik {self.request.identity.name} odpiął tag z projektu")
+        log.info(f"Użytkownik {self.request.identity.name} odpiął tag od projektu")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagProjectEvent"}

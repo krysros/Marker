@@ -705,7 +705,7 @@ class CompanyView(object):
             raise HTTPNotFound
 
         company.tags.remove(tag)
-        log.info(f"Użytkownik {self.request.identity.name} odpiął tag z firmy")
+        log.info(f"Użytkownik {self.request.identity.name} odpiął tag od firmy")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagCompanyEvent"}
