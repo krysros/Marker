@@ -669,7 +669,9 @@ class ProjectView:
             if tag not in project.tags:
                 project.tags.append(tag)
                 new_tag = tag
-                log.info(f"Użytkownik {self.request.identity.name} dodał tag do projektu")
+                log.info(
+                    f"Użytkownik {self.request.identity.name} dodał tag do projektu"
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
