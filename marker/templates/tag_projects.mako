@@ -19,7 +19,7 @@
       </li>
     </ul>
   </div>
-  <div>${button.map('tag_map', tag_id=tag.id, slug=tag.slug)}</div>
+  ## <div>${button.map('tag_map', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
 <p class="lead">${tag.name}</p>
