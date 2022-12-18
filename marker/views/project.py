@@ -314,6 +314,33 @@ class ProjectView(object):
         return project.count_companies
 
     @view_config(
+        route_name="count_project_tags",
+        renderer="json",
+        permission="view",
+    )
+    def count_project_tags(self):
+        project = self.request.context.project
+        return project.count_tags
+
+    @view_config(
+        route_name="count_project_persons",
+        renderer="json",
+        permission="view",
+    )
+    def count_project_persons(self):
+        project = self.request.context.project
+        return project.count_persons
+
+    @view_config(
+        route_name="count_project_comments",
+        renderer="json",
+        permission="view",
+    )
+    def count_project_comments(self):
+        project = self.request.context.project
+        return project.count_comments
+
+    @view_config(
         route_name="count_project_watched",
         renderer="json",
         permission="view",
@@ -593,7 +620,7 @@ class ProjectView(object):
         request_method="POST",
         permission="edit",
     )
-    def add_company_to_project(self):
+    def add_company(self):
         project = self.request.context.project
         name = self.request.POST.get("name")
         if name:

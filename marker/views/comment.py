@@ -106,11 +106,15 @@ class CommentView(object):
     )
     def delete(self):
         comment = self.request.context.comment
+        if comment.company:
+            event = "commentCompanyEvent"
+        elif comment.project:
+            event = "commentProjectEvent"
         self.request.dbsession.delete(comment)
         log.info(f"Użytkownik {self.request.identity.name} usunął komentarz")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": "commentCompanyEvent"}
+        self.request.response.headers = {"HX-Trigger": event}
         return ""
 
     @view_config(

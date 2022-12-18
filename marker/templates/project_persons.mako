@@ -19,7 +19,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('project_persons', project_id=project.id, slug=project.slug)}">
-          Osoby <span class="badge text-bg-secondary">${project.count_persons}</span>
+          Osoby <span class="badge text-bg-secondary"><div id="project-persons-counter" hx-get="${request.route_url('count_project_persons', project_id=project.id, slug=project.slug)}" hx-trigger="personProjectEvent from:body">${project.count_persons}</div></span>
         </a>
       </li>
       <li class="nav-item">

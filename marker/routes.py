@@ -213,7 +213,7 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "add_project",
+        "add_project_to_company",
         r"/add/company/{company_id:\d+}/{slug}/project",
         factory=company_factory,
     )
@@ -237,12 +237,12 @@ def includeme(config):
     config.add_route("comment_more", "/comment/more", factory=default_factory)
     config.add_route(
         "comment_company",
-        r"/company/{company_id:\d+}/comment",
+        r"/add/comment/company/{company_id:\d+}",
         factory=company_factory,
     )
     config.add_route(
         "comment_project",
-        r"/project/{project_id:\d+}/comment",
+        r"/add/comment/project/{project_id:\d+}",
         factory=project_factory,
     )
     config.add_route(

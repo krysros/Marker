@@ -14,7 +14,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('project_tags', project_id=project.id, slug=project.slug)}">
-          Tagi <span class="badge text-bg-secondary">${project.count_tags}</span>
+          Tagi <span class="badge text-bg-secondary"><div id="project-tags-counter" hx-get="${request.route_url('count_project_tags', project_id=project.id, slug=project.slug)}" hx-trigger="tagProjectEvent from:body">${project.count_tags}</div></span>
         </a>
       </li>
       <li class="nav-item">

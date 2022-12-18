@@ -4,8 +4,10 @@
 <div class="card mt-4 mb-4">
   <div class="card-header">
     % if comment.company:
+    <span class="badge bg-secondary">F</span>&nbsp;
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>
     % elif comment.project:
+    <span class="badge bg-secondary">P</span>&nbsp;
     <a href="${request.route_url('project_view', project_id=comment.project.id, slug=comment.project.slug)}">${comment.project.name}</a>
     % endif
     % if comment.created_by == request.identity or request.identity.name == 'admin':

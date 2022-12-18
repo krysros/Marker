@@ -58,7 +58,7 @@
 <div class="modal fade" id="add-project-modal" tabindex="-1" aria-labelledby="add-project-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('add_project', company_id=company.id, slug=company.slug)}" hx-target="#company-projects" hx-swap="innerHTML show:window:top">
+      <form hx-post="${request.route_url('add_project_to_company', company_id=company.id, slug=company.slug)}" hx-target="#company-projects" hx-swap="innerHTML show:window:top">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="add-project-modal-label">Dodaj projekt</h5>

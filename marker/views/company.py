@@ -712,22 +712,7 @@ class CompanyView(object):
         return ""
 
     @view_config(
-        route_name="delete_person",
-        request_method="POST",
-        permission="edit",
-        renderer="string",
-    )
-    def delete_person(self):
-        person = self.request.context.person
-        self.request.dbsession.delete(person)
-        log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
-        # This request responds with empty content,
-        # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": "personCompanyEvent"}
-        return ""
-
-    @view_config(
-        route_name="add_project",
+        route_name="add_project_to_company",
         renderer="project_list_companies.mako",
         request_method="POST",
         permission="edit",

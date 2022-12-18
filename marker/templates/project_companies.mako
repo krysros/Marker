@@ -8,7 +8,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
-          Firmy <span class="badge text-bg-secondary">${project.count_companies}</span>
+          Firmy <span class="badge text-bg-secondary"><div id="project-companies-counter" hx-get="${request.route_url('count_project_companies', project_id=project.id, slug=project.slug)}" hx-trigger="projectCompanyEvent from:body">${project.count_companies}</div></span>
         </a>
       </li>
       <li class="nav-item">

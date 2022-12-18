@@ -142,6 +142,25 @@ class PersonView(object):
         return response
 
     @view_config(
+        route_name="delete_person",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_person(self):
+        person = self.request.context.person
+        if person.company:
+            event = "personCompanyEvent"
+        elif person.project:
+            event = "personProjectEvent"
+        self.request.dbsession.delete(person)
+        log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": event}
+        return ""
+
+    @view_config(
         route_name="person_search",
         renderer="person_form.mako",
         permission="view",
