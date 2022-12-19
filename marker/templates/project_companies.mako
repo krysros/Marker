@@ -43,7 +43,7 @@
       <i class="bi bi-plus-lg"></i>
     </button>
     % else:
-    <button type="button" class="btn btn-success btn-sm" disabled><i class="bi bi-plus-lg"></i></button>
+    <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
     % endif
   </div>
 </div>
