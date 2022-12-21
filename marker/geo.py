@@ -25,6 +25,6 @@ def location(**kwargs):
         lat = fst["lat"]
         lon = fst["lon"]
         loc = {"lat": float(lat), "lon": float(lon)}
-    except IndexError:
+    except (IndexError, UnboundLocalError):
         loc = None
     return loc
