@@ -12,6 +12,11 @@
           Firmy <span class="badge text-bg-secondary">${tag.count_companies}</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="${request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug)}">
+          Projekty <span class="badge text-bg-secondary">${tag.count_projects}</span>
+        </a>
+      </li>
     </ul>
   </div>
   <div>${button.table('tag_companies', tag_id=tag.id, slug=tag.slug)}</div>

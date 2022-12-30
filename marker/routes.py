@@ -30,10 +30,14 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/{slug}",
         factory=tag_factory,
     )
-    config.add_route("tag_map", r"/tag/{tag_id:\d+}/{slug}/map", factory=tag_factory)
     config.add_route(
-        "tag_json",
-        r"/tag/{tag_id:\d+}/{slug}/json",
+        "tag_companies_json",
+        r"/tag/{tag_id:\d+}/{slug}/companies/json",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_projects_json",
+        r"/tag/{tag_id:\d+}/{slug}/projects/json",
         factory=tag_factory,
     )
     config.add_route(
@@ -46,6 +50,7 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/{slug}/companies/more",
         factory=tag_factory,
     )
+    config.add_route("tag_companies_map", r"/tag/{tag_id:\d+}/{slug}/companies/map", factory=tag_factory)
     config.add_route(
         "tag_companies_export",
         r"/tag/{tag_id:\d+}/{slug}/companies/export",
@@ -64,6 +69,11 @@ def includeme(config):
     config.add_route(
         "tag_projects_more",
         r"/tag/{tag_id:\d+}/{slug}/projects/more",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_projects_map",
+        r"/tag/{tag_id:\d+}/{slug}/projects/map",
         factory=tag_factory,
     )
     config.add_route(

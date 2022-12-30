@@ -110,21 +110,31 @@ class TagView:
         return {"tag": tag, "title": tag.name}
 
     @view_config(
-        route_name="tag_map",
-        renderer="tag_map.mako",
+        route_name="tag_companies_map",
+        renderer="tag_companies_map.mako",
         permission="view",
     )
-    def map(self):
+    def map_companies(self):
         tag = self.request.context.tag
-        url = self.request.route_url("tag_json", tag_id=tag.id, slug=tag.slug)
+        url = self.request.route_url("tag_companies_json", tag_id=tag.id, slug=tag.slug)
         return {"tag": tag, "url": url}
 
     @view_config(
-        route_name="tag_json",
+        route_name="tag_projects_map",
+        renderer="tag_projects_map.mako",
+        permission="view",
+    )
+    def map_projects(self):
+        tag = self.request.context.tag
+        url = self.request.route_url("tag_projects_json", tag_id=tag.id, slug=tag.slug)
+        return {"tag": tag, "url": url}
+
+    @view_config(
+        route_name="tag_companies_json",
         renderer="json",
         permission="view",
     )
-    def tag_json(self):
+    def tag_companies_json(self):
         tag = self.request.context.tag
         stmt = select(Company).filter(Company.tags.any(name=tag.name))
         companies = self.request.dbsession.execute(stmt).scalars()
@@ -147,6 +157,36 @@ class TagView:
                 "color": company.color,
             }
             for company in companies
+        ]
+        return res
+
+    @view_config(
+        route_name="tag_projects_json",
+        renderer="json",
+        permission="view",
+    )
+    def tag_projects_json(self):
+        tag = self.request.context.tag
+        stmt = select(Project).filter(Project.tags.any(name=tag.name))
+        projects = self.request.dbsession.execute(stmt).scalars()
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "postcode": project.postcode,
+                "city": project.city,
+                "state": project.state,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "link": project.link,
+                "color": project.color,
+                # "deadline": project.deadline,
+                # "stage": project.stage,
+                # "delivery_method": project.delivery_method,
+            }
+            for project in projects
         ]
         return res
 
