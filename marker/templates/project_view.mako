@@ -126,4 +126,7 @@
       attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
+  let title = `<b>${project.name}</b><br>Ulica: ${project.street}<br>Miasto: ${project.city}<br>Woj.: ${project.state}<br>Kraj: ${project.country}`;
+  marker.bindPopup(title);
+  marker.openPopup();
 </script>
