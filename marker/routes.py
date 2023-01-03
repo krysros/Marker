@@ -50,7 +50,11 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/{slug}/companies/more",
         factory=tag_factory,
     )
-    config.add_route("tag_companies_map", r"/tag/{tag_id:\d+}/{slug}/companies/map", factory=tag_factory)
+    config.add_route(
+        "tag_companies_map",
+        r"/tag/{tag_id:\d+}/{slug}/companies/map",
+        factory=tag_factory,
+    )
     config.add_route(
         "tag_companies_export",
         r"/tag/{tag_id:\d+}/{slug}/companies/export",

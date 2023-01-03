@@ -317,10 +317,7 @@ class CompanyView:
         if color:
             stmt = stmt.filter(Company.color == color)
 
-        companies = (
-            self.request.dbsession.execute(stmt)
-            .scalars()
-        )
+        companies = self.request.dbsession.execute(stmt).scalars()
 
         res = [
             {
