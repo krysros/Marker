@@ -112,8 +112,8 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
 
         if deadline:
-            deadline = datetime.datetime.strptime(deadline, "%Y-%m-%d")
-            stmt = stmt.filter(Project.deadline <= deadline)
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d")
+            stmt = stmt.filter(Project.deadline <= deadline_dt)
 
         if filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
@@ -276,8 +276,34 @@ class ProjectView:
         permission="view",
     )
     def map(self):
-        url = self.request.route_url("project_json")
-        return {"url": url}
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        state = self.request.params.get("state", None)
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        color = self.request.params.get("color", None)
+        deadline = self.request.params.get("deadline", None)
+        stage = self.request.params.get("stage", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+
+        search_query = {
+            "name": name,
+            "street": street,
+            "postcode": postcode,
+            "city": city,
+            "state": state,
+            "country": country,
+            "link": link,
+            "color": color,
+            "deadline": deadline,
+            "stage": stage,
+            "delivery_method": delivery_method,
+        }
+
+        url = self.request.route_url("project_json", _query=search_query)
+        return {"url": url, "search_query": search_query}
 
     @view_config(
         route_name="project_json",
@@ -285,8 +311,56 @@ class ProjectView:
         permission="view",
     )
     def project_json(self):
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        state = self.request.params.get("state", None)
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        color = self.request.params.get("color", None)
+        deadline = self.request.params.get("deadline", None)
+        stage = self.request.params.get("stage", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+
         stmt = select(Project)
+
+        if name:
+            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+
+        if link:
+            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+
+        if state:
+            stmt = stmt.filter(Project.state == state)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
+        if deadline:
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d")
+            stmt = stmt.filter(Project.deadline <= deadline_dt)
+
         projects = self.request.dbsession.execute(stmt).scalars()
+
         res = [
             {
                 "id": project.id,
@@ -299,6 +373,10 @@ class ProjectView:
                 "latitude": project.latitude,
                 "longitude": project.longitude,
                 "link": project.link,
+                "color": project.color,
+                "deadline": project.deadline.strftime("%Y-%m-%d"),
+                "stage": project.stage,
+                "delivery_method": project.delivery_method,
             }
             for project in projects
         ]

@@ -5,7 +5,7 @@
   <i class="bi bi-buildings"></i> Firmy
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.map('company_map')}
+    ${button.map('company_map', _query=search_query)}
     ${button.search('company_search')}
     ${button.add('company_add')}
   </div>

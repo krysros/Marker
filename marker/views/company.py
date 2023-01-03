@@ -229,8 +229,36 @@ class CompanyView:
         permission="view",
     )
     def map(self):
-        url = self.request.route_url("company_json")
-        return {"url": url}
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        state = self.request.params.get("state", None)
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
+        color = self.request.params.get("color", None)
+
+        search_query = {
+            "name": name,
+            "street": street,
+            "postcode": postcode,
+            "city": city,
+            "state": state,
+            "country": country,
+            "link": link,
+            "NIP": NIP,
+            "REGON": REGON,
+            "KRS": KRS,
+            "court": court,
+            "color": color,
+        }
+
+        url = self.request.route_url("company_json", _query=search_query)
+        return {"url": url, "search_query": search_query}
 
     @view_config(
         route_name="company_json",
@@ -238,8 +266,62 @@ class CompanyView:
         permission="view",
     )
     def company_json(self):
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        state = self.request.params.get("state", None)
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
+        color = self.request.params.get("color", None)
+
         stmt = select(Company)
-        companies = self.request.dbsession.execute(stmt).scalars()
+
+        if name:
+            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+
+        if link:
+            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
+
+        if state:
+            stmt = stmt.filter(Company.state == state)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        companies = (
+            self.request.dbsession.execute(stmt)
+            .scalars()
+        )
+
         res = [
             {
                 "id": company.id,
@@ -252,6 +334,11 @@ class CompanyView:
                 "latitude": company.latitude,
                 "longitude": company.longitude,
                 "link": company.link,
+                "NIP": company.NIP,
+                "REGON": company.REGON,
+                "KRS": company.KRS,
+                "court": company.court,
+                "color": company.color,
             }
             for company in companies
         ]

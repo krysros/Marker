@@ -3,7 +3,7 @@
 
 <h2><i class="bi bi-briefcase"></i> Projekty
   <div class="float-end">
-    ${button.table('project_all')}
+    ${button.table('project_all', _query=search_query)}
     ${button.search('project_search')}
     ${button.add('project_add')}
   </div>

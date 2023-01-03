@@ -3,7 +3,7 @@
 
 <h2><i class="bi bi-buildings"></i> Firmy
   <div class="float-end">
-    ${button.table('company_all')}
+    ${button.table('company_all', _query=search_query)}
     ${button.search('company_search')}
     ${button.add('company_add')}
   </div>
