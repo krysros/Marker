@@ -15,14 +15,20 @@ from ..models import (
     Tag,
     Company,
     Project,
+    companies_tags,
+    projects_tags,
+    companies_comments,
+    projects_comments,
+    companies_projects,
+    recommended,
+    watched,
 )
 
-from ..models import companies_tags
-from ..models import companies_projects
-from ..models import recommended, watched
-
 from ..paginator import get_paginator
-from ..forms.select import STATES, REPORTS
+from ..forms.select import (
+    STATES,
+    REPORTS,
+)
 from ..forms import ReportForm
 
 
@@ -68,6 +74,16 @@ class ReportView:
                 .group_by(Tag)
                 .order_by(desc("companies-tags"))
             )
+        elif rel == "projects-tags":
+            stmt = (
+                select(
+                    Tag.name,
+                    func.count(projects_tags.c.project_id).label("projects-tags"),
+                )
+                .join(projects_tags)
+                .group_by(Tag)
+                .order_by(desc("projects-tags"))
+            )
         elif rel == "companies-states":
             stmt = (
                 select(
@@ -83,6 +99,18 @@ class ReportView:
                 .group_by(Company.city)
                 .order_by(desc("companies-cities"))
             )
+        elif rel == "companies-comments":
+            stmt = (
+                select(
+                    Company.name,
+                    func.count(companies_comments.c.comment_id).label(
+                        "companies-comments"
+                    ),
+                )
+                .join(companies_comments)
+                .group_by(Company)
+                .order_by(desc("companies-comments"))
+            )
         elif rel == "projects-states":
             stmt = (
                 select(
@@ -97,6 +125,18 @@ class ReportView:
                 select(Project.city, func.count(Project.city).label("projects-cities"))
                 .group_by(Project.city)
                 .order_by(desc("projects-cities"))
+            )
+        elif rel == "projects-comments":
+            stmt = (
+                select(
+                    Project.name,
+                    func.count(projects_comments.c.comment_id).label(
+                        "projects-comments"
+                    ),
+                )
+                .join(projects_comments)
+                .group_by(Project)
+                .order_by(desc("projects-comments"))
             )
         elif rel == "users-companies":
             stmt = (
