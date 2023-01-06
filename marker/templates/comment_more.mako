@@ -11,7 +11,7 @@
 % endif
   <div class="card-header">
     % if comment.company:
-    <span class="badge bg-secondary">F</span>&nbsp;
+    <span class="badge bg-secondary">C</span>&nbsp;
     <a href="${request.route_url('company_view', company_id=comment.company.id, slug=comment.company.slug)}">${comment.company.name}</a>
     % elif comment.project:
     <span class="badge bg-secondary">P</span>&nbsp;
