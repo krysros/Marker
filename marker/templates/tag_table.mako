@@ -5,6 +5,8 @@
         <th>Tag</th>
         <th>Dodano</th>
         <th>Zmodyfikowano</th>
+        <th>Firmy</th>
+        <th>Projekty</th>
       </tr>
     </thead>
     <tbody>
