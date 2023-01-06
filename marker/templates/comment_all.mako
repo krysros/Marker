@@ -1,5 +1,5 @@
-<%inherit file="layout.mako"/>
-<%namespace name="button" file="button.mako"/>
+<%inherit file="layout.mako" />
+<%namespace name="button" file="button.mako" />
 
 <h2>
   <i class="bi bi-chat-left-text"></i> Komentarze
@@ -11,4 +11,9 @@
 
 <hr>
 
-<%include file="comment_more.mako"/>
+<div class="hstack gap-2 mb-4">
+  <div>${button.dropdown('comment_all', dd_filter)}</div>
+  <div>${button.dropdown('comment_all', dd_order)}</div>
+</div>
+
+<%include file="comment_more.mako" />

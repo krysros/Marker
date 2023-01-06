@@ -5,10 +5,18 @@ from sqlalchemy import (
     select,
     func,
 )
-from ..models import Comment
+from ..models import (
+    Comment,
+    companies_comments,
+    projects_comments,
+)
 from ..forms import CommentSearchForm
+from ..forms.select import (
+    COMMENTS_FILTER,
+    DROPDOWN_ORDER,
+)
 from ..paginator import get_paginator
-
+from ..dropdown import Dd, Dropdown
 
 log = logging.getLogger(__name__)
 
@@ -30,12 +38,26 @@ class CommentView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", "created_at")
+        order = self.request.params.get("order", "desc")
+        comments_filter = dict(COMMENTS_FILTER)
+        dropdown_order = dict(DROPDOWN_ORDER)
+
         stmt = select(Comment)
 
         if comment:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
 
-        stmt = stmt.order_by(Comment.created_at.desc())
+        if filter == "C":
+            stmt = stmt.join(companies_comments).filter(Comment.id == companies_comments.c.comment_id)
+        elif filter == "P":
+            stmt = stmt.join(projects_comments).filter(Comment.id == projects_comments.c.comment_id)
+
+        if order == "asc":
+            stmt = stmt.order_by(Comment.created_at.asc())
+        elif order == "desc":
+            stmt = stmt.order_by(Comment.created_at.desc())
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -49,13 +71,27 @@ class CommentView:
             .all()
         )
         next_page = self.request.route_url(
-            "comment_more", _query={**search_query, "page": page + 1}
+            "comment_more", _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1}
         )
+
+        dd_filter = Dropdown(
+            items=comments_filter,
+            typ=Dd.FILTER,
+            _filter=filter,
+            _sort=sort,
+            _order=order,
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+        )
+
         return {
             "search_query": search_query,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "dd_filter": dd_filter,
+            "dd_order": dd_order,
         }
 
     @view_config(

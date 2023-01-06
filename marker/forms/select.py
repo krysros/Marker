@@ -527,3 +527,10 @@ PROJECT_DELIVERY_METHODS = [
     ("design-build", "Projektuj i buduj"),
     ("build", "Buduj"),
 ]
+
+
+COMMENTS_FILTER = [
+    ("", "---"),
+    ("C", "Firmy"),
+    ("P", "Projekty"),
+]
