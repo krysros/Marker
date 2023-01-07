@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import (
-    Column,
     Integer,
     Unicode,
     DateTime,
@@ -10,6 +9,7 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import (
+    mapped_column,
     relationship,
     object_session,
 )
@@ -33,14 +33,14 @@ ph = argon2.PasswordHasher()
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(30), unique=True)
-    fullname = Column(Unicode(50))
-    email = Column(Unicode(50))
-    role = Column(Unicode(20))
-    _password = Column("password", Unicode(255))
-    created_at = Column(DateTime, default=datetime.datetime.now)
-    updated_at = Column(
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(30), unique=True)
+    fullname = mapped_column(Unicode(50))
+    email = mapped_column(Unicode(50))
+    role = mapped_column(Unicode(20))
+    _password = mapped_column("password", Unicode(255))
+    created_at = mapped_column(DateTime, default=datetime.datetime.now)
+    updated_at = mapped_column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 

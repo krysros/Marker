@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import (
-    Column,
     ForeignKey,
     Sequence,
     Integer,
@@ -14,6 +13,7 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import (
+    mapped_column,
     relationship,
     object_session,
     backref,
@@ -34,21 +34,21 @@ from .tables import (
 
 class Company(Base):
     __tablename__ = "companies"
-    id = Column(Integer, Sequence("companies_id_seq", 1, 1), primary_key=True)
-    name = Column(Unicode(100))
-    street = Column(Unicode(100))
-    postcode = Column(Unicode(10))
-    city = Column(Unicode(100))
-    state = Column(Unicode(2))
-    country = Column(Unicode(2))
-    latitude = Column(Float)
-    longitude = Column(Float)
-    link = Column(Unicode(100))
-    NIP = Column(Unicode(20))
-    REGON = Column(Unicode(20))
-    KRS = Column(Unicode(20))
-    court = Column(Unicode(100))
-    color = Column(Unicode(10))
+    id = mapped_column(Integer, Sequence("companies_id_seq", 1, 1), primary_key=True)
+    name = mapped_column(Unicode(100))
+    street = mapped_column(Unicode(100))
+    postcode = mapped_column(Unicode(10))
+    city = mapped_column(Unicode(100))
+    state = mapped_column(Unicode(2))
+    country = mapped_column(Unicode(2))
+    latitude = mapped_column(Float)
+    longitude = mapped_column(Float)
+    link = mapped_column(Unicode(100))
+    NIP = mapped_column(Unicode(20))
+    REGON = mapped_column(Unicode(20))
+    KRS = mapped_column(Unicode(20))
+    court = mapped_column(Unicode(100))
+    color = mapped_column(Unicode(10))
     tags = relationship("Tag", secondary=companies_tags, backref="companies")
     projects = relationship(
         "Project", secondary=companies_projects, backref="companies"
@@ -69,12 +69,12 @@ class Company(Base):
         lazy="select",
         backref=backref("company", uselist=False),
     )
-    created_at = Column(DateTime, default=datetime.datetime.now)
-    updated_at = Column(
+    created_at = mapped_column(DateTime, default=datetime.datetime.now)
+    updated_at = mapped_column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
-    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    creator_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     created_by = relationship("User", foreign_keys=[creator_id])
     updated_by = relationship("User", foreign_keys=[editor_id])
 

@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import (
-    Column,
     ForeignKey,
     Integer,
     Float,
@@ -14,6 +13,7 @@ from sqlalchemy import (
 )
 
 from sqlalchemy.orm import (
+    mapped_column,
     relationship,
     object_session,
     backref,
@@ -33,20 +33,20 @@ from .tables import (
 
 class Project(Base):
     __tablename__ = "projects"
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(200))
-    street = Column(Unicode(100))
-    postcode = Column(Unicode(10))
-    city = Column(Unicode(100))
-    state = Column(Unicode(2))
-    country = Column(Unicode(2))
-    latitude = Column(Float)
-    longitude = Column(Float)
-    link = Column(Unicode(2000))
-    color = Column(Unicode(10))
-    deadline = Column(Date)
-    stage = Column(Unicode(100))
-    delivery_method = Column(Unicode(100))
+    id = mapped_column(Integer, primary_key=True)
+    name = mapped_column(Unicode(200))
+    street = mapped_column(Unicode(100))
+    postcode = mapped_column(Unicode(10))
+    city = mapped_column(Unicode(100))
+    state = mapped_column(Unicode(2))
+    country = mapped_column(Unicode(2))
+    latitude = mapped_column(Float)
+    longitude = mapped_column(Float)
+    link = mapped_column(Unicode(2000))
+    color = mapped_column(Unicode(10))
+    deadline = mapped_column(Date)
+    stage = mapped_column(Unicode(100))
+    delivery_method = mapped_column(Unicode(100))
     tags = relationship("Tag", secondary=projects_tags, backref="projects")
     people = relationship(
         "Person",
@@ -64,12 +64,12 @@ class Project(Base):
         lazy="select",
         backref=backref("project", uselist=False),
     )
-    created_at = Column(DateTime, default=datetime.datetime.now)
-    updated_at = Column(
+    created_at = mapped_column(DateTime, default=datetime.datetime.now)
+    updated_at = mapped_column(
         DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
-    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    editor_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    creator_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     created_by = relationship("User", foreign_keys=[creator_id])
     updated_by = relationship("User", foreign_keys=[editor_id])
 
