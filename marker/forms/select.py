@@ -338,11 +338,20 @@ COUNTRIES = [
 ]
 
 
-ROLES = [
+USER_ROLES = [
     ("", "---"),
     ("basic", "wyświetlanie"),
     ("editor", "edytowanie"),
     ("admin", "administrator"),
+]
+
+
+COMPANY_ROLES = [
+    ("", "---"),
+    ("purchaser", "Purchaser"),
+    ("investor", "Investor"),
+    ("general_contractor", "General Contractor"),
+    ("subcontractor", "Subcontractor"),
 ]
 
 

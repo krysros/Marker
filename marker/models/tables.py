@@ -3,25 +3,30 @@ from sqlalchemy import (
     Column,
     ForeignKey,
     Integer,
+    Unicode,
+)
+
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
 )
 
 from .meta import Base
 
 
-companies_projects = Table(
-    "companies_projects",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
+class CompaniesProjectsAssociation(Base):
+    __tablename__ = "companies_projects"
+    company_id: Mapped[int] = mapped_column(
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "project_id",
-        Integer,
+        primary_key=True,
+    )
+    project_id: Mapped[int] = mapped_column(
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
+        primary_key=True,
+    )
+    stage: Mapped[str] = mapped_column(Unicode(100))
+    role: Mapped[str] = mapped_column(Unicode(100))
+
 
 companies_tags = Table(
     "companies_tags",

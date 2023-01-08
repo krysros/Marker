@@ -19,7 +19,7 @@ from ..models import (
     projects_tags,
     companies_comments,
     projects_comments,
-    companies_projects,
+    CompaniesProjectsAssociation,
     recommended,
     watched,
 )
@@ -161,11 +161,11 @@ class ReportView:
             stmt = (
                 select(
                     Company.name,
-                    func.count(companies_projects.c.company_id).label(
+                    func.count(CompaniesProjectsAssociation.company_id).label(
                         "companies-projects"
                     ),
                 )
-                .join(companies_projects)
+                .join(CompaniesProjectsAssociation)
                 .group_by(Company)
                 .order_by(desc("companies-projects"))
             )

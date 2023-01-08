@@ -20,7 +20,7 @@ from slugify import slugify
 from .meta import Base
 from .tag import Tag
 from .tables import (
-    companies_projects,
+    CompaniesProjectsAssociation,
     projects_tags,
     projects_persons,
     projects_comments,
@@ -103,8 +103,8 @@ class Project(Base):
     @property
     def count_companies(self) -> int:
         return object_session(self).scalar(
-            select(func.count(companies_projects.c.project_id)).where(
-                companies_projects.c.project_id == self.id
+            select(func.count(CompaniesProjectsAssociation.project_id)).where(
+                CompaniesProjectsAssociation.project_id == self.id
             )
         )
 

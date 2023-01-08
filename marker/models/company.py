@@ -21,7 +21,7 @@ from slugify import slugify
 from .meta import Base
 from .tag import Tag
 from .tables import (
-    companies_projects,
+    CompaniesProjectsAssociation,
     companies_tags,
     companies_persons,
     companies_comments,
@@ -50,7 +50,7 @@ class Company(Base):
         secondary=companies_tags, backref="companies"
     )
     projects: Mapped[list["Project"]] = relationship(
-        secondary=companies_projects, backref="companies"
+        secondary="companies_projects", backref="companies"
     )
     people: Mapped[list["Person"]] = relationship(
         secondary=companies_persons,
@@ -110,8 +110,8 @@ class Company(Base):
     @property
     def count_projects(self) -> int:
         return object_session(self).scalar(
-            select(func.count(companies_projects.c.company_id)).where(
-                companies_projects.c.company_id == self.id
+            select(func.count(CompaniesProjectsAssociation.company_id)).where(
+                CompaniesProjectsAssociation.company_id == self.id
             )
         )
 

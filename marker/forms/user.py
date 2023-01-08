@@ -10,7 +10,7 @@ from wtforms import (
 from wtforms.validators import InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
 from ..models import User
-from .select import ROLES
+from .select import USER_ROLES
 from .filters import strip_filter
 
 
@@ -40,7 +40,7 @@ class UserForm(Form):
         filters=[strip_filter],
     )
     email = EmailField("Email", filters=[strip_filter])
-    role = SelectField("Rola", choices=ROLES)
+    role = SelectField("Rola", choices=USER_ROLES)
     password = PasswordField(
         "Hasło",
         validators=[

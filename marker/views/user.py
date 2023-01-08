@@ -29,7 +29,7 @@ from ..export import (
     export_projects_to_xlsx,
 )
 from ..forms.select import (
-    ROLES,
+    USER_ROLES,
     STATES,
     COLORS,
     DROPDOWN_SORT,
@@ -56,7 +56,7 @@ class UserView:
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
-        roles = dict(ROLES)
+        roles = dict(USER_ROLES)
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(User)
