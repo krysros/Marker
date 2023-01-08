@@ -1,12 +1,11 @@
 import datetime
+
 from sqlalchemy import (
-    Column,
-    Integer,
     Unicode,
-    DateTime,
     ForeignKey,
 )
 from sqlalchemy.orm import (
+    Mapped,
     mapped_column,
     relationship,
 )
@@ -17,32 +16,32 @@ from .meta import Base
 
 class Person(Base):
     __tablename__ = "persons"
-    id = mapped_column(Integer, primary_key=True)
-    name = mapped_column(Unicode(100))
-    position = mapped_column(Unicode(100))
-    phone = mapped_column(Unicode(50))
-    email = mapped_column(Unicode(50))
-    created_at = mapped_column(DateTime, default=datetime.datetime.now)
-    updated_at = mapped_column(
-        DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(Unicode(100))
+    position: Mapped[str] = mapped_column(Unicode(100))
+    phone: Mapped[str] = mapped_column(Unicode(50))
+    email: Mapped[str] = mapped_column(Unicode(50))
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
-    creator_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    editor_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    created_by = relationship("User", foreign_keys=[creator_id])
-    updated_by = relationship("User", foreign_keys=[editor_id])
+    creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
+    updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
     def __init__(
         self,
-        name,
-        position,
-        phone,
-        email,
-    ):
+        name: str,
+        position: str,
+        phone: str,
+        email: str,
+    ) -> None:
         self.name = name
         self.position = position
         self.phone = phone
         self.email = email
 
     @property
-    def slug(self):
+    def slug(self) -> str:
         return slugify(self.name)

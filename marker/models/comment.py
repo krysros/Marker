@@ -1,13 +1,8 @@
 import datetime
 
-from sqlalchemy import (
-    ForeignKey,
-    Integer,
-    Text,
-    DateTime,
-)
-
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (
+    Mapped,
     mapped_column,
     relationship,
 )
@@ -16,16 +11,16 @@ from .meta import Base
 
 class Comment(Base):
     __tablename__ = "comments"
-    id = mapped_column(Integer, primary_key=True)
-    comment = mapped_column(Text())
-    created_at = mapped_column(DateTime, default=datetime.datetime.now)
-    updated_at = mapped_column(
-        DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now
+    id: Mapped[int] = mapped_column(primary_key=True)
+    comment: Mapped[str]
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
-    creator_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    editor_id = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
-    created_by = relationship("User", foreign_keys=[creator_id])
-    updated_by = relationship("User", foreign_keys=[editor_id])
+    creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
+    updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
-    def __init__(self, comment):
+    def __init__(self, comment: str) -> None:
         self.comment = comment

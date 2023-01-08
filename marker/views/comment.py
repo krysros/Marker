@@ -50,9 +50,13 @@ class CommentView:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
 
         if filter == "C":
-            stmt = stmt.join(companies_comments).filter(Comment.id == companies_comments.c.comment_id)
+            stmt = stmt.join(companies_comments).filter(
+                Comment.id == companies_comments.c.comment_id
+            )
         elif filter == "P":
-            stmt = stmt.join(projects_comments).filter(Comment.id == projects_comments.c.comment_id)
+            stmt = stmt.join(projects_comments).filter(
+                Comment.id == projects_comments.c.comment_id
+            )
 
         if order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -71,7 +75,14 @@ class CommentView:
             .all()
         )
         next_page = self.request.route_url(
-            "comment_more", _query={**search_query, "filter": filter, "sort": sort, "order": order, "page": page + 1}
+            "comment_more",
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
 
         dd_filter = Dropdown(
