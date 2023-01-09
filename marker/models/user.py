@@ -19,7 +19,7 @@ from .project import Project
 from .tag import Tag
 from .person import Person
 from .comment import Comment
-from .tables import (
+from .association import (
     checked,
     recommended,
     watched,

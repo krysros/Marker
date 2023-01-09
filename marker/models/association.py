@@ -14,7 +14,7 @@ from sqlalchemy.orm import (
 from .meta import Base
 
 
-class CompaniesProjectsAssociation(Base):
+class CompaniesProjects(Base):
     __tablename__ = "companies_projects"
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),

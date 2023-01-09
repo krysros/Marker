@@ -19,8 +19,8 @@ from sqlalchemy.orm import (
 from slugify import slugify
 from .meta import Base
 from .tag import Tag
-from .tables import (
-    CompaniesProjectsAssociation,
+from .association import (
+    CompaniesProjects,
     projects_tags,
     projects_persons,
     projects_comments,
@@ -103,8 +103,8 @@ class Project(Base):
     @property
     def count_companies(self) -> int:
         return object_session(self).scalar(
-            select(func.count(CompaniesProjectsAssociation.project_id)).where(
-                CompaniesProjectsAssociation.project_id == self.id
+            select(func.count(CompaniesProjects.project_id)).where(
+                CompaniesProjects.project_id == self.id
             )
         )
 

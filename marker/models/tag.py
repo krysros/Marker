@@ -16,7 +16,7 @@ from sqlalchemy.orm import (
 
 from slugify import slugify
 from .meta import Base
-from .tables import (
+from .association import (
     companies_tags,
     projects_tags,
 )

@@ -5,15 +5,15 @@ import zope.sqlalchemy
 
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
-from .tables import recommended  # flake8: noqa
-from .tables import checked  # flake8: noqa
-from .tables import watched  # flake8: noqa
-from .tables import companies_tags  # flake8: noqa
-from .tables import companies_persons  # flake8: noqa
-from .tables import companies_comments  # flake8: noqa
-from .tables import projects_tags  # flake8: noqa
-from .tables import projects_comments  # flake8: noqa
-from .tables import CompaniesProjectsAssociation  # flake8: noqa
+from .association import recommended  # flake8: noqa
+from .association import checked  # flake8: noqa
+from .association import watched  # flake8: noqa
+from .association import companies_tags  # flake8: noqa
+from .association import companies_persons  # flake8: noqa
+from .association import companies_comments  # flake8: noqa
+from .association import projects_tags  # flake8: noqa
+from .association import projects_comments  # flake8: noqa
+from .association import CompaniesProjects  # flake8: noqa
 from .tag import Tag  # flake8: noqa
 from .project import Project  # flake8: noqa
 from .company import Company  # flake8: noqa
