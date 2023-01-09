@@ -64,133 +64,141 @@ class ReportView:
         states = dict(STATES)
         reports = dict(REPORTS)
 
-        if rel == "companies-tags":
-            stmt = (
-                select(
-                    Tag.name,
-                    func.count(companies_tags.c.company_id).label("companies-tags"),
+        match rel:
+            case "companies-tags":
+                stmt = (
+                    select(
+                        Tag.name,
+                        func.count(companies_tags.c.company_id).label("companies-tags"),
+                    )
+                    .join(companies_tags)
+                    .group_by(Tag)
+                    .order_by(desc("companies-tags"))
                 )
-                .join(companies_tags)
-                .group_by(Tag)
-                .order_by(desc("companies-tags"))
-            )
-        elif rel == "projects-tags":
-            stmt = (
-                select(
-                    Tag.name,
-                    func.count(projects_tags.c.project_id).label("projects-tags"),
+            case "projects-tags":
+                stmt = (
+                    select(
+                        Tag.name,
+                        func.count(projects_tags.c.project_id).label("projects-tags"),
+                    )
+                    .join(projects_tags)
+                    .group_by(Tag)
+                    .order_by(desc("projects-tags"))
                 )
-                .join(projects_tags)
-                .group_by(Tag)
-                .order_by(desc("projects-tags"))
-            )
-        elif rel == "companies-states":
-            stmt = (
-                select(
-                    Company.state,
-                    func.count(Company.state).label("companies-states"),
+            case "companies-states":
+                stmt = (
+                    select(
+                        Company.state,
+                        func.count(Company.state).label("companies-states"),
+                    )
+                    .group_by(Company.state)
+                    .order_by(desc("companies-states"))
                 )
-                .group_by(Company.state)
-                .order_by(desc("companies-states"))
-            )
-        elif rel == "companies-cities":
-            stmt = (
-                select(Company.city, func.count(Company.city).label("companies-cities"))
-                .group_by(Company.city)
-                .order_by(desc("companies-cities"))
-            )
-        elif rel == "companies-comments":
-            stmt = (
-                select(
-                    Company.name,
-                    func.count(companies_comments.c.comment_id).label(
-                        "companies-comments"
-                    ),
+            case "companies-cities":
+                stmt = (
+                    select(
+                        Company.city, func.count(Company.city).label("companies-cities")
+                    )
+                    .group_by(Company.city)
+                    .order_by(desc("companies-cities"))
                 )
-                .join(companies_comments)
-                .group_by(Company)
-                .order_by(desc("companies-comments"))
-            )
-        elif rel == "projects-states":
-            stmt = (
-                select(
-                    Project.state,
-                    func.count(Project.state).label("projects-states"),
+            case "companies-comments":
+                stmt = (
+                    select(
+                        Company.name,
+                        func.count(companies_comments.c.comment_id).label(
+                            "companies-comments"
+                        ),
+                    )
+                    .join(companies_comments)
+                    .group_by(Company)
+                    .order_by(desc("companies-comments"))
                 )
-                .group_by(Project.state)
-                .order_by(desc("projects-states"))
-            )
-        elif rel == "projects-cities":
-            stmt = (
-                select(Project.city, func.count(Project.city).label("projects-cities"))
-                .group_by(Project.city)
-                .order_by(desc("projects-cities"))
-            )
-        elif rel == "projects-comments":
-            stmt = (
-                select(
-                    Project.name,
-                    func.count(projects_comments.c.comment_id).label(
-                        "projects-comments"
-                    ),
+            case "projects-states":
+                stmt = (
+                    select(
+                        Project.state,
+                        func.count(Project.state).label("projects-states"),
+                    )
+                    .group_by(Project.state)
+                    .order_by(desc("projects-states"))
                 )
-                .join(projects_comments)
-                .group_by(Project)
-                .order_by(desc("projects-comments"))
-            )
-        elif rel == "users-companies":
-            stmt = (
-                select(
-                    User.name, func.count(Company.creator_id).label("users-companies")
+            case "projects-cities":
+                stmt = (
+                    select(
+                        Project.city, func.count(Project.city).label("projects-cities")
+                    )
+                    .group_by(Project.city)
+                    .order_by(desc("projects-cities"))
                 )
-                .join(Company.created_by)
-                .group_by(User.name)
-                .order_by(desc("users-companies"))
-            )
-        elif rel == "users-projects":
-            stmt = (
-                select(
-                    User.name,
-                    func.count(Project.creator_id).label("users-projects"),
+            case "projects-comments":
+                stmt = (
+                    select(
+                        Project.name,
+                        func.count(projects_comments.c.comment_id).label(
+                            "projects-comments"
+                        ),
+                    )
+                    .join(projects_comments)
+                    .group_by(Project)
+                    .order_by(desc("projects-comments"))
                 )
-                .join(Project.created_by)
-                .group_by(User.name)
-                .order_by(desc("users-projects"))
-            )
-        elif rel == "companies-projects":
-            stmt = (
-                select(
-                    Company.name,
-                    func.count(CompaniesProjects.company_id).label(
-                        "companies-projects"
-                    ),
+            case "users-companies":
+                stmt = (
+                    select(
+                        User.name,
+                        func.count(Company.creator_id).label("users-companies"),
+                    )
+                    .join(Company.created_by)
+                    .group_by(User.name)
+                    .order_by(desc("users-companies"))
                 )
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("companies-projects"))
-            )
-        elif rel == "recommended-companies":
-            stmt = (
-                select(
-                    Company.name,
-                    func.count(recommended.c.company_id).label("recommended-companies"),
+            case "users-projects":
+                stmt = (
+                    select(
+                        User.name,
+                        func.count(Project.creator_id).label("users-projects"),
+                    )
+                    .join(Project.created_by)
+                    .group_by(User.name)
+                    .order_by(desc("users-projects"))
                 )
-                .join(recommended)
-                .group_by(Company)
-                .order_by(desc("recommended-companies"))
-            )
-        elif rel == "watched-projects":
-            stmt = (
-                select(
-                    Project.name,
-                    func.count(watched.c.project_id).label("watched-projects"),
+            case "companies-projects":
+                stmt = (
+                    select(
+                        Company.name,
+                        func.count(CompaniesProjects.company_id).label(
+                            "companies-projects"
+                        ),
+                    )
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("companies-projects"))
                 )
-                .join(watched)
-                .group_by(Project)
-                .order_by(desc("watched-projects"))
-            )
-        else:
-            raise HTTPNotFound
+            case "recommended-companies":
+                stmt = (
+                    select(
+                        Company.name,
+                        func.count(recommended.c.company_id).label(
+                            "recommended-companies"
+                        ),
+                    )
+                    .join(recommended)
+                    .group_by(Company)
+                    .order_by(desc("recommended-companies"))
+                )
+            case "watched-projects":
+                stmt = (
+                    select(
+                        Project.name,
+                        func.count(watched.c.project_id).label("watched-projects"),
+                    )
+                    .join(watched)
+                    .group_by(Project)
+                    .order_by(desc("watched-projects"))
+                )
+            case _:
+                raise HTTPNotFound
 
         paginator = self.request.dbsession.execute(get_paginator(stmt, page=page)).all()
         next_page = self.request.route_url(
