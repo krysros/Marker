@@ -64,21 +64,18 @@ class User(Base):
         secondary=recommended,
         cascade="delete",
         single_parent=True,
-        backref="companies",
     )
 
     watched: Mapped[list["Project"]] = relationship(
         secondary=watched,
         cascade="delete",
         single_parent=True,
-        backref="projects",
     )
 
     checked: Mapped[list["Company"]] = relationship(
         secondary=checked,
         cascade="delete",
         single_parent=True,
-        backref="checked_companies",
     )
 
     @property
