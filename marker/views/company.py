@@ -18,6 +18,7 @@ from ..models import (
     Tag,
     Project,
     User,
+    CompaniesProjects,
     recommended,
     companies_comments,
 )
@@ -33,6 +34,8 @@ from ..forms.select import (
     COURTS,
     DROPDOWN_SORT_COMPANIES,
     DROPDOWN_ORDER,
+    COMPANY_ROLES,
+    STAGES,
 )
 from ..geo import location
 from ..dropdown import Dropdown, Dd
@@ -520,8 +523,12 @@ class CompanyView:
     )
     def projects(self):
         company = self.request.context.company
+        stages = dict(STAGES)
+        company_roles = dict(COMPANY_ROLES)
         return {
             "company": company,
+            "stages": stages,
+            "company_roles": company_roles,
             "title": company.name,
         }
 
@@ -838,7 +845,13 @@ class CompanyView:
         if not project:
             raise HTTPNotFound
 
-        company.projects.remove(project)
+        assoc = self.request.dbsession.execute(
+            select(CompaniesProjects).filter_by(
+                company_id=company.id, project_id=project.id
+            )
+        ).scalar()
+
+        self.request.dbsession.delete(assoc)
         log.info(f"Użytkownik {self.request.identity.name} odpiął firmę od projektu")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.

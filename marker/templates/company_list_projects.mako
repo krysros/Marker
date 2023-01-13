@@ -9,15 +9,15 @@
       </tr>
     </thead>
     <tbody>
-      % for company in project.companies:
+      % for assoc in project.companies:
       <tr>
         <td>
-          % if company in request.identity.recommended:
+          % if assoc.company in request.identity.recommended:
           <i class="bi bi-hand-thumbs-up-fill"></i>
           % endif
-          <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
+          <a href="${request.route_url('company_view', company_id=assoc.company.id, slug=assoc.company.slug)}">${assoc.company.name}</a>
         </td>
-        <td class="col-2">${button.unlink('unlink_project', company_id=company.id, project_id=project.id, size='sm')}</td>
+        <td class="col-2">${button.unlink('unlink_project', company_id=assoc.company.id, project_id=assoc.project.id, size='sm')}</td>
       </tr>
       % endfor
     </tbody>

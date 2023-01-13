@@ -34,6 +34,7 @@ from ..models import (
     Person,
     User,
     Tag,
+    CompaniesProjects,
     watched,
     projects_comments,
 )
@@ -706,7 +707,9 @@ class ProjectView:
                 select(Company).filter_by(name=name)
             ).scalar_one_or_none()
             if company not in project.companies:
-                project.companies.append(company)
+                a = CompaniesProjects()
+                a.company = company
+                project.companies.append(a)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()

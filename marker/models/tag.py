@@ -35,6 +35,14 @@ class Tag(Base):
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
+    companies: Mapped[list["Company"]] = relationship(
+        secondary=companies_tags, back_populates="tags"
+    )
+
+    projects: Mapped[list["Project"]] = relationship(
+        secondary=projects_tags, back_populates="tags"
+    )
+
     def __init__(self, name: str) -> None:
         self.name = name
 

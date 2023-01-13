@@ -9,6 +9,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from .meta import Base
@@ -26,6 +27,8 @@ class CompaniesProjects(Base):
     )
     stage: Mapped[str] = mapped_column(Unicode(100))
     role: Mapped[str] = mapped_column(Unicode(100))
+    company: Mapped["Company"] = relationship(back_populates="projects")
+    project: Mapped["Project"] = relationship(back_populates="companies")
 
 
 companies_tags = Table(

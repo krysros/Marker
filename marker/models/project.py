@@ -45,8 +45,12 @@ class Project(Base):
     stage: Mapped[str] = mapped_column(Unicode(100))
     delivery_method: Mapped[str] = mapped_column(Unicode(100))
     tags: Mapped[list["Tag"]] = relationship(
-        secondary=projects_tags, backref="projects"
+        secondary=projects_tags, back_populates="projects"
     )
+    companies: Mapped[list["CompaniesProjects"]] = relationship(
+        back_populates="project"
+    )
+
     people: Mapped[list["Person"]] = relationship(
         secondary=projects_persons,
         cascade="all, delete-orphan",

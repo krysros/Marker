@@ -47,11 +47,10 @@ class Company(Base):
     court: Mapped[str] = mapped_column(Unicode(100))
     color: Mapped[str] = mapped_column(Unicode(10))
     tags: Mapped[list["Tag"]] = relationship(
-        secondary=companies_tags, backref="companies"
+        secondary=companies_tags, back_populates="companies"
     )
-    projects: Mapped[list["Project"]] = relationship(
-        secondary="companies_projects", backref="companies"
-    )
+    projects: Mapped[list["CompaniesProjects"]] = relationship(back_populates="company")
+
     people: Mapped[list["Person"]] = relationship(
         secondary=companies_persons,
         cascade="all, delete-orphan",
