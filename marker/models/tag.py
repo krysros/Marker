@@ -26,19 +26,21 @@ class Tag(Base):
     __tablename__ = "tags"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Unicode(50))
+
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
+
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
     companies: Mapped[list["Company"]] = relationship(
         secondary=companies_tags, back_populates="tags"
     )
-
     projects: Mapped[list["Project"]] = relationship(
         secondary=projects_tags, back_populates="tags"
     )

@@ -48,8 +48,10 @@ class Project(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
+
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
@@ -111,17 +113,15 @@ class Project(Base):
     @property
     def count_persons(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Person).where(
-                Person.project_id == self.id
-            )
+            select(func.count()).select_from(Person).where(Person.project_id == self.id)
         )
 
     @property
     def count_comments(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Comment).where(
-                Comment.project_id == self.id
-            )
+            select(func.count())
+            .select_from(Comment)
+            .where(Comment.project_id == self.id)
         )
 
     @property

@@ -50,8 +50,10 @@ class Company(Base):
     updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
+
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
@@ -62,7 +64,6 @@ class Company(Base):
 
     people: Mapped[list["Person"]] = relationship(back_populates="company")
     comments: Mapped[list["Comment"]] = relationship(back_populates="company")
-
 
     def __init__(
         self,
@@ -115,17 +116,15 @@ class Company(Base):
     @property
     def count_persons(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Person).where(
-                Person.company_id == self.id
-            )
+            select(func.count()).select_from(Person).where(Person.company_id == self.id)
         )
 
     @property
     def count_comments(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Comment).where(
-                Comment.company_id == self.id
-            )
+            select(func.count())
+            .select_from(Comment)
+            .where(Comment.company_id == self.id)
         )
 
     @property

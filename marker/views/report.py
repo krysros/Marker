@@ -105,9 +105,7 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(Comment.company_id).label(
-                            "companies-comments"
-                        ),
+                        func.count(Comment.company_id).label("companies-comments"),
                     )
                     .join(Comment)
                     .group_by(Company)
@@ -134,9 +132,7 @@ class ReportView:
                 stmt = (
                     select(
                         Project.name,
-                        func.count(Comment.project_id).label(
-                            "projects-comments"
-                        ),
+                        func.count(Comment.project_id).label("projects-comments"),
                     )
                     .join(Comment)
                     .group_by(Project)
