@@ -3,6 +3,7 @@
 
 - **BREAKING CHANGE**: Add new tables: `projects_tags`, `projects_persons`, `projects_comments`
 - **BREAKING CHANGE**: Add tags, persons, and comments to projects
+- **BREAKING CHANGE**: Remove tables: companies_comments, projects_comments, companies_persons, projects_persons. Use One To Many instead.
 
 2.0a5
 -----

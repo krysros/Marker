@@ -18,15 +18,6 @@ from .person import Person  # flake8: noqa
 from .comment import Comment  # flake8: noqa
 from .user import User  # flake8: noqa
 
-############
-# TO REMOVE
-############
-
-from .association import companies_comments
-from .association import projects_comments
-from .association import companies_persons
-from .association import projects_persons
-
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.
