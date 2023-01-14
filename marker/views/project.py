@@ -36,7 +36,6 @@ from ..models import (
     Tag,
     CompaniesProjects,
     watched,
-    projects_comments,
 )
 from ..paginator import get_paginator
 from ..geo import location
@@ -213,8 +212,7 @@ class ProjectView:
         page = int(self.request.params.get("page", 1))
         stmt = (
             select(Comment)
-            .join(projects_comments)
-            .filter(project.id == projects_comments.c.project_id)
+            .filter(Comment.project_id == project.id)
             .order_by(Comment.created_at.desc())
         )
         paginator = (

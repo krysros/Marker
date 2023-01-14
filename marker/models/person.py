@@ -30,6 +30,13 @@ class Person(Base):
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
+    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
+    company: Mapped["Company"] = relationship(back_populates="people")
+
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    project: Mapped["Project"] = relationship(back_populates="people")
+
+
     def __init__(
         self,
         name: str,

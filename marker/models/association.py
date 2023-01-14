@@ -46,35 +46,6 @@ companies_tags = Table(
     ),
 )
 
-companies_persons = Table(
-    "companies_persons",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "person_id",
-        Integer,
-        ForeignKey("persons.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
-
-companies_comments = Table(
-    "companies_comments",
-    Base.metadata,
-    Column(
-        "company_id",
-        Integer,
-        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "comment_id",
-        Integer,
-        ForeignKey("comments.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
 
 recommended = Table(
     "recommended",
@@ -133,6 +104,42 @@ projects_tags = Table(
         "tag_id",
         Integer,
         ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+
+
+############
+# TO REMOVE
+############
+
+companies_persons = Table(
+    "companies_persons",
+    Base.metadata,
+    Column(
+        "company_id",
+        Integer,
+        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "person_id",
+        Integer,
+        ForeignKey("persons.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+companies_comments = Table(
+    "companies_comments",
+    Base.metadata,
+    Column(
+        "company_id",
+        Integer,
+        ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "comment_id",
+        Integer,
+        ForeignKey("comments.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
 )
 

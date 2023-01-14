@@ -5,11 +5,7 @@ from sqlalchemy import (
     select,
     func,
 )
-from ..models import (
-    Comment,
-    companies_comments,
-    projects_comments,
-)
+from ..models import Comment
 from ..forms import CommentSearchForm
 from ..forms.select import (
     COMMENTS_FILTER,

@@ -13,18 +13,17 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
     object_session,
-    backref,
 )
 
 from slugify import slugify
 
 from .meta import Base
 from .tag import Tag
+from .person import Person
+from .comment import Comment
 from .association import (
     CompaniesProjects,
     companies_tags,
-    companies_persons,
-    companies_comments,
     recommended,
 )
 
@@ -46,25 +45,7 @@ class Company(Base):
     KRS: Mapped[str] = mapped_column(Unicode(20))
     court: Mapped[str] = mapped_column(Unicode(100))
     color: Mapped[str] = mapped_column(Unicode(10))
-    tags: Mapped[list["Tag"]] = relationship(
-        secondary=companies_tags, back_populates="companies"
-    )
-    projects: Mapped[list["CompaniesProjects"]] = relationship(back_populates="company")
 
-    people: Mapped[list["Person"]] = relationship(
-        secondary=companies_persons,
-        cascade="all, delete-orphan",
-        single_parent=True,
-        lazy="select",
-        backref=backref("company", uselist=False),
-    )
-    comments: Mapped[list["Comment"]] = relationship(
-        secondary=companies_comments,
-        cascade="all, delete-orphan",
-        single_parent=True,
-        lazy="select",
-        backref=backref("company", uselist=False),
-    )
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
@@ -73,6 +54,15 @@ class Company(Base):
     editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
+
+    tags: Mapped[list["Tag"]] = relationship(
+        secondary=companies_tags, back_populates="companies"
+    )
+    projects: Mapped[list["CompaniesProjects"]] = relationship(back_populates="company")
+
+    people: Mapped[list["Person"]] = relationship(back_populates="company")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="company")
+
 
     def __init__(
         self,
@@ -125,16 +115,16 @@ class Company(Base):
     @property
     def count_persons(self) -> int:
         return object_session(self).scalar(
-            select(func.count(companies_persons.c.company_id)).where(
-                companies_persons.c.company_id == self.id
+            select(func.count()).select_from(Person).where(
+                Person.company_id == self.id
             )
         )
 
     @property
     def count_comments(self) -> int:
         return object_session(self).scalar(
-            select(func.count(companies_comments.c.company_id)).where(
-                companies_comments.c.company_id == self.id
+            select(func.count()).select_from(Comment).where(
+                Comment.company_id == self.id
             )
         )
 

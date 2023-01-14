@@ -15,10 +15,9 @@ from ..models import (
     Tag,
     Company,
     Project,
+    Comment,
     companies_tags,
     projects_tags,
-    companies_comments,
-    projects_comments,
     CompaniesProjects,
     recommended,
     watched,
@@ -106,11 +105,11 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(companies_comments.c.comment_id).label(
+                        func.count(Comment.company_id).label(
                             "companies-comments"
                         ),
                     )
-                    .join(companies_comments)
+                    .join(Comment)
                     .group_by(Company)
                     .order_by(desc("companies-comments"))
                 )
@@ -135,11 +134,11 @@ class ReportView:
                 stmt = (
                     select(
                         Project.name,
-                        func.count(projects_comments.c.comment_id).label(
+                        func.count(Comment.project_id).label(
                             "projects-comments"
                         ),
                     )
-                    .join(projects_comments)
+                    .join(Comment)
                     .group_by(Project)
                     .order_by(desc("projects-comments"))
                 )

@@ -5,14 +5,11 @@ import zope.sqlalchemy
 
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
-from .association import recommended  # flake8: noqa
 from .association import checked  # flake8: noqa
 from .association import watched  # flake8: noqa
+from .association import recommended  # flake8: noqa
 from .association import companies_tags  # flake8: noqa
-from .association import companies_persons  # flake8: noqa
-from .association import companies_comments  # flake8: noqa
 from .association import projects_tags  # flake8: noqa
-from .association import projects_comments  # flake8: noqa
 from .association import CompaniesProjects  # flake8: noqa
 from .tag import Tag  # flake8: noqa
 from .project import Project  # flake8: noqa
@@ -20,6 +17,16 @@ from .company import Company  # flake8: noqa
 from .person import Person  # flake8: noqa
 from .comment import Comment  # flake8: noqa
 from .user import User  # flake8: noqa
+
+############
+# TO REMOVE
+############
+
+from .association import companies_comments
+from .association import projects_comments
+from .association import companies_persons
+from .association import projects_persons
+
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.

@@ -20,7 +20,6 @@ from ..models import (
     User,
     CompaniesProjects,
     recommended,
-    companies_comments,
 )
 from ..forms import (
     CompanyForm,
@@ -494,8 +493,7 @@ class CompanyView:
         page = int(self.request.params.get("page", 1))
         stmt = (
             select(Comment)
-            .join(companies_comments)
-            .filter(company.id == companies_comments.c.company_id)
+            .filter(Comment.company_id == company.id)
             .order_by(Comment.created_at.desc())
         )
         paginator = (
