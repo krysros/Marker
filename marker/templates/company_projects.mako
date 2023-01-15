@@ -108,5 +108,9 @@
   btnAddProject.addEventListener('click', function handleClick(event) {
     var projectName = document.getElementById("project-name");
     projectName.value = '';
+    var stageElement = document.getElementById("stage");
+    stageElement.selectedIndex = 0;
+    var roleElement = document.getElementById("role");
+    roleElement.selectedIndex = 0;
   });
 </script> 

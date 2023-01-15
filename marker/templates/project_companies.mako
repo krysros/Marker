@@ -107,5 +107,9 @@
   btnAddCompany.addEventListener('click', function handleClick(event) {
     var companyName = document.getElementById("company-name");
     companyName.value = '';
+    var stageElement = document.getElementById("stage");
+    stageElement.selectedIndex = 0;
+    var roleElement = document.getElementById("role");
+    roleElement.selectedIndex = 0;
   });
 </script>
