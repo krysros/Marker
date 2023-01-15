@@ -809,17 +809,23 @@ class CompanyView:
     def add_project(self):
         company = self.request.context.company
         name = self.request.POST.get("name")
+        stage = self.request.POST.get("stage")
+        role = self.request.POST.get("role")
+        stages = dict(STAGES)
+        company_roles = dict(COMPANY_ROLES)
         if name:
             project = self.request.dbsession.execute(
                 select(Project).filter_by(name=name)
             ).scalar_one_or_none()
             if project not in company.projects:
-                company.projects.append(project)
+                a = CompaniesProjects(stage=stage, role=role)
+                a.project = project
+                company.projects.append(a)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
         self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
-        return {"company": company}
+        return {"company": company, "stages": stages, "company_roles": company_roles}
 
     @view_config(
         route_name="unlink_project",

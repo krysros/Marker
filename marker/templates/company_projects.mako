@@ -70,6 +70,22 @@
             <input list="projects" type="text" class="form-control" id="project-name" name="name" autocomplete="off" hx-get="${request.route_url('project_select')}" hx-target="#project-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="200">
             <div id="project-list"></div>
           </div>
+          <div class="mb-3">
+            <label for="stage">Etap</label>
+            <select class="form-control" id="stage" name="stage">
+            % for key, value in stages.items():
+              <option value="${key}">${value}</option>
+            % endfor
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="role">Rola</label>
+            <select class="form-control" id="role" name="role">
+            % for key, value in company_roles.items():
+              <option value="${key}">${value}</option>
+            % endfor
+            </select>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>

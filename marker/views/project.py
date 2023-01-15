@@ -22,6 +22,7 @@ from ..forms.select import (
     STAGES,
     COLORS,
     PROJECT_DELIVERY_METHODS,
+    COMPANY_ROLES,
     DROPDOWN_ORDER,
     DROPDOWN_SORT_PROJECTS,
     DROPDOWN_STATUS,
@@ -240,8 +241,12 @@ class ProjectView:
     )
     def companies(self):
         project = self.request.context.project
+        stages = dict(STAGES)
+        company_roles = dict(COMPANY_ROLES)
         return {
             "project": project,
+            "stages": stages,
+            "company_roles": company_roles,
             "title": project.name,
         }
 
@@ -700,19 +705,23 @@ class ProjectView:
     def add_company(self):
         project = self.request.context.project
         name = self.request.POST.get("name")
+        stage = self.request.POST.get("stage")
+        role = self.request.POST.get("role")
+        stages = dict(STAGES)
+        company_roles = dict(COMPANY_ROLES)
         if name:
             company = self.request.dbsession.execute(
                 select(Company).filter_by(name=name)
             ).scalar_one_or_none()
             if company not in project.companies:
-                a = CompaniesProjects()
+                a = CompaniesProjects(stage=stage, role=role)
                 a.company = company
                 project.companies.append(a)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
         self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
-        return {"project": project}
+        return {"project": project, "stages": stages, "company_roles": company_roles}
 
     @view_config(
         route_name="project_select",

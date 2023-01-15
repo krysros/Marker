@@ -5,6 +5,8 @@
     <thead>
       <tr>
         <th>Projekt</th>
+        <th>Etap</th>
+        <th>Rola</th>
         <th class="col-2">Akcja</th>
       </tr>
     </thead>
@@ -17,6 +19,8 @@
           % endif
           <a href="${request.route_url('project_view', project_id=assoc.project.id, slug=assoc.project.slug)}">${assoc.project.name}</a>
         </td>
+        <td>${stages.get(assoc.stage)}</td>
+        <td>${company_roles.get(assoc.role)}</td>
         <td class="col-2">${button.unlink('unlink_project', company_id=assoc.company.id, project_id=assoc.project.id, size='sm')}</td>
       </tr>
       % endfor

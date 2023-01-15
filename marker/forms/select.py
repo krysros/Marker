@@ -348,10 +348,10 @@ USER_ROLES = [
 
 COMPANY_ROLES = [
     ("", "---"),
-    ("purchaser", "Purchaser"),
-    ("investor", "Investor"),
-    ("general_contractor", "General Contractor"),
-    ("subcontractor", "Subcontractor"),
+    ("purchaser", "Zamawiający"),  # Purchaser
+    ("investor", "Inwestor"),  # Investor
+    ("general_contractor", "Generalny Wykonawca"),  # General Contractor
+    ("subcontractor", "Podwykonawca"),  # Subcontractor
 ]
 
 
