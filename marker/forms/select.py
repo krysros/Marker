@@ -348,6 +348,7 @@ USER_ROLES = [
 
 COMPANY_ROLES = [
     ("", "---"),
+    ("designer", "Projektant"),  # Designer
     ("purchaser", "Zamawiający"),  # Purchaser
     ("investor", "Inwestor"),  # Investor
     ("general_contractor", "Generalny Wykonawca"),  # General Contractor
@@ -526,6 +527,7 @@ REPORTS = [
 
 STAGES = [
     ("", "---"),
+    ("announcement", "Zapowiedź"),
     ("tender", "Przetarg"),
     ("construction", "Realizacja"),
 ]
