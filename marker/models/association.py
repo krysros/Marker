@@ -47,6 +47,22 @@ companies_tags = Table(
 )
 
 
+projects_tags = Table(
+    "projects_tags",
+    Base.metadata,
+    Column(
+        "project_id",
+        Integer,
+        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "tag_id",
+        Integer,
+        ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+
 recommended = Table(
     "recommended",
     Base.metadata,
@@ -89,20 +105,5 @@ watched = Table(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-)
-
-projects_tags = Table(
-    "projects_tags",
-    Base.metadata,
-    Column(
-        "project_id",
-        Integer,
-        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
-    ),
-    Column(
-        "tag_id",
-        Integer,
-        ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
 )
