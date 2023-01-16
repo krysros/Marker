@@ -817,7 +817,12 @@ class CompanyView:
             project = self.request.dbsession.execute(
                 select(Project).filter_by(name=name)
             ).scalar_one_or_none()
-            if project not in company.projects:
+
+            exist = self.request.dbsession.execute(
+                select(CompaniesProjects).filter_by(project_id=project.id)
+            ).scalar_one_or_none()
+
+            if not exist:
                 a = CompaniesProjects(stage=stage, role=role)
                 a.project = project
                 company.projects.append(a)
