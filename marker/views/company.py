@@ -389,6 +389,15 @@ class CompanyView:
         return company.count_recommended
 
     @view_config(
+        route_name="count_similar_companies",
+        renderer="json",
+        permission="view",
+    )
+    def count_similar_companies(self):
+        company = self.request.context.company
+        return company.count_similar
+
+    @view_config(
         route_name="company_recommended",
         renderer="company_recommended.mako",
         permission="view",

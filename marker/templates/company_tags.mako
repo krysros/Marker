@@ -34,7 +34,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-          Podobne <span class="badge text-bg-secondary">${company.count_similar}</span>
+          Podobne <span class="badge text-bg-secondary"><div id="similar-companies" hx-get="${request.route_url('count_similar_companies', company_id=company.id, slug=company.slug)}" hx-trigger="tagCompanyEvent from:body">${company.count_similar}</div></span>
         </a>
       </li>
     </ul>

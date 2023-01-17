@@ -162,6 +162,11 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
+        "count_similar_companies",
+        r"/count/company/{company_id:\d+}/{slug}/similar",
+        factory=company_factory,
+    )
+    config.add_route(
         "company_comments",
         r"/company/{company_id:\d+}/{slug}/comments",
         factory=company_factory,
@@ -385,6 +390,11 @@ def includeme(config):
     config.add_route(
         "count_project_watched",
         r"/count/project/{project_id:\d+}/{slug}/watched",
+        factory=project_factory,
+    )
+    config.add_route(
+        "count_similar_projects",
+        r"/count/project/{project_id:\d+}/{slug}/similar",
         factory=project_factory,
     )
     config.add_route(
