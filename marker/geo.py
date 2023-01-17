@@ -1,7 +1,7 @@
 import json
+import urllib.error
 import urllib.parse
 import urllib.request
-import urllib.error
 
 
 def location(**kwargs):

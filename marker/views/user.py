@@ -1,45 +1,36 @@
-import logging
 import datetime
+import logging
+
+from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPSeeOther, HTTPSeeOther
+from sqlalchemy import func, select
 
-from sqlalchemy import (
-    select,
-    func,
+from ..dropdown import Dd, Dropdown
+from ..export import export_companies_to_xlsx, export_projects_to_xlsx
+from ..forms import UserForm, UserSearchForm
+from ..forms.select import (
+    COLORS,
+    DROPDOWN_EXT_SORT,
+    DROPDOWN_ORDER,
+    DROPDOWN_SORT,
+    DROPDOWN_SORT_COMPANIES,
+    DROPDOWN_SORT_PROJECTS,
+    DROPDOWN_STATUS,
+    STATES,
+    USER_ROLES,
 )
-
 from ..models import (
+    Comment,
+    Company,
+    Person,
+    Project,
+    Tag,
     User,
     checked,
     recommended,
     watched,
-    Tag,
-    Company,
-    Comment,
-    Project,
-    Person,
-)
-from ..forms import (
-    UserForm,
-    UserSearchForm,
 )
 from ..paginator import get_paginator
-from ..export import (
-    export_companies_to_xlsx,
-    export_projects_to_xlsx,
-)
-from ..forms.select import (
-    USER_ROLES,
-    STATES,
-    COLORS,
-    DROPDOWN_SORT,
-    DROPDOWN_EXT_SORT,
-    DROPDOWN_STATUS,
-    DROPDOWN_SORT_COMPANIES,
-    DROPDOWN_SORT_PROJECTS,
-    DROPDOWN_ORDER,
-)
-from ..dropdown import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 

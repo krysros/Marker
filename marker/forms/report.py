@@ -1,5 +1,6 @@
 from wtforms import Form
 from wtforms.fields import SelectField, SubmitField
+
 from .select import REPORTS
 
 

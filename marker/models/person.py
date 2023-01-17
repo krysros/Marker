@@ -1,16 +1,9 @@
 import datetime
 
-from sqlalchemy import (
-    Unicode,
-    ForeignKey,
-)
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-)
-
 from slugify import slugify
+from sqlalchemy import ForeignKey, Unicode
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .meta import Base
 
 

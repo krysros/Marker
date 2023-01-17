@@ -1,23 +1,15 @@
 import logging
-from pyramid.csrf import new_csrf_token
-from pyramid.httpexceptions import (
-    HTTPSeeOther,
-    HTTPException,
-)
-from pyramid.security import (
-    remember,
-    forget,
-)
-from pyramid.view import (
-    forbidden_view_config,
-    view_config,
-)
-from pyramid.renderers import render_to_response
-from sqlalchemy import select
-from mako.exceptions import TopLevelLookupException
 
-from ..models import User
+from mako.exceptions import TopLevelLookupException
+from pyramid.csrf import new_csrf_token
+from pyramid.httpexceptions import HTTPException, HTTPSeeOther
+from pyramid.renderers import render_to_response
+from pyramid.security import forget, remember
+from pyramid.view import forbidden_view_config, view_config
+from sqlalchemy import select
+
 from ..forms import LoginForm
+from ..models import User
 
 log = logging.getLogger(__name__)
 

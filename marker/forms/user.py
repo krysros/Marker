@@ -1,17 +1,18 @@
 from sqlalchemy import select
 from wtforms import (
-    Form,
-    StringField,
     EmailField,
-    SelectField,
+    Form,
     PasswordField,
+    SelectField,
+    StringField,
     SubmitField,
 )
 from wtforms.validators import InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
+
 from ..models import User
-from .select import USER_ROLES
 from .filters import strip_filter
+from .select import USER_ROLES
 
 
 class UserForm(Form):

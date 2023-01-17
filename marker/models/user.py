@@ -1,31 +1,16 @@
 import datetime
 
-from sqlalchemy import (
-    Unicode,
-    select,
-    func,
-)
+import argon2
+from sqlalchemy import Unicode, func, select
+from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-    object_session,
-)
-
-from .meta import Base
+from .association import checked, recommended, watched
+from .comment import Comment
 from .company import Company
+from .meta import Base
+from .person import Person
 from .project import Project
 from .tag import Tag
-from .person import Person
-from .comment import Comment
-from .association import (
-    checked,
-    recommended,
-    watched,
-)
-
-import argon2
 
 ph = argon2.PasswordHasher()
 

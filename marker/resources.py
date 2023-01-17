@@ -1,8 +1,4 @@
-from pyramid.authorization import (
-    Allow,
-    Authenticated,
-    ALL_PERMISSIONS,
-)
+from pyramid.authorization import ALL_PERMISSIONS, Allow, Authenticated
 
 
 class DefaultResource:

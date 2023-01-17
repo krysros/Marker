@@ -1,5 +1,6 @@
 from pyramid.httpexceptions import HTTPNotFound
 from sqlalchemy import select
+
 import marker.models as models
 import marker.resources as resources
 

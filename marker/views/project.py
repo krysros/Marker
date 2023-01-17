@@ -1,46 +1,35 @@
 import datetime
 import logging
+
+from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from pyramid.httpexceptions import (
-    HTTPSeeOther,
-    HTTPNotFound,
-)
-from sqlalchemy import (
-    select,
-    func,
-    and_,
-)
+from sqlalchemy import and_, func, select
 
-from ..forms.project import (
-    ProjectForm,
-    ProjectSearchForm,
-)
-
+from ..dropdown import Dd, Dropdown
+from ..forms.project import ProjectForm, ProjectSearchForm
 from ..forms.select import (
-    COUNTRIES,
-    STATES,
-    STAGES,
     COLORS,
-    PROJECT_DELIVERY_METHODS,
     COMPANY_ROLES,
+    COUNTRIES,
     DROPDOWN_ORDER,
     DROPDOWN_SORT_PROJECTS,
     DROPDOWN_STATUS,
+    PROJECT_DELIVERY_METHODS,
+    STAGES,
+    STATES,
 )
-
+from ..geo import location
 from ..models import (
-    Company,
-    Project,
     Comment,
-    Person,
-    User,
-    Tag,
     CompaniesProjects,
+    Company,
+    Person,
+    Project,
+    Tag,
+    User,
     watched,
 )
 from ..paginator import get_paginator
-from ..geo import location
-from ..dropdown import Dd, Dropdown
 
 log = logging.getLogger(__name__)
 

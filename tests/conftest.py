@@ -1,16 +1,16 @@
-import alembic
-import alembic.config
-import alembic.command
 import os
-from pyramid.paster import get_appsettings
-from pyramid.scripting import prepare
-from pyramid.testing import DummyRequest, testConfig
+
+import alembic
+import alembic.command
+import alembic.config
 import pytest
 import transaction
 import webtest
+from pyramid.paster import get_appsettings
+from pyramid.scripting import prepare
+from pyramid.testing import DummyRequest, testConfig
 
-from marker import main
-from marker import models
+from marker import main, models
 from marker.models.meta import Base
 
 

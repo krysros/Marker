@@ -1,10 +1,5 @@
 from pyramid.authentication import AuthTktCookieHelper
-from pyramid.authorization import (
-    ACLHelper,
-    Authenticated,
-    Everyone,
-)
-
+from pyramid.authorization import ACLHelper, Authenticated, Everyone
 from pyramid.csrf import CookieCSRFStoragePolicy
 from pyramid.request import RequestLocalCache
 

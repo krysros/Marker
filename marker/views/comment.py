@@ -1,18 +1,14 @@
 import logging
-from pyramid.view import view_config
+
 from pyramid.httpexceptions import HTTPSeeOther
-from sqlalchemy import (
-    select,
-    func,
-)
-from ..models import Comment
-from ..forms import CommentSearchForm
-from ..forms.select import (
-    COMMENTS_FILTER,
-    DROPDOWN_ORDER,
-)
-from ..paginator import get_paginator
+from pyramid.view import view_config
+from sqlalchemy import func, select
+
 from ..dropdown import Dd, Dropdown
+from ..forms import CommentSearchForm
+from ..forms.select import COMMENTS_FILTER, DROPDOWN_ORDER
+from ..models import Comment
+from ..paginator import get_paginator
 
 log = logging.getLogger(__name__)
 

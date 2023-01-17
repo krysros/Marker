@@ -1,5 +1,6 @@
-from wtforms import Form, StringField, EmailField, SubmitField
+from wtforms import EmailField, Form, StringField, SubmitField
 from wtforms.validators import InputRequired, Length
+
 from .filters import strip_filter
 
 

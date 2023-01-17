@@ -1,4 +1,5 @@
 from wtforms import Form, SubmitField, TextAreaField
+
 from .filters import strip_filter
 
 

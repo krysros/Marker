@@ -1,10 +1,11 @@
 import io
-import xlsxwriter
 from urllib.parse import quote
-from unidecode import unidecode
+
+import xlsxwriter
 from mako.template import Template
-from pyramid.response import Response
 from pyramid.path import AssetResolver
+from pyramid.response import Response
+from unidecode import unidecode
 
 
 def export_companies_to_xlsx(companies):

@@ -1,13 +1,10 @@
 from sqlalchemy import select
-from wtforms import Form, StringField, SelectField, DateField, SubmitField
+from wtforms import DateField, Form, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
-from .filters import (
-    dash_filter,
-    strip_filter,
-    remove_multiple_spaces,
-)
+
 from ..models import Project
-from .select import COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES, STATES, COLORS
+from .filters import dash_filter, remove_multiple_spaces, strip_filter
+from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES, STATES
 
 
 class ProjectForm(Form):

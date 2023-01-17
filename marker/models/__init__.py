@@ -1,23 +1,21 @@
-from sqlalchemy import engine_from_config
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import configure_mappers
 import zope.sqlalchemy
+from sqlalchemy import engine_from_config
+from sqlalchemy.orm import configure_mappers, sessionmaker
 
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
+from .association import CompaniesProjects  # flake8: noqa
 from .association import checked  # flake8: noqa
-from .association import watched  # flake8: noqa
-from .association import recommended  # flake8: noqa
 from .association import companies_tags  # flake8: noqa
 from .association import projects_tags  # flake8: noqa
-from .association import CompaniesProjects  # flake8: noqa
-from .tag import Tag  # flake8: noqa
-from .project import Project  # flake8: noqa
+from .association import recommended  # flake8: noqa
+from .association import watched  # flake8: noqa
+from .comment import Comment  # flake8: noqa
 from .company import Company  # flake8: noqa
 from .person import Person  # flake8: noqa
-from .comment import Comment  # flake8: noqa
+from .project import Project  # flake8: noqa
+from .tag import Tag  # flake8: noqa
 from .user import User  # flake8: noqa
-
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.

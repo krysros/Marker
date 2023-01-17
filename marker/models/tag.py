@@ -1,25 +1,11 @@
 import datetime
 
-from sqlalchemy import (
-    Unicode,
-    ForeignKey,
-    select,
-    func,
-)
-
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-    object_session,
-)
-
 from slugify import slugify
+from sqlalchemy import ForeignKey, Unicode, func, select
+from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
+
+from .association import companies_tags, projects_tags
 from .meta import Base
-from .association import (
-    companies_tags,
-    projects_tags,
-)
 
 
 class Tag(Base):

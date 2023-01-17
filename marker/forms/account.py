@@ -1,6 +1,7 @@
-from wtforms import Form, PasswordField, StringField, EmailField, SubmitField
-from wtforms.validators import InputRequired, EqualTo, Length, ValidationError
+from wtforms import EmailField, Form, PasswordField, StringField, SubmitField
+from wtforms.validators import EqualTo, InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
+
 from .filters import strip_filter
 
 

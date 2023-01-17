@@ -1,11 +1,11 @@
 from .factories import (
-    default_factory,
     account_factory,
-    tag_factory,
-    company_factory,
     comment_factory,
+    company_factory,
+    default_factory,
     person_factory,
     project_factory,
+    tag_factory,
     user_factory,
 )
 

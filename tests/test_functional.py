@@ -1,5 +1,6 @@
 from marker import models
 
+
 def test_my_view_success(testapp, dbsession):
     model = models.user.User(
         name='admin',

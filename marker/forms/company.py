@@ -1,14 +1,16 @@
 from operator import mul
+
 from sqlalchemy import select
-from wtforms import Form, StringField, SelectField, SubmitField
+from wtforms import Form, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
+
+from ..models import Company
 from .filters import (
     dash_filter,
-    strip_filter,
     remove_dashes_and_spaces,
     remove_multiple_spaces,
+    strip_filter,
 )
-from ..models import Company
 from .select import COLORS, COUNTRIES, COURTS, STATES
 
 

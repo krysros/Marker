@@ -1,9 +1,9 @@
 import logging
-from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPFound
-from ..forms import Account
-from ..forms import ChangePassword
 
+from pyramid.httpexceptions import HTTPFound
+from pyramid.view import view_config
+
+from ..forms import Account, ChangePassword
 
 log = logging.getLogger(__name__)
 

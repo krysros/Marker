@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, PasswordField, SubmitField
+from wtforms import Form, PasswordField, StringField, SubmitField
 
 
 class LoginForm(Form):

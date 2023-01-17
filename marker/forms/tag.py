@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from wtforms import Form, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
+
 from ..models import Tag
 from .filters import strip_filter
 

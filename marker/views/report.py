@@ -1,34 +1,23 @@
+from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from pyramid.httpexceptions import (
-    HTTPNotFound,
-    HTTPSeeOther,
-)
-
+from sqlalchemy.sql import func, select
 from sqlalchemy.sql.expression import desc
-from sqlalchemy.sql import (
-    func,
-    select,
-)
 
+from ..forms import ReportForm
+from ..forms.select import REPORTS, STATES
 from ..models import (
-    User,
-    Tag,
+    Comment,
+    CompaniesProjects,
     Company,
     Project,
-    Comment,
+    Tag,
+    User,
     companies_tags,
     projects_tags,
-    CompaniesProjects,
     recommended,
     watched,
 )
-
 from ..paginator import get_paginator
-from ..forms.select import (
-    STATES,
-    REPORTS,
-)
-from ..forms import ReportForm
 
 
 class ReportView:

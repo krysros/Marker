@@ -1,23 +1,15 @@
 import logging
-from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPSeeOther
 
-from sqlalchemy import (
-    select,
-    func,
-)
+from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.view import view_config
+from sqlalchemy import func, select
+
+from ..dropdown import Dd, Dropdown
+from ..export import export_vcard
+from ..forms import PersonForm, PersonSearchForm
+from ..forms.select import DROPDOWN_ORDER, DROPDOWN_SORT
 from ..models import Person
 from ..paginator import get_paginator
-from ..forms import (
-    PersonForm,
-    PersonSearchForm,
-)
-from ..forms.select import (
-    DROPDOWN_SORT,
-    DROPDOWN_ORDER,
-)
-from ..export import export_vcard
-from ..dropdown import Dropdown, Dd
 
 log = logging.getLogger(__name__)
 
