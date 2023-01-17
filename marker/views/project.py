@@ -722,7 +722,7 @@ class ProjectView:
             company = self.request.dbsession.execute(
                 select(Company).filter_by(name=name)
             ).scalar_one_or_none()
-            
+
             exist = self.request.dbsession.execute(
                 select(CompaniesProjects).filter_by(company_id=company.id)
             ).scalar_one_or_none()
