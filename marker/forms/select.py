@@ -48,7 +48,6 @@ DROPDOWN_STATUS = [
 
 
 COLORS = [
-    ("", "---"),
     ("default", "domyślny"),
     ("success", "zielony"),
     ("info", "niebieski"),
