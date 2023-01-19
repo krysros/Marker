@@ -49,7 +49,7 @@
   </div>
 </div>
 
-<%include file="project_led.mako"/>
+<%include file="project_lead.mako"/>
 
 <div class="table-responsive">
   <table class="table table-striped">

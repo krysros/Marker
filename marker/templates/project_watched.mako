@@ -39,5 +39,5 @@
   </div>
 </div>
 
-<%include file="project_led.mako"/>
+<%include file="project_lead.mako"/>
 <%include file="user_table.mako"/>

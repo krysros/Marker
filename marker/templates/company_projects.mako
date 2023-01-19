@@ -49,7 +49,7 @@
   </div>
 </div>
 
-<%include file="company_led.mako"/>
+<%include file="company_lead.mako"/>
 
 <div id="company-projects">
   <%include file="project_list_companies.mako"/>

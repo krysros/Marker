@@ -60,7 +60,7 @@
   <div>${button.delete('project_delete', project_id=project.id, slug=project.slug)}</div>
 </div>
 
-<%include file="project_led.mako"/>
+<%include file="project_lead.mako"/>
 
 % if project.latitude:
 <div id="map"></div>

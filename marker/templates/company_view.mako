@@ -61,7 +61,7 @@
   <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>
 </div>
 
-<%include file="company_led.mako"/>
+<%include file="company_lead.mako"/>
 
 % if company.latitude:
 <div id="map"></div>

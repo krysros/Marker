@@ -49,7 +49,7 @@
   </div>
 </div>
 
-<%include file="company_led.mako"/>
+<%include file="company_lead.mako"/>
 
 <div id="last-comment"></div>
 <%include file="comment_more.mako"/>

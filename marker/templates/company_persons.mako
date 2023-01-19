@@ -50,7 +50,7 @@
   </div>
 </div>
 
-<%include file="company_led.mako"/>
+<%include file="company_lead.mako"/>
 
 <div class="table-responsive">
   <table class="table table-striped">
