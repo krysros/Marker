@@ -5,7 +5,14 @@
   <div class="me-auto">
     <ul class="nav nav-pills">
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">Projekt</a>
+        <a class="nav-link active position-relative" aria-current="page" href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">
+          Projekt
+          % if project.color != "default":
+          <span class="position-absolute top-0 start-100 translate-middle p-2 bg-${project.color} border border-light rounded-circle">
+            <span class="visually-hidden">Color</span>
+          </span>
+          % endif
+        </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
