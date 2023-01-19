@@ -27,5 +27,14 @@
     <span class="badge text-bg-secondary">0</span>
     % endif
   </td>
+  <td>
+    % if project.count_comments > 0:
+    <a href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
+      <span class="badge text-bg-dark" role="button">${project.count_comments}</span>
+    </a>
+    % else:
+    <span class="badge text-bg-secondary">0</span>
+    % endif
+  </td>
 </tr>
 % endfor

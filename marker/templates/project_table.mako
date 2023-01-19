@@ -9,6 +9,7 @@
         <th>Utworzono</th>
         <th>Zmodyfikowano</th>
         <th>Obserwacje</th>
+        <th>Komentarze</th>
       </tr>
     </thead>
     <tbody>
