@@ -157,7 +157,7 @@ class PersonView:
         renderer="person_form.mako",
         permission="view",
     )
-    def person_search(self):
+    def search(self):
         form = PersonSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
