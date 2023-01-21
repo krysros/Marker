@@ -379,11 +379,11 @@ class CompanyView:
         return company.count_recommended
 
     @view_config(
-        route_name="count_similar_companies",
+        route_name="count_company_similar",
         renderer="json",
         permission="view",
     )
-    def count_similar_companies(self):
+    def count_company_similar(self):
         company = self.request.context.company
         return company.count_similar
 

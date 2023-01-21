@@ -421,11 +421,11 @@ class ProjectView:
         return project.count_watched
 
     @view_config(
-        route_name="count_similar_projects",
+        route_name="count_project_similar",
         renderer="json",
         permission="view",
     )
-    def count_similar_projects(self):
+    def count_project_similar(self):
         project = self.request.context.project
         return project.count_similar
 
