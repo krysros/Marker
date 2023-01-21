@@ -716,7 +716,7 @@ class CompanyView:
         renderer="json",
         permission="view",
     )
-    def mark(self):
+    def check(self):
         company = self.request.context.company
         checked = self.request.identity.checked
 
