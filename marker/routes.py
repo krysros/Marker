@@ -20,7 +20,7 @@ def includeme(config):
     config.add_route("password", "/password", factory=account_factory)
 
     config.add_route("report", "/report", factory=default_factory)
-    config.add_route("report_results", "/report/{rel}", factory=default_factory)
+    config.add_route("report_all", "/report/{rel}", factory=default_factory)
     config.add_route("report_more", "/report/{rel}/more", factory=default_factory)
 
     config.add_route("tag_all", "/tag", factory=default_factory)

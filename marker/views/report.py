@@ -30,7 +30,7 @@ class ReportView:
 
         if self.request.method == "POST" and form.validate():
             report = form.report.data
-            next_url = self.request.route_url("report_results", rel=report)
+            next_url = self.request.route_url("report_all", rel=report)
             return HTTPSeeOther(location=next_url)
 
         return {
@@ -40,7 +40,7 @@ class ReportView:
             "counter": len(REPORTS),
         }
 
-    @view_config(route_name="report_results", renderer="report.mako", permission="view")
+    @view_config(route_name="report_all", renderer="report.mako", permission="view")
     @view_config(
         route_name="report_more",
         renderer="report_more.mako",
