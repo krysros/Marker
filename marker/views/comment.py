@@ -42,13 +42,9 @@ class CommentView:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
 
         if filter == "C":
-            stmt = stmt.join(companies_comments).filter(
-                Comment.id == companies_comments.c.comment_id
-            )
+            stmt = stmt.filter(Comment.company)
         elif filter == "P":
-            stmt = stmt.join(projects_comments).filter(
-                Comment.id == projects_comments.c.comment_id
-            )
+            stmt = stmt.filter(Comment.project)
 
         if order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -103,7 +99,7 @@ class CommentView:
         request_method="POST",
         permission="edit",
     )
-    def add_to_company(self):
+    def comment_company(self):
         company = self.request.context.company
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -123,7 +119,7 @@ class CommentView:
         request_method="POST",
         permission="edit",
     )
-    def add_to_project(self):
+    def comment_project(self):
         project = self.request.context.project
         comment = None
         comment_text = self.request.POST.get("comment")
