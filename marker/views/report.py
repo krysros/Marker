@@ -46,7 +46,7 @@ class ReportView:
         renderer="report_more.mako",
         permission="view",
     )
-    def results(self):
+    def all(self):
         rel = self.request.matchdict.get("rel", "companies-tags")
         page = int(self.request.params.get("page", 1))
         states = dict(STATES)
