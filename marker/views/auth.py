@@ -1,6 +1,5 @@
 import logging
 
-from mako.exceptions import TopLevelLookupException
 from pyramid.csrf import new_csrf_token
 from pyramid.httpexceptions import HTTPException, HTTPSeeOther
 from pyramid.renderers import render_to_response
@@ -67,8 +66,18 @@ def forbidden(exc, request):
 
 @view_config(context=HTTPException)
 def httpexception_view(exc, request):
+    # This function is based on the function of the same name from the module:
+    # https://github.com/pypi/warehouse/blob/9e853ac20cdce3df43acb07541c3f78ebdd811a0/warehouse/views.py#L74
     try:
         response = render_to_response(f"{exc.status_code}.mako", {}, request=request)
-    except TopLevelLookupException:
+    except LookupError:
         return exc
+
+    # Copy over the important values from our HTTPException to our new response
+    # object.
+    response.status = exc.status
+    response.headers.extend(
+        (k, v) for k, v in exc.headers.items() if k not in response.headers
+    )
+
     return response
