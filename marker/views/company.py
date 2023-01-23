@@ -818,7 +818,9 @@ class CompanyView:
             ).scalar_one_or_none()
 
             exist = self.request.dbsession.execute(
-                select(CompaniesProjects).filter_by(project_id=project.id)
+                select(CompaniesProjects).filter_by(
+                    company_id=company.id, project_id=project.id
+                )
             ).scalar_one_or_none()
 
             if not exist:
