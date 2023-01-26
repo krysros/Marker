@@ -39,7 +39,7 @@
     </ul>
   </div>
   <div>
-    % if request.identity.role == 'editor':
+    % if request.identity.role == 'editor' or 'admin':
     <button id="btn-add-project" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-project-modal">
       <i class="bi bi-plus-lg"></i>
     </button>
