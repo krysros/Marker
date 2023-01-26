@@ -347,11 +347,12 @@ USER_ROLES = [
 
 COMPANY_ROLES = [
     ("", "---"),
-    ("designer", "Projektant"),  # Designer
-    ("purchaser", "Zamawiający"),  # Purchaser
-    ("investor", "Inwestor"),  # Investor
-    ("general_contractor", "Generalny Wykonawca"),  # General Contractor
-    ("subcontractor", "Podwykonawca"),  # Subcontractor
+    ("designer", "Projektant"),
+    ("purchaser", "Zamawiający"),
+    ("investor", "Inwestor"),
+    ("general_contractor", "Generalny Wykonawca"),
+    ("subcontractor", "Podwykonawca"),
+    ("supplier", "Dostawca"),
 ]
 
 
@@ -521,6 +522,10 @@ REPORTS = [
     ("companies-projects", "Inwestorzy (liczba projektów)"),
     ("recommended-companies", "Rekomendowane firmy"),
     ("watched-projects", "Obserwowane projekty"),
+    ("companies-announcement", "Firmy, które ogłosiły największą liczbę inwestycji"),
+    ("companies-tenders", "Firmy, które wzięły udział w największej liczbie przetargów"),
+    ("companies-constructions", "Firmy, które zrealizowały największą liczbę inwestycji"),
+    ("projects-companies", "Projekty o największym zainteresowaniu"),
 ]
 
 

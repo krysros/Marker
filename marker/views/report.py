@@ -181,6 +181,49 @@ class ReportView:
                     .group_by(Project)
                     .order_by(desc("watched-projects"))
                 )
+            case "companies-announcement":
+                stmt = (
+                    select(
+                        Company.name,
+                        func.count(CompaniesProjects.company).label("companies-announcement"),
+                    )
+                .filter(CompaniesProjects.stage == "announcement")
+                .join(CompaniesProjects)
+                .group_by(Company)
+                .order_by(desc("companies-announcement"))
+                )
+            case "companies-tenders":
+                stmt = (
+                    select(
+                        Company.name,
+                        func.count(CompaniesProjects.company).label("companies-tenders"),
+                    )
+                .filter(CompaniesProjects.stage == "tender")
+                .join(CompaniesProjects)
+                .group_by(Company)
+                .order_by(desc("companies-tenders"))
+                )
+            case "companies-constructions":
+                stmt = (
+                    select(
+                        Company.name,
+                        func.count(CompaniesProjects.company).label("companies-constructions"),
+                    )
+                .filter(CompaniesProjects.stage == "construction")
+                .join(CompaniesProjects)
+                .group_by(Company)
+                .order_by(desc("companies-constructions"))
+                )
+            case "projects-companies":
+                stmt = (
+                    select(
+                        Project.name,
+                        func.count(CompaniesProjects.project).label("projects-companies"),
+                    )
+                .join(CompaniesProjects)
+                .group_by(Project)
+                .order_by(desc("projects-companies"))
+                )
             case _:
                 raise HTTPNotFound
 
