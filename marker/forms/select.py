@@ -525,6 +525,12 @@ REPORTS = [
     ("companies-announcement", "Firmy, które ogłosiły największą liczbę inwestycji"),
     ("companies-tenders", "Firmy, które wzięły udział w największej liczbie przetargów"),
     ("companies-constructions", "Firmy, które zrealizowały największą liczbę inwestycji"),
+    ("designers", "Najbardziej aktywni projektanci"),
+    ("purchasers", "Najbardziej aktywni zamawiający"),
+    ("investors", "Najbardziej aktywni inwestorzy"),
+    ("general-contractors", "Najbardziej aktywni generalni wykonawcy"),
+    ("subcontractors", "Najbardziej aktywni podwykonawcy"),
+    ("suppliers", "Najbardziej aktywni dostawcy"),
     ("projects-companies", "Projekty o największym zainteresowaniu"),
 ]
 
