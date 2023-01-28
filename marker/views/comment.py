@@ -84,6 +84,11 @@ class CommentView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        if any(x is not None for x in search_query.values()):
+            heading = "Wyniki wyszukiwania"
+        else:
+            heading = ""
+
         return {
             "search_query": search_query,
             "paginator": paginator,
@@ -91,6 +96,7 @@ class CommentView:
             "counter": counter,
             "dd_filter": dd_filter,
             "dd_order": dd_order,
+            "heading": heading,
         }
 
     @view_config(

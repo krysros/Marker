@@ -95,6 +95,11 @@ class UserView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        if any(x is not None for x in search_query.values()):
+            heading = "Wyniki wyszukiwania"
+        else:
+            heading = ""
+
         return {
             "search_query": search_query,
             "roles": roles,
@@ -104,6 +109,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "heading": heading,
         }
 
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")

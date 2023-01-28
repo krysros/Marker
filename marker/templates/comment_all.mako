@@ -3,6 +3,7 @@
 
 <h2>
   <i class="bi bi-chat-left-text"></i> Komentarze
+  <small class="text-muted">${heading}</small>
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('comment_search')}

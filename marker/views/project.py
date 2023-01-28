@@ -176,6 +176,11 @@ class ProjectView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        if any(x is not None for x in search_query.values()):
+            heading = "Wyniki wyszukiwania"
+        else:
+            heading = ""
+
         return {
             "search_query": search_query,
             "states": states,
@@ -185,6 +190,7 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "heading": heading,
         }
 
     @view_config(

@@ -3,6 +3,7 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> Projekty
+  <small class="text-muted">${heading}</small>
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.map('project_map', _query=search_query)}

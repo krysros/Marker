@@ -161,6 +161,11 @@ class CompanyView:
             _query={**search_query, "page": page + 1},
         )
 
+        if any(x is not None for x in search_query.values()):
+            heading = "Wyniki wyszukiwania"
+        else:
+            heading = ""
+
         return {
             "search_query": search_query,
             "next_page": next_page,
@@ -170,6 +175,7 @@ class CompanyView:
             "states": states,
             "colors": colors,
             "counter": counter,
+            "heading": heading,
         }
 
     @view_config(
