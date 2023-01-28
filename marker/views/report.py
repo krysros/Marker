@@ -185,34 +185,40 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("companies-announcement"),
+                        func.count(CompaniesProjects.company).label(
+                            "companies-announcement"
+                        ),
                     )
-                .filter(CompaniesProjects.stage == "announcement")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("companies-announcement"))
+                    .filter(CompaniesProjects.stage == "announcement")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("companies-announcement"))
                 )
             case "companies-tenders":
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("companies-tenders"),
+                        func.count(CompaniesProjects.company).label(
+                            "companies-tenders"
+                        ),
                     )
-                .filter(CompaniesProjects.stage == "tender")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("companies-tenders"))
+                    .filter(CompaniesProjects.stage == "tender")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("companies-tenders"))
                 )
             case "companies-constructions":
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("companies-constructions"),
+                        func.count(CompaniesProjects.company).label(
+                            "companies-constructions"
+                        ),
                     )
-                .filter(CompaniesProjects.stage == "construction")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("companies-constructions"))
+                    .filter(CompaniesProjects.stage == "construction")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("companies-constructions"))
                 )
             case "designers":
                 stmt = (
@@ -220,10 +226,10 @@ class ReportView:
                         Company.name,
                         func.count(CompaniesProjects.company).label("designers"),
                     )
-                .filter(CompaniesProjects.role == "designer")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("designers"))
+                    .filter(CompaniesProjects.role == "designer")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("designers"))
                 )
             case "purchasers":
                 stmt = (
@@ -231,10 +237,10 @@ class ReportView:
                         Company.name,
                         func.count(CompaniesProjects.company).label("purchasers"),
                     )
-                .filter(CompaniesProjects.role == "purchaser")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("purchasers"))
+                    .filter(CompaniesProjects.role == "purchaser")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("purchasers"))
                 )
             case "investors":
                 stmt = (
@@ -242,21 +248,23 @@ class ReportView:
                         Company.name,
                         func.count(CompaniesProjects.company).label("investors"),
                     )
-                .filter(CompaniesProjects.role == "investor")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("investors"))
+                    .filter(CompaniesProjects.role == "investor")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("investors"))
                 )
             case "general-contractors":
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("general-contractors"),
+                        func.count(CompaniesProjects.company).label(
+                            "general-contractors"
+                        ),
                     )
-                .filter(CompaniesProjects.role == "general_contractor")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("general-contractors"))
+                    .filter(CompaniesProjects.role == "general_contractor")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("general-contractors"))
                 )
             case "subcontractors":
                 stmt = (
@@ -264,10 +272,10 @@ class ReportView:
                         Company.name,
                         func.count(CompaniesProjects.company).label("subcontractors"),
                     )
-                .filter(CompaniesProjects.role == "subcontractor")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("subcontractors"))
+                    .filter(CompaniesProjects.role == "subcontractor")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("subcontractors"))
                 )
             case "suppliers":
                 stmt = (
@@ -275,20 +283,22 @@ class ReportView:
                         Company.name,
                         func.count(CompaniesProjects.company).label("suppliers"),
                     )
-                .filter(CompaniesProjects.role == "supplier")
-                .join(CompaniesProjects)
-                .group_by(Company)
-                .order_by(desc("suppliers"))
+                    .filter(CompaniesProjects.role == "supplier")
+                    .join(CompaniesProjects)
+                    .group_by(Company)
+                    .order_by(desc("suppliers"))
                 )
             case "projects-companies":
                 stmt = (
                     select(
                         Project.name,
-                        func.count(CompaniesProjects.project).label("projects-companies"),
+                        func.count(CompaniesProjects.project).label(
+                            "projects-companies"
+                        ),
                     )
-                .join(CompaniesProjects)
-                .group_by(Project)
-                .order_by(desc("projects-companies"))
+                    .join(CompaniesProjects)
+                    .group_by(Project)
+                    .order_by(desc("projects-companies"))
                 )
             case _:
                 raise HTTPNotFound
