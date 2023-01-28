@@ -523,8 +523,14 @@ REPORTS = [
     ("recommended-companies", "Rekomendowane firmy"),
     ("watched-projects", "Obserwowane projekty"),
     ("companies-announcement", "Firmy, które ogłosiły największą liczbę inwestycji"),
-    ("companies-tenders", "Firmy, które wzięły udział w największej liczbie przetargów"),
-    ("companies-constructions", "Firmy, które zrealizowały największą liczbę inwestycji"),
+    (
+        "companies-tenders",
+        "Firmy, które wzięły udział w największej liczbie przetargów",
+    ),
+    (
+        "companies-constructions",
+        "Firmy, które zrealizowały największą liczbę inwestycji",
+    ),
     ("designers", "Najbardziej aktywni projektanci"),
     ("purchasers", "Najbardziej aktywni zamawiający"),
     ("investors", "Najbardziej aktywni inwestorzy"),
