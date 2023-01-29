@@ -44,6 +44,9 @@ class UserView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         username = self.request.params.get("username", None)
+        fullname = self.request.params.get("fullname", None)
+        email = self.request.params.get("email", None)
+        role = self.request.params.get("role", None)
         filter = self.request.params.get("filter", None)
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
@@ -54,6 +57,15 @@ class UserView:
 
         if username:
             stmt = stmt.filter(User.name.ilike("%" + username + "%"))
+
+        if fullname:
+            stmt = stmt.filter(User.fullname.ilike("%" + fullname + "%"))
+
+        if email:
+            stmt = stmt.filter(User.email.ilike("%" + email + "%"))
+
+        if role:
+            stmt = stmt.filter(User.role.ilike("%" + role + "%"))
 
         if filter:
             stmt = stmt.filter(User.role == filter)
@@ -72,7 +84,7 @@ class UserView:
             .scalars()
             .all()
         )
-        search_query = {"username": username}
+        search_query = {"username": username, "fullname": fullname, "email": email, "role": role}
 
         next_page = self.request.route_url(
             "user_more",
@@ -512,7 +524,7 @@ class UserView:
 
     @view_config(
         route_name="user_search",
-        renderer="basic_form.mako",
+        renderer="user_search.mako",
         permission="view",
     )
     def search(self):
@@ -520,7 +532,7 @@ class UserView:
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "user_all", _query={"username": form.name.data}
+                    "user_all", _query={"username": form.name.data, "fullname": form.fullname.data, "email": form.email.data, "role": form.role.data}
                 )
             )
         return {"heading": "Znajdź użytkownika", "form": form}

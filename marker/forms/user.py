@@ -71,4 +71,7 @@ class UserForm(Form):
 
 class UserSearchForm(Form):
     name = StringField("Nazwa", filters=[strip_filter])
+    fullname = StringField("Imię i nazwisko", filters=[strip_filter])
+    email = StringField("Email", filters=[strip_filter])
+    role = SelectField("Rola", choices=USER_ROLES)
     submit = SubmitField("Szukaj")
