@@ -648,9 +648,10 @@ class CompanyView:
 
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
-            self.request.session.flash("success:Dodano do bazy danych")
+            self.request.dbsession.flush()
+            self.request.session.flash("info:Dodaj tagi i osoby do kontaktu")
             log.info(f"Użytkownik {self.request.identity.name} dodał firmę")
-            next_url = self.request.route_url("company_all")
+            next_url = self.request.route_url("company_view", company_id=company.id, slug=company.slug)
             return HTTPSeeOther(location=next_url)
         return {"heading": "Dodaj firmę", "form": form}
 
