@@ -45,5 +45,5 @@ class PersonSearchForm(Form):
     name = StringField("Imię i nazwisko", filters=[strip_filter])
     position = StringField("Stanowisko", filters=[strip_filter])
     phone = StringField("Telefon", filters=[strip_filter])
-    email = EmailField("Email", filters=[strip_filter])
+    email = StringField("Email", filters=[strip_filter])
     submit = SubmitField("Szukaj")
