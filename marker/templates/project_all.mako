@@ -20,4 +20,27 @@
   <div>${button.dropdown('project_all', dd_order)}</div>
 </div>
 
+% if heading:
+<div class="alert alert-info" role="alert">
+  Kryteria wyszukiwania: 
+  % for k, v in form.data.items():
+    % if v:
+      % if k == "color":
+        ${form[k].label.text}: <strong>${colors.get(v)}</strong>.
+      % elif k == "state":
+        ${form[k].label.text}: <strong>${states.get(v)}</strong>,
+      % elif k == "country":
+        ${form[k].label.text}: <strong>${countries.get(v)}</strong>,
+      % elif k == "stages":
+        ${form[k].label.text}: <strong>${stages.get(v)}</strong>,
+      % elif k == "delivery_method":
+        ${form[k].label.text}: <strong>${project_delivery_methods.get(v)}</strong>,
+      % else:
+        ${form[k].label.text}: <strong>${v}</strong>,
+      % endif
+    % endif
+  % endfor
+</div>
+% endif
+
 <%include file="project_table.mako"/>

@@ -69,6 +69,10 @@ class ProjectView:
         dropdown_order = dict(DROPDOWN_ORDER)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         states = dict(STATES)
+        countries = dict(COUNTRIES)
+        colors = dict(COLORS)
+        stages = dict(STAGES)
+        projects_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         stmt = select(Project)
 
         if name:
@@ -138,6 +142,7 @@ class ProjectView:
             .scalars()
             .all()
         )
+
         search_query = {
             "name": name,
             "street": street,
@@ -151,6 +156,7 @@ class ProjectView:
             "stage": stage,
             "delivery_method": delivery_method,
         }
+
         next_page = self.request.route_url(
             "project_more",
             _query={
@@ -181,9 +187,16 @@ class ProjectView:
         else:
             heading = ""
 
+        form = ProjectSearchForm(**search_query)
+
         return {
             "search_query": search_query,
+            "form": form,
             "states": states,
+            "countries": countries,
+            "stages": stages,
+            "project_delivery_methods": projects_delivery_methods,
+            "colors": colors,
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,

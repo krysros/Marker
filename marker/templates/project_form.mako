@@ -35,10 +35,6 @@
         ${form.link(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.color.label}
-        ${form.color(class_="form-control")}
-      </div>
-      <div class="mb-3">
         ${form.deadline.label}
         ${form.deadline(class_="form-control")}
       </div>
@@ -49,6 +45,10 @@
       <div class="mb-3">
         ${form.delivery_method.label}
         ${form.delivery_method(class_="form-control")}
+      </div>
+      <div class="mb-3">
+        ${form.color.label}
+        ${form.color(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.submit(class_="btn btn-primary")}

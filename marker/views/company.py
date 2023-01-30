@@ -166,8 +166,11 @@ class CompanyView:
         else:
             heading = ""
 
+        form = CompanySearchForm(**search_query)
+
         return {
             "search_query": search_query,
+            "form": form,
             "next_page": next_page,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
