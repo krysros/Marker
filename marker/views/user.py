@@ -84,7 +84,12 @@ class UserView:
             .scalars()
             .all()
         )
-        search_query = {"username": username, "fullname": fullname, "email": email, "role": role}
+        search_query = {
+            "name": username,
+            "fullname": fullname,
+            "email": email,
+            "role": role,
+        }
 
         next_page = self.request.route_url(
             "user_more",
@@ -112,8 +117,11 @@ class UserView:
         else:
             heading = ""
 
+        form = UserSearchForm(**search_query)
+
         return {
             "search_query": search_query,
+            "form": form,
             "roles": roles,
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
@@ -532,7 +540,13 @@ class UserView:
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "user_all", _query={"username": form.name.data, "fullname": form.fullname.data, "email": form.email.data, "role": form.role.data}
+                    "user_all",
+                    _query={
+                        "username": form.name.data,
+                        "fullname": form.fullname.data,
+                        "email": form.email.data,
+                        "role": form.role.data,
+                    },
                 )
             )
         return {"heading": "Znajdź użytkownika", "form": form}

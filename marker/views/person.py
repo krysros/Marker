@@ -93,8 +93,11 @@ class PersonView:
         else:
             heading = ""
 
+        form = PersonSearchForm(**search_query)
+
         return {
             "search_query": search_query,
+            "form": form,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,

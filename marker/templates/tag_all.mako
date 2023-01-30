@@ -17,4 +17,15 @@
   <div>${button.dropdown('tag_all', dd_order)}</div>
 </div>
 
+% if heading:
+<div class="alert alert-info" role="alert">
+  Kryteria wyszukiwania: 
+  % for k, v in form.data.items():
+    % if v:
+      ${form[k].label.text}: <strong>${v}</strong>; 
+    % endif
+  % endfor
+</div>
+% endif
+
 <%include file="tag_table.mako"/>

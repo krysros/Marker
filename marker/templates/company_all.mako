@@ -25,11 +25,11 @@
   % for k, v in form.data.items():
     % if v:
       % if k == "color":
-        ${form[k].label.text}: <strong>${colors.get(v)}</strong>.
+        ${form[k].label.text}: <strong>${colors.get(v)}</strong>;
       % elif k == "state":
-        ${form[k].label.text}: <strong>${states.get(v)}</strong>,
+        ${form[k].label.text}: <strong>${states.get(v)}</strong>;
       % else:
-        ${form[k].label.text}: <strong>${v}</strong>,
+        ${form[k].label.text}: <strong>${v}</strong>;
       % endif
     % endif
   % endfor

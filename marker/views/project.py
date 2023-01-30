@@ -584,7 +584,9 @@ class ProjectView:
             self.request.dbsession.flush()
             self.request.session.flash("info:Dodaj tagi i osoby do kontaktu")
             log.info(f"Użytkownik {self.request.identity.name} dodał projekt")
-            next_url = self.request.route_url("project_view", project_id=project.id, slug=project.slug)
+            next_url = self.request.route_url(
+                "project_view", project_id=project.id, slug=project.slug
+            )
             return HTTPSeeOther(location=next_url)
         return {"heading": "Dodaj projekt", "form": form}
 
