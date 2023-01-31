@@ -183,6 +183,7 @@ class ProjectView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        # Recreate the search form to display the search criteria
         form = None
         if any(x for x in search_query.values() if x):
             form = ProjectSearchForm(**search_query)    

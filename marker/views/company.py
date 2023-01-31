@@ -162,6 +162,7 @@ class CompanyView:
             _query={**search_query, "page": page + 1},
         )
 
+        # Recreate the search form to display the search criteria
         form = None
         if any(x for x in search_query.values() if x):
             form = CompanySearchForm(**search_query)
