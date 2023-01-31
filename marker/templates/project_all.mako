@@ -3,7 +3,6 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> Projekty
-  <small class="text-muted">${heading}</small>
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.map('project_map', _query=search_query)}
@@ -20,9 +19,9 @@
   <div>${button.dropdown('project_all', dd_order)}</div>
 </div>
 
-% if heading:
+% if form:
 <div class="alert alert-info" role="alert">
-  Kryteria wyszukiwania: 
+  <strong>Kryteria wyszukiwania: </strong> 
   % for k, v in form.data.items():
     % if v:
       % if k == "color":

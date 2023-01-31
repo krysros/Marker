@@ -3,7 +3,6 @@
 
 <h2>
   <i class="bi bi-chat-left-text"></i> Komentarze
-  <small class="text-muted">${heading}</small>
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('comment_search')}
@@ -16,5 +15,16 @@
   <div>${button.dropdown('comment_all', dd_filter)}</div>
   <div>${button.dropdown('comment_all', dd_order)}</div>
 </div>
+
+% if form:
+<div class="alert alert-info" role="alert">
+  <strong>Kryteria wyszukiwania: </strong>
+  % for k, v in form.data.items():
+    % if v:
+      ${form[k].label.text}: <strong>${v}</strong>; 
+    % endif
+  % endfor
+</div>
+% endif
 
 <%include file="comment_more.mako" />

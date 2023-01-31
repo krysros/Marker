@@ -112,12 +112,9 @@ class UserView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        form = None
         if any(x for x in search_query.values() if x):
-            heading = "Wyniki wyszukiwania"
-        else:
-            heading = ""
-
-        form = UserSearchForm(**search_query)
+            form = UserSearchForm(**search_query)
 
         return {
             "search_query": search_query,
@@ -129,7 +126,6 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "heading": heading,
         }
 
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")

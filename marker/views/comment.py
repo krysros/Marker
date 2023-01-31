@@ -84,19 +84,18 @@ class CommentView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        form = None
         if any(x for x in search_query.values() if x):
-            heading = "Wyniki wyszukiwania"
-        else:
-            heading = ""
+            form = CommentSearchForm(**search_query)
 
         return {
             "search_query": search_query,
+            "form": form,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
             "dd_filter": dd_filter,
             "dd_order": dd_order,
-            "heading": heading,
         }
 
     @view_config(

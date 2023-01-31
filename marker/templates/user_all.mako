@@ -3,7 +3,6 @@
 
 <h2>
   <i class="bi bi-person-circle"></i> Użytkownicy
-  <small class="text-muted">${heading}</small>
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('user_search')}
@@ -19,9 +18,9 @@
   <div>${button.dropdown('user_all', dd_order)}</div>
 </div>
 
-% if heading:
+% if form:
 <div class="alert alert-info" role="alert">
-  Kryteria wyszukiwania: 
+  <strong>Kryteria wyszukiwania: </strong>
   % for k, v in form.data.items():
     % if v:
       % if k == "role":

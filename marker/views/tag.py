@@ -79,12 +79,9 @@ class TagView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
+        form = None
         if any(x for x in search_query.values() if x):
-            heading = "Wyniki wyszukiwania"
-        else:
-            heading = ""
-
-        form = TagSearchForm(**search_query)
+            form = TagSearchForm(**search_query)
 
         return {
             "search_query": search_query,
@@ -94,7 +91,6 @@ class TagView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "heading": heading,
         }
 
     @view_config(

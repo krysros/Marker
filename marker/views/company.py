@@ -162,12 +162,9 @@ class CompanyView:
             _query={**search_query, "page": page + 1},
         )
 
+        form = None
         if any(x for x in search_query.values() if x):
-            heading = "Wyniki wyszukiwania"
-        else:
-            heading = ""
-
-        form = CompanySearchForm(**search_query)
+            form = CompanySearchForm(**search_query)
 
         return {
             "search_query": search_query,
@@ -179,7 +176,6 @@ class CompanyView:
             "states": states,
             "colors": colors,
             "counter": counter,
-            "heading": heading,
         }
 
     @view_config(

@@ -3,7 +3,6 @@
 
 <h2>
   <i class="bi bi-people"></i> Osoby
-  <small class="text-muted">${heading}</small>
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('person_search')}
@@ -17,9 +16,9 @@
   <div>${button.dropdown('person_all', dd_order)}</div>
 </div>
 
-% if heading:
+% if form:
 <div class="alert alert-info" role="alert">
-  Kryteria wyszukiwania: 
+  <strong>Kryteria wyszukiwania: </strong>
   % for k, v in form.data.items():
     % if v:
       ${form[k].label.text}: <strong>${v}</strong>; 

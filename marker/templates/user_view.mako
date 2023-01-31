@@ -34,7 +34,7 @@
   <div class="card-header"><i class="bi bi-person-circle"></i> Użytkownik</div>
   <div class="card-body">
     <dl>
-      <dt>Nazwa użytkownika</dt>
+      <dt>Nazwa</dt>
       <dd>${user.name}</dd>
 
       <dt>Imię i nazwisko</dt>

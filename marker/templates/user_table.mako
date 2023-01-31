@@ -2,7 +2,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Nazwa użytkownika</th>
+        <th>Nazwa</th>
         <th>Imię i nazwisko</th>
         <th>Email</th>
         <th>Rola</th>
