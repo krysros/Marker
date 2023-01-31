@@ -162,7 +162,7 @@ class CompanyView:
             _query={**search_query, "page": page + 1},
         )
 
-        if any(x is not None for x in search_query.values()):
+        if any(x for x in search_query.values() if x):
             heading = "Wyniki wyszukiwania"
         else:
             heading = ""

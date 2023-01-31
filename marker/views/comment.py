@@ -84,7 +84,7 @@ class CommentView:
             items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
         )
 
-        if any(x is not None for x in search_query.values()):
+        if any(x for x in search_query.values() if x):
             heading = "Wyniki wyszukiwania"
         else:
             heading = ""
