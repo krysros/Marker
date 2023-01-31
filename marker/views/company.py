@@ -9,6 +9,7 @@ from ..forms import CompanyForm, CompanySearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
+    USER_ROLES,
     COUNTRIES,
     COURTS,
     DROPDOWN_ORDER,
@@ -409,6 +410,7 @@ class CompanyView:
     def recommended(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
+        user_roles = dict(USER_ROLES)
         stmt = (
             select(User)
             .join(recommended)
@@ -430,6 +432,7 @@ class CompanyView:
             "next_page": next_page,
             "company": company,
             "title": company.name,
+            "roles": user_roles,
         }
 
     @view_config(

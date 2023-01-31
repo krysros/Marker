@@ -10,6 +10,7 @@ from ..forms.project import ProjectForm, ProjectSearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
+    USER_ROLES,
     COUNTRIES,
     DROPDOWN_ORDER,
     DROPDOWN_SORT_PROJECTS,
@@ -697,6 +698,7 @@ class ProjectView:
     def watched(self):
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
+        user_roles = dict(USER_ROLES)
         stmt = select(User).join(watched).filter(project.id == watched.c.project_id)
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -714,6 +716,7 @@ class ProjectView:
             "next_page": next_page,
             "project": project,
             "title": project.name,
+            "roles": user_roles,
         }
 
     @view_config(
