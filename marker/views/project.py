@@ -186,7 +186,7 @@ class ProjectView:
         # Recreate the search form to display the search criteria
         form = None
         if any(x for x in search_query.values() if x):
-            form = ProjectSearchForm(**search_query)    
+            form = ProjectSearchForm(**search_query)
 
         return {
             "search_query": search_query,
