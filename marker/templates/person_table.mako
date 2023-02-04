@@ -4,7 +4,7 @@
       <tr>
         <th>Imię i nazwisko</th>
         <th>Firma / Projekt</th>
-        <th>Stanowisko</th>
+        <th>Rola</th>
         <th>Telefon</th>
         <th>Email</th>
         <th>Utworzono</th>

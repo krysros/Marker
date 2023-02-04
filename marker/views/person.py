@@ -27,7 +27,7 @@ class PersonView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
-        position = self.request.params.get("position", None)
+        role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
         filter = self.request.params.get("filter", None)
@@ -40,8 +40,8 @@ class PersonView:
         if name:
             stmt = stmt.filter(Person.name.ilike("%" + name + "%"))
 
-        if position:
-            stmt = stmt.filter(Person.position.ilike("%" + position + "%"))
+        if role:
+            stmt = stmt.filter(Person.role.ilike("%" + role + "%"))
 
         if phone:
             stmt = stmt.filter(Person.phone.ilike("%" + phone + "%"))
@@ -65,7 +65,7 @@ class PersonView:
         )
         search_query = {
             "name": name,
-            "position": position,
+            "role": role,
             "phone": phone,
             "email": email,
         }
@@ -171,7 +171,7 @@ class PersonView:
                     "person_all",
                     _query={
                         "name": form.name.data,
-                        "position": form.position.data,
+                        "role": form.role.data,
                         "phone": form.phone.data,
                         "email": form.email.data,
                     },

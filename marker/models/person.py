@@ -11,7 +11,7 @@ class Person(Base):
     __tablename__ = "persons"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Unicode(100))
-    position: Mapped[str] = mapped_column(Unicode(100))
+    role: Mapped[str] = mapped_column(Unicode(100))
     phone: Mapped[str] = mapped_column(Unicode(50))
     email: Mapped[str] = mapped_column(Unicode(50))
 
@@ -35,12 +35,12 @@ class Person(Base):
     def __init__(
         self,
         name: str,
-        position: str,
+        role: str,
         phone: str,
         email: str,
     ) -> None:
         self.name = name
-        self.position = position
+        self.role = role
         self.phone = phone
         self.email = email
 

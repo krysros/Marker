@@ -33,8 +33,8 @@
       <dd><a href="${request.route_url('project_view', project_id=person.project.id, slug=person.project.slug)}">${person.project.name}</a></dd>
       % endif
 
-      <dt>Stanowisko</dt>
-      <dd>${person.position}</dd>
+      <dt>Rola</dt>
+      <dd>${person.role}</dd>
 
       <dt>Telefon</dt>
       <dd>${person.phone}</dd>

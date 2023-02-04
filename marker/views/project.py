@@ -803,11 +803,11 @@ class ProjectView:
         project = self.request.context.project
         person = None
         name = self.request.POST.get("name")
-        position = self.request.POST.get("position")
+        role = self.request.POST.get("role")
         phone = self.request.POST.get("phone")
         email = self.request.POST.get("email")
         if name:
-            person = Person(name, position, phone, email)
+            person = Person(name, role, phone, email)
             person.created_by = self.request.identity
             if person not in project.people:
                 project.people.append(person)

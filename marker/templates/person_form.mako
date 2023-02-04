@@ -11,8 +11,8 @@
         ${form.name(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.position.label}
-        ${form.position(class_="form-control")}
+        ${form.role.label}
+        ${form.role(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.phone.label}

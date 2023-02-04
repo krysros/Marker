@@ -1,8 +1,8 @@
 BEGIN:VCARD
 VERSION:4.0
 FN:${person.name}
-% if person.position:
-ROLE:${person.position}
+% if person.role:
+ROLE:${person.role}
 % endif
 % if person.phone:
 TEL;TYPE=work,voice;VALUE=uri:tel:${person.phone}

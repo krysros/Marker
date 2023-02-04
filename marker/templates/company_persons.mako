@@ -57,7 +57,7 @@
     <thead>
       <tr>
         <th>Imię i nazwisko</th>
-        <th>Stanowisko</th>
+        <th>Rola</th>
         <th>Telefon</th>
         <th>Email</th>
         <th class="col-2">Akcja</th>
@@ -67,7 +67,7 @@
       % for person in company.people:
       <tr>
         <td><a href="${request.route_url('person_view', person_id=person.id, slug=person.slug)}">${person.name}</a></td>
-        <td>${person.position}</td>
+        <td>${person.role}</td>
         <td>${person.phone}</td>
         <td><a href="mailto:${person.email}">${person.email}</a></td>
         <td class="col-2">
@@ -95,8 +95,8 @@
             <input type="text" class="form-control" id="person-name" name="name" required minlength="5" maxlength="100">
           </div>
           <div class="mb-3">
-            <label for="position" class="form-label">Stanowisko</label>
-            <input type="text" class="form-control" id="position" name="position" maxlength="100">
+            <label for="role" class="form-label">Rola</label>
+            <input type="text" class="form-control" id="role" name="role" maxlength="100">
           </div>
           <div class="mb-3">
             <label for="phone" class="form-label">Telefon</label>
@@ -130,7 +130,7 @@
   // Clear input fields
   var btnAddPerson = document.getElementById("btn-add-person");
   btnAddPerson.addEventListener('click', function handleClick(event) {
-    var inputs = document.querySelectorAll("#person-name, #position, #phone, #email");
+    var inputs = document.querySelectorAll("#person-name, #role, #phone, #email");
     inputs.forEach(input => {
       input.value = '';
     });

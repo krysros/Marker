@@ -17,8 +17,8 @@ class PersonForm(Form):
         ],
         filters=[strip_filter],
     )
-    position = StringField(
-        "Stanowisko",
+    role = StringField(
+        "Rola",
         validators=[
             Length(max=100, message="Długość nie może przekraczać %(max)d znaków"),
         ],
@@ -43,7 +43,7 @@ class PersonForm(Form):
 
 class PersonSearchForm(Form):
     name = StringField("Imię i nazwisko", filters=[strip_filter])
-    position = StringField("Stanowisko", filters=[strip_filter])
+    role = StringField("Rola", filters=[strip_filter])
     phone = StringField("Telefon", filters=[strip_filter])
     email = StringField("Email", filters=[strip_filter])
     submit = SubmitField("Szukaj")

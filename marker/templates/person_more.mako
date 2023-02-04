@@ -14,7 +14,7 @@
   % else:
   <td>---</td>
   % endif
-  <td>${person.position}</td>
+  <td>${person.role}</td>
   <td>${person.phone}</td>
   <td><a href="mailto:${person.email}">${person.email}</a></td>
   % if person.created_at:
