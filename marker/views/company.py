@@ -15,7 +15,7 @@ from ..forms.select import (
     DROPDOWN_ORDER,
     DROPDOWN_SORT_COMPANIES,
     STAGES,
-    STATES,
+    REGIONS,
 )
 from ..geo import location
 from ..models import (
@@ -53,7 +53,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        state = self.request.params.get("state", None)
+        region = self.request.params.get("region", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -65,7 +65,7 @@ class CompanyView:
         sort = self.request.params.get("sort", "created_at")
         order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
@@ -94,8 +94,8 @@ class CompanyView:
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
 
-        if state:
-            stmt = stmt.filter(Company.state == state)
+        if region:
+            stmt = stmt.filter(Company.region == region)
 
         if country:
             stmt = stmt.filter(Company.country == country)
@@ -147,7 +147,7 @@ class CompanyView:
             "street": street,
             "postcode": postcode,
             "city": city,
-            "state": state,
+            "region": region,
             "country": country,
             "link": link,
             "NIP": NIP,
@@ -174,7 +174,7 @@ class CompanyView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
-            "states": states,
+            "regions": regions,
             "colors": colors,
             "counter": counter,
         }
@@ -186,13 +186,13 @@ class CompanyView:
     )
     def view(self):
         company = self.request.context.company
-        states = dict(STATES)
+        regions = dict(REGIONS)
         courts = dict(COURTS)
         countries = dict(COUNTRIES)
 
         return {
             "company": company,
-            "states": states,
+            "regions": regions,
             "courts": courts,
             "countries": countries,
             "title": company.name,
@@ -232,7 +232,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        state = self.request.params.get("state", None)
+        region = self.request.params.get("region", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -246,7 +246,7 @@ class CompanyView:
             "street": street,
             "postcode": postcode,
             "city": city,
-            "state": state,
+            "region": region,
             "country": country,
             "link": link,
             "NIP": NIP,
@@ -269,7 +269,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        state = self.request.params.get("state", None)
+        region = self.request.params.get("region", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -304,8 +304,8 @@ class CompanyView:
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
 
-        if state:
-            stmt = stmt.filter(Company.state == state)
+        if region:
+            stmt = stmt.filter(Company.region == region)
 
         if country:
             stmt = stmt.filter(Company.country == country)
@@ -325,7 +325,7 @@ class CompanyView:
                 "street": company.street,
                 "postcode": company.postcode,
                 "city": company.city,
-                "state": company.state,
+                "region": company.region,
                 "country": company.country,
                 "latitude": company.latitude,
                 "longitude": company.longitude,
@@ -555,7 +555,7 @@ class CompanyView:
         sort = self.request.params.get("sort", None)
         order = self.request.params.get("order", None)
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
 
         stmt = (
             select(Company)
@@ -611,7 +611,7 @@ class CompanyView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "states": states,
+            "regions": regions,
             "title": company.name,
         }
 
@@ -620,7 +620,7 @@ class CompanyView:
     )
     def add(self):
         form = CompanyForm(self.request.POST, dbsession=self.request.dbsession)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -629,7 +629,7 @@ class CompanyView:
                 street=form.street.data,
                 postcode=form.postcode.data,
                 city=form.city.data,
-                state=form.state.data,
+                region=form.region.data,
                 country=form.country.data,
                 link=form.link.data,
                 NIP=form.NIP.data,
@@ -641,7 +641,7 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                state=states.get(form.state.data),
+                region=regions.get(form.region.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -666,7 +666,7 @@ class CompanyView:
     def edit(self):
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, dbsession=self.request.dbsession)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -674,7 +674,7 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                state=states.get(form.state.data),
+                region=regions.get(form.region.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -769,7 +769,7 @@ class CompanyView:
                         "street": form.street.data,
                         "postcode": form.postcode.data,
                         "city": form.city.data,
-                        "state": form.state.data,
+                        "region": form.region.data,
                         "country": form.country.data,
                         "link": form.link.data,
                         "NIP": form.NIP.data,

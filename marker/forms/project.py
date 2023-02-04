@@ -4,7 +4,7 @@ from wtforms.validators import InputRequired, Length, Optional, ValidationError
 
 from ..models import Project
 from .filters import dash_filter, remove_multiple_spaces, strip_filter
-from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES, STATES
+from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES, REGIONS
 
 
 class ProjectForm(Form):
@@ -37,7 +37,7 @@ class ProjectForm(Form):
         ],
         filters=[strip_filter],
     )
-    state = SelectField("Województwo", choices=STATES)
+    region = SelectField("Region", choices=REGIONS)
     country = SelectField("Kraj", choices=COUNTRIES)
     link = StringField(
         "Link",
@@ -76,7 +76,7 @@ class ProjectSearchForm(Form):
     street = StringField("Ulica", filters=[strip_filter])
     postcode = StringField("Kod pocztowy", filters=[strip_filter])
     city = StringField("Miasto", filters=[strip_filter])
-    state = SelectField("Województwo", choices=STATES)
+    region = SelectField("Region", choices=REGIONS)
     country = SelectField("Kraj", choices=COUNTRIES)
     link = StringField("Link", filters=[strip_filter])
     deadline = DateField("Termin", validators=[Optional()])

@@ -5,7 +5,7 @@
         <th>#</th>
         <th>Firma</th>
         <th>Miasto</th>
-        <th>Województwo</th>
+        <th>Region</th>
         <th>Utworzono</th>
         <th>Zmodyfikowano</th>
         <th>Rekomendacje</th>

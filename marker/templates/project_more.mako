@@ -15,7 +15,7 @@
   </td>
   <td>${project.deadline}</td>
   <td>${project.city}</td>
-  <td>${states.get(project.state)}</td>
+  <td>${regions.get(project.region)}</td>
   <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>

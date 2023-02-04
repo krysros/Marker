@@ -18,7 +18,7 @@ class Company(Base):
     street: Mapped[str] = mapped_column(Unicode(100))
     postcode: Mapped[str] = mapped_column(Unicode(10))
     city: Mapped[str] = mapped_column(Unicode(100))
-    state: Mapped[str] = mapped_column(Unicode(2))
+    region: Mapped[str] = mapped_column(Unicode(2))
     country: Mapped[str] = mapped_column(Unicode(2))
     latitude: Mapped[float]
     longitude: Mapped[float]
@@ -54,7 +54,7 @@ class Company(Base):
         street: str,
         postcode: str,
         city: str,
-        state: str,
+        region: str,
         country: str,
         link: str,
         NIP: str,
@@ -67,7 +67,7 @@ class Company(Base):
         self.street = street
         self.postcode = postcode
         self.city = city
-        self.state = state
+        self.region = region
         self.country = country
         self.link = link
         self.NIP = NIP

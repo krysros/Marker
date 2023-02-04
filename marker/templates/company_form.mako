@@ -23,8 +23,8 @@
         ${form.city(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.state.label}
-        ${form.state(class_="form-control")}
+        ${form.region.label}
+        ${form.region(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.country.label}

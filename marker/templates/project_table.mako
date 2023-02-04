@@ -5,7 +5,7 @@
         <th>Projekt</th>
         <th>Termin</th>
         <th>Miasto</th>
-        <th>Województwo</th>
+        <th>Region</th>
         <th>Utworzono</th>
         <th>Zmodyfikowano</th>
         <th>Obserwacje</th>

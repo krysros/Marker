@@ -8,7 +8,7 @@ DROPDOWN_SORT = [
 DROPDOWN_EXT_SORT = [
     ("name", "wg nazwy"),
     ("city", "wg miasta"),
-    ("state", "wg województwa"),
+    ("region", "wg regionu"),
     ("created_at", "wg daty dodania"),
     ("updated_at", "wg daty edycji"),
 ]
@@ -17,7 +17,7 @@ DROPDOWN_EXT_SORT = [
 DROPDOWN_SORT_COMPANIES = [
     ("name", "wg nazwy"),
     ("city", "wg miasta"),
-    ("state", "wg województwa"),
+    ("region", "wg regionu"),
     ("created_at", "wg daty dodania"),
     ("updated_at", "wg daty edycji"),
     ("recommended", "wg rekomendacji"),
@@ -27,7 +27,7 @@ DROPDOWN_SORT_COMPANIES = [
 DROPDOWN_SORT_PROJECTS = [
     ("name", "wg nazwy"),
     ("city", "wg miasta"),
-    ("state", "wg województwa"),
+    ("region", "wg regionu"),
     ("created_at", "wg daty dodania"),
     ("updated_at", "wg daty edycji"),
     ("watched", "wg obserwacji"),
@@ -56,7 +56,7 @@ COLORS = [
 ]
 
 
-STATES = [
+REGIONS = [
     ("", "---"),
     ("DS", "dolnośląskie"),
     ("KP", "kujawsko-pomorskie"),
@@ -511,10 +511,10 @@ COURTS = [
 REPORTS = [
     ("companies-tags", "Najpopularniejsze tagi wśród firm"),
     ("projects-tags", "Najpopularniejsze tagi wśród projektów"),
-    ("companies-states", "Województwa o największej liczbie firm"),
+    ("companies-regions", "Województwa o największej liczbie firm"),
     ("companies-cities", "Miasta o największej liczbie firm"),
     ("companies-comments", "Najczęściej komentowane firmy"),
-    ("projects-states", "Województwa o największej liczbie projektów"),
+    ("projects-regions", "Województwa o największej liczbie projektów"),
     ("projects-cities", "Miasta o największej liczbie projektów"),
     ("projects-comments", "Najczęściej komentowane projekty"),
     ("users-companies", "Aktywność użytkowników (dodane firmy)"),

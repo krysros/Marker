@@ -82,7 +82,7 @@
             % else:
             ${project.city}<br>
             % endif
-            ${states.get(project.state)}<br>
+            ${regions.get(project.region)}<br>
             ${countries.get(project.country)}<br>
           </dd>
           <dt>Link</dt>
@@ -133,7 +133,7 @@
       attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
-  let title = `<b>${project.name}</b><br>Ulica: ${project.street}<br>Miasto: ${project.city}<br>Woj.: ${project.state}<br>Kraj: ${project.country}`;
+  let title = `<b>${project.name}</b><br>Ulica: ${project.street}<br>Miasto: ${project.city}<br>Woj.: ${project.region}<br>Kraj: ${project.country}`;
   marker.bindPopup(title);
   marker.openPopup();
 </script>

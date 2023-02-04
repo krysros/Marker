@@ -19,7 +19,7 @@ def export_companies_to_xlsx(companies):
     header = [
         "Firma",
         "Miasto",
-        "Województwo",
+        "Region",
         "Rekomendacje",
         "Link",
     ]
@@ -32,7 +32,7 @@ def export_companies_to_xlsx(companies):
         cols = [
             company.name,
             company.city,
-            company.state,
+            company.region,
             company.count_recommended,
             company.link,
         ]
@@ -71,7 +71,7 @@ def export_projects_to_xlsx(projects):
         "Projekt",
         "Termin",
         "Miasto",
-        "Województwo",
+        "Region",
         "Link",
     ]
 
@@ -84,7 +84,7 @@ def export_projects_to_xlsx(projects):
             project.name,
             project.deadline,
             project.city,
-            project.state,
+            project.region,
             project.link,
         ]
         for j, col in enumerate(cols):

@@ -13,7 +13,7 @@ from ..forms.select import (
     DROPDOWN_SORT,
     DROPDOWN_SORT_COMPANIES,
     DROPDOWN_SORT_PROJECTS,
-    STATES,
+    REGIONS,
 )
 from ..models import Company, Project, Tag, recommended, watched
 from ..paginator import get_paginator
@@ -139,7 +139,7 @@ class TagView:
                 "street": company.street,
                 "postcode": company.postcode,
                 "city": company.city,
-                "state": company.state,
+                "region": company.region,
                 "country": company.country,
                 "latitude": company.latitude,
                 "longitude": company.longitude,
@@ -170,7 +170,7 @@ class TagView:
                 "street": project.street,
                 "postcode": project.postcode,
                 "city": project.city,
-                "state": project.state,
+                "region": project.region,
                 "country": project.country,
                 "latitude": project.latitude,
                 "longitude": project.longitude,
@@ -201,7 +201,7 @@ class TagView:
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
@@ -271,7 +271,7 @@ class TagView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "states": states,
+            "regions": regions,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
@@ -344,7 +344,7 @@ class TagView:
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Project)
@@ -414,7 +414,7 @@ class TagView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "states": states,
+            "regions": regions,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,

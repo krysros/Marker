@@ -16,7 +16,7 @@ from ..forms.select import (
     DROPDOWN_SORT_COMPANIES,
     DROPDOWN_SORT_PROJECTS,
     DROPDOWN_STATUS,
-    STATES,
+    REGIONS,
     USER_ROLES,
 )
 from ..models import (
@@ -253,7 +253,7 @@ class UserView:
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         stmt = select(Company).filter(Company.created_by == user)
 
         if sort == "recommended":
@@ -315,7 +315,7 @@ class UserView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "states": states,
+            "regions": regions,
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
@@ -341,7 +341,7 @@ class UserView:
         dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         stmt = select(Project).filter(Project.created_by == user)
 
         if sort == "watched":
@@ -405,7 +405,7 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "states": states,
+            "regions": regions,
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
@@ -567,7 +567,7 @@ class UserView:
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
 
         if filter:
@@ -621,7 +621,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "states": states,
+            "regions": regions,
             "counter": counter,
         }
 
@@ -682,7 +682,7 @@ class UserView:
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
-        states = dict(STATES)
+        regions = dict(REGIONS)
 
         stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
@@ -739,7 +739,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "states": states,
+            "regions": regions,
             "counter": counter,
         }
 
@@ -802,7 +802,7 @@ class UserView:
         dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_sort = dict(DROPDOWN_EXT_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
-        states = dict(STATES)
+        regions = dict(REGIONS)
         now = datetime.datetime.now()
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
@@ -861,7 +861,7 @@ class UserView:
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
-            "states": states,
+            "regions": regions,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
