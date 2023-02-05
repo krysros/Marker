@@ -17,7 +17,7 @@
         <a class="nav-link active" aria-current="page" href="${request.route_url('user_tags', username=user.name)}">Tagi <span class="badge text-bg-secondary">${user.count_tags}</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('user_persons', username=user.name)}">Osoby <span class="badge text-bg-secondary">${user.count_persons}</span></a>
+        <a class="nav-link" href="${request.route_url('user_contacts', username=user.name)}">Kontakty <span class="badge text-bg-secondary">${user.count_contacts}</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('user_comments', username=user.name)}">Komentarze <span class="badge text-bg-secondary">${user.count_comments}</span></a>

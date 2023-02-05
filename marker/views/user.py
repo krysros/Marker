@@ -22,7 +22,7 @@ from ..forms.select import (
 from ..models import (
     Comment,
     Company,
-    Person,
+    Contact,
     Project,
     Tag,
     User,
@@ -415,16 +415,16 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_persons",
-        renderer="user_persons.mako",
+        route_name="user_contacts",
+        renderer="user_contacts.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_persons_more",
-        renderer="person_more.mako",
+        route_name="user_contacts_more",
+        renderer="contact_more.mako",
         permission="view",
     )
-    def persons(self):
+    def contacts(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", None)
@@ -432,12 +432,12 @@ class UserView:
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
-        stmt = select(Person).filter(Person.created_by == user)
+        stmt = select(Contact).filter(Contact.created_by == user)
 
         if order == "asc":
-            stmt = stmt.order_by(getattr(Person, sort).asc())
+            stmt = stmt.order_by(getattr(Contact, sort).asc())
         elif order == "desc":
-            stmt = stmt.order_by(getattr(Person, sort).desc())
+            stmt = stmt.order_by(getattr(Contact, sort).desc())
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -448,7 +448,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_persons_more",
+            "user_contacts_more",
             username=user.name,
             _query={
                 **search_query,

@@ -5,6 +5,7 @@
 - **BREAKING CHANGE**: Add tags, persons, and comments to projects
 - **BREAKING CHANGE**: Remove tables: companies_comments, projects_comments, companies_persons, projects_persons. Use One To Many instead.
 - **BREAKING CHANGE**: Rename `state` to `region`
+- **BREAKING CHANGE**: Rename `person` to `contact`
 
 2.0a5
 -----

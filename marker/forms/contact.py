@@ -4,7 +4,7 @@ from wtforms.validators import InputRequired, Length
 from .filters import strip_filter
 
 
-class PersonForm(Form):
+class ContactForm(Form):
     name = StringField(
         "Imię i nazwisko",
         validators=[
@@ -41,7 +41,7 @@ class PersonForm(Form):
     submit = SubmitField("Zapisz")
 
 
-class PersonSearchForm(Form):
+class ContactSearchForm(Form):
     name = StringField("Imię i nazwisko", filters=[strip_filter])
     role = StringField("Rola", filters=[strip_filter])
     phone = StringField("Telefon", filters=[strip_filter])

@@ -16,7 +16,7 @@
           <a class="nav-link" role="button" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> Tagi</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('person_all')}"><i class="bi bi-people"></i> Osoby</a>
+          <a class="nav-link" role="button" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> Kontakty</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('comment_all')}"><i class="bi bi-chat-left-text"></i> Komentarze</a>

@@ -6,22 +6,22 @@ from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
 from ..export import export_vcard
-from ..forms import PersonForm, PersonSearchForm
+from ..forms import ContactForm, ContactSearchForm
 from ..forms.select import DROPDOWN_ORDER, DROPDOWN_SORT
-from ..models import Person
+from ..models import Contact
 from ..paginator import get_paginator
 
 log = logging.getLogger(__name__)
 
 
-class PersonView:
+class ContactView:
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name="person_all", renderer="person_all.mako", permission="view")
+    @view_config(route_name="contact_all", renderer="contact_all.mako", permission="view")
     @view_config(
-        route_name="person_more",
-        renderer="person_more.mako",
+        route_name="contact_more",
+        renderer="contact_more.mako",
         permission="view",
     )
     def all(self):
@@ -35,24 +35,24 @@ class PersonView:
         order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
-        stmt = select(Person)
+        stmt = select(Contact)
 
         if name:
-            stmt = stmt.filter(Person.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
 
         if role:
-            stmt = stmt.filter(Person.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
 
         if phone:
-            stmt = stmt.filter(Person.phone.ilike("%" + phone + "%"))
+            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
 
         if email:
-            stmt = stmt.filter(Person.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
 
         if order == "asc":
-            stmt = stmt.order_by(getattr(Person, sort).asc())
+            stmt = stmt.order_by(getattr(Contact, sort).asc())
         elif order == "desc":
-            stmt = stmt.order_by(getattr(Person, sort).desc())
+            stmt = stmt.order_by(getattr(Contact, sort).desc())
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -71,7 +71,7 @@ class PersonView:
         }
 
         next_page = self.request.route_url(
-            "person_more",
+            "contact_more",
             _query={
                 **search_query,
                 "filter": filter,
@@ -91,7 +91,7 @@ class PersonView:
         # Recreate the search form to display the search criteria
         form = None
         if any(x for x in search_query.values() if x):
-            form = PersonSearchForm(**search_query)
+            form = ContactSearchForm(**search_query)
 
         return {
             "search_query": search_query,
@@ -104,35 +104,35 @@ class PersonView:
         }
 
     @view_config(
-        route_name="person_view", renderer="person_view.mako", permission="view"
+        route_name="contact_view", renderer="contact_view.mako", permission="view"
     )
     def view(self):
-        person = self.request.context.person
-        return {"person": person, "title": person.name}
+        contact = self.request.context.contact
+        return {"contact": contact, "title": contact.name}
 
     @view_config(
-        route_name="person_edit", renderer="person_form.mako", permission="edit"
+        route_name="contact_edit", renderer="contact_form.mako", permission="edit"
     )
     def edit(self):
-        person = self.request.context.person
-        form = PersonForm(self.request.POST, person)
+        contact = self.request.context.contact
+        form = ContactForm(self.request.POST, contact)
         if self.request.method == "POST" and form.validate():
-            form.populate_obj(person)
-            person.updated_by = self.request.identity
+            form.populate_obj(contact)
+            contact.updated_by = self.request.identity
             self.request.session.flash("success:Zmiany zostały zapisane")
             next_url = self.request.route_url(
-                "person_view", person_id=person.id, slug=person.slug
+                "contact_view", contact_id=contact.id, slug=contact.slug
             )
-            log.info(f"Użytkownik {self.request.identity.name} zmienił dane osoby")
+            log.info(f"Użytkownik {self.request.identity.name} zmienił dane kontaktowe")
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Edytuj dane osoby", "form": form}
+        return {"heading": "Edytuj kontakt", "form": form}
 
-    @view_config(route_name="person_delete", request_method="POST", permission="edit")
+    @view_config(route_name="contact_delete", request_method="POST", permission="edit")
     def delete(self):
-        person = self.request.context.person
-        self.request.dbsession.delete(person)
+        contact = self.request.context.contact
+        self.request.dbsession.delete(contact)
         self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
+        log.info(f"Użytkownik {self.request.identity.name} usunął kontakt")
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -140,35 +140,35 @@ class PersonView:
         return response
 
     @view_config(
-        route_name="delete_person",
+        route_name="delete_contact",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_person(self):
-        person = self.request.context.person
-        if person.company:
-            event = "personCompanyEvent"
-        elif person.project:
-            event = "personProjectEvent"
-        self.request.dbsession.delete(person)
-        log.info(f"Użytkownik {self.request.identity.name} usunął osobę")
+    def delete_contact(self):
+        contact = self.request.context.contact
+        if contact.company:
+            event = "contactCompanyEvent"
+        elif contact.project:
+            event = "contactProjectEvent"
+        self.request.dbsession.delete(contact)
+        log.info(f"Użytkownik {self.request.identity.name} usunął kontakt")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": event}
         return ""
 
     @view_config(
-        route_name="person_search",
-        renderer="person_form.mako",
+        route_name="contact_search",
+        renderer="contact_form.mako",
         permission="view",
     )
     def search(self):
-        form = PersonSearchForm(self.request.POST)
+        form = ContactSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
-                    "person_all",
+                    "contact_all",
                     _query={
                         "name": form.name.data,
                         "role": form.role.data,
@@ -177,10 +177,10 @@ class PersonView:
                     },
                 )
             )
-        return {"heading": "Znajdź osobę", "form": form}
+        return {"heading": "Znajdź kontakt", "form": form}
 
-    @view_config(route_name="person_vcard", permission="view")
+    @view_config(route_name="contact_vcard", permission="view")
     def vcard(self):
-        person = self.request.context.person
-        response = export_vcard(person)
+        contact = self.request.context.contact
+        response = export_vcard(contact)
         return response

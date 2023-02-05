@@ -17,7 +17,7 @@
         <a class="nav-link" href="${request.route_url('user_tags', username=user.name)}">Tagi <span class="badge text-bg-secondary">${user.count_tags}</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('user_persons', username=user.name)}">Osoby <span class="badge text-bg-secondary">${user.count_persons}</span></a>
+        <a class="nav-link active" aria-current="page" href="${request.route_url('user_contacts', username=user.name)}">Kontakty <span class="badge text-bg-secondary">${user.count_contacts}</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('user_comments', username=user.name)}">Komentarze <span class="badge text-bg-secondary">${user.count_comments}</span></a>
@@ -29,8 +29,8 @@
 <p class="lead">${user.fullname}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('user_persons', dd_sort, username=user.name)}</div>
-  <div>${button.dropdown('user_persons', dd_order, username=user.name)}</div>
+  <div>${button.dropdown('user_contacts', dd_sort, username=user.name)}</div>
+  <div>${button.dropdown('user_contacts', dd_order, username=user.name)}</div>
 </div>
 
-<%include file="person_table.mako"/>
+<%include file="contact_table.mako"/>

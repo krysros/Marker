@@ -35,7 +35,7 @@ Aktualnie dostępne moduły:
 - Firmy
 - Projekty
 - Tagi
-- Osoby
+- Kontakty
 - Komentarze
 - Raporty
 - Użytkownicy

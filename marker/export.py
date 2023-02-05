@@ -109,13 +109,13 @@ def export_projects_to_xlsx(projects):
     return response
 
 
-def export_vcard(person):
+def export_vcard(contact):
     response = Response()
     a = AssetResolver("marker")
     resolver = a.resolve("templates/vcard.mako")
     template = Template(filename=resolver.abspath())
-    response.text = template.render(person=person)
+    response.text = template.render(contact=contact)
     response.charset = "utf-8"
     response.content_type = "text/vcard"
-    response.content_disposition = f"attachment; filename={unidecode(person.name)}.vcf; filename*=UTF-8''{quote(person.name)}.vcf"
+    response.content_disposition = f"attachment; filename={unidecode(contact.name)}.vcf; filename*=UTF-8''{quote(contact.name)}.vcf"
     return response

@@ -2,18 +2,18 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-people"></i> Osoby
+  <i class="bi bi-people"></i> Kontakty
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.search('person_search')}
+    ${button.search('contact_search')}
   </div>
 </h2>
 
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('person_all', dd_sort)}</div>
-  <div>${button.dropdown('person_all', dd_order)}</div>
+  <div>${button.dropdown('contact_all', dd_sort)}</div>
+  <div>${button.dropdown('contact_all', dd_order)}</div>
 </div>
 
 % if form:
@@ -27,4 +27,4 @@
 </div>
 % endif
 
-<%include file="person_table.mako"/>
+<%include file="contact_table.mako"/>

@@ -12,7 +12,7 @@ from .association import recommended  # flake8: noqa
 from .association import watched  # flake8: noqa
 from .comment import Comment  # flake8: noqa
 from .company import Company  # flake8: noqa
-from .person import Person  # flake8: noqa
+from .contact import Contact  # flake8: noqa
 from .project import Project  # flake8: noqa
 from .tag import Tag  # flake8: noqa
 from .user import User  # flake8: noqa

@@ -25,8 +25,8 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_persons', company_id=company.id, slug=company.slug)}">
-          Osoby <span class="badge text-bg-secondary">${company.count_persons}</span>
+        <a class="nav-link" href="${request.route_url('company_contacts', company_id=company.id, slug=company.slug)}">
+          Kontakty <span class="badge text-bg-secondary">${company.count_contacts}</span>
         </a>
       </li>
       <li class="nav-item">

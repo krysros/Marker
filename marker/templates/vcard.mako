@@ -1,16 +1,16 @@
 BEGIN:VCARD
 VERSION:4.0
-FN:${person.name}
-% if person.role:
-ROLE:${person.role}
+FN:${contact.name}
+% if contact.role:
+ROLE:${contact.role}
 % endif
-% if person.phone:
-TEL;TYPE=work,voice;VALUE=uri:tel:${person.phone}
+% if contact.phone:
+TEL;TYPE=work,voice;VALUE=uri:tel:${contact.phone}
 % endif
-% if person.email:
-EMAIL;TYPE=work:${person.email}
+% if contact.email:
+EMAIL;TYPE=work:${contact.email}
 % endif
-% if person.company:
-ORG;TYPE=work:${person.company.name}
+% if contact.company:
+ORG;TYPE=work:${contact.company.name}
 % endif
 END:VCARD

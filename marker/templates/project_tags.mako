@@ -18,8 +18,8 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('project_persons', project_id=project.id, slug=project.slug)}">
-          Osoby <span class="badge text-bg-secondary">${project.count_persons}</span>
+        <a class="nav-link" href="${request.route_url('project_contacts', project_id=project.id, slug=project.slug)}">
+          Kontakty <span class="badge text-bg-secondary">${project.count_contacts}</span>
         </a>
       </li>
       <li class="nav-item">

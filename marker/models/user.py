@@ -8,7 +8,7 @@ from .association import checked, recommended, watched
 from .comment import Comment
 from .company import Company
 from .meta import Base
-from .person import Person
+from .contact import Contact
 from .project import Project
 from .tag import Tag
 
@@ -82,9 +82,9 @@ class User(Base):
         )
 
     @property
-    def count_persons(self) -> int:
+    def count_contacts(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Person).filter(Person.created_by == self)
+            select(func.count()).select_from(Contact).filter(Contact.created_by == self)
         )
 
     @property

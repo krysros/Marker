@@ -22,7 +22,7 @@ from ..models import (
     Comment,
     CompaniesProjects,
     Company,
-    Person,
+    Contact,
     Project,
     Tag,
     User,
@@ -199,11 +199,11 @@ class CompanyView:
         }
 
     @view_config(
-        route_name="company_persons",
-        renderer="company_persons.mako",
+        route_name="company_contacts",
+        renderer="company_contacts.mako",
         permission="view",
     )
-    def persons(self):
+    def contacts(self):
         company = self.request.context.company
         return {
             "company": company,
@@ -359,13 +359,13 @@ class CompanyView:
         return company.count_projects
 
     @view_config(
-        route_name="count_company_persons",
+        route_name="count_company_contacts",
         renderer="json",
         permission="view",
     )
-    def count_company_persons(self):
+    def count_company_contacts(self):
         company = self.request.context.company
-        return company.count_persons
+        return company.count_contacts
 
     @view_config(
         route_name="count_company_comments",
@@ -460,31 +460,31 @@ class CompanyView:
         return {"company": company, "tag": new_tag}
 
     @view_config(
-        route_name="add_person_to_company",
-        renderer="person_row.mako",
+        route_name="add_contact_to_company",
+        renderer="contact_row.mako",
         request_method="POST",
         permission="edit",
     )
-    def add_person(self):
+    def add_contact(self):
         company = self.request.context.company
-        person = None
+        contact = None
         name = self.request.POST.get("name")
         role = self.request.POST.get("role")
         phone = self.request.POST.get("phone")
         email = self.request.POST.get("email")
         if name:
-            person = Person(name, role, phone, email)
-            person.created_by = self.request.identity
-            if person not in company.people:
-                company.people.append(person)
+            contact = Contact(name, role, phone, email)
+            contact.created_by = self.request.identity
+            if contact not in company.contacts:
+                company.contacts.append(contact)
                 log.info(
-                    f"Użytkownik {self.request.identity.name} dodał osobę do firmy"
+                    f"Użytkownik {self.request.identity.name} dodał kontakt do firmy"
                 )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "personCompanyEvent"}
-        return {"person": person}
+        self.request.response.headers = {"HX-Trigger": "contactCompanyEvent"}
+        return {"contact": contact}
 
     @view_config(
         route_name="company_comments",
@@ -652,7 +652,7 @@ class CompanyView:
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
-            self.request.session.flash("info:Dodaj tagi i osoby do kontaktu")
+            self.request.session.flash("info:Dodaj tagi i kontakty")
             log.info(f"Użytkownik {self.request.identity.name} dodał firmę")
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug

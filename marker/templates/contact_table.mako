@@ -12,7 +12,7 @@
       </tr>
     </thead>
     <tbody>
-      <%include file="person_more.mako"/>
+      <%include file="contact_more.mako"/>
     </tbody>
   </table>
 </div>

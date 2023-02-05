@@ -36,14 +36,14 @@ def company_factory(request):
     return resources.CompanyResource(company)
 
 
-def person_factory(request):
-    person_id = int(request.matchdict["person_id"])
-    person = request.dbsession.execute(
-        select(models.Person).filter_by(id=person_id)
+def contact_factory(request):
+    contact_id = int(request.matchdict["contact_id"])
+    contact = request.dbsession.execute(
+        select(models.Contact).filter_by(id=contact_id)
     ).scalar_one_or_none()
-    if not person:
+    if not contact:
         raise HTTPNotFound
-    return resources.PersonResource(person)
+    return resources.ContactResource(contact)
 
 
 def comment_factory(request):

@@ -44,9 +44,9 @@ class CompanyResource(DefaultResource):
         self.company = company
 
 
-class PersonResource(DefaultResource):
-    def __init__(self, person):
-        self.person = person
+class ContactResource(DefaultResource):
+    def __init__(self, contact):
+        self.contact = contact
 
 
 class CommentResource(DefaultResource):

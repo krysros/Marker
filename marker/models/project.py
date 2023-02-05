@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 from .association import CompaniesProjects, projects_tags, watched
 from .comment import Comment
 from .meta import Base
-from .person import Person
+from .contact import Contact
 from .tag import Tag
 
 
@@ -45,7 +45,7 @@ class Project(Base):
     companies: Mapped[list["CompaniesProjects"]] = relationship(
         back_populates="project"
     )
-    people: Mapped[list["Person"]] = relationship(back_populates="project")
+    contacts: Mapped[list["Contact"]] = relationship(back_populates="project")
     comments: Mapped[list["Comment"]] = relationship(back_populates="project")
 
     def __init__(
@@ -95,9 +95,9 @@ class Project(Base):
         )
 
     @property
-    def count_persons(self) -> int:
+    def count_contacts(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Person).where(Person.project_id == self.id)
+            select(func.count()).select_from(Contact).where(Contact.project_id == self.id)
         )
 
     @property

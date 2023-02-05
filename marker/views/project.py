@@ -24,7 +24,7 @@ from ..models import (
     Comment,
     CompaniesProjects,
     Company,
-    Person,
+    Contact,
     Project,
     Tag,
     User,
@@ -257,11 +257,11 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="project_persons",
-        renderer="project_persons.mako",
+        route_name="project_contacts",
+        renderer="project_contacts.mako",
         permission="view",
     )
-    def persons(self):
+    def contacts(self):
         project = self.request.context.project
         return {
             "project": project,
@@ -411,13 +411,13 @@ class ProjectView:
         return project.count_tags
 
     @view_config(
-        route_name="count_project_persons",
+        route_name="count_project_contacts",
         renderer="json",
         permission="view",
     )
-    def count_project_persons(self):
+    def count_project_contacts(self):
         project = self.request.context.project
-        return project.count_persons
+        return project.count_contacts
 
     @view_config(
         route_name="count_project_comments",
@@ -580,7 +580,7 @@ class ProjectView:
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
-            self.request.session.flash("info:Dodaj tagi i osoby do kontaktu")
+            self.request.session.flash("info:Dodaj tagi i kontakty")
             log.info(f"Użytkownik {self.request.identity.name} dodał projekt")
             next_url = self.request.route_url(
                 "project_view", project_id=project.id, slug=project.slug
@@ -794,31 +794,31 @@ class ProjectView:
         return {"project": project, "tag": new_tag}
 
     @view_config(
-        route_name="add_person_to_project",
-        renderer="person_row.mako",
+        route_name="add_contact_to_project",
+        renderer="contact_row.mako",
         request_method="POST",
         permission="edit",
     )
-    def add_person(self):
+    def add_contact(self):
         project = self.request.context.project
-        person = None
+        contact = None
         name = self.request.POST.get("name")
         role = self.request.POST.get("role")
         phone = self.request.POST.get("phone")
         email = self.request.POST.get("email")
         if name:
-            person = Person(name, role, phone, email)
-            person.created_by = self.request.identity
-            if person not in project.people:
-                project.people.append(person)
+            contact = Contact(name, role, phone, email)
+            contact.created_by = self.request.identity
+            if contact not in project.contacts:
+                project.contacts.append(contact)
                 log.info(
-                    f"Użytkownik {self.request.identity.name} dodał osobę do projektu"
+                    f"Użytkownik {self.request.identity.name} dodał kontakt do projektu"
                 )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "personProjectEvent"}
-        return {"person": person}
+        self.request.response.headers = {"HX-Trigger": "contactProjectEvent"}
+        return {"contact": contact}
 
     @view_config(
         route_name="unlink_tag_from_project",

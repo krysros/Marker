@@ -7,8 +7,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .meta import Base
 
 
-class Person(Base):
-    __tablename__ = "persons"
+class Contact(Base):
+    __tablename__ = "contacts"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Unicode(100))
     role: Mapped[str] = mapped_column(Unicode(100))
@@ -27,10 +27,10 @@ class Person(Base):
     updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
 
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
-    company: Mapped["Company"] = relationship(back_populates="people")
+    company: Mapped["Company"] = relationship(back_populates="contacts")
 
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
-    project: Mapped["Project"] = relationship(back_populates="people")
+    project: Mapped["Project"] = relationship(back_populates="contacts")
 
     def __init__(
         self,

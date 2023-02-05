@@ -3,7 +3,7 @@ from .factories import (
     comment_factory,
     company_factory,
     default_factory,
-    person_factory,
+    contact_factory,
     project_factory,
     tag_factory,
     user_factory,
@@ -127,8 +127,8 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_persons",
-        r"/company/{company_id:\d+}/{slug}/persons",
+        "company_contacts",
+        r"/company/{company_id:\d+}/{slug}/contacts",
         factory=company_factory,
     )
     config.add_route(
@@ -147,8 +147,8 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "count_company_persons",
-        r"/count/company/{company_id:\d+}/{slug}/persons",
+        "count_company_contacts",
+        r"/count/company/{company_id:\d+}/{slug}/contacts",
         factory=company_factory,
     )
     config.add_route(
@@ -222,13 +222,13 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "add_person_to_company",
-        r"/add/company/{company_id:\d+}/{slug}/person",
+        "add_contact_to_company",
+        r"/add/company/{company_id:\d+}/{slug}/contact",
         factory=company_factory,
     )
     config.add_route(
-        "add_person_to_project",
-        r"/add/project/{project_id:\d+}/{slug}/person",
+        "add_contact_to_project",
+        r"/add/project/{project_id:\d+}/{slug}/contact",
         factory=project_factory,
     )
     config.add_route(
@@ -272,33 +272,33 @@ def includeme(config):
     config.add_route("comment_search", "/comment/search", factory=default_factory)
 
     config.add_route(
-        "person_vcard",
-        r"/person/{person_id:\d+}/{slug}/vcard",
-        factory=person_factory,
+        "contact_vcard",
+        r"/contact/{contact_id:\d+}/{slug}/vcard",
+        factory=contact_factory,
     )
     config.add_route(
-        "person_view",
-        r"/person/{person_id:\d+}/{slug}",
-        factory=person_factory,
+        "contact_view",
+        r"/contact/{contact_id:\d+}/{slug}",
+        factory=contact_factory,
     )
     config.add_route(
-        "person_edit",
-        r"/person/{person_id:\d+}/{slug}/edit",
-        factory=person_factory,
+        "contact_edit",
+        r"/contact/{contact_id:\d+}/{slug}/edit",
+        factory=contact_factory,
     )
     config.add_route(
-        "person_delete",
-        r"/person/{person_id:\d+}/{slug}/delete",
-        factory=person_factory,
+        "contact_delete",
+        r"/contact/{contact_id:\d+}/{slug}/delete",
+        factory=contact_factory,
     )
     config.add_route(
-        "delete_person",
-        r"/delete/person/{person_id:\d+}/{slug}",
-        factory=person_factory,
+        "delete_contact",
+        r"/delete/contact/{contact_id:\d+}/{slug}",
+        factory=contact_factory,
     )
-    config.add_route("person_all", "/person", factory=default_factory)
-    config.add_route("person_more", "/person/more", factory=default_factory)
-    config.add_route("person_search", "/person/search", factory=default_factory)
+    config.add_route("contact_all", "/contact", factory=default_factory)
+    config.add_route("contact_more", "/contact/more", factory=default_factory)
+    config.add_route("contact_search", "/contact/search", factory=default_factory)
 
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
@@ -323,8 +323,8 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "project_persons",
-        r"/project/{project_id:\d+}/{slug}/persons",
+        "project_contacts",
+        r"/project/{project_id:\d+}/{slug}/contacts",
         factory=project_factory,
     )
     config.add_route(
@@ -378,8 +378,8 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "count_project_persons",
-        r"/count/project/{project_id:\d+}/{slug}/persons",
+        "count_project_contacts",
+        r"/count/project/{project_id:\d+}/{slug}/contacts",
         factory=project_factory,
     )
     config.add_route(
@@ -445,10 +445,10 @@ def includeme(config):
         "/user/{username}/projects/more",
         factory=user_factory,
     )
-    config.add_route("user_persons", "/user/{username}/persons", factory=user_factory)
+    config.add_route("user_contacts", "/user/{username}/contacts", factory=user_factory)
     config.add_route(
-        "user_persons_more",
-        "/user/{username}/persons/more",
+        "user_contacts_more",
+        "/user/{username}/contacts/more",
         factory=user_factory,
     )
     config.add_route("user_checked", "/user/{username}/checked", factory=user_factory)
