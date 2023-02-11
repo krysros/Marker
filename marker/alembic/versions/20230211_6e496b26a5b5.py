@@ -27,7 +27,7 @@ def upgrade():
         sa.Column("role", sa.Unicode(length=20), nullable=False),
         sa.Column("password", sa.Unicode(length=255), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_users")),
         sa.UniqueConstraint("name", name=op.f("uq_users_name")),
     )
@@ -49,7 +49,7 @@ def upgrade():
         sa.Column("court", sa.Unicode(length=100), nullable=True),
         sa.Column("color", sa.Unicode(length=10), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("creator_id", sa.Integer(), nullable=False),
         sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -83,7 +83,7 @@ def upgrade():
         sa.Column("stage", sa.Unicode(length=100), nullable=True),
         sa.Column("delivery_method", sa.Unicode(length=100), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("creator_id", sa.Integer(), nullable=False),
         sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -105,7 +105,7 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.Unicode(length=50), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("creator_id", sa.Integer(), nullable=False),
         sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -146,7 +146,7 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("comment", sa.String(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("creator_id", sa.Integer(), nullable=False),
         sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.Column("company_id", sa.Integer(), nullable=True),
@@ -226,7 +226,7 @@ def upgrade():
         sa.Column("phone", sa.Unicode(length=50), nullable=True),
         sa.Column("email", sa.Unicode(length=50), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("creator_id", sa.Integer(), nullable=False),
         sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.Column("company_id", sa.Integer(), nullable=True),

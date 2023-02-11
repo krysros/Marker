@@ -12,7 +12,7 @@ class Comment(Base):
     comment: Mapped[str]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+    updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 

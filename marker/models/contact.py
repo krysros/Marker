@@ -16,7 +16,7 @@ class Contact(Base):
     email: Mapped[Optional[str]] = mapped_column(Unicode(50))
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+    updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 

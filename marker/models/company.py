@@ -30,7 +30,7 @@ class Company(Base):
     color: Mapped[Optional[str]] = mapped_column(Unicode(10))
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
+    updated_at: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 
