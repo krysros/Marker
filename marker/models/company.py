@@ -1,5 +1,5 @@
 import datetime
-
+from typing import Optional
 from slugify import slugify
 from sqlalchemy import ForeignKey, Unicode, and_, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
@@ -15,30 +15,32 @@ class Company(Base):
     __tablename__ = "companies"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Unicode(100))
-    street: Mapped[str] = mapped_column(Unicode(100))
-    postcode: Mapped[str] = mapped_column(Unicode(10))
-    city: Mapped[str] = mapped_column(Unicode(100))
-    region: Mapped[str] = mapped_column(Unicode(2))
-    country: Mapped[str] = mapped_column(Unicode(2))
-    latitude: Mapped[float]
-    longitude: Mapped[float]
-    link: Mapped[str] = mapped_column(Unicode(100))
-    NIP: Mapped[str] = mapped_column(Unicode(20))
-    REGON: Mapped[str] = mapped_column(Unicode(20))
-    KRS: Mapped[str] = mapped_column(Unicode(20))
-    court: Mapped[str] = mapped_column(Unicode(100))
-    color: Mapped[str] = mapped_column(Unicode(10))
+    street: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    postcode: Mapped[Optional[str]] = mapped_column(Unicode(10))
+    city: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    region: Mapped[Optional[str]] = mapped_column(Unicode(2))
+    country: Mapped[Optional[str]] = mapped_column(Unicode(2))
+    latitude: Mapped[Optional[float]]
+    longitude: Mapped[Optional[float]]
+    link: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    NIP: Mapped[Optional[str]] = mapped_column(Unicode(20))
+    REGON: Mapped[Optional[str]] = mapped_column(Unicode(20))
+    KRS: Mapped[Optional[str]] = mapped_column(Unicode(20))
+    court: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    color: Mapped[Optional[str]] = mapped_column(Unicode(10))
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
-    editor_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    editor_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
 
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
-    updated_by: Mapped["User"] = relationship(foreign_keys=[editor_id])
+    updated_by: Mapped[Optional["User"]] = relationship(foreign_keys=[editor_id])
 
     tags: Mapped[list["Tag"]] = relationship(
         secondary=companies_tags, back_populates="companies"
@@ -99,7 +101,9 @@ class Company(Base):
     @property
     def count_contacts(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).select_from(Contact).where(Contact.company_id == self.id)
+            select(func.count())
+            .select_from(Contact)
+            .where(Contact.company_id == self.id)
         )
 
     @property

@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy import Column, ForeignKey, Integer, Table, Unicode
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -14,8 +15,8 @@ class CompaniesProjects(Base):
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
         primary_key=True,
     )
-    stage: Mapped[str] = mapped_column(Unicode(100))
-    role: Mapped[str] = mapped_column(Unicode(100))
+    stage: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    role: Mapped[Optional[str]] = mapped_column(Unicode(100))
     company: Mapped["Company"] = relationship(back_populates="projects")
     project: Mapped["Project"] = relationship(back_populates="companies")
 

@@ -18,7 +18,9 @@ class ContactView:
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name="contact_all", renderer="contact_all.mako", permission="view")
+    @view_config(
+        route_name="contact_all", renderer="contact_all.mako", permission="view"
+    )
     @view_config(
         route_name="contact_more",
         renderer="contact_more.mako",

@@ -1,8 +1,8 @@
 """init
 
-Revision ID: c214947db5b2
+Revision ID: 6e496b26a5b5
 Revises: 
-Create Date: 2023-01-21 19:20:12.268354
+Create Date: 2023-02-11 08:20:42.186834
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "c214947db5b2"
+revision = "6e496b26a5b5"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,7 +27,7 @@ def upgrade():
         sa.Column("role", sa.Unicode(length=20), nullable=False),
         sa.Column("password", sa.Unicode(length=255), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_users")),
         sa.UniqueConstraint("name", name=op.f("uq_users_name")),
     )
@@ -35,23 +35,23 @@ def upgrade():
         "companies",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.Unicode(length=100), nullable=False),
-        sa.Column("street", sa.Unicode(length=100), nullable=False),
-        sa.Column("postcode", sa.Unicode(length=10), nullable=False),
-        sa.Column("city", sa.Unicode(length=100), nullable=False),
-        sa.Column("state", sa.Unicode(length=2), nullable=False),
-        sa.Column("country", sa.Unicode(length=2), nullable=False),
-        sa.Column("latitude", sa.Float(), nullable=False),
-        sa.Column("longitude", sa.Float(), nullable=False),
-        sa.Column("link", sa.Unicode(length=100), nullable=False),
-        sa.Column("NIP", sa.Unicode(length=20), nullable=False),
-        sa.Column("REGON", sa.Unicode(length=20), nullable=False),
-        sa.Column("KRS", sa.Unicode(length=20), nullable=False),
-        sa.Column("court", sa.Unicode(length=100), nullable=False),
-        sa.Column("color", sa.Unicode(length=10), nullable=False),
+        sa.Column("street", sa.Unicode(length=100), nullable=True),
+        sa.Column("postcode", sa.Unicode(length=10), nullable=True),
+        sa.Column("city", sa.Unicode(length=100), nullable=True),
+        sa.Column("region", sa.Unicode(length=2), nullable=True),
+        sa.Column("country", sa.Unicode(length=2), nullable=True),
+        sa.Column("latitude", sa.Float(), nullable=True),
+        sa.Column("longitude", sa.Float(), nullable=True),
+        sa.Column("link", sa.Unicode(length=100), nullable=True),
+        sa.Column("NIP", sa.Unicode(length=20), nullable=True),
+        sa.Column("REGON", sa.Unicode(length=20), nullable=True),
+        sa.Column("KRS", sa.Unicode(length=20), nullable=True),
+        sa.Column("court", sa.Unicode(length=100), nullable=True),
+        sa.Column("color", sa.Unicode(length=10), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=False),
-        sa.Column("editor_id", sa.Integer(), nullable=False),
+        sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["creator_id"],
             ["users.id"],
@@ -70,22 +70,22 @@ def upgrade():
         "projects",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.Unicode(length=200), nullable=False),
-        sa.Column("street", sa.Unicode(length=100), nullable=False),
-        sa.Column("postcode", sa.Unicode(length=10), nullable=False),
-        sa.Column("city", sa.Unicode(length=100), nullable=False),
-        sa.Column("state", sa.Unicode(length=2), nullable=False),
-        sa.Column("country", sa.Unicode(length=2), nullable=False),
-        sa.Column("latitude", sa.Float(), nullable=False),
-        sa.Column("longitude", sa.Float(), nullable=False),
-        sa.Column("link", sa.Unicode(length=2000), nullable=False),
-        sa.Column("color", sa.Unicode(length=10), nullable=False),
-        sa.Column("deadline", sa.Date(), nullable=False),
-        sa.Column("stage", sa.Unicode(length=100), nullable=False),
-        sa.Column("delivery_method", sa.Unicode(length=100), nullable=False),
+        sa.Column("street", sa.Unicode(length=100), nullable=True),
+        sa.Column("postcode", sa.Unicode(length=10), nullable=True),
+        sa.Column("city", sa.Unicode(length=100), nullable=True),
+        sa.Column("region", sa.Unicode(length=2), nullable=True),
+        sa.Column("country", sa.Unicode(length=2), nullable=True),
+        sa.Column("latitude", sa.Float(), nullable=True),
+        sa.Column("longitude", sa.Float(), nullable=True),
+        sa.Column("link", sa.Unicode(length=2000), nullable=True),
+        sa.Column("color", sa.Unicode(length=10), nullable=True),
+        sa.Column("deadline", sa.Date(), nullable=True),
+        sa.Column("stage", sa.Unicode(length=100), nullable=True),
+        sa.Column("delivery_method", sa.Unicode(length=100), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=False),
-        sa.Column("editor_id", sa.Integer(), nullable=False),
+        sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["creator_id"],
             ["users.id"],
@@ -105,9 +105,9 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.Unicode(length=50), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=False),
-        sa.Column("editor_id", sa.Integer(), nullable=False),
+        sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["creator_id"],
             ["users.id"],
@@ -146,11 +146,11 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("comment", sa.String(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=False),
-        sa.Column("editor_id", sa.Integer(), nullable=False),
-        sa.Column("company_id", sa.Integer(), nullable=False),
-        sa.Column("project_id", sa.Integer(), nullable=False),
+        sa.Column("editor_id", sa.Integer(), nullable=True),
+        sa.Column("company_id", sa.Integer(), nullable=True),
+        sa.Column("project_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["company_id"],
             ["companies.id"],
@@ -179,8 +179,8 @@ def upgrade():
         "companies_projects",
         sa.Column("company_id", sa.Integer(), nullable=False),
         sa.Column("project_id", sa.Integer(), nullable=False),
-        sa.Column("stage", sa.Unicode(length=100), nullable=False),
-        sa.Column("role", sa.Unicode(length=100), nullable=False),
+        sa.Column("stage", sa.Unicode(length=100), nullable=True),
+        sa.Column("role", sa.Unicode(length=100), nullable=True),
         sa.ForeignKeyConstraint(
             ["company_id"],
             ["companies.id"],
@@ -219,39 +219,41 @@ def upgrade():
         ),
     )
     op.create_table(
-        "persons",
+        "contacts",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.Unicode(length=100), nullable=False),
-        sa.Column("position", sa.Unicode(length=100), nullable=False),
-        sa.Column("phone", sa.Unicode(length=50), nullable=False),
-        sa.Column("email", sa.Unicode(length=50), nullable=False),
+        sa.Column("role", sa.Unicode(length=100), nullable=True),
+        sa.Column("phone", sa.Unicode(length=50), nullable=True),
+        sa.Column("email", sa.Unicode(length=50), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=False),
-        sa.Column("editor_id", sa.Integer(), nullable=False),
+        sa.Column("editor_id", sa.Integer(), nullable=True),
         sa.Column("company_id", sa.Integer(), nullable=False),
         sa.Column("project_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["company_id"],
             ["companies.id"],
-            name=op.f("fk_persons_company_id_companies"),
+            name=op.f("fk_contacts_company_id_companies"),
         ),
         sa.ForeignKeyConstraint(
             ["creator_id"],
             ["users.id"],
-            name=op.f("fk_persons_creator_id_users"),
+            name=op.f("fk_contacts_creator_id_users"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
             ["editor_id"],
             ["users.id"],
-            name=op.f("fk_persons_editor_id_users"),
+            name=op.f("fk_contacts_editor_id_users"),
             ondelete="SET NULL",
         ),
         sa.ForeignKeyConstraint(
-            ["project_id"], ["projects.id"], name=op.f("fk_persons_project_id_projects")
+            ["project_id"],
+            ["projects.id"],
+            name=op.f("fk_contacts_project_id_projects"),
         ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_persons")),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_contacts")),
     )
     op.create_table(
         "projects_tags",
@@ -318,7 +320,7 @@ def downgrade():
     op.drop_table("watched")
     op.drop_table("recommended")
     op.drop_table("projects_tags")
-    op.drop_table("persons")
+    op.drop_table("contacts")
     op.drop_table("companies_tags")
     op.drop_table("companies_projects")
     op.drop_table("comments")
