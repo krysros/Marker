@@ -38,13 +38,17 @@
       <dd>${user.name}</dd>
 
       <dt>Imię i nazwisko</dt>
-      <dd>${user.fullname}</dd>
+      <dd>${user.fullname or "---"}</dd>
 
       <dt>Email</dt>
+      % if user.email:
       <dd><a href="mailto:${user.email}">${user.email}</a></dd>
+      % else:
+      <dd>---</dd>
+      % endif
 
       <dt>Rola</dt>
-      <dd>${user.role}</dd>
+      <dd>${user.role or "---"}</dd>
     </dl>
   </div>
 </div>

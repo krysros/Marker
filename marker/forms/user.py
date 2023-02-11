@@ -40,8 +40,8 @@ class UserForm(Form):
         ],
         filters=[strip_filter],
     )
-    email = EmailField("Email", filters=[strip_filter])
-    role = SelectField("Rola", choices=USER_ROLES)
+    email = EmailField("Email", validators=[InputRequired()], filters=[strip_filter])
+    role = SelectField("Rola", validators=[InputRequired()], choices=USER_ROLES)
     password = PasswordField(
         "Hasło",
         validators=[
