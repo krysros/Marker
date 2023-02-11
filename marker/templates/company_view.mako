@@ -77,39 +77,35 @@
         <dl>
           <dt>Nazwa</dt>
           <dd>${company.name}</dd>
-          <dt>Adres</dt>
-          <dd>
-            ${company.street}<br>
-            % if company.postcode:
-            ${company.postcode} ${company.city}<br>
-            % else:
-            ${company.city}<br>
-            % endif
-            ${regions.get(company.region)}<br>
-            ${countries.get(company.country)}<br>
-          </dd>
-          <dt>Link</dt>
-          <dd>
-          % if company.link.startswith('http'):
-            <a href="${company.link}">
-          % else:
-            <a href="${'http://' + company.link}">
-          % endif
-            ${company.link}</a>
-          </dd>      
+          <dt>Ulica</dt>
+          <dd>${company.street or "---"}</dd>
+          <dt>Kod pocztowy</dt>
+          <dd>${company.postcode or "---"}</dd>
+          <dt>Miasto</dt>
+          <dd>${company.city or "---"}</dd>
+          <dt>Region</dt>
+          <dd>${regions.get(company.region) or "---"}</dd>
+          <dt>Kraj</dt>
+          <dd>${countries.get(company.country) or "---"}</dd>
         </dl>
       </div>
       <div class="col">
         <dl>
-          <dt>Dane rejestrowe</dt>
-          <dd>
-            NIP: ${company.NIP or "brak"}<br>
-            REGON: ${company.REGON or "brak"}<br>
-            KRS: ${company.KRS or "brak"}
-            % if company.court:
-              <br>${courts.get(company.court)}
-            % endif
+          <dt>Link</dt>
+          % if company.link:
+          <dd><a href="${company.link}" target="_blank">${company.link}</a></dd>
+          % else:
+          <dd>---</dd>
+          % endif
           </dd>
+          <dt>NIP</dt>
+          <dd>${company.NIP or "---"}</dd>
+          <dt>REGON</dt>
+          <dd>${company.REGON or "---"}</dd>
+          <dt>KRS</dt>
+          <dd>${company.KRS or "---"}</dd>
+          <dt>Sąd</dt>
+          <dd>${courts.get(company.court) or "---"}</dd>
         </dl>
       </div>
     </div>

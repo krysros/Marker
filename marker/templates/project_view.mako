@@ -74,33 +74,32 @@
         <dl>
           <dt>Nazwa</dt>
           <dd>${project.name}</dd>
-          <dt>Adres</dt>
-          <dd>
-            ${project.street}<br>
-            % if project.postcode:
-            ${project.postcode} ${project.city}<br>
-            % else:
-            ${project.city}<br>
-            % endif
-            ${regions.get(project.region)}<br>
-            ${countries.get(project.country)}<br>
-          </dd>
-          <dt>Link</dt>
-          <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>        
+          <dt>Ulica</dt>
+          <dd>${project.street or "---"}</dd>
+          <dt>Kod pocztowy</dt>
+          <dd>${project.postcode or "---"}</dd>
+          <dt>Miasto</dt>
+          <dd>${project.city or "---"}</dd>
+          <dt>Region</dt>
+          <dd>${regions.get(project.region) or "---"}</dd>
+          <dt>Kraj</dt>
+          <dd>${countries.get(project.country) or "---"}</dd>      
         </dl>
       </div>
       <div class="col">
         <dl>
-          <dt>Termin</dt>
-          % if project.deadline:
-          <dd>${project.deadline}</dd>
+          <dt>Link</dt>
+          % if project.link:
+          <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
           % else:
           <dd>---</dd>
           % endif
+          <dt>Termin</dt>
+          <dd>${project.deadline or "---"}</dd>
           <dt>Etap</dt>
-          <dd>${stages.get(project.stage)}</dd>
+          <dd>${stages.get(project.stage) or "---"}</dd>
           <dt>Sposób realizacji</dt>
-          <dd>${delivery_methods.get(project.delivery_method)}</dd>
+          <dd>${delivery_methods.get(project.delivery_method) or "---"}</dd>
         </dl>
       </div>
     </div>

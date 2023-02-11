@@ -4,8 +4,8 @@
     hx-trigger="revealed"
     hx-swap="afterend"
     class="table-${project.color}">
-    % else:
-    <tr class="table-${project.color}">
+% else:
+<tr class="table-${project.color}">
 % endif
   <td>
   % if project in request.identity.watched:
@@ -13,17 +13,9 @@
   % endif
     <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
   </td>
-  % if project.deadline:
-    <td>${project.deadline}</td>
-  % else:
-    <td>---</td>
-  % endif
-  % if project.city:
-    <td>${project.city}</td>
-  % else:
-    <td>---</td>
-  % endif
-  <td>${regions.get(project.region)}</td>
+  <td>${project.deadline or "---"}</td>
+  <td>${project.city or "---"}</td>
+  <td>${regions.get(project.region) or "---"}</td>
   <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>

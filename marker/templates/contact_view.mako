@@ -34,13 +34,17 @@
       % endif
 
       <dt>Rola</dt>
-      <dd>${contact.role}</dd>
+      <dd>${contact.role or "---"}</dd>
 
       <dt>Telefon</dt>
-      <dd>${contact.phone}</dd>
+      <dd>${contact.phone or "---"}</dd>
 
       <dt>Email</dt>
+      % if contact.email:
       <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
+      % else:
+      <dd>---</dd>
+      % endif
     </dl>
   </div>
 </div>
