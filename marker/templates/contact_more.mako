@@ -14,9 +14,21 @@
   % else:
   <td>---</td>
   % endif
+  % if contact.role:
   <td>${contact.role}</td>
+  % else:
+  <td>---</td>
+  % endif
+  % if contact.phone:
   <td>${contact.phone}</td>
+  % else:
+    <td>---</td>
+  % endif
+  % if contact.email:
   <td><a href="mailto:${contact.email}">${contact.email}</a></td>
+  % else:
+    <td>---</td>
+  % endif
   % if contact.created_at:
   <td>${contact.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   % else:

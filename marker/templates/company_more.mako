@@ -35,7 +35,11 @@
     % endif
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
   </td>
-  <td>${company.city}</td>
+  % if company.city:
+    <td>${company.city}</td>
+  % else:
+    <td>---</td>
+  % endif
   <td>${regions.get(company.region)}</td>
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>

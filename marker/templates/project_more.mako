@@ -13,8 +13,16 @@
   % endif
     <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
   </td>
-  <td>${project.deadline}</td>
-  <td>${project.city}</td>
+  % if project.deadline:
+    <td>${project.deadline}</td>
+  % else:
+    <td>---</td>
+  % endif
+  % if project.city:
+    <td>${project.city}</td>
+  % else:
+    <td>---</td>
+  % endif
   <td>${regions.get(project.region)}</td>
   <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
