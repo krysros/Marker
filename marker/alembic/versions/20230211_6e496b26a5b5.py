@@ -229,8 +229,8 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=False),
         sa.Column("editor_id", sa.Integer(), nullable=True),
-        sa.Column("company_id", sa.Integer(), nullable=False),
-        sa.Column("project_id", sa.Integer(), nullable=False),
+        sa.Column("company_id", sa.Integer(), nullable=True),
+        sa.Column("project_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["company_id"],
             ["companies.id"],

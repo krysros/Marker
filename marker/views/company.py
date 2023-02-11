@@ -829,19 +829,20 @@ class CompanyView:
                 select(Project).filter_by(name=name)
             ).scalar_one_or_none()
 
-            exist = self.request.dbsession.execute(
-                select(CompaniesProjects).filter_by(
-                    company_id=company.id, project_id=project.id
-                )
-            ).scalar_one_or_none()
+            if project:
+                exist = self.request.dbsession.execute(
+                    select(CompaniesProjects).filter_by(
+                        company_id=company.id, project_id=project.id
+                    )
+                ).scalar_one_or_none()
 
-            if not exist:
-                a = CompaniesProjects(stage=stage, role=role)
-                a.project = project
-                company.projects.append(a)
-            # If you want to use the id of a newly created object
-            # in the middle of a transaction, you must call dbsession.flush()
-            self.request.dbsession.flush()
+                if not exist:
+                    a = CompaniesProjects(stage=stage, role=role)
+                    a.project = project
+                    company.projects.append(a)
+                # If you want to use the id of a newly created object
+                # in the middle of a transaction, you must call dbsession.flush()
+                self.request.dbsession.flush()
         self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
         return {"company": company, "stages": stages, "company_roles": company_roles}
 
