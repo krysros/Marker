@@ -568,7 +568,11 @@ class UserView:
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
         regions = dict(REGIONS)
-        stmt = select(Company).join(selected_companies).filter(user.id == selected_companies.c.user_id)
+        stmt = (
+            select(Company)
+            .join(selected_companies)
+            .filter(user.id == selected_companies.c.user_id)
+        )
 
         if filter:
             stmt = stmt.filter(Company.color == filter)
@@ -634,7 +638,11 @@ class UserView:
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        stmt = select(Company).join(selected_companies).filter(user.id == selected_companies.c.user_id)
+        stmt = (
+            select(Company)
+            .join(selected_companies)
+            .filter(user.id == selected_companies.c.user_id)
+        )
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())

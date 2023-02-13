@@ -451,7 +451,11 @@ def includeme(config):
         "/user/{username}/contacts/more",
         factory=user_factory,
     )
-    config.add_route("user_selected_companies", "/user/{username}/selected_companies", factory=user_factory)
+    config.add_route(
+        "user_selected_companies",
+        "/user/{username}/selected_companies",
+        factory=user_factory,
+    )
     config.add_route(
         "user_selected_companies_more",
         "/user/{username}/selected_companies/more",
