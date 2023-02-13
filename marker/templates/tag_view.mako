@@ -23,7 +23,7 @@
   <div>${button.delete('tag_delete', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
-<p class="lead">${tag.name}</p>
+<%include file="tag_lead.mako"/>
 
 <div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-tag"></i> Tag</div>

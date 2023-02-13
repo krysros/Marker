@@ -22,7 +22,7 @@
   <div>${button.table('tag_projects', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
-<p class="lead">${tag.name}</p>
+<%include file="tag_lead.mako"/>
 
 <div id="map"></div>
 

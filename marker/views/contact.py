@@ -186,3 +186,20 @@ class ContactView:
         contact = self.request.context.contact
         response = export_vcard(contact)
         return response
+
+    @view_config(
+        route_name="contact_check",
+        request_method="POST",
+        renderer="json",
+        permission="view",
+    )
+    def check(self):
+        contact = self.request.context.contact
+        selected_contacts = self.request.identity.selected_contacts
+
+        if contact in selected_contacts:
+            selected_contacts.remove(contact)
+            return {"checked": False}
+        else:
+            selected_contacts.append(contact)
+            return {"checked": True}

@@ -6,6 +6,28 @@
 % else:
 <tr>
 % endif
+  <td>
+    % if contact in request.identity.selected_contacts:
+    <input class="form-check-input"
+          type="checkbox"
+          value="${contact.id}"
+          autocomplete="off"
+          checked
+          hx-post="${request.route_url('contact_check', contact_id=contact.id)}"
+          hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+          hx-trigger="click"
+          hx-swap="none">
+    % else:
+    <input class="form-check-input"
+          type="checkbox"
+          value="${contact.id}"
+          autocomplete="off"
+          hx-post="${request.route_url('contact_check', contact_id=contact.id)}"
+          hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+          hx-trigger="click"
+          hx-swap="none">
+    % endif
+  </td>
   <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name}</a></td>
   % if contact.company:
   <td><a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a></td>

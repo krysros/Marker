@@ -22,7 +22,7 @@
   <div>${button.map('tag_projects_map', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
-<p class="lead">${tag.name}</p>
+<%include file="tag_lead.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div>${button.dropdown('tag_projects', dd_filter, tag_id=tag.id, slug=tag.slug)}</div>

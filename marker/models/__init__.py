@@ -8,6 +8,7 @@ from .association import CompaniesProjects  # flake8: noqa
 from .association import selected_companies  # flake8: noqa
 from .association import selected_projects  # flake8: noqa
 from .association import selected_tags  # flake8: noqa
+from .association import selected_contacts  # flake8: noqa
 from .association import companies_tags  # flake8: noqa
 from .association import projects_tags  # flake8: noqa
 from .association import recommended  # flake8: noqa

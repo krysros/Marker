@@ -1,14 +1,14 @@
 <div class="hstack">
   <div class="me-auto">
     <p class="lead">
-      % if project in request.identity.selected_projects:
+      % if tag in request.identity.selected_tags:
       <input class="form-check-input"
             id="mark"
             type="checkbox"
-            value="${project.id}"
+            value="${tag.id}"
             autocomplete="off"
             checked
-            hx-post="${request.route_url('project_check', project_id=project.id)}"
+            hx-post="${request.route_url('tag_check', tag_id=tag.id)}"
             hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
             hx-trigger="click"
             hx-swap="none">
@@ -16,14 +16,14 @@
       <input class="form-check-input"
             id="mark"
             type="checkbox"
-            value="${project.id}"
+            value="${tag.id}"
             autocomplete="off"
-            hx-post="${request.route_url('project_check', project_id=project.id)}"
+            hx-post="${request.route_url('tag_check', tag_id=tag.id)}"
             hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
             hx-trigger="click"
             hx-swap="none">
       % endif
-      &nbsp;${project.name}
+      &nbsp;${tag.name}
     </p>
   </div>
 </div>

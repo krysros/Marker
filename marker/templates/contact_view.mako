@@ -14,7 +14,7 @@
   <div>${button.delete('contact_delete', contact_id=contact.id, slug=contact.slug)}</div>
 </div>
 
-<p class="lead">${contact.name}</p>
+<%include file="contact_lead.mako"/>
 
 <div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-person"></i> Kontakt</div>

@@ -13,7 +13,7 @@
 <div class="hstack gap-2 mb-4">
   <div>${button.dropdown('user_selected_tags', dd_sort, username=user.name)}</div>
   <div class="me-auto">${button.dropdown('user_selected_tags', dd_order, username=user.name)}</div>
-  ## <div>${button.export('user_selected_tags_export', username=user.name, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
+  <div>${button.export('user_selected_tags_export', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="tag_table.mako"/>

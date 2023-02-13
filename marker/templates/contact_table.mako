@@ -2,6 +2,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>#</th>
         <th>Imię i nazwisko</th>
         <th>Firma / Projekt</th>
         <th>Rola</th>

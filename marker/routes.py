@@ -301,6 +301,11 @@ def includeme(config):
         r"/delete/contact/{contact_id:\d+}/{slug}",
         factory=contact_factory,
     )
+    config.add_route(
+        "contact_check",
+        r"/check/contact/{contact_id:\d+}",
+        factory=contact_factory,
+    )
     config.add_route("contact_all", "/contact", factory=default_factory)
     config.add_route("contact_more", "/contact/more", factory=default_factory)
     config.add_route("contact_search", "/contact/search", factory=default_factory)
@@ -511,14 +516,34 @@ def includeme(config):
         "/user/{username}/selected_tags/more",
         factory=user_factory,
     )
-    # config.add_route(
-    #     "user_selected_tags_export",
-    #     "/user/{username}/selected_tags/export",
-    #     factory=user_factory,
-    # )
+    config.add_route(
+        "user_selected_tags_export",
+        "/user/{username}/selected_tags/export",
+        factory=user_factory,
+    )
     config.add_route(
         "user_selected_tags_clear",
         "/user/{username}/selected_tags/clear",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts",
+        "/user/{username}/selected_contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts_more",
+        "/user/{username}/selected_contacts/more",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts_export",
+        "/user/{username}/selected_contacts/export",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts_clear",
+        "/user/{username}/selected_contacts/clear",
         factory=user_factory,
     )
     config.add_route(

@@ -6,7 +6,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
-from ..export import export_companies_to_xlsx, export_projects_to_xlsx
+from ..export import export_companies_to_xlsx, export_projects_to_xlsx, export_contacts_to_xlsx, export_tags_to_xlsx
 from ..forms import UserForm, UserSearchForm
 from ..forms.select import (
     COLORS,
@@ -29,6 +29,7 @@ from ..models import (
     selected_companies,
     selected_projects,
     selected_tags,
+    selected_contacts,
     recommended,
     watched,
 )
@@ -877,6 +878,33 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_selected_tags_export",
+        permission="view",
+    )
+    def export_selected_tags(self):
+        user = self.request.context.user
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+
+        stmt = (
+            select(Tag)
+            .join(selected_tags)
+            .filter(user.id == selected_tags.c.user_id)
+        )
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Tag, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Tag, sort).desc())
+
+        tags = self.request.dbsession.execute(stmt).scalars()
+        response = export_tags_to_xlsx(tags)
+        log.info(
+            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych tagów"
+        )
+        return response
+
+    @view_config(
         route_name="user_selected_tags_clear",
         request_method="POST",
         permission="view",
@@ -888,6 +916,120 @@ class UserView:
             f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone tagi"
         )
         next_url = self.request.route_url("user_selected_tags", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_selected_contacts",
+        renderer="user_selected_contacts.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_selected_contacts_more",
+        renderer="contact_more.mako",
+        permission="view",
+    )
+    def selected_contacts(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+        dropdown_sort = dict(DROPDOWN_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        stmt = (
+            select(Contact)
+            .join(selected_contacts)
+            .filter(user.id == selected_contacts.c.user_id)
+        )
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Contact, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Contact, sort).desc())
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        search_query = {}
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_selected_contacts_more",
+            username=user.name,
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
+        )
+
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+        )
+
+        return {
+            "search_query": search_query,
+            "user": user,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+        }
+
+    @view_config(
+        route_name="user_selected_contacts_export",
+        permission="view",
+    )
+    def export_selected_contacts(self):
+        user = self.request.context.user
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+
+        stmt = (
+            select(Contact)
+            .join(selected_contacts)
+            .filter(user.id == selected_contacts.c.user_id)
+        )
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Contact, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Contact, sort).desc())
+
+        contacts = self.request.dbsession.execute(stmt).scalars()
+        response = export_contacts_to_xlsx(contacts)
+        log.info(
+            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych kontaktów"
+        )
+        return response
+
+    @view_config(
+        route_name="user_selected_contacts_clear",
+        request_method="POST",
+        permission="view",
+    )
+    def clear_selected_contacts(self):
+        user = self.request.context.user
+        user.selected_contacts = []
+        log.info(
+            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone kontakty"
+        )
+        next_url = self.request.route_url("user_selected_contacts", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
