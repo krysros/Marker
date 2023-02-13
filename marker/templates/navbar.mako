@@ -40,7 +40,7 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a class="dropdown-item" role="button" href="${request.route_url('user_checked', username=request.identity.name)}">
+              <a class="dropdown-item" role="button" href="${request.route_url('user_selected_companies', username=request.identity.name)}">
                 <i class="bi bi-check-square"></i> Zaznaczone
               </a>
             </li>

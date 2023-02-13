@@ -730,13 +730,13 @@ class CompanyView:
     )
     def check(self):
         company = self.request.context.company
-        checked = self.request.identity.checked
+        selected_companies = self.request.identity.selected_companies
 
-        if company in checked:
-            checked.remove(company)
+        if company in selected_companies:
+            selected_companies.remove(company)
             return {"checked": False}
         else:
-            checked.append(company)
+            selected_companies.append(company)
             return {"checked": True}
 
     @view_config(

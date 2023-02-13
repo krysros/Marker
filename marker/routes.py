@@ -451,20 +451,20 @@ def includeme(config):
         "/user/{username}/contacts/more",
         factory=user_factory,
     )
-    config.add_route("user_checked", "/user/{username}/checked", factory=user_factory)
+    config.add_route("user_selected_companies", "/user/{username}/selected_companies", factory=user_factory)
     config.add_route(
-        "user_checked_more",
-        "/user/{username}/checked/more",
+        "user_selected_companies_more",
+        "/user/{username}/selected_companies/more",
         factory=user_factory,
     )
     config.add_route(
-        "user_checked_export",
-        "/user/{username}/checked/export",
+        "user_selected_companies_export",
+        "/user/{username}/selected_companies/export",
         factory=user_factory,
     )
     config.add_route(
-        "user_checked_clear",
-        "/user/{username}/checked/clear",
+        "user_selected_companies_clear",
+        "/user/{username}/selected_companies/clear",
         factory=user_factory,
     )
     config.add_route(

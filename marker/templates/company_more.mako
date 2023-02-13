@@ -8,7 +8,7 @@
 <tr class="table-${company.color}">
 % endif
   <td>
-    % if company in request.identity.checked:
+    % if company in request.identity.selected_companies:
     <input class="form-check-input"
            type="checkbox"
            value="${company.id}"

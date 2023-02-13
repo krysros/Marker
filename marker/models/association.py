@@ -68,8 +68,23 @@ recommended = Table(
     ),
 )
 
-checked = Table(
-    "checked",
+watched = Table(
+    "watched",
+    Base.metadata,
+    Column(
+        "project_id",
+        Integer,
+        ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "user_id",
+        Integer,
+        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+selected_companies = Table(
+    "selected_companies",
     Base.metadata,
     Column(
         "company_id",
@@ -83,13 +98,43 @@ checked = Table(
     ),
 )
 
-watched = Table(
-    "watched",
+selected_projects = Table(
+    "selected_projects",
     Base.metadata,
     Column(
         "project_id",
         Integer,
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "user_id",
+        Integer,
+        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+selected_tags = Table(
+    "selected_tags",
+    Base.metadata,
+    Column(
+        "tag_id",
+        Integer,
+        ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    Column(
+        "user_id",
+        Integer,
+        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+)
+
+selected_contacts = Table(
+    "selected_contacts",
+    Base.metadata,
+    Column(
+        "contact_id",
+        Integer,
+        ForeignKey("contacts.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
     Column(
         "user_id",

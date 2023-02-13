@@ -26,7 +26,7 @@ from ..models import (
     Project,
     Tag,
     User,
-    checked,
+    selected_companies,
     recommended,
     watched,
 )
@@ -549,16 +549,16 @@ class UserView:
         return {"heading": "Znajdź użytkownika", "form": form}
 
     @view_config(
-        route_name="user_checked",
-        renderer="user_checked.mako",
+        route_name="user_selected_companies",
+        renderer="user_selected_companies.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_checked_more",
+        route_name="user_selected_companies_more",
         renderer="company_more.mako",
         permission="view",
     )
-    def checked(self):
+    def selected_companies(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         filter = self.request.params.get("filter", None)
@@ -568,7 +568,7 @@ class UserView:
         dropdown_order = dict(DROPDOWN_ORDER)
         colors = dict(COLORS)
         regions = dict(REGIONS)
-        stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
+        stmt = select(Company).join(selected_companies).filter(user.id == selected_companies.c.user_id)
 
         if filter:
             stmt = stmt.filter(Company.color == filter)
@@ -591,7 +591,7 @@ class UserView:
         )
 
         next_page = self.request.route_url(
-            "user_checked_more",
+            "user_selected_companies_more",
             username=user.name,
             _query={
                 **search_query,
@@ -626,15 +626,15 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_checked_export",
+        route_name="user_selected_companies_export",
         permission="view",
     )
-    def export_checked(self):
+    def export_selected_companies(self):
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
-        stmt = select(Company).join(checked).filter(user.id == checked.c.user_id)
+        stmt = select(Company).join(selected_companies).filter(user.id == selected_companies.c.user_id)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -649,15 +649,15 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_checked_clear",
+        route_name="user_selected_companies_clear",
         request_method="POST",
         permission="view",
     )
-    def clear_checked(self):
+    def clear_selected_companies(self):
         user = self.request.context.user
-        user.checked = []
+        user.selected_companies = []
         log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy")
-        next_url = self.request.route_url("user_checked", username=user.name)
+        next_url = self.request.route_url("user_selected_companies", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303

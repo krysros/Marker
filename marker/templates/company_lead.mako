@@ -1,7 +1,7 @@
 <div class="hstack">
   <div class="me-auto">
     <p class="lead">
-      % if company in request.identity.checked:
+      % if company in request.identity.selected_companies:
       <input class="form-check-input"
             id="mark"
             type="checkbox"
