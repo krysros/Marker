@@ -6,6 +6,28 @@
 % else:
 <tr>
 % endif
+  <td>
+    % if tag in request.identity.selected_tags:
+    <input class="form-check-input"
+          type="checkbox"
+          value="${tag.id}"
+          autocomplete="off"
+          checked
+          hx-post="${request.route_url('tag_check', tag_id=tag.id)}"
+          hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+          hx-trigger="click"
+          hx-swap="none">
+    % else:
+    <input class="form-check-input"
+          type="checkbox"
+          value="${tag.id}"
+          autocomplete="off"
+          hx-post="${request.route_url('tag_check', tag_id=tag.id)}"
+          hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+          hx-trigger="click"
+          hx-swap="none">
+    % endif
+  </td>
   <td><a href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a></td>
   <td>${tag.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${tag.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>

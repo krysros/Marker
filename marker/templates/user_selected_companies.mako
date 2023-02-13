@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> Zaznaczone firmy
+  <i class="bi bi-check-square"></i> Firmy
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.clear('user_selected_companies_clear', icon='square', username=user.name)}

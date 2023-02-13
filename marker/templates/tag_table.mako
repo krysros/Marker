@@ -2,6 +2,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>#</th>
         <th>Tag</th>
         <th>Dodano</th>
         <th>Zmodyfikowano</th>

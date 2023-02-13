@@ -103,6 +103,11 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/{slug}/delete",
         factory=tag_factory,
     )
+    config.add_route(
+        "tag_check",
+        r"/check/tag/{tag_id:\d+}",
+        factory=tag_factory,
+    )
 
     config.add_route("company_all", "/company", factory=default_factory)
     config.add_route("company_more", "/company/more", factory=default_factory)
@@ -494,6 +499,26 @@ def includeme(config):
     config.add_route(
         "user_selected_projects_clear",
         "/user/{username}/selected_projects/clear",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_tags",
+        "/user/{username}/selected_tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_tags_more",
+        "/user/{username}/selected_tags/more",
+        factory=user_factory,
+    )
+    # config.add_route(
+    #     "user_selected_tags_export",
+    #     "/user/{username}/selected_tags/export",
+    #     factory=user_factory,
+    # )
+    config.add_route(
+        "user_selected_tags_clear",
+        "/user/{username}/selected_tags/clear",
         factory=user_factory,
     )
     config.add_route(

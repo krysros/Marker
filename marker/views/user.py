@@ -28,6 +28,7 @@ from ..models import (
     User,
     selected_companies,
     selected_projects,
+    selected_tags,
     recommended,
     watched,
 )
@@ -800,6 +801,93 @@ class UserView:
             f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone projekty"
         )
         next_url = self.request.route_url("user_selected_projects", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_selected_tags",
+        renderer="user_selected_tags.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_selected_tags_more",
+        renderer="tag_more.mako",
+        permission="view",
+    )
+    def selected_tags(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+        dropdown_sort = dict(DROPDOWN_SORT)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        stmt = (
+            select(Tag)
+            .join(selected_tags)
+            .filter(user.id == selected_tags.c.user_id)
+        )
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Tag, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Tag, sort).desc())
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        search_query = {}
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_selected_tags_more",
+            username=user.name,
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
+        )
+
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+        )
+
+        return {
+            "search_query": search_query,
+            "user": user,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+        }
+
+    @view_config(
+        route_name="user_selected_tags_clear",
+        request_method="POST",
+        permission="view",
+    )
+    def clear_selected_tags(self):
+        user = self.request.context.user
+        user.selected_tags = []
+        log.info(
+            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone tagi"
+        )
+        next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303

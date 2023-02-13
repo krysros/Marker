@@ -512,6 +512,23 @@ class TagView:
         return response
 
     @view_config(
+        route_name="tag_check",
+        request_method="POST",
+        renderer="json",
+        permission="view",
+    )
+    def check(self):
+        tag = self.request.context.tag
+        selected_tags = self.request.identity.selected_tags
+
+        if tag in selected_tags:
+            selected_tags.remove(tag)
+            return {"checked": False}
+        else:
+            selected_tags.append(tag)
+            return {"checked": True}
+
+    @view_config(
         route_name="tag_select",
         renderer="tag_datalist.mako",
         request_method="GET",
