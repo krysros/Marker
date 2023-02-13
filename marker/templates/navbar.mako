@@ -54,6 +54,7 @@
                 <i class="bi bi-check-square"></i> Tagi
               </a>
             </li>
+            <li><hr class="dropdown-divider"></li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_recommended', username=request.identity.name)}">
                 <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
