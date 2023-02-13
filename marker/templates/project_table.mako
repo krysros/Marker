@@ -4,9 +4,9 @@
       <tr>
         <th>#</th>
         <th>Projekt</th>
-        <th>Termin</th>
         <th>Miasto</th>
         <th>Region</th>
+        <th>Termin</th>
         <th>Utworzono</th>
         <th>Zmodyfikowano</th>
         <th>Obserwacje</th>
