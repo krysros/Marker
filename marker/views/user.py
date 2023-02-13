@@ -27,6 +27,7 @@ from ..models import (
     Tag,
     User,
     selected_companies,
+    selected_projects,
     recommended,
     watched,
 )
@@ -666,6 +667,139 @@ class UserView:
         user.selected_companies = []
         log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy")
         next_url = self.request.route_url("user_selected_companies", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_selected_projects",
+        renderer="user_selected_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_selected_projects_more",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def selected_projects(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        filter = self.request.params.get("filter", None)
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+        dropdown_status = dict(DROPDOWN_STATUS)
+        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
+        dropdown_order = dict(DROPDOWN_ORDER)
+        colors = dict(COLORS)
+        regions = dict(REGIONS)
+        now = datetime.datetime.now()
+        stmt = (
+            select(Project)
+            .join(selected_projects)
+            .filter(user.id == selected_projects.c.user_id)
+        )
+
+        if filter == "in_progress":
+            stmt = stmt.filter(Project.deadline > now.date())
+        elif filter == "completed":
+            stmt = stmt.filter(Project.deadline < now.date())
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Project, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Project, sort).desc())
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        search_query = {}
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_selected_projects_more",
+            username=user.name,
+            _query={
+                **search_query,
+                "page": page + 1,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+            },
+        )
+
+        dd_filter = Dropdown(
+            items=dropdown_status,
+            typ=Dd.FILTER,
+            _filter=filter,
+            _sort=sort,
+            _order=order,
+        )
+        dd_sort = Dropdown(
+            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+        )
+        dd_order = Dropdown(
+            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+        )
+
+        return {
+            "search_query": search_query,
+            "user": user,
+            "dd_filter": dd_filter,
+            "dd_sort": dd_sort,
+            "dd_order": dd_order,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "regions": regions,
+            "counter": counter,
+        }
+
+    @view_config(
+        route_name="user_selected_projects_export",
+        permission="view",
+    )
+    def export_selected_projects(self):
+        user = self.request.context.user
+        sort = self.request.params.get("sort", "name")
+        order = self.request.params.get("order", "asc")
+
+        stmt = (
+            select(Project)
+            .join(selected_projects)
+            .filter(user.id == selected_projects.c.user_id)
+        )
+
+        if order == "asc":
+            stmt = stmt.order_by(getattr(Project, sort).asc())
+        elif order == "desc":
+            stmt = stmt.order_by(getattr(Project, sort).desc())
+
+        projects = self.request.dbsession.execute(stmt).scalars()
+        response = export_projects_to_xlsx(projects)
+        log.info(
+            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych projektów"
+        )
+        return response
+
+    @view_config(
+        route_name="user_selected_projects_clear",
+        request_method="POST",
+        permission="view",
+    )
+    def clear_selected_projects(self):
+        user = self.request.context.user
+        user.selected_projects = []
+        log.info(
+            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone projekty"
+        )
+        next_url = self.request.route_url("user_selected_projects", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303

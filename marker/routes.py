@@ -353,6 +353,11 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
+        "project_check",
+        r"/check/project/{project_id:\d+}",
+        factory=project_factory,
+    )
+    config.add_route(
         "project_watch",
         r"/watch/project/{project_id:\d+}",
         factory=project_factory,
@@ -469,6 +474,26 @@ def includeme(config):
     config.add_route(
         "user_selected_companies_clear",
         "/user/{username}/selected_companies/clear",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects",
+        "/user/{username}/selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects_more",
+        "/user/{username}/selected_projects/more",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects_export",
+        "/user/{username}/selected_projects/export",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects_clear",
+        "/user/{username}/selected_projects/clear",
         factory=user_factory,
     )
     config.add_route(

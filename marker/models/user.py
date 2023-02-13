@@ -4,7 +4,7 @@ import argon2
 from sqlalchemy import Unicode, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
-from .association import selected_companies, recommended, watched
+from .association import selected_companies, selected_projects, recommended, watched
 from .comment import Comment
 from .company import Company
 from .meta import Base
@@ -59,6 +59,12 @@ class User(Base):
 
     selected_companies: Mapped[list["Company"]] = relationship(
         secondary=selected_companies,
+        cascade="delete",
+        single_parent=True,
+    )
+
+    selected_projects: Mapped[list["Project"]] = relationship(
+        secondary=selected_projects,
         cascade="delete",
         single_parent=True,
     )

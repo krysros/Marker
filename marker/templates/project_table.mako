@@ -2,6 +2,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>#</th>
         <th>Projekt</th>
         <th>Termin</th>
         <th>Miasto</th>

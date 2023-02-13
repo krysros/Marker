@@ -752,6 +752,23 @@ class ProjectView:
         return {"project": project, "stages": stages, "company_roles": company_roles}
 
     @view_config(
+        route_name="project_check",
+        request_method="POST",
+        renderer="json",
+        permission="view",
+    )
+    def check(self):
+        project = self.request.context.project
+        selected_projects = self.request.identity.selected_projects
+
+        if project in selected_projects:
+            selected_projects.remove(project)
+            return {"checked": False}
+        else:
+            selected_projects.append(project)
+            return {"checked": True}
+
+    @view_config(
         route_name="project_select",
         renderer="project_datalist.mako",
         request_method="GET",
