@@ -56,7 +56,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th class="col-1"></th>
+        <th class="col-1">#</th>
         <th>Imię i nazwisko</th>
         <th>Rola</th>
         <th>Telefon</th>
