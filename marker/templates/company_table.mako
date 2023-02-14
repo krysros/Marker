@@ -2,7 +2,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>#</th>
+        <th class="col-1">#</th>
         <th>Firma</th>
         <th>Miasto</th>
         <th>Region</th>

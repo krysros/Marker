@@ -4,6 +4,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th class="col-1">#</th>
         <th>Firma</th>
         <th>Etap</th>
         <th>Rola</th>
@@ -13,6 +14,28 @@
     <tbody>
       % for assoc in project.companies:
       <tr>
+        <td>
+          % if assoc.company in request.identity.selected_companies:
+          <input class="form-check-input"
+                  type="checkbox"
+                  value="${assoc.company.id}"
+                  autocomplete="off"
+                  checked
+                  hx-post="${request.route_url('company_check', company_id=assoc.company.id)}"
+                  hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+                  hx-trigger="click"
+                  hx-swap="none">
+          % else:
+          <input class="form-check-input"
+                  type="checkbox"
+                  value="${assoc.company.id}"
+                  autocomplete="off"
+                  hx-post="${request.route_url('company_check', company_id=assoc.company.id)}"
+                  hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+                  hx-trigger="click"
+                  hx-swap="none">
+          % endif
+        </td>
         <td>
           % if assoc.company in request.identity.recommended:
           <i class="bi bi-hand-thumbs-up-fill"></i>
