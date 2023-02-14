@@ -15,7 +15,7 @@
     <tbody>
       % for assoc in company.projects:
       <tr>
-        <td>${checkbox.check_project(assoc.project)}</td>
+        <td>${checkbox.project(assoc.project)}</td>
         <td>
           % if assoc.project in request.identity.watched:
             <i class="bi bi-eye-fill"></i>

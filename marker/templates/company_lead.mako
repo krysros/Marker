@@ -3,7 +3,7 @@
 <div class="hstack">
   <div class="me-auto">
     <p class="lead">
-      ${checkbox.check_company(company)}
+      ${checkbox.company(company)}
       &nbsp;${company.name}
     </p>
   </div>

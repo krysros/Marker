@@ -15,7 +15,7 @@
     <tbody>
       % for assoc in project.companies:
       <tr>
-        <td>${checkbox.check_project(assoc.project)}</td>
+        <td>${checkbox.project(assoc.project)}</td>
         <td>
           % if assoc.company in request.identity.recommended:
           <i class="bi bi-hand-thumbs-up-fill"></i>

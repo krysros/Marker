@@ -68,7 +68,7 @@
     <tbody id="new-contact">
       % for contact in company.contacts:
       <tr>
-        <td>${checkbox.check_contact(contact)}</td>
+        <td>${checkbox.contact(contact)}</td>
         <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name}</a></td>
         <td>${contact.role}</td>
         <td>${contact.phone}</td>

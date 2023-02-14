@@ -9,7 +9,7 @@
 % else:
 <tr class="table-${company.color}">
 % endif
-  <td>${checkbox.check_company(company)}</td>
+  <td>${checkbox.company(company)}</td>
   <td>
     % if company in request.identity.recommended:
     <i class="bi bi-hand-thumbs-up-fill"></i>

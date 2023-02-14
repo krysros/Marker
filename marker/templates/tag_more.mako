@@ -8,7 +8,7 @@
 % else:
 <tr>
 % endif
-  <td>${checkbox.check_tag(tag)}</td>
+  <td>${checkbox.tag(tag)}</td>
   <td><a href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a></td>
   <td>${tag.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${tag.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>

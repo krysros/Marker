@@ -9,7 +9,7 @@
 % else:
 <tr class="table-${project.color}">
 % endif
-  <td>${checkbox.check_project(project)}</td>
+  <td>${checkbox.project(project)}</td>
   <td>
   % if project in request.identity.watched:
     <i class="bi bi-eye-fill"></i>
