@@ -118,19 +118,19 @@ def export_tags_to_xlsx(tags):
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({"bold": True})
     # Write rows.
-    header = ["Tag"]
+    header = ["Tag", "Firmy", "Projekty"]
 
     for j, col in enumerate(header):
         worksheet.write(0, j, col, bold)
 
     i = 1
     for tag in tags:
-        cols = [tag.name]
+        cols = [tag.name, tag.count_companies, tag.count_projects]
         for j, col in enumerate(cols):
             worksheet.write(i, j, col)
         i += 1
 
-    cols_width = [70]
+    cols_width = [70, 10, 10]
     for col, width in enumerate(cols_width):
         worksheet.set_column(col, col, width)
 
