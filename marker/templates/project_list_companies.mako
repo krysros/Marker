@@ -1,4 +1,5 @@
 <%namespace name="button" file="button.mako"/>
+<%namespace name="checkbox" file="checkbox.mako"/>
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -14,28 +15,7 @@
     <tbody>
       % for assoc in company.projects:
       <tr>
-        <td>
-          % if assoc.project in request.identity.selected_projects:
-          <input class="form-check-input"
-                type="checkbox"
-                value="${assoc.project.id}"
-                autocomplete="off"
-                checked
-                hx-post="${request.route_url('project_check', project_id=assoc.project.id)}"
-                hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-                hx-trigger="click"
-                hx-swap="none">
-          % else:
-          <input class="form-check-input"
-                type="checkbox"
-                value="${assoc.project.id}"
-                autocomplete="off"
-                hx-post="${request.route_url('project_check', project_id=assoc.project.id)}"
-                hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-                hx-trigger="click"
-                hx-swap="none">
-          % endif
-        </td>
+        <td>${checkbox.check_project(assoc.project)}</td>
         <td>
           % if assoc.project in request.identity.watched:
             <i class="bi bi-eye-fill"></i>

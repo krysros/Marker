@@ -1,5 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
+<%namespace name="checkbox" file="checkbox.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">
@@ -66,28 +67,7 @@
     <tbody id="new-contact">
       % for contact in project.contacts:
       <tr>
-        <td>
-          % if contact in request.identity.selected_contacts:
-          <input class="form-check-input"
-                type="checkbox"
-                value="${contact.id}"
-                autocomplete="off"
-                checked
-                hx-post="${request.route_url('contact_check', contact_id=contact.id)}"
-                hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-                hx-trigger="click"
-                hx-swap="none">
-          % else:
-          <input class="form-check-input"
-                type="checkbox"
-                value="${contact.id}"
-                autocomplete="off"
-                hx-post="${request.route_url('contact_check', contact_id=contact.id)}"
-                hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-                hx-trigger="click"
-                hx-swap="none">
-          % endif
-        </td>
+        <td>${checkbox.check_contact(contact)}</td>
         <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name}</a></td>
         <td>${contact.role}</td>
         <td>${contact.phone}</td>

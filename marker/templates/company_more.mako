@@ -1,3 +1,5 @@
+<%namespace name="checkbox" file="checkbox.mako"/>
+
 % for company in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
@@ -7,28 +9,7 @@
 % else:
 <tr class="table-${company.color}">
 % endif
-  <td>
-    % if company in request.identity.selected_companies:
-    <input class="form-check-input"
-           type="checkbox"
-           value="${company.id}"
-           autocomplete="off"
-           checked
-           hx-post="${request.route_url('company_check', company_id=company.id)}"
-           hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-           hx-trigger="click"
-           hx-swap="none">
-    % else:
-    <input class="form-check-input"
-           type="checkbox"
-           value="${company.id}"
-           autocomplete="off"
-           hx-post="${request.route_url('company_check', company_id=company.id)}"
-           hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
-           hx-trigger="click"
-           hx-swap="none">
-    % endif
-  </td>
+  <td>${checkbox.check_company(company)}</td>
   <td>
     % if company in request.identity.recommended:
     <i class="bi bi-hand-thumbs-up-fill"></i>
