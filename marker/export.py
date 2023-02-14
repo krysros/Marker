@@ -159,6 +159,7 @@ def export_contacts_to_xlsx(contacts):
     # Write rows.
     header = [
         "Imię i nazwisko",
+        "Firma/Projekt",
         "Rola",
         "Telefon",
         "Email",
@@ -169,8 +170,15 @@ def export_contacts_to_xlsx(contacts):
 
     i = 1
     for contact in contacts:
+        if contact.company:
+            member = contact.company.name
+        elif contact.project:
+            member = contact.project.name
+        else:
+            member = "---"
         cols = [
             contact.name,
+            member,
             contact.role,
             contact.phone,
             contact.email,
@@ -179,7 +187,7 @@ def export_contacts_to_xlsx(contacts):
             worksheet.write(i, j, col)
         i += 1
 
-    cols_width = [70, 20, 20, 20]
+    cols_width = [70, 20, 20, 20, 20]
     for col, width in enumerate(cols_width):
         worksheet.set_column(col, col, width)
 
