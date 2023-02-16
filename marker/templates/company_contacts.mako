@@ -70,9 +70,13 @@
       <tr>
         <td>${checkbox.contact(contact)}</td>
         <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name}</a></td>
-        <td>${contact.role}</td>
-        <td>${contact.phone}</td>
+        <td>${contact.role or "---"}</td>
+        <td>${contact.phone or "---"}</td>
+        % if contact.email:
         <td><a href="mailto:${contact.email}">${contact.email}</a></td>
+        % else:
+        <td>---</td>
+        % endif
         <td class="col-2">
           ${button.vcard('contact_vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
           ${button.del_row('delete_contact', contact_id=contact.id, slug=contact.slug, size='sm')}
