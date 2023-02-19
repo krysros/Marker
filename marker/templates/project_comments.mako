@@ -24,12 +24,12 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-        Komentarze <span class="badge text-bg-secondary"><div id="project-comments-counter" hx-get="${request.route_url('count_project_comments', project_id=project.id, slug=project.slug)}" hx-trigger="commentProjectEvent from:body">${project.count_comments}</div></span>
+        Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_project_comments', project_id=project.id, slug=project.slug)}" hx-trigger="commentEvent from:body">${project.count_comments}</div></span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-          Obserwacje <span class="badge text-bg-secondary"><div id="project-watched-counter" hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchedProjectEvent from:body">${project.count_watched}</div></span></a>
+          Obserwacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchedProjectEvent from:body">${project.count_watched}</div></span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">

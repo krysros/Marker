@@ -100,6 +100,16 @@ class CommentView:
         }
 
     @view_config(
+        route_name="count_comments",
+        renderer="json",
+        permission="view",
+    )
+    def count_comments(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(Comment)
+        ).scalar()
+
+    @view_config(
         route_name="comment_company",
         renderer="comment.mako",
         request_method="POST",
@@ -116,7 +126,7 @@ class CommentView:
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "commentCompanyEvent"}
+        self.request.response.headers = {"HX-Trigger": "commentEvent"}
         return {"comment": comment}
 
     @view_config(
@@ -136,7 +146,7 @@ class CommentView:
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "commentProjectEvent"}
+        self.request.response.headers = {"HX-Trigger": "commentEvent"}
         return {"comment": comment}
 
     @view_config(
@@ -147,15 +157,11 @@ class CommentView:
     )
     def delete(self):
         comment = self.request.context.comment
-        if comment.company:
-            event = "commentCompanyEvent"
-        elif comment.project:
-            event = "commentProjectEvent"
         self.request.dbsession.delete(comment)
         log.info(f"Użytkownik {self.request.identity.name} usunął komentarz")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": event}
+        self.request.response.headers = {"HX-Trigger": "commentEvent"}
         return ""
 
     @view_config(

@@ -23,7 +23,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-          Komentarze <span class="badge text-bg-secondary"><div id="company-comments-counter" hx-get="${request.route_url('count_company_comments', company_id=company.id, slug=company.slug)}" hx-trigger="commentCompanyEvent from:body">${company.count_comments}</div></span>
+          Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_comments', company_id=company.id, slug=company.slug)}" hx-trigger="commentEvent from:body">${company.count_comments}</div></span>
         </a>
       </li>
       <li class="nav-item">

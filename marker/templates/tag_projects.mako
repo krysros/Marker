@@ -9,7 +9,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" aria-current="page" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">
-          Firmy <span class="badge text-bg-secondary"><div id="tag-companies-counter" hx-get="${request.route_url('count_tag_companies', tag_id=tag.id, slug=tag.slug)}" hx-trigger="tagCompanyEvent from:body">${tag.count_companies}</div></span>
+          Firmy <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_tag_companies', tag_id=tag.id, slug=tag.slug)}" hx-trigger="tagCompanyEvent from:body">${tag.count_companies}</div></span>
         </a>
       </li>
       <li class="nav-item">

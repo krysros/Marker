@@ -6,7 +6,12 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
-from ..export import export_companies_to_xlsx, export_projects_to_xlsx, export_contacts_to_xlsx, export_tags_to_xlsx
+from ..export import (
+    export_companies_to_xlsx,
+    export_projects_to_xlsx,
+    export_contacts_to_xlsx,
+    export_tags_to_xlsx,
+)
 from ..forms import UserForm, UserSearchForm
 from ..forms.select import (
     COLORS,
@@ -826,9 +831,7 @@ class UserView:
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = (
-            select(Tag)
-            .join(selected_tags)
-            .filter(user.id == selected_tags.c.user_id)
+            select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
         )
 
         if order == "asc":
@@ -887,9 +890,7 @@ class UserView:
         order = self.request.params.get("order", "asc")
 
         stmt = (
-            select(Tag)
-            .join(selected_tags)
-            .filter(user.id == selected_tags.c.user_id)
+            select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
         )
 
         if order == "asc":
@@ -912,9 +913,7 @@ class UserView:
     def clear_selected_tags(self):
         user = self.request.context.user
         user.selected_tags = []
-        log.info(
-            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone tagi"
-        )
+        log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone tagi")
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
