@@ -5,7 +5,8 @@
   <div class="container">
     <h1>${project} <small class="text-muted">Informacje o firmach i projektach</small></h1>
     <p class="fs-4">
-      Znajdź najczęściej rekomendowane firmy o określonym profilu działalności.
+      Znajdź najczęściej rekomendowane firmy o określonym profilu działalności
+      oraz projekty spełniające wymagane kryteria.
       Sprawdź, które firmy zrealizowały największą liczbę projektów,
       które regiony są najbardziej przedsiębiorcze
       i w jakich branżach jest największa konkurencja.
@@ -18,7 +19,7 @@
     <div class="col">
       <h2><i class="bi bi-buildings"></i> Firmy</h2>
       <p>
-        Ostatnio dodane firmy wg wybranej kategorii.
+        Ostatnio dodane firmy.
       </p>
       <p>
         ${button.show('company_all')}
@@ -40,7 +41,7 @@
     <div class="col">
       <h2><i class="bi bi-tags"></i> Tagi</h2>
       <p>
-        Tagi określają profil działalności firmy.
+        Tagi określają profil działalności firm i rodzaj projektów.
       </p>
       <p>
         ${button.show('tag_all')}
@@ -53,7 +54,7 @@
     <div class="col">
       <h2><i class="bi bi-chat-left-text"></i> Komentarze</h2>
       <p>
-        Komentarze dotyczące firm.
+        Komentarze dotyczące firm i projektów.
       </p>
       <p>
         ${button.show('comment_all')}
