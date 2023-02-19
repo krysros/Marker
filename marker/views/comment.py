@@ -41,9 +41,9 @@ class CommentView:
         if comment:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
 
-        if filter == "C":
+        if filter == "companies":
             stmt = stmt.filter(Comment.company)
-        elif filter == "P":
+        elif filter == "projects":
             stmt = stmt.filter(Comment.project)
 
         if order == "asc":

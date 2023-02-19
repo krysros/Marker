@@ -558,6 +558,6 @@ PROJECT_DELIVERY_METHODS = [
 
 COMMENTS_FILTER = [
     ("", "---"),
-    ("C", "Firmy"),
-    ("P", "Projekty"),
+    ("companies", "Firmy"),
+    ("projects", "Projekty"),
 ]
