@@ -9,12 +9,12 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" aria-current="page" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">
-          Firmy <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_tag_companies', tag_id=tag.id, slug=tag.slug)}" hx-trigger="tagCompanyEvent from:body">${tag.count_companies}</div></span>
+          Firmy <span class="badge text-bg-secondary">${tag.count_companies}</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug)}">
-          Projekty <span class="badge text-bg-secondary">${tag.count_projects}</span>
+          Projekty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_tag_projects', tag_id=tag.id, slug=tag.slug)}" hx-trigger="projectEvent from:body">${tag.count_projects}</div></span>
         </a>
       </li>
     </ul>
