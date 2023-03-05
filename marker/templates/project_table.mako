@@ -11,7 +11,7 @@
         <th>Zmodyfikowano</th>
         <th>Obserwacje</th>
         <th>Komentarze</th>
-        <th>Akcja</th>
+        <th class="col-2">Akcja</th>
       </tr>
     </thead>
     <tbody>
