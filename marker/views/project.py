@@ -580,6 +580,7 @@ class ProjectView:
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
+            self.request.session.flash("success:Dodano do bazy danych")
             self.request.session.flash("info:Dodaj tagi i kontakty")
             log.info(f"Użytkownik {self.request.identity.name} dodał projekt")
             next_url = self.request.route_url(
