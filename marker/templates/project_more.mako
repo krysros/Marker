@@ -35,9 +35,9 @@
     </a>
   </td>
   <td>
-    ${button.watch(project, size="sm")}
-    ${button.edit('project_edit', project_id=project.id, slug=project.slug, size="sm")}
-    ${button.delete('project_delete', project_id=project.id, slug=project.slug, size="sm")}
+    ${button.watch(project, size='sm')}
+    ${button.edit('project_edit', project_id=project.id, slug=project.slug, size='sm')}
+    ${button.delete('project_delete', project_id=project.id, slug=project.slug, size='sm')}
   </td>
 </tr>
 % endfor

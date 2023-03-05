@@ -8,6 +8,7 @@
         <th>Zmodyfikowano</th>
         <th>Firmy</th>
         <th>Projekty</th>
+        <th class="col-2">Akcja</th>
       </tr>
     </thead>
     <tbody>

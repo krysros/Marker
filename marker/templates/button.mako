@@ -19,7 +19,7 @@
 </%def>
 
 <%def name="vcard(route_name, size=None, **kwargs)">
-<a class="btn btn-secondary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-person-vcard"></i></a>
+<a class="btn btn-primary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-person-vcard"></i></a>
 </%def>
 
 <%def name="add(route_name, size=None, **kwargs)">

@@ -10,6 +10,7 @@
         <th>Email</th>
         <th>Utworzono</th>
         <th>Zmodyfikowano</th>
+        <th class="col-2">Akcja</th>
       </tr>
     </thead>
     <tbody>

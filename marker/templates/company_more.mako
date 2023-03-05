@@ -34,9 +34,9 @@
     </a>
   </td>
   <td>
-    ${button.recommend(company, size="sm")}
-    ${button.edit('company_edit', company_id=company.id, slug=company.slug, size="sm")}
-    ${button.delete('company_delete', company_id=company.id, slug=company.slug, size="sm")}
+    ${button.recommend(company, size='sm')}
+    ${button.edit('company_edit', company_id=company.id, slug=company.slug, size='sm')}
+    ${button.delete('company_delete', company_id=company.id, slug=company.slug, size='sm')}
   </td>
 </tr>
 % endfor

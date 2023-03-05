@@ -1,3 +1,4 @@
+<%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
 % for contact in paginator:
@@ -34,5 +35,10 @@
   % else:
   <td>---</td>
   % endif
+  <td>
+    ${button.vcard('contact_vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
+    ${button.edit('contact_edit', contact_id=contact.id, slug=contact.slug, size='sm')}
+    ${button.delete('contact_delete', contact_id=contact.id, slug=contact.slug, size='sm')}
+  </td>
 </tr>
 % endfor
