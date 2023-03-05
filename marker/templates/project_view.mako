@@ -45,17 +45,7 @@
       </li>
     </ul>
   </div>
-  <div>
-    <button hx-post="${request.route_url('project_watch', project_id=project.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#watch" class="btn btn-primary">
-      <div id="watch">
-      % if project in request.identity.watched:
-        <i class="bi bi-eye-fill"></i>
-      % else:
-        <i class="bi bi-eye"></i>
-      % endif
-      </div>
-    </button>
-  </div>
+  <div>${button.watch(project)}</div>
   <div>${button.edit('project_edit', project_id=project.id, slug=project.slug)}</div>
   <div>${button.delete('project_delete', project_id=project.id, slug=project.slug)}</div>
 </div>

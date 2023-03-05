@@ -46,17 +46,7 @@
       </li>
     </ul>
   </div>
-  <div>
-    <button class="btn btn-primary" hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommended">
-      <div id="recommended">
-        % if company in request.identity.recommended:
-          <i class="bi bi-hand-thumbs-up-fill"></i>
-        % else:
-          <i class="bi bi-hand-thumbs-up"></i>
-        % endif
-      </div>
-    </button>
-  </div>
+  <div>${button.recommend(company)}</div>
   <div>${button.edit('company_edit', company_id=company.id, slug=company.slug)}</div>
   <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>
 </div>

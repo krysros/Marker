@@ -10,6 +10,7 @@
         <th>Zmodyfikowano</th>
         <th>Rekomendacje</th>
         <th>Komentarze</th>
+        <th>Akcja</th>
       </tr>
     </thead>
     <tbody>

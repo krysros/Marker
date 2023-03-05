@@ -78,6 +78,30 @@
 % endif
 </%def>
 
+<%def name="recommend(company, size=None)">
+<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('company_recommend', company_id=company.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommend-${company.id}" hx-swap="innerHTML">
+  <div id="recommend-${company.id}">
+  % if company in request.identity.recommended:
+    <i class="bi bi-hand-thumbs-up-fill"></i>
+  % else:
+    <i class="bi bi-hand-thumbs-up"></i>
+  % endif
+  </div>
+</button>
+</%def>
+
+<%def name="watch(project, size=None)">
+<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('project_watch', project_id=project.id)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#watch-${project.id}" hx-swap="innerHTML">
+  <div id="watch-${project.id}">
+  % if project in request.identity.watched:
+    <i class="bi bi-eye-fill"></i>
+  % else:
+    <i class="bi bi-eye"></i>
+  % endif
+  </div>
+</button>
+</%def>
+
 <%def name="dropdown(route_name, dd_obj, **kwargs)">
 <div class="btn-group">
   <div class="dropdown">

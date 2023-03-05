@@ -45,7 +45,7 @@ class Project(Base):
         secondary=projects_tags, back_populates="projects"
     )
     companies: Mapped[list["CompaniesProjects"]] = relationship(
-        back_populates="project"
+        back_populates="project", cascade="all, delete-orphan"
     )
     contacts: Mapped[list["Contact"]] = relationship(back_populates="project")
     comments: Mapped[list["Comment"]] = relationship(back_populates="project")

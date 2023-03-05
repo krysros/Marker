@@ -1,3 +1,4 @@
+<%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
 % for project in paginator:
@@ -11,9 +12,6 @@
 % endif
   <td>${checkbox.project(project)}</td>
   <td>
-  % if project in request.identity.watched:
-    <i class="bi bi-eye-fill"></i>
-  % endif
     <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
   </td>
   <td>${project.city or "---"}</td>
@@ -22,22 +20,24 @@
   <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
-    % if project.count_watched > 0:
     <a href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-      <span class="badge text-bg-success" role="button">${project.count_watched}</span>
+      <div hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}"
+            hx-trigger="watchedProjectEvent from:body"
+            hx-target="#watched-${project.id}"
+            hx-swap="innerHTML">
+        <span id="watched-${project.id}" class="badge text-bg-secondary" role="button">${project.count_watched}</swap>
+      </div>
     </a>
-    % else:
-    <span class="badge text-bg-secondary">0</span>
-    % endif
   </td>
   <td>
-    % if project.count_comments > 0:
     <a href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-      <span class="badge text-bg-dark" role="button">${project.count_comments}</span>
+      <span class="badge text-bg-secondary" role="button">${project.count_comments}</span>
     </a>
-    % else:
-    <span class="badge text-bg-secondary">0</span>
-    % endif
+  </td>
+  <td>
+    ${button.watch(project, size="sm")}
+    ${button.edit('project_edit', project_id=project.id, slug=project.slug, size="sm")}
+    ${button.delete('project_delete', project_id=project.id, slug=project.slug, size="sm")}
   </td>
 </tr>
 % endfor

@@ -11,6 +11,7 @@
         <th>Zmodyfikowano</th>
         <th>Obserwacje</th>
         <th>Komentarze</th>
+        <th>Akcja</th>
       </tr>
     </thead>
     <tbody>

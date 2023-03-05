@@ -1,3 +1,4 @@
+<%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
 % for company in paginator:
@@ -11,9 +12,6 @@
 % endif
   <td>${checkbox.company(company)}</td>
   <td>
-    % if company in request.identity.recommended:
-    <i class="bi bi-hand-thumbs-up-fill"></i>
-    % endif
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
   </td>
   <td>${company.city or "---"}</td>
@@ -21,22 +19,24 @@
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
-    % if company.count_recommended > 0:
     <a href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-      <span class="badge text-bg-success" role="button">${company.count_recommended}</span>
+      <div hx-get="${request.route_url('count_company_recommended', company_id=company.id, slug=company.slug)}"
+            hx-trigger="recommendedCompanyEvent from:body"
+            hx-target="#recommendations-${company.id}"
+            hx-swap="innerHTML">
+        <span id="recommendations-${company.id}" class="badge text-bg-secondary" role="button">${company.count_recommended}</swap>
+      </div>
     </a>
-    % else:
-    <span class="badge text-bg-secondary">0</span>
-    % endif
   </td>
   <td>
-    % if company.count_comments > 0:
     <a href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-      <span class="badge text-bg-dark" role="button">${company.count_comments}</span>
+      <span class="badge text-bg-secondary" role="button">${company.count_comments}</span>
     </a>
-    % else:
-    <span class="badge text-bg-secondary">0</span>
-    % endif
+  </td>
+  <td>
+    ${button.recommend(company, size="sm")}
+    ${button.edit('company_edit', company_id=company.id, slug=company.slug, size="sm")}
+    ${button.delete('company_delete', company_id=company.id, slug=company.slug, size="sm")}
   </td>
 </tr>
 % endfor
