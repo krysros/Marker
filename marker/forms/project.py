@@ -46,7 +46,7 @@ class ProjectForm(Form):
         ],
         filters=[strip_filter],
     )
-    color = SelectField("Kolor", choices=COLORS)
+    color = SelectField("Kolor", choices=COLORS, default="default")
     deadline = DateField("Termin", validators=[Optional()])
     stage = SelectField("Etap", choices=STAGES)
     delivery_method = SelectField("Sposób realizacji", choices=PROJECT_DELIVERY_METHODS)

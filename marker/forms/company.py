@@ -112,7 +112,7 @@ class CompanyForm(Form):
         ],
     )
     court = SelectField("Sąd", choices=COURTS)
-    color = SelectField("Kolor", choices=COLORS)
+    color = SelectField("Kolor", choices=COLORS, default="default")
     submit = SubmitField("Zapisz")
 
     def __init__(self, *args, dbsession, **kwargs):
