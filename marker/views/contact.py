@@ -149,15 +149,11 @@ class ContactView:
     )
     def delete_contact(self):
         contact = self.request.context.contact
-        if contact.company:
-            event = "contactCompanyEvent"
-        elif contact.project:
-            event = "contactProjectEvent"
         self.request.dbsession.delete(contact)
         log.info(f"Użytkownik {self.request.identity.name} usunął kontakt")
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": event}
+        self.request.response.headers = {"HX-Trigger": "contactEvent"}
         return ""
 
     @view_config(

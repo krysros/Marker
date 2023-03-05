@@ -20,7 +20,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('company_contacts', company_id=company.id, slug=company.slug)}">
-          Kontakty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_contacts', company_id=company.id, slug=company.slug)}" hx-trigger="contactCompanyEvent from:body">${company.count_contacts}</div></span>
+          Kontakty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_contacts', company_id=company.id, slug=company.slug)}" hx-trigger="contactEvent from:body">${company.count_contacts}</div></span>
         </a>
       </li>
       <li class="nav-item">

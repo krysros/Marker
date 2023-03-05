@@ -836,7 +836,7 @@ class ProjectView:
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "contactProjectEvent"}
+        self.request.response.headers = {"HX-Trigger": "contactEvent"}
         return {"contact": contact}
 
     @view_config(
