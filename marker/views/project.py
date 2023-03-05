@@ -205,6 +205,16 @@ class ProjectView:
         }
 
     @view_config(
+        route_name="project_count_all",
+        renderer="json",
+        permission="view",
+    )
+    def count_all(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(select(Project))
+        ).scalar()
+
+    @view_config(
         route_name="project_comments",
         renderer="project_comments.mako",
         permission="view",
@@ -637,6 +647,21 @@ class ProjectView:
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
+
+    @view_config(
+        route_name="delete_project",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_project(self):
+        project = self.request.context.project
+        self.request.dbsession.delete(project)
+        log.info(f"Użytkownik {self.request.identity.name} usunął projekt")
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "projectEvent"}
+        return ""
 
     @view_config(
         route_name="project_search",

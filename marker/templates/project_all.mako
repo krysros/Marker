@@ -3,7 +3,7 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> Projekty
-  <span class="badge bg-secondary">${counter}</span>
+  <span class="badge bg-secondary"><div hx-get="${request.route_url('project_count_all')}" hx-trigger="projectEvent from:body">${counter}</div></span>
   <div class="float-end">
     ${button.map('project_map', _query=search_query)}
     ${button.search('project_search')}

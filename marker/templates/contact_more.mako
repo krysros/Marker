@@ -38,7 +38,7 @@
   <td>
     ${button.vcard('contact_vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
     ${button.edit('contact_edit', contact_id=contact.id, slug=contact.slug, size='sm')}
-    ${button.delete('contact_delete', contact_id=contact.id, slug=contact.slug, size='sm')}
+    ${button.del_row('delete_contact', contact_id=contact.id, slug=contact.slug, size='sm')}
   </td>
 </tr>
 % endfor

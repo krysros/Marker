@@ -106,6 +106,16 @@ class ContactView:
         }
 
     @view_config(
+        route_name="contact_count_all",
+        renderer="json",
+        permission="view",
+    )
+    def count_all(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(select(Contact))
+        ).scalar()
+
+    @view_config(
         route_name="contact_view", renderer="contact_view.mako", permission="view"
     )
     def view(self):

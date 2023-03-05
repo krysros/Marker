@@ -3,7 +3,7 @@
 
 <h2>
   <i class="bi bi-people"></i> Kontakty
-  <span class="badge bg-secondary">${counter}</span>
+  <span class="badge bg-secondary"><div hx-get="${request.route_url('contact_count_all')}" hx-trigger="contactEvent from:body">${counter}</div></span>
   <div class="float-end">
     ${button.search('contact_search')}
   </div>

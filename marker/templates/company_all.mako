@@ -3,7 +3,7 @@
 
 <h2>
   <i class="bi bi-buildings"></i> Firmy
-  <span class="badge bg-secondary">${counter}</span>
+  <span class="badge bg-secondary"><div hx-get="${request.route_url('company_count_all')}" hx-trigger="companyEvent from:body">${counter}</div></span>
   <div class="float-end">
     ${button.map('company_map', _query=search_query)}
     ${button.search('company_search')}

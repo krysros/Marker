@@ -95,6 +95,16 @@ class TagView:
         }
 
     @view_config(
+        route_name="tag_count_all",
+        renderer="json",
+        permission="view",
+    )
+    def count_all(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(select(Tag))
+        ).scalar()
+
+    @view_config(
         route_name="tag_view",
         renderer="tag_view.mako",
         permission="view",
@@ -510,6 +520,21 @@ class TagView:
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
+
+    @view_config(
+        route_name="delete_tag",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_tag(self):
+        tag = self.request.context.tag
+        self.request.dbsession.delete(tag)
+        log.info(f"Użytkownik {self.request.identity.name} usunął tag")
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "tagEvent"}
+        return ""
 
     @view_config(
         route_name="tag_check",

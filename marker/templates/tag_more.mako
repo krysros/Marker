@@ -25,7 +25,7 @@
   </td>
   <td>
     ${button.edit('tag_edit', tag_id=tag.id, slug=tag.slug, size='sm')}
-    ${button.delete('tag_delete', tag_id=tag.id, slug=tag.slug, size='sm')}
+    ${button.del_row('delete_tag', tag_id=tag.id, slug=tag.slug, size='sm')}
   </td>
 </tr>
 % endfor

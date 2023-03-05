@@ -180,6 +180,16 @@ class CompanyView:
         }
 
     @view_config(
+        route_name="company_count_all",
+        renderer="json",
+        permission="view",
+    )
+    def count_all(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(select(Company))
+        ).scalar()
+
+    @view_config(
         route_name="company_view",
         renderer="company_view.mako",
         permission="view",
@@ -703,6 +713,21 @@ class CompanyView:
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
+
+    @view_config(
+        route_name="delete_company",
+        request_method="POST",
+        permission="edit",
+        renderer="string",
+    )
+    def delete_company(self):
+        company = self.request.context.company
+        self.request.dbsession.delete(company)
+        log.info(f"Użytkownik {self.request.identity.name} usunął firmę")
+        # This request responds with empty content,
+        # indicating that the row should be replaced with nothing.
+        self.request.response.headers = {"HX-Trigger": "companyEvent"}
+        return ""
 
     @view_config(
         route_name="company_recommend",
