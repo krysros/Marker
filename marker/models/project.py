@@ -47,8 +47,12 @@ class Project(Base):
     companies: Mapped[list["CompaniesProjects"]] = relationship(
         back_populates="project", cascade="all, delete-orphan"
     )
-    contacts: Mapped[list["Contact"]] = relationship(back_populates="project")
-    comments: Mapped[list["Comment"]] = relationship(back_populates="project")
+    contacts: Mapped[list["Contact"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
+    comments: Mapped[list["Comment"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
 
     def __init__(
         self,
