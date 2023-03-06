@@ -159,7 +159,13 @@ class CompanyView:
 
         next_page = self.request.route_url(
             "company_more",
-            _query={**search_query, "page": page + 1},
+            _query={
+                **search_query,
+                "filter": filter,
+                "sort": sort,
+                "order": order,
+                "page": page + 1,
+            },
         )
 
         # Recreate the search form to display the search criteria
