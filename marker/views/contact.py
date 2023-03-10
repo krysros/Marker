@@ -83,12 +83,8 @@ class ContactView:
             },
         )
 
-        dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
-        )
-        dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
-        )
+        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None

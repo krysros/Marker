@@ -73,16 +73,8 @@ class CommentView:
             },
         )
 
-        dd_filter = Dropdown(
-            items=comments_filter,
-            typ=Dd.FILTER,
-            _filter=_filter,
-            _sort=_sort,
-            _order=_order,
-        )
-        dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
-        )
+        dd_filter = Dropdown(comments_filter, Dd.FILTER, _filter, _sort, _order)
+        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None

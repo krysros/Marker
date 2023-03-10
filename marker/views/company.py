@@ -135,12 +135,8 @@ class CompanyView:
             .all()
         )
 
-        dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
-        )
-        dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
-        )
+        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
 
         search_query = {
             "name": name,
@@ -616,9 +612,7 @@ class CompanyView:
             },
         )
 
-        dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, _filter=_filter, _sort=_sort, _order=_order
-        )
+        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,

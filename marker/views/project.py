@@ -169,19 +169,9 @@ class ProjectView:
             },
         )
 
-        dd_filter = Dropdown(
-            items=dropdown_status,
-            typ=Dd.FILTER,
-            _filter=_filter,
-            _sort=_sort,
-            _order=_order,
-        )
-        dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
-        )
-        dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
-        )
+        dd_filter = Dropdown(dropdown_status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None
@@ -539,9 +529,7 @@ class ProjectView:
             },
         )
 
-        dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, _filter=_filter, _sort=_sort, _order=_order
-        )
+        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
