@@ -34,9 +34,9 @@ class TagView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "created_at")
-        order = self.request.params.get("order", "desc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Tag)
@@ -44,10 +44,10 @@ class TagView:
         if name:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
 
-        if order == "asc":
-            stmt = stmt.order_by(getattr(Tag, sort).asc())
-        elif order == "desc":
-            stmt = stmt.order_by(getattr(Tag, sort).desc())
+        if _order == "asc":
+            stmt = stmt.order_by(getattr(Tag, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(getattr(Tag, _sort).desc())
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -65,18 +65,18 @@ class TagView:
             "tag_more",
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
 
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         # Recreate the search form to display the search criteria
@@ -207,24 +207,24 @@ class TagView:
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "name")
-        order = self.request.params.get("order", "asc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
         regions = dict(REGIONS)
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Company)
 
-        if sort == "recommended":
-            if order == "asc":
+        if _sort == "recommended":
+            if _order == "asc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(recommended)
@@ -232,17 +232,17 @@ class TagView:
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
-            if order == "asc":
+            if _order == "asc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, sort).asc(), Company.id
+                    getattr(Company, _sort).asc(), Company.id
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, sort).desc(), Company.id
+                    getattr(Company, _sort).desc(), Company.id
                 )
 
-        if filter:
-            stmt = stmt.filter(Company.color == filter)
+        if _filter:
+            stmt = stmt.filter(Company.color == _filter)
 
         search_query = {}
 
@@ -258,20 +258,20 @@ class TagView:
             _query={
                 **search_query,
                 "page": page + 1,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
             },
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
+            items=colors, typ=Dd.FILTER, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         return {
@@ -290,20 +290,20 @@ class TagView:
     @view_config(route_name="tag_companies_export", permission="view")
     def export_companies(self):
         tag = self.request.context.tag
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "name")
-        order = self.request.params.get("order", "asc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
         stmt = select(Company)
 
-        if sort == "recommended":
-            if order == "asc":
+        if _sort == "recommended":
+            if _order == "asc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(recommended)
@@ -311,17 +311,17 @@ class TagView:
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
-            if order == "asc":
+            if _order == "asc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, sort).asc(), Company.id
+                    getattr(Company, _sort).asc(), Company.id
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, sort).desc(), Company.id
+                    getattr(Company, _sort).desc(), Company.id
                 )
 
-        if filter:
-            stmt = stmt.filter(Company.color == filter)
+        if _filter:
+            stmt = stmt.filter(Company.color == _filter)
 
         companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(companies)
@@ -350,24 +350,24 @@ class TagView:
     def projects(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "name")
-        order = self.request.params.get("order", "asc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
         regions = dict(REGIONS)
         dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Project)
 
-        if sort == "watched":
-            if order == "asc":
+        if _sort == "watched":
+            if _order == "asc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(watched)
                     .group_by(Project)
                     .order_by(func.count(watched.c.project_id).asc(), Project.id)
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(watched)
@@ -375,17 +375,17 @@ class TagView:
                     .order_by(func.count(watched.c.project_id).desc(), Project.id)
                 )
         else:
-            if order == "asc":
+            if _order == "asc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, sort).asc(), Project.id
+                    getattr(Project, _sort).asc(), Project.id
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, sort).desc(), Project.id
+                    getattr(Project, _sort).desc(), Project.id
                 )
 
-        if filter:
-            stmt = stmt.filter(Project.color == filter)
+        if _filter:
+            stmt = stmt.filter(Project.color == _filter)
 
         search_query = {}
 
@@ -401,20 +401,20 @@ class TagView:
             _query={
                 **search_query,
                 "page": page + 1,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
             },
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
+            items=colors, typ=Dd.FILTER, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         return {
@@ -433,20 +433,20 @@ class TagView:
     @view_config(route_name="tag_projects_export", permission="view")
     def export_projects(self):
         tag = self.request.context.tag
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "name")
-        order = self.request.params.get("order", "asc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
         stmt = select(Project)
 
-        if sort == "watched":
-            if order == "asc":
+        if _sort == "watched":
+            if _order == "asc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(watched)
                     .group_by(Project)
                     .order_by(func.count(watched.c.project_id).asc(), Project.id)
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(watched)
@@ -454,17 +454,17 @@ class TagView:
                     .order_by(func.count(watched.c.project_id).desc(), Project.id)
                 )
         else:
-            if order == "asc":
+            if _order == "asc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, sort).asc(), Project.id
+                    getattr(Project, _sort).asc(), Project.id
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, sort).desc(), Project.id
+                    getattr(Project, _sort).desc(), Project.id
                 )
 
-        if filter:
-            stmt = stmt.filter(Project.color == filter)
+        if _filter:
+            stmt = stmt.filter(Project.color == _filter)
 
         projects = self.request.dbsession.execute(stmt).scalars()
         response = export_projects_to_xlsx(projects)

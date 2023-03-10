@@ -62,9 +62,9 @@ class ProjectView:
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
         delivery_method = self.request.params.get("delivery_method", None)
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "created_at")
-        order = self.request.params.get("order", "desc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         dropdown_status = dict(DROPDOWN_STATUS)
         dropdown_order = dict(DROPDOWN_ORDER)
@@ -110,29 +110,29 @@ class ProjectView:
             deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
 
-        if filter == "in_progress":
+        if _filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
-        elif filter == "completed":
+        elif _filter == "completed":
             stmt = stmt.filter(Project.deadline < now.date())
 
-        if sort == "watched":
-            if order == "asc":
+        if _sort == "watched":
+            if _order == "asc":
                 stmt = (
                     stmt.join(watched)
                     .group_by(Project)
                     .order_by(func.count(watched.c.project_id).asc(), Project.id)
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = (
                     stmt.join(watched)
                     .group_by(Project)
                     .order_by(func.count(watched.c.project_id).desc(), Project.id)
                 )
         else:
-            if order == "asc":
-                stmt = stmt.order_by(getattr(Project, sort).asc(), Project.id)
-            elif order == "desc":
-                stmt = stmt.order_by(getattr(Project, sort).desc(), Project.id)
+            if _order == "asc":
+                stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -162,9 +162,9 @@ class ProjectView:
             "project_more",
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
@@ -172,15 +172,15 @@ class ProjectView:
         dd_filter = Dropdown(
             items=dropdown_status,
             typ=Dd.FILTER,
-            _filter=filter,
-            _sort=sort,
-            _order=order,
+            _filter=_filter,
+            _sort=_sort,
+            _order=_order,
         )
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         # Recreate the search form to display the search criteria
@@ -490,9 +490,9 @@ class ProjectView:
     def similar(self):
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", None)
-        order = self.request.params.get("order", None)
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         colors = dict(COLORS)
         regions = dict(REGIONS)
 
@@ -509,13 +509,13 @@ class ProjectView:
             .order_by(func.count(Tag.projects.any(Project.id == project.id)).desc())
         )
 
-        if filter:
-            stmt = stmt.filter(Project.color == filter)
+        if _filter:
+            stmt = stmt.filter(Project.color == _filter)
 
-        if order == "asc":
-            stmt = stmt.order_by(getattr(Project, sort).asc())
-        elif order == "desc":
-            stmt = stmt.order_by(getattr(Project, sort).desc())
+        if _order == "asc":
+            stmt = stmt.order_by(getattr(Project, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(getattr(Project, _sort).desc())
 
         search_query = {}
 
@@ -532,15 +532,15 @@ class ProjectView:
             colors=colors,
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
+            items=colors, typ=Dd.FILTER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         return {

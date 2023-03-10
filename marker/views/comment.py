@@ -30,9 +30,9 @@ class CommentView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "created_at")
-        order = self.request.params.get("order", "desc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         comments_filter = dict(COMMENTS_FILTER)
         dropdown_order = dict(DROPDOWN_ORDER)
 
@@ -41,14 +41,14 @@ class CommentView:
         if comment:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
 
-        if filter == "companies":
+        if _filter == "companies":
             stmt = stmt.filter(Comment.company)
-        elif filter == "projects":
+        elif _filter == "projects":
             stmt = stmt.filter(Comment.project)
 
-        if order == "asc":
+        if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
-        elif order == "desc":
+        elif _order == "desc":
             stmt = stmt.order_by(Comment.created_at.desc())
 
         counter = self.request.dbsession.execute(
@@ -66,9 +66,9 @@ class CommentView:
             "comment_more",
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
@@ -76,12 +76,12 @@ class CommentView:
         dd_filter = Dropdown(
             items=comments_filter,
             typ=Dd.FILTER,
-            _filter=filter,
-            _sort=sort,
-            _order=order,
+            _filter=_filter,
+            _sort=_sort,
+            _order=_order,
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         # Recreate the search form to display the search criteria

@@ -61,9 +61,9 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "created_at")
-        order = self.request.params.get("order", "desc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         regions = dict(REGIONS)
         dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
@@ -106,24 +106,24 @@ class CompanyView:
         if color:
             stmt = stmt.filter(Company.color == color)
 
-        if sort == "recommended":
-            if order == "asc":
+        if _sort == "recommended":
+            if _order == "asc":
                 stmt = (
                     stmt.join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).asc(), Company.id)
                 )
-            elif order == "desc":
+            elif _order == "desc":
                 stmt = (
                     stmt.join(recommended)
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
         else:
-            if order == "asc":
-                stmt = stmt.order_by(getattr(Company, sort).asc(), Company.id)
-            elif order == "desc":
-                stmt = stmt.order_by(getattr(Company, sort).desc(), Company.id)
+            if _order == "asc":
+                stmt = stmt.order_by(getattr(Company, _sort).asc(), Company.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -136,10 +136,10 @@ class CompanyView:
         )
 
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         search_query = {
@@ -161,9 +161,9 @@ class CompanyView:
             "company_more",
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
@@ -567,9 +567,9 @@ class CompanyView:
     def similar(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", None)
-        order = self.request.params.get("order", None)
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         colors = dict(COLORS)
         regions = dict(REGIONS)
 
@@ -586,13 +586,13 @@ class CompanyView:
             .order_by(func.count(Tag.companies.any(Company.id == company.id)).desc())
         )
 
-        if filter:
-            stmt = stmt.filter(Company.color == filter)
+        if _filter:
+            stmt = stmt.filter(Company.color == _filter)
 
-        if order == "asc":
-            stmt = stmt.order_by(getattr(Company, sort).asc())
-        elif order == "desc":
-            stmt = stmt.order_by(getattr(Company, sort).desc())
+        if _order == "asc":
+            stmt = stmt.order_by(getattr(Company, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(getattr(Company, _sort).desc())
 
         search_query = {}
 
@@ -609,15 +609,15 @@ class CompanyView:
             colors=colors,
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
 
         dd_filter = Dropdown(
-            items=colors, typ=Dd.FILTER, _filter=filter, _sort=sort, _order=order
+            items=colors, typ=Dd.FILTER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         return {

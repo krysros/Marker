@@ -32,9 +32,9 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        filter = self.request.params.get("filter", None)
-        sort = self.request.params.get("sort", "created_at")
-        order = self.request.params.get("order", "desc")
+        _filter = self.request.params.get("filter", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         dropdown_sort = dict(DROPDOWN_SORT)
         dropdown_order = dict(DROPDOWN_ORDER)
         stmt = select(Contact)
@@ -51,10 +51,10 @@ class ContactView:
         if email:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
 
-        if order == "asc":
-            stmt = stmt.order_by(getattr(Contact, sort).asc())
-        elif order == "desc":
-            stmt = stmt.order_by(getattr(Contact, sort).desc())
+        if _order == "asc":
+            stmt = stmt.order_by(getattr(Contact, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(getattr(Contact, _sort).desc())
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -76,18 +76,18 @@ class ContactView:
             "contact_more",
             _query={
                 **search_query,
-                "filter": filter,
-                "sort": sort,
-                "order": order,
+                "filter": _filter,
+                "sort": _sort,
+                "order": _order,
                 "page": page + 1,
             },
         )
 
         dd_sort = Dropdown(
-            items=dropdown_sort, typ=Dd.SORT, _filter=filter, _sort=sort, _order=order
+            items=dropdown_sort, typ=Dd.SORT, _filter=_filter, _sort=_sort, _order=_order
         )
         dd_order = Dropdown(
-            items=dropdown_order, typ=Dd.ORDER, _filter=filter, _sort=sort, _order=order
+            items=dropdown_order, typ=Dd.ORDER, _filter=_filter, _sort=_sort, _order=_order
         )
 
         # Recreate the search form to display the search criteria
