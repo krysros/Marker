@@ -257,30 +257,6 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="project_contacts",
-        renderer="project_contacts.mako",
-        permission="view",
-    )
-    def contacts(self):
-        project = self.request.context.project
-        return {
-            "project": project,
-            "title": project.name,
-        }
-
-    @view_config(
-        route_name="project_tags",
-        renderer="project_tags.mako",
-        permission="view",
-    )
-    def tags(self):
-        project = self.request.context.project
-        return {
-            "project": project,
-            "title": project.name,
-        }
-
-    @view_config(
         route_name="project_map",
         renderer="project_map.mako",
         permission="view",
@@ -449,6 +425,16 @@ class ProjectView:
     @view_config(
         route_name="project_view",
         renderer="project_view.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_tags",
+        renderer="project_tags.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_contacts",
+        renderer="project_contacts.mako",
         permission="view",
     )
     def view(self):

@@ -196,6 +196,16 @@ class CompanyView:
         renderer="company_view.mako",
         permission="view",
     )
+    @view_config(
+        route_name="company_tags",
+        renderer="company_tags.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="company_contacts",
+        renderer="company_contacts.mako",
+        permission="view",
+    )
     def view(self):
         company = self.request.context.company
         regions = dict(REGIONS)
@@ -207,30 +217,6 @@ class CompanyView:
             "regions": regions,
             "courts": courts,
             "countries": countries,
-            "title": company.name,
-        }
-
-    @view_config(
-        route_name="company_contacts",
-        renderer="company_contacts.mako",
-        permission="view",
-    )
-    def contacts(self):
-        company = self.request.context.company
-        return {
-            "company": company,
-            "title": company.name,
-        }
-
-    @view_config(
-        route_name="company_tags",
-        renderer="company_tags.mako",
-        permission="view",
-    )
-    def tags(self):
-        company = self.request.context.company
-        return {
-            "company": company,
             "title": company.name,
         }
 
