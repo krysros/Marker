@@ -41,7 +41,7 @@
     <div class="col">
       <h2><i class="bi bi-tags"></i> Tagi</h2>
       <p>
-        Tagi określają profil działalności firm i rodzaj projektów.
+        Profile działalności firm i typy projektów.
       </p>
       <p>
         ${button.show('tag_all')}
@@ -51,6 +51,16 @@
     </div>
   </div>
   <div class="row">
+    <div class="col">
+      <h2><i class="bi bi-people"></i> Kontakty</h2>
+      <p>
+        Kontakty przypisane do firm i projektów.
+      </p>
+      <p>
+        ${button.show('contact_all')}
+        ${button.search('contact_search')}
+      </p>
+    </div>
     <div class="col">
       <h2><i class="bi bi-chat-left-text"></i> Komentarze</h2>
       <p>
@@ -64,22 +74,24 @@
     <div class="col">
       <h2><i class="bi bi-bar-chart"></i> Raporty</h2>
       <p>
-        Podsumowanie informacji o firmach i projektach.
+        Podsumowanie zawartości bazy danych.
       </p>
       <p>
         ${button.show('report')}
       </p>
     </div>
-    <div class="col">
-      <h2><i class="bi bi-person-circle"></i> Użytkownicy</h2>
-      <p>
-        Użytkownicy aplikacji.
-      </p>
-      <p>
-        ${button.show('user_all')}
-        ${button.search('user_search')}
-        ${button.add('user_add')}
-      </p>
-    </div>
   </div>
+##  <div class="row">
+##    <div class="col">
+##      <h2><i class="bi bi-person-circle"></i> Użytkownicy</h2>
+##      <p>
+##        Użytkownicy aplikacji.
+##      </p>
+##      <p>
+##        ${button.show('user_all')}
+##        ${button.search('user_search')}
+##        ${button.add('user_add')}
+##      </p>
+##    </div>
+##  </div>
 </div>
