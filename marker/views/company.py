@@ -12,8 +12,8 @@ from ..forms.select import (
     USER_ROLES,
     COUNTRIES,
     COURTS,
-    DROPDOWN_ORDER,
-    DROPDOWN_SORT_COMPANIES,
+    ORDER_CRITERIA,
+    SORT_CRITERIA_COMPANIES,
     STAGES,
     REGIONS,
 )
@@ -66,8 +66,8 @@ class CompanyView:
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         regions = dict(REGIONS)
-        dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA_COMPANIES)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Company)
 
         if name:
@@ -135,8 +135,8 @@ class CompanyView:
             .all()
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         search_query = {
             "name": name,

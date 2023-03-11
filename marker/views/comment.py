@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
 from ..forms import CommentSearchForm
-from ..forms.select import COMMENTS_FILTER, DROPDOWN_ORDER
+from ..forms.select import COMMENTS_FILTER, ORDER_CRITERIA
 from ..models import Comment
 from ..paginator import get_paginator
 
@@ -34,7 +34,7 @@ class CommentView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         comments_filter = dict(COMMENTS_FILTER)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        order_criteria = dict(ORDER_CRITERIA)
 
         stmt = select(Comment)
 
@@ -74,7 +74,7 @@ class CommentView:
         )
 
         dd_filter = Dropdown(comments_filter, Dd.FILTER, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None

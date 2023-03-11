@@ -1,11 +1,11 @@
-DROPDOWN_SORT = [
+SORT_CRITERIA = [
     ("name", "wg nazwy"),
     ("created_at", "wg daty dodania"),
     ("updated_at", "wg daty edycji"),
 ]
 
 
-DROPDOWN_EXT_SORT = [
+SORT_CRITERIA_EXT = [
     ("name", "wg nazwy"),
     ("city", "wg miasta"),
     ("region", "wg regionu"),
@@ -14,7 +14,7 @@ DROPDOWN_EXT_SORT = [
 ]
 
 
-DROPDOWN_SORT_COMPANIES = [
+SORT_CRITERIA_COMPANIES = [
     ("name", "wg nazwy"),
     ("city", "wg miasta"),
     ("region", "wg regionu"),
@@ -24,7 +24,7 @@ DROPDOWN_SORT_COMPANIES = [
 ]
 
 
-DROPDOWN_SORT_PROJECTS = [
+SORT_CRITERIA_PROJECTS = [
     ("name", "wg nazwy"),
     ("city", "wg miasta"),
     ("region", "wg regionu"),
@@ -34,13 +34,13 @@ DROPDOWN_SORT_PROJECTS = [
 ]
 
 
-DROPDOWN_ORDER = [
+ORDER_CRITERIA = [
     ("asc", "rosnąco"),
     ("desc", "malejąco"),
 ]
 
 
-DROPDOWN_STATUS = [
+STATUS = [
     ("", "---"),
     ("in_progress", "w trakcie"),
     ("completed", "zakończone"),

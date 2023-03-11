@@ -7,7 +7,7 @@ from sqlalchemy import func, select
 from ..dropdown import Dd, Dropdown
 from ..export import export_vcard
 from ..forms import ContactForm, ContactSearchForm
-from ..forms.select import DROPDOWN_ORDER, DROPDOWN_SORT
+from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA
 from ..models import Contact
 from ..paginator import get_paginator
 
@@ -35,8 +35,8 @@ class ContactView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Contact)
 
         if name:
@@ -83,8 +83,8 @@ class ContactView:
             },
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None

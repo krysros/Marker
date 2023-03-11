@@ -15,12 +15,12 @@ from ..export import (
 from ..forms import UserForm, UserSearchForm
 from ..forms.select import (
     COLORS,
-    DROPDOWN_EXT_SORT,
-    DROPDOWN_ORDER,
-    DROPDOWN_SORT,
-    DROPDOWN_SORT_COMPANIES,
-    DROPDOWN_SORT_PROJECTS,
-    DROPDOWN_STATUS,
+    SORT_CRITERIA_EXT,
+    ORDER_CRITERIA,
+    SORT_CRITERIA,
+    SORT_CRITERIA_COMPANIES,
+    SORT_CRITERIA_PROJECTS,
+    STATUS,
     REGIONS,
     USER_ROLES,
 )
@@ -59,8 +59,8 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         roles = dict(USER_ROLES)
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(User)
 
         if username:
@@ -111,8 +111,8 @@ class UserView:
         )
 
         dd_filter = Dropdown(roles, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None
@@ -190,8 +190,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Tag).filter(Tag.created_by == user)
 
         if _order == "asc":
@@ -219,8 +219,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -248,8 +248,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA_COMPANIES)
+        order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         regions = dict(REGIONS)
         stmt = select(Company).filter(Company.created_by == user)
@@ -297,8 +297,8 @@ class UserView:
         )
 
         dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -330,9 +330,9 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        dropdown_status = dict(DROPDOWN_STATUS)
-        dropdown_order = dict(DROPDOWN_ORDER)
-        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
+        status = dict(STATUS)
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         regions = dict(REGIONS)
         stmt = select(Project).filter(Project.created_by == user)
 
@@ -380,9 +380,9 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(dropdown_status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -412,8 +412,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Contact).filter(Contact.created_by == user)
 
         if _order == "asc":
@@ -441,8 +441,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -542,8 +542,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        dropdown_sort = dict(DROPDOWN_EXT_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA_EXT)
+        order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         regions = dict(REGIONS)
         stmt = (
@@ -585,8 +585,8 @@ class UserView:
         )
 
         dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -659,9 +659,9 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        dropdown_status = dict(DROPDOWN_STATUS)
-        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        status = dict(STATUS)
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         regions = dict(REGIONS)
         now = datetime.datetime.now()
@@ -705,9 +705,9 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(dropdown_status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -782,8 +782,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = (
             select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
         )
@@ -817,8 +817,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -886,8 +886,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = (
             select(Contact)
             .join(selected_contacts)
@@ -923,8 +923,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -996,8 +996,8 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        dropdown_sort = dict(DROPDOWN_EXT_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA_EXT)
+        order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         regions = dict(REGIONS)
 
@@ -1038,8 +1038,8 @@ class UserView:
         )
 
         dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -1110,9 +1110,9 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "asc")
-        dropdown_status = dict(DROPDOWN_STATUS)
-        dropdown_sort = dict(DROPDOWN_EXT_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        status = dict(STATUS)
+        sort_criteria = dict(SORT_CRITERIA_EXT)
+        order_criteria = dict(ORDER_CRITERIA)
         regions = dict(REGIONS)
         now = datetime.datetime.now()
 
@@ -1152,9 +1152,9 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(dropdown_status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,

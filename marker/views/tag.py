@@ -9,10 +9,10 @@ from ..export import export_companies_to_xlsx, export_projects_to_xlsx
 from ..forms import TagForm, TagSearchForm
 from ..forms.select import (
     COLORS,
-    DROPDOWN_ORDER,
-    DROPDOWN_SORT,
-    DROPDOWN_SORT_COMPANIES,
-    DROPDOWN_SORT_PROJECTS,
+    ORDER_CRITERIA,
+    SORT_CRITERIA,
+    SORT_CRITERIA_COMPANIES,
+    SORT_CRITERIA_PROJECTS,
     REGIONS,
 )
 from ..models import Company, Project, Tag, recommended, watched
@@ -37,8 +37,8 @@ class TagView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        dropdown_sort = dict(DROPDOWN_SORT)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Tag)
 
         if name:
@@ -72,8 +72,8 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None
@@ -208,8 +208,8 @@ class TagView:
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
         regions = dict(REGIONS)
-        dropdown_sort = dict(DROPDOWN_SORT_COMPANIES)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA_COMPANIES)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Company)
 
         if _sort == "recommended":
@@ -261,8 +261,8 @@ class TagView:
         )
 
         dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -345,8 +345,8 @@ class TagView:
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
         regions = dict(REGIONS)
-        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
-        dropdown_order = dict(DROPDOWN_ORDER)
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Project)
 
         if _sort == "watched":
@@ -398,8 +398,8 @@ class TagView:
         )
 
         dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,

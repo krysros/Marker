@@ -12,9 +12,9 @@ from ..forms.select import (
     COMPANY_ROLES,
     USER_ROLES,
     COUNTRIES,
-    DROPDOWN_ORDER,
-    DROPDOWN_SORT_PROJECTS,
-    DROPDOWN_STATUS,
+    ORDER_CRITERIA,
+    SORT_CRITERIA_PROJECTS,
+    STATUS,
     PROJECT_DELIVERY_METHODS,
     STAGES,
     REGIONS,
@@ -66,9 +66,9 @@ class ProjectView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
-        dropdown_status = dict(DROPDOWN_STATUS)
-        dropdown_order = dict(DROPDOWN_ORDER)
-        dropdown_sort = dict(DROPDOWN_SORT_PROJECTS)
+        status = dict(STATUS)
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
         colors = dict(COLORS)
@@ -169,9 +169,9 @@ class ProjectView:
             },
         )
 
-        dd_filter = Dropdown(dropdown_status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(dropdown_sort, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(dropdown_order, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
         form = None
