@@ -2,7 +2,7 @@
 <%namespace name="checkbox" file="checkbox.mako"/>
 
 <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table table-dark table-striped">
     <thead>
       <tr>
         <th class="col-1">#</th>

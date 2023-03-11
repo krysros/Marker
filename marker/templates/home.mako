@@ -1,7 +1,7 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="p-4 mb-4 bg-light rounded-3">
+<div class="p-4 mb-4 border rounded-3">
   <div class="container">
     <h1>${project} <small class="text-muted">Informacje o firmach i projektach</small></h1>
     <p class="fs-4">

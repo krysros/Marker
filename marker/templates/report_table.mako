@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <table class="table table-striped">
+  <table class="table table-dark table-striped">
     <thead>
       <tr>
         <th>Opis</th>
