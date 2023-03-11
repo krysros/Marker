@@ -241,22 +241,6 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="project_companies",
-        renderer="project_companies.mako",
-        permission="view",
-    )
-    def companies(self):
-        project = self.request.context.project
-        stages = dict(STAGES)
-        company_roles = dict(COMPANY_ROLES)
-        return {
-            "project": project,
-            "stages": stages,
-            "company_roles": company_roles,
-            "title": project.name,
-        }
-
-    @view_config(
         route_name="project_map",
         renderer="project_map.mako",
         permission="view",
@@ -428,6 +412,11 @@ class ProjectView:
         permission="view",
     )
     @view_config(
+        route_name="project_companies",
+        renderer="project_companies.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="project_tags",
         renderer="project_tags.mako",
         permission="view",
@@ -442,6 +431,7 @@ class ProjectView:
         regions = dict(REGIONS)
         stages = dict(STAGES)
         countries = dict(COUNTRIES)
+        company_roles = dict(COMPANY_ROLES)
         delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
         return {
@@ -449,6 +439,7 @@ class ProjectView:
             "regions": regions,
             "stages": stages,
             "countries": countries,
+            "company_roles": company_roles,
             "delivery_methods": delivery_methods,
             "title": project.name,
         }

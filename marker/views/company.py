@@ -197,6 +197,11 @@ class CompanyView:
         permission="view",
     )
     @view_config(
+        route_name="company_projects",
+        renderer="company_projects.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="company_tags",
         renderer="company_tags.mako",
         permission="view",
@@ -211,12 +216,16 @@ class CompanyView:
         regions = dict(REGIONS)
         courts = dict(COURTS)
         countries = dict(COUNTRIES)
+        stages = dict(STAGES)
+        company_roles = dict(COMPANY_ROLES)
 
         return {
             "company": company,
             "regions": regions,
             "courts": courts,
             "countries": countries,
+            "stages": stages,
+            "company_roles": company_roles,
             "title": company.name,
         }
 
@@ -517,22 +526,6 @@ class CompanyView:
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
-            "title": company.name,
-        }
-
-    @view_config(
-        route_name="company_projects",
-        renderer="company_projects.mako",
-        permission="view",
-    )
-    def projects(self):
-        company = self.request.context.company
-        stages = dict(STAGES)
-        company_roles = dict(COMPANY_ROLES)
-        return {
-            "company": company,
-            "stages": stages,
-            "company_roles": company_roles,
             "title": company.name,
         }
 
