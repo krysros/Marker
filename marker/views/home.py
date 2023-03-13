@@ -19,4 +19,4 @@ def color_scheme_view(request):
 
     session["color_scheme"] = theme
     request.response.headers = {"HX-Refresh": "true"}
-    return session["color_scheme"]
+    return theme
