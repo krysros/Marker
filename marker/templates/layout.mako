@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="${request.locale_name}" data-bs-theme="dark">
+<html lang="${request.locale_name}" data-bs-theme="${request.session.get('color_scheme', 'light')}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

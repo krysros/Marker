@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md fixed-top bg-dark">
+<nav class="navbar navbar-expand-md fixed-top bg-${request.session.get('color_scheme', 'light')}">
   <div class="container-fluid">
     <a class="navbar-brand" href="${request.route_url('home')}">Marker</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +29,9 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" role="button" hx-get="${request.route_url('color_scheme')}" hx-swap="none"><i class="bi bi-${'sun' if request.session.get('color_scheme', 'light') == 'dark' else 'moon'}"></i></a>
+        </li>
         % if not request.is_authenticated:
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.application_url}/login">Zaloguj</a>
