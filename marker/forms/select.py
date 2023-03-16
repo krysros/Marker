@@ -512,10 +512,10 @@ COURTS = [
 REPORTS = [
     ("companies-tags", "Najpopularniejsze tagi wśród firm"),
     ("projects-tags", "Najpopularniejsze tagi wśród projektów"),
-    ("companies-regions", "Województwa o największej liczbie firm"),
+    ("companies-regions", "Regiony o największej liczbie firm"),
     ("companies-cities", "Miasta o największej liczbie firm"),
     ("companies-comments", "Najczęściej komentowane firmy"),
-    ("projects-regions", "Województwa o największej liczbie projektów"),
+    ("projects-regions", "Regiony o największej liczbie projektów"),
     ("projects-cities", "Miasta o największej liczbie projektów"),
     ("projects-comments", "Najczęściej komentowane projekty"),
     ("users-companies", "Aktywność użytkowników (dodane firmy)"),
