@@ -1,4 +1,5 @@
 <%namespace name="button" file="button.mako"/>
+<%! import markdown %>
 
 % if comment:
 <div class="card mt-4 mb-4">
@@ -17,7 +18,7 @@
     % endif
   </div>
   <div class="card-body">
-    <p>${comment.comment}</p>
+    ${markdown.markdown(comment.comment) | n}
   </div>
   <div class="card-footer">
     ${comment.created_at.strftime('%Y-%m-%d %H:%M:%S')} przez <a href="${request.route_url('user_view', username=comment.created_by.name)}" title="${comment.created_by.fullname}">${comment.created_by.name}</a>

@@ -27,6 +27,7 @@ requires = [
     'alembic',
     'zxcvbn',
     'Unidecode',
+    'markdown',
     ]
 
 tests_require = [
