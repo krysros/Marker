@@ -53,7 +53,7 @@
 <%include file="project_lead.mako"/>
 
 <div class="table-responsive">
-  <table class="${'table table-dark' if request.session.get('color_scheme', 'light') == 'dark' else 'table'} table-striped">
+  <table class="table table-striped">
     <thead>
       <tr>
         <th class="col-1">#</th>

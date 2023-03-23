@@ -1,5 +1,17 @@
+<%!
+	from sqlalchemy import select
+	from marker.models import Themes
+%>
+<%
+  if request.identity:
+    stmt = select(Themes.theme).filter(Themes.user_id == request.identity.id)
+    theme = request.dbsession.execute(stmt).scalar()
+  else:
+    theme = "light"
+%>
+
 <!doctype html>
-<html lang="${request.locale_name}" data-bs-theme="${request.session.get('color_scheme', 'light')}">
+<html lang="${request.locale_name}" data-bs-theme="${theme}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,7 +50,7 @@
   <body>
     <main role="main">
       <div class="container">
-        <%include file="navbar.mako"/>
+        <%include file="navbar.mako" args="theme=theme"/>
         <%include file="flash_messages.mako"/>
         ${self.body()}
         <%include file="footer.mako"/>

@@ -1,4 +1,6 @@
 from pyramid.view import view_config
+from sqlalchemy import select
+from ..models import Themes
 
 
 @view_config(route_name="home", renderer="home.mako")
@@ -6,16 +8,20 @@ def home_view(request):
     return {"project": "Marker"}
 
 
-@view_config(route_name="color_scheme", renderer="string", permission="view")
-def color_scheme_view(request):
-    color_scheme = request.session.get("color_scheme", "light")
+@view_config(route_name="theme", renderer="string", permission="view")
+def theme_view(request):
+    theme = request.dbsession.execute(
+        select(Themes).where(Themes.user_id == request.identity.id)
+    ).scalar_one_or_none()
 
-    match color_scheme:
+    if not theme:
+        theme = Themes(user_id=request.identity.id, theme="light")
+
+    match theme.theme:
         case "light":
-            theme = "dark"
+            theme.theme = "dark"
         case "dark":
-            theme = "light"
+            theme.theme = "light"
 
-    request.session["color_scheme"] = theme
     request.response.headers = {"HX-Refresh": "true"}
-    return theme
+    return theme.theme

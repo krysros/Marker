@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-md fixed-top bg-${request.session.get('color_scheme', 'light')}">
+<%page args="theme"/>
+<nav class="navbar navbar-expand-md fixed-top bg-${theme}">
   <div class="container-fluid">
     <a class="navbar-brand" href="${request.route_url('home')}">Marker</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,8 +73,8 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item" role="button" hx-get="${request.route_url('color_scheme')}" hx-swap="none">
-              % if request.session.get("color_scheme", "light") == "dark":
+              <a class="dropdown-item" role="button" hx-get="${request.route_url('theme')}" hx-swap="none">
+              % if theme == "dark":
                 <i class="bi bi-sun"></i> Jasny
               % else:
                 <i class="bi bi-moon"></i> Ciemny

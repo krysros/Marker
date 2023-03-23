@@ -5,6 +5,7 @@ from sqlalchemy.orm import configure_mappers, sessionmaker
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
 from .association import CompaniesProjects  # flake8: noqa
+from .association import Themes  # flake8: noqa
 from .association import selected_companies  # flake8: noqa
 from .association import selected_projects  # flake8: noqa
 from .association import selected_tags  # flake8: noqa
