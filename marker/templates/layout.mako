@@ -1,6 +1,6 @@
 <%!
-	from sqlalchemy import select
-	from marker.models import Themes
+  from sqlalchemy import select
+  from marker.models import Themes
 %>
 <%
   if request.identity:
