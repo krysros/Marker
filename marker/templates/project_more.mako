@@ -22,9 +22,9 @@
   <td>
     <a href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
       <div hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}"
-            hx-trigger="watchedProjectEvent from:body"
-            hx-target="#watched-${project.id}"
-            hx-swap="innerHTML">
+           hx-trigger="watchedProjectEvent from:body"
+           hx-target="#watched-${project.id}"
+           hx-swap="innerHTML">
         <span id="watched-${project.id}" class="badge text-bg-secondary" role="button">${project.count_watched}</swap>
       </div>
     </a>

@@ -24,7 +24,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-        Komentarze <span class="badge text-bg-secondary">${project.count_comments}</span>
+          Komentarze <span class="badge text-bg-secondary">${project.count_comments}</span>
         </a>
       </li>
       <li class="nav-item">

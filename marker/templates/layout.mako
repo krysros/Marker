@@ -2,6 +2,7 @@
   from sqlalchemy import select
   from marker.models import Themes
 %>
+
 <%
   if request.identity:
     stmt = select(Themes.theme).filter(Themes.user_id == request.identity.id)
