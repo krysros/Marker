@@ -12,10 +12,7 @@ def home_view(request):
 def theme_view(request):
     theme = request.dbsession.execute(
         select(Themes).where(Themes.user_id == request.identity.id)
-    ).scalar_one_or_none()
-
-    if not theme:
-        theme = Themes(user_id=request.identity.id, theme="light")
+    ).scalar()
 
     match theme.theme:
         case "light":

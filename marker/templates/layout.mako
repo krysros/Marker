@@ -5,7 +5,10 @@
 <%
   if request.identity:
     stmt = select(Themes.theme).filter(Themes.user_id == request.identity.id)
-    theme = request.dbsession.execute(stmt).scalar()
+    theme = request.dbsession.execute(stmt).scalar_one_or_none()
+    if not theme:
+      theme = Themes(user_id=request.identity.id, theme="light")
+      request.dbsession.add(theme)
   else:
     theme = "light"
 %>
