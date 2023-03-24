@@ -666,11 +666,11 @@ class ProjectView:
         project = self.request.context.project
         if project in self.request.identity.watched:
             self.request.identity.watched.remove(project)
-            self.request.response.headers = {"HX-Trigger": "watchedProjectEvent"}
+            self.request.response.headers = {"HX-Trigger": "watchEvent"}
             return '<i class="bi bi-eye"></i>'
         else:
             self.request.identity.watched.append(project)
-            self.request.response.headers = {"HX-Trigger": "watchedProjectEvent"}
+            self.request.response.headers = {"HX-Trigger": "watchEvent"}
             return '<i class="bi bi-eye-fill"></i>'
 
     @view_config(

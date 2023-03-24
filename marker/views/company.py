@@ -720,11 +720,11 @@ class CompanyView:
 
         if company in recommended:
             recommended.remove(company)
-            self.request.response.headers = {"HX-Trigger": "recommendedCompanyEvent"}
+            self.request.response.headers = {"HX-Trigger": "recommendEvent"}
             return '<i class="bi bi-hand-thumbs-up"></i>'
         else:
             recommended.append(company)
-            self.request.response.headers = {"HX-Trigger": "recommendedCompanyEvent"}
+            self.request.response.headers = {"HX-Trigger": "recommendEvent"}
             return '<i class="bi bi-hand-thumbs-up-fill"></i>'
 
     @view_config(

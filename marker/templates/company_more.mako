@@ -21,7 +21,7 @@
   <td>
     <a href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
       <div hx-get="${request.route_url('count_company_recommended', company_id=company.id, slug=company.slug)}"
-           hx-trigger="recommendedCompanyEvent from:body"
+           hx-trigger="recommendEvent from:body"
            hx-target="#recommendations-${company.id}"
            hx-swap="innerHTML">
         <span id="recommendations-${company.id}" class="badge text-bg-secondary" role="button">${company.count_recommended}</swap>
