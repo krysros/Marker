@@ -68,6 +68,9 @@
             <label for="comment" class="form-label">Komentarz</label>
             <textarea class="form-control" id="comment" name="comment"></textarea>
           </div>
+          <div class="mb-3">
+            <p><small class="text-muted">W tym polu możesz skorzystać z Markdown.</small></p>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
