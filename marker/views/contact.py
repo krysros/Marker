@@ -102,11 +102,11 @@ class ContactView:
         }
 
     @view_config(
-        route_name="contact_count_all",
+        route_name="contact_count",
         renderer="json",
         permission="view",
     )
-    def count_all(self):
+    def count(self):
         return self.request.dbsession.execute(
             select(func.count()).select_from(select(Contact))
         ).scalar()
@@ -148,12 +148,12 @@ class ContactView:
         return response
 
     @view_config(
-        route_name="delete_contact",
+        route_name="contact_del_row",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_contact(self):
+    def del_row(self):
         contact = self.request.context.contact
         self.request.dbsession.delete(contact)
         log.info(f"Użytkownik {self.request.identity.name} usunął kontakt")

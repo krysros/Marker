@@ -14,12 +14,12 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug)}">
-          Projekty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_tag_projects', tag_id=tag.id, slug=tag.slug)}" hx-trigger="projectEvent from:body">${tag.count_projects}</div></span>
+          Projekty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('tag_count_projects', tag_id=tag.id, slug=tag.slug)}" hx-trigger="projectEvent from:body">${tag.count_projects}</div></span>
         </a>
       </li>
     </ul>
   </div>
-  <div>${button.map('tag_projects_map', tag_id=tag.id, slug=tag.slug)}</div>
+  <div>${button.map('tag_map_projects', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
 <%include file="tag_lead.mako"/>
@@ -28,7 +28,7 @@
   <div>${button.dropdown('tag_projects', dd_filter, tag_id=tag.id, slug=tag.slug)}</div>
   <div>${button.dropdown('tag_projects', dd_sort, tag_id=tag.id, slug=tag.slug)}</div>
   <div class="me-auto">${button.dropdown('tag_projects', dd_order, tag_id=tag.id, slug=tag.slug)}</div>
-  <div>${button.export('tag_projects_export', tag_id=tag.id, slug=tag.slug, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
+  <div>${button.export('tag_export_projects', tag_id=tag.id, slug=tag.slug, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="project_table.mako"/>

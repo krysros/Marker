@@ -9,7 +9,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug)}">
-          Firmy <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_tag_companies', tag_id=tag.id, slug=tag.slug)}" hx-trigger="companyEvent from:body">${tag.count_companies}</div></span>
+          Firmy <span class="badge text-bg-secondary"><div hx-get="${request.route_url('tag_count_companies', tag_id=tag.id, slug=tag.slug)}" hx-trigger="companyEvent from:body">${tag.count_companies}</div></span>
         </a>
       </li>
       <li class="nav-item">
@@ -19,7 +19,7 @@
       </li>
     </ul>
   </div>
-  <div>${button.map('tag_companies_map', tag_id=tag.id, slug=tag.slug)}</div>
+  <div>${button.map('tag_map_companies', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
 <%include file="tag_lead.mako"/>
@@ -28,7 +28,7 @@
   <div>${button.dropdown('tag_companies', dd_filter, tag_id=tag.id, slug=tag.slug)}</div>
   <div>${button.dropdown('tag_companies', dd_sort, tag_id=tag.id, slug=tag.slug)}</div>
   <div class="me-auto">${button.dropdown('tag_companies', dd_order, tag_id=tag.id, slug=tag.slug)}</div>
-  <div>${button.export('tag_companies_export', tag_id=tag.id, slug=tag.slug, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
+  <div>${button.export('tag_export_companies', tag_id=tag.id, slug=tag.slug, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="company_table.mako"/>

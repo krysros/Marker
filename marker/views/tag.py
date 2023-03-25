@@ -110,31 +110,31 @@ class TagView:
         return {"tag": tag, "title": tag.name}
 
     @view_config(
-        route_name="tag_companies_map",
-        renderer="tag_companies_map.mako",
+        route_name="tag_map_companies",
+        renderer="tag_map_companies.mako",
         permission="view",
     )
     def map_companies(self):
         tag = self.request.context.tag
-        url = self.request.route_url("tag_companies_json", tag_id=tag.id, slug=tag.slug)
+        url = self.request.route_url("tag_json_companies", tag_id=tag.id, slug=tag.slug)
         return {"tag": tag, "url": url}
 
     @view_config(
-        route_name="tag_projects_map",
-        renderer="tag_projects_map.mako",
+        route_name="tag_map_projects",
+        renderer="tag_map_projects.mako",
         permission="view",
     )
     def map_projects(self):
         tag = self.request.context.tag
-        url = self.request.route_url("tag_projects_json", tag_id=tag.id, slug=tag.slug)
+        url = self.request.route_url("tag_json_projects", tag_id=tag.id, slug=tag.slug)
         return {"tag": tag, "url": url}
 
     @view_config(
-        route_name="tag_companies_json",
+        route_name="tag_json_companies",
         renderer="json",
         permission="view",
     )
-    def tag_companies_json(self):
+    def json_companies(self):
         tag = self.request.context.tag
         stmt = select(Company).filter(Company.tags.any(name=tag.name))
         companies = self.request.dbsession.execute(stmt).scalars()
@@ -161,11 +161,11 @@ class TagView:
         return res
 
     @view_config(
-        route_name="tag_projects_json",
+        route_name="tag_json_projects",
         renderer="json",
         permission="view",
     )
-    def tag_projects_json(self):
+    def json_projects(self):
         tag = self.request.context.tag
         stmt = select(Project).filter(Project.tags.any(name=tag.name))
         projects = self.request.dbsession.execute(stmt).scalars()
@@ -196,7 +196,7 @@ class TagView:
         permission="view",
     )
     @view_config(
-        route_name="tag_companies_more",
+        route_name="tag_more_companies",
         renderer="company_more.mako",
         permission="view",
     )
@@ -248,7 +248,7 @@ class TagView:
             .all()
         )
         next_page = self.request.route_url(
-            "tag_companies_more",
+            "tag_more_companies",
             tag_id=tag.id,
             slug=tag.slug,
             _query={
@@ -277,7 +277,7 @@ class TagView:
             "title": tag.name,
         }
 
-    @view_config(route_name="tag_companies_export", permission="view")
+    @view_config(route_name="tag_export_companies", permission="view")
     def export_companies(self):
         tag = self.request.context.tag
         _filter = self.request.params.get("filter", None)
@@ -319,11 +319,11 @@ class TagView:
         return response
 
     @view_config(
-        route_name="count_tag_companies",
+        route_name="tag_count_companies",
         renderer="json",
         permission="view",
     )
-    def count_tag_companies(self):
+    def count_companies(self):
         tag = self.request.context.tag
         return tag.count_companies
 
@@ -333,7 +333,7 @@ class TagView:
         permission="view",
     )
     @view_config(
-        route_name="tag_projects_more",
+        route_name="tag_more_projects",
         renderer="project_more.mako",
         permission="view",
     )
@@ -385,7 +385,7 @@ class TagView:
             .all()
         )
         next_page = self.request.route_url(
-            "tag_projects_more",
+            "tag_more_projects",
             tag_id=tag.id,
             slug=tag.slug,
             _query={
@@ -414,7 +414,7 @@ class TagView:
             "title": tag.name,
         }
 
-    @view_config(route_name="tag_projects_export", permission="view")
+    @view_config(route_name="tag_export_projects", permission="view")
     def export_projects(self):
         tag = self.request.context.tag
         _filter = self.request.params.get("filter", None)
@@ -456,11 +456,11 @@ class TagView:
         return response
 
     @view_config(
-        route_name="count_tag_projects",
+        route_name="tag_count_projects",
         renderer="json",
         permission="view",
     )
-    def count_tag_projects(self):
+    def count_projects(self):
         tag = self.request.context.tag
         return tag.count_projects
 
@@ -506,12 +506,12 @@ class TagView:
         return response
 
     @view_config(
-        route_name="delete_tag",
+        route_name="tag_del_row",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_tag(self):
+    def tag_del_row(self):
         tag = self.request.context.tag
         self.request.dbsession.delete(tag)
         log.info(f"Użytkownik {self.request.identity.name} usunął tag")

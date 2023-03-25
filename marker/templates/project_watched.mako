@@ -28,7 +28,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-          Obserwacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchEvent from:body">${project.count_watched}</div></span></a>
+          Obserwacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('project_count_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchEvent from:body">${project.count_watched}</div></span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">

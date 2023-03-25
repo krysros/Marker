@@ -23,7 +23,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-          Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_comments', company_id=company.id, slug=company.slug)}" hx-trigger="commentEvent from:body">${company.count_comments}</div></span>
+          Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('company_count_comments', company_id=company.id, slug=company.slug)}" hx-trigger="commentEvent from:body">${company.count_comments}</div></span>
         </a>
       </li>
       <li class="nav-item">
@@ -57,7 +57,7 @@
 <div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('comment_company', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
+      <form hx-post="${request.route_url('add_comment_to_company', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="add-comment-modal-label">Dodaj komentarz</h5>

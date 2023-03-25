@@ -182,11 +182,11 @@ class CompanyView:
         }
 
     @view_config(
-        route_name="company_count_all",
+        route_name="company_count",
         renderer="json",
         permission="view",
     )
-    def count_all(self):
+    def count(self):
         return self.request.dbsession.execute(
             select(func.count()).select_from(select(Company))
         ).scalar()
@@ -348,56 +348,56 @@ class CompanyView:
         return res
 
     @view_config(
-        route_name="count_company_tags",
+        route_name="company_count_tags",
         renderer="json",
         permission="view",
     )
-    def count_company_tags(self):
+    def count_tags(self):
         company = self.request.context.company
         return company.count_tags
 
     @view_config(
-        route_name="count_company_projects",
+        route_name="company_count_projects",
         renderer="json",
         permission="view",
     )
-    def count_company_projects(self):
+    def count_projects(self):
         company = self.request.context.company
         return company.count_projects
 
     @view_config(
-        route_name="count_company_contacts",
+        route_name="company_count_contacts",
         renderer="json",
         permission="view",
     )
-    def count_company_contacts(self):
+    def count_contacts(self):
         company = self.request.context.company
         return company.count_contacts
 
     @view_config(
-        route_name="count_company_comments",
+        route_name="company_count_comments",
         renderer="json",
         permission="view",
     )
-    def count_company_comments(self):
+    def count_comments(self):
         company = self.request.context.company
         return company.count_comments
 
     @view_config(
-        route_name="count_company_recommended",
+        route_name="company_count_recommended",
         renderer="json",
         permission="view",
     )
-    def count_company_recommended(self):
+    def count_recommended(self):
         company = self.request.context.company
         return company.count_recommended
 
     @view_config(
-        route_name="count_company_similar",
+        route_name="company_count_similar",
         renderer="json",
         permission="view",
     )
-    def count_company_similar(self):
+    def count_similar(self):
         company = self.request.context.company
         return company.count_similar
 
@@ -407,7 +407,7 @@ class CompanyView:
         permission="view",
     )
     @view_config(
-        route_name="company_recommended_more",
+        route_name="company_more_recommended",
         renderer="user_more.mako",
         permission="view",
     )
@@ -426,7 +426,7 @@ class CompanyView:
             .all()
         )
         next_page = self.request.route_url(
-            "company_recommended_more",
+            "company_more_recommended",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},
@@ -499,7 +499,7 @@ class CompanyView:
         permission="view",
     )
     @view_config(
-        route_name="company_comments_more",
+        route_name="company_more_comments",
         renderer="comment_more.mako",
         permission="view",
     )
@@ -517,7 +517,7 @@ class CompanyView:
             .all()
         )
         next_page = self.request.route_url(
-            "company_comments_more",
+            "company_more_comments",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},
@@ -535,7 +535,7 @@ class CompanyView:
         permission="view",
     )
     @view_config(
-        route_name="company_similar_more",
+        route_name="company_more_similar",
         renderer="company_more.mako",
         permission="view",
     )
@@ -578,7 +578,7 @@ class CompanyView:
         )
 
         next_page = self.request.route_url(
-            "company_similar_more",
+            "company_more_similar",
             company_id=company.id,
             slug=company.slug,
             colors=colors,
@@ -694,12 +694,12 @@ class CompanyView:
         return response
 
     @view_config(
-        route_name="delete_company",
+        route_name="company_del_row",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_company(self):
+    def del_row(self):
         company = self.request.context.company
         self.request.dbsession.delete(company)
         log.info(f"Użytkownik {self.request.identity.name} usunął firmę")
@@ -763,7 +763,7 @@ class CompanyView:
         renderer="company_form.mako",
         permission="view",
     )
-    def company_search(self):
+    def search(self):
         form = CompanySearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(

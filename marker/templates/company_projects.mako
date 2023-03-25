@@ -8,7 +8,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
-          Projekty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_projects', company_id=company.id, slug=company.slug)}" hx-trigger="projectCompanyEvent from:body">${company.count_projects}</div></span>
+          Projekty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('company_count_projects', company_id=company.id, slug=company.slug)}" hx-trigger="projectCompanyEvent from:body">${company.count_projects}</div></span>
         </a>
       </li>
       <li class="nav-item">

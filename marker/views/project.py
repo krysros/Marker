@@ -195,11 +195,11 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="project_count_all",
+        route_name="project_count",
         renderer="json",
         permission="view",
     )
-    def count_all(self):
+    def count(self):
         return self.request.dbsession.execute(
             select(func.count()).select_from(select(Project))
         ).scalar()
@@ -210,7 +210,7 @@ class ProjectView:
         permission="view",
     )
     @view_config(
-        route_name="project_comments_more",
+        route_name="project_more_comments",
         renderer="project_more.mako",
         permission="view",
     )
@@ -228,7 +228,7 @@ class ProjectView:
             .all()
         )
         next_page = self.request.route_url(
-            "project_comments_more",
+            "project_more_comments",
             project_id=project.id,
             slug=project.slug,
             _query={"page": page + 1},
@@ -353,56 +353,56 @@ class ProjectView:
         return res
 
     @view_config(
-        route_name="count_project_companies",
+        route_name="project_count_companies",
         renderer="json",
         permission="view",
     )
-    def count_project_companies(self):
+    def count_companies(self):
         project = self.request.context.project
         return project.count_companies
 
     @view_config(
-        route_name="count_project_tags",
+        route_name="project_count_tags",
         renderer="json",
         permission="view",
     )
-    def count_project_tags(self):
+    def count_tags(self):
         project = self.request.context.project
         return project.count_tags
 
     @view_config(
-        route_name="count_project_contacts",
+        route_name="project_count_contacts",
         renderer="json",
         permission="view",
     )
-    def count_project_contacts(self):
+    def count_contacts(self):
         project = self.request.context.project
         return project.count_contacts
 
     @view_config(
-        route_name="count_project_comments",
+        route_name="project_count_comments",
         renderer="json",
         permission="view",
     )
-    def count_project_comments(self):
+    def count_comments(self):
         project = self.request.context.project
         return project.count_comments
 
     @view_config(
-        route_name="count_project_watched",
+        route_name="project_count_watched",
         renderer="json",
         permission="view",
     )
-    def count_project_watched(self):
+    def count_watched(self):
         project = self.request.context.project
         return project.count_watched
 
     @view_config(
-        route_name="count_project_similar",
+        route_name="project_count_similar",
         renderer="json",
         permission="view",
     )
-    def count_project_similar(self):
+    def count_similar(self):
         project = self.request.context.project
         return project.count_similar
 
@@ -450,7 +450,7 @@ class ProjectView:
         permission="view",
     )
     @view_config(
-        route_name="project_similar_more",
+        route_name="project_more_similar",
         renderer="project_more.mako",
         permission="view",
     )
@@ -493,7 +493,7 @@ class ProjectView:
         )
 
         next_page = self.request.route_url(
-            "project_similar_more",
+            "project_more_similar",
             project_id=project.id,
             slug=project.slug,
             colors=colors,
@@ -614,12 +614,12 @@ class ProjectView:
         return response
 
     @view_config(
-        route_name="delete_project",
+        route_name="project_del_row",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def delete_project(self):
+    def del_row(self):
         project = self.request.context.project
         self.request.dbsession.delete(project)
         log.info(f"Użytkownik {self.request.identity.name} usunął projekt")
@@ -679,7 +679,7 @@ class ProjectView:
         permission="view",
     )
     @view_config(
-        route_name="project_watched_more",
+        route_name="project_more_watched",
         renderer="user_more.mako",
         permission="view",
     )
@@ -694,7 +694,7 @@ class ProjectView:
             .all()
         )
         next_page = self.request.route_url(
-            "project_watched_more",
+            "project_more_watched",
             project_id=project.id,
             slug=project.slug,
             _query={"page": page + 1},

@@ -5,7 +5,7 @@
   <i class="bi bi-check-square"></i> Kontakty
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.clear('user_selected_contacts_clear', icon='square', username=user.name)}
+    ${button.clear('user_clear_selected_contacts', icon='square', username=user.name)}
   </div>
 </h2>
 <hr>
@@ -13,7 +13,7 @@
 <div class="hstack gap-2 mb-4">
   <div>${button.dropdown('user_selected_contacts', dd_sort, username=user.name)}</div>
   <div class="me-auto">${button.dropdown('user_selected_contacts', dd_order, username=user.name)}</div>
-  <div>${button.export('user_selected_contacts_export', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order})}</div>
+  <div>${button.export('user_export_selected_contacts', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="contact_table.mako"/>

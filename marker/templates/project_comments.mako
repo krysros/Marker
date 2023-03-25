@@ -24,12 +24,12 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-        Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_project_comments', project_id=project.id, slug=project.slug)}" hx-trigger="commentEvent from:body">${project.count_comments}</div></span>
+        Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('project_count_comments', project_id=project.id, slug=project.slug)}" hx-trigger="commentEvent from:body">${project.count_comments}</div></span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-          Obserwacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_project_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchEvent from:body">${project.count_watched}</div></span></a>
+          Obserwacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('project_count_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchEvent from:body">${project.count_watched}</div></span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">
@@ -57,7 +57,7 @@
 <div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('comment_project', project_id=project.id, slug=project.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
+      <form hx-post="${request.route_url('add_comment_to_project', project_id=project.id, slug=project.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="add-comment-modal-label">Dodaj komentarz</h5>

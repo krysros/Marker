@@ -20,7 +20,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('company_contacts', company_id=company.id, slug=company.slug)}">
-          Kontakty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_contacts', company_id=company.id, slug=company.slug)}" hx-trigger="contactEvent from:body">${company.count_contacts}</div></span>
+          Kontakty <span class="badge text-bg-secondary"><div hx-get="${request.route_url('company_count_contacts', company_id=company.id, slug=company.slug)}" hx-trigger="contactEvent from:body">${company.count_contacts}</div></span>
         </a>
       </li>
       <li class="nav-item">
@@ -80,7 +80,7 @@
         <td class="col-2">
           ${button.vcard('contact_vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
           ${button.edit('contact_edit', contact_id=contact.id, slug=contact.slug, size='sm')}
-          ${button.del_row('delete_contact', contact_id=contact.id, slug=contact.slug, size='sm')}
+          ${button.del_row('contact_del_row', contact_id=contact.id, slug=contact.slug, size='sm')}
         </td>
       </tr>
       % endfor

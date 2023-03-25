@@ -20,7 +20,7 @@
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
     <a href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-      <div hx-get="${request.route_url('count_company_recommended', company_id=company.id, slug=company.slug)}"
+      <div hx-get="${request.route_url('company_count_recommended', company_id=company.id, slug=company.slug)}"
            hx-trigger="recommendEvent from:body"
            hx-target="#recommendations-${company.id}"
            hx-swap="innerHTML">
@@ -36,7 +36,7 @@
   <td>
     ${button.recommend(company, size='sm')}
     ${button.edit('company_edit', company_id=company.id, slug=company.slug, size='sm')}
-    ${button.del_row('delete_company', company_id=company.id, slug=company.slug, size='sm')}
+    ${button.del_row('company_del_row', company_id=company.id, slug=company.slug, size='sm')}
   </td>
 </tr>
 % endfor

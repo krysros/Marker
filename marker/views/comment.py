@@ -92,22 +92,22 @@ class CommentView:
         }
 
     @view_config(
-        route_name="count_comments",
+        route_name="comment_count",
         renderer="json",
         permission="view",
     )
-    def count_comments(self):
+    def count(self):
         return self.request.dbsession.execute(
             select(func.count()).select_from(Comment)
         ).scalar()
 
     @view_config(
-        route_name="comment_company",
+        route_name="add_comment_to_company",
         renderer="comment.mako",
         request_method="POST",
         permission="edit",
     )
-    def comment_company(self):
+    def add_comment_to_company(self):
         company = self.request.context.company
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -122,12 +122,12 @@ class CommentView:
         return {"comment": comment}
 
     @view_config(
-        route_name="comment_project",
+        route_name="add_comment_to_project",
         renderer="comment.mako",
         request_method="POST",
         permission="edit",
     )
-    def comment_project(self):
+    def add_comment_to_project(self):
         project = self.request.context.project
         comment = None
         comment_text = self.request.POST.get("comment")

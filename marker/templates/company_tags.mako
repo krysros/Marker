@@ -15,7 +15,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-          Tagi <span class="badge text-bg-secondary"><div hx-get="${request.route_url('count_company_tags', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${company.count_tags}</div></span>
+          Tagi <span class="badge text-bg-secondary"><div hx-get="${request.route_url('company_count_tags', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${company.count_tags}</div></span>
         </a>
       </li>
       <li class="nav-item">
@@ -35,7 +35,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-          Podobne <span class="badge text-bg-secondary"><div id="similar-companies" hx-get="${request.route_url('count_company_similar', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${company.count_similar}</div></span>
+          Podobne <span class="badge text-bg-secondary"><div id="similar-companies" hx-get="${request.route_url('company_count_similar', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${company.count_similar}</div></span>
         </a>
       </li>
     </ul>

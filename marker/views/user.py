@@ -145,7 +145,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_comments_more",
+        route_name="user_more_comments",
         renderer="comment_more.mako",
         permission="view",
     )
@@ -163,7 +163,7 @@ class UserView:
             .all()
         )
         next_page = self.request.route_url(
-            "user_comments_more",
+            "user_more_comments",
             username=user.name,
             _query={"page": page + 1},
         )
@@ -180,7 +180,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_tags_more",
+        route_name="user_more_tags",
         renderer="tag_more.mako",
         permission="view",
     )
@@ -208,7 +208,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_tags_more",
+            "user_more_tags",
             username=user.name,
             _query={
                 **search_query,
@@ -238,7 +238,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_companies_more",
+        route_name="user_more_companies",
         renderer="company_more.mako",
         permission="view",
     )
@@ -285,7 +285,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_companies_more",
+            "user_more_companies",
             username=user.name,
             _query={
                 **search_query,
@@ -319,7 +319,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_projects_more",
+        route_name="user_more_projects",
         renderer="project_more.mako",
         permission="view",
     )
@@ -369,7 +369,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_projects_more",
+            "user_more_projects",
             username=user.name,
             _query={
                 **search_query,
@@ -402,7 +402,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_contacts_more",
+        route_name="user_more_contacts",
         renderer="contact_more.mako",
         permission="view",
     )
@@ -430,7 +430,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_contacts_more",
+            "user_more_contacts",
             username=user.name,
             _query={
                 **search_query,
@@ -532,7 +532,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_selected_companies_more",
+        route_name="user_more_selected_companies",
         renderer="company_more.mako",
         permission="view",
     )
@@ -573,7 +573,7 @@ class UserView:
         )
 
         next_page = self.request.route_url(
-            "user_selected_companies_more",
+            "user_more_selected_companies",
             username=user.name,
             _query={
                 **search_query,
@@ -602,7 +602,7 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_selected_companies_export",
+        route_name="user_export_selected_companies",
         permission="view",
     )
     def export_selected_companies(self):
@@ -629,7 +629,7 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_selected_companies_clear",
+        route_name="user_clear_selected_companies",
         request_method="POST",
         permission="view",
     )
@@ -649,7 +649,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_selected_projects_more",
+        route_name="user_more_selected_projects",
         renderer="project_more.mako",
         permission="view",
     )
@@ -694,7 +694,7 @@ class UserView:
         )
 
         next_page = self.request.route_url(
-            "user_selected_projects_more",
+            "user_more_selected_projects",
             username=user.name,
             _query={
                 **search_query,
@@ -723,7 +723,7 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_selected_projects_export",
+        route_name="user_export_selected_projects",
         permission="view",
     )
     def export_selected_projects(self):
@@ -750,7 +750,7 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_selected_projects_clear",
+        route_name="user_clear_selected_projects",
         request_method="POST",
         permission="view",
     )
@@ -772,7 +772,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_selected_tags_more",
+        route_name="user_more_selected_tags",
         renderer="tag_more.mako",
         permission="view",
     )
@@ -806,7 +806,7 @@ class UserView:
         )
 
         next_page = self.request.route_url(
-            "user_selected_tags_more",
+            "user_more_selected_tags",
             username=user.name,
             _query={
                 **search_query,
@@ -831,7 +831,7 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_selected_tags_export",
+        route_name="user_export_selected_tags",
         permission="view",
     )
     def export_selected_tags(self):
@@ -856,7 +856,7 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_selected_tags_clear",
+        route_name="user_clear_selected_tags",
         request_method="POST",
         permission="view",
     )
@@ -876,7 +876,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_selected_contacts_more",
+        route_name="user_more_selected_contacts",
         renderer="contact_more.mako",
         permission="view",
     )
@@ -912,7 +912,7 @@ class UserView:
         )
 
         next_page = self.request.route_url(
-            "user_selected_contacts_more",
+            "user_more_selected_contacts",
             username=user.name,
             _query={
                 **search_query,
@@ -937,7 +937,7 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_selected_contacts_export",
+        route_name="user_export_selected_contacts",
         permission="view",
     )
     def export_selected_contacts(self):
@@ -964,7 +964,7 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_selected_contacts_clear",
+        route_name="user_clear_selected_contacts",
         request_method="POST",
         permission="view",
     )
@@ -986,7 +986,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_recommended_more",
+        route_name="user_more_recommended",
         renderer="company_more.mako",
         permission="view",
     )
@@ -1026,7 +1026,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_recommended_more",
+            "user_more_recommended",
             username=user.name,
             _query={
                 **search_query,
@@ -1055,7 +1055,7 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_recommended_export",
+        route_name="user_export_recommended",
         permission="view",
     )
     def export_recommended(self):
@@ -1080,7 +1080,7 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_recommended_clear",
+        route_name="user_clear_recommended",
         request_method="POST",
         permission="view",
     )
@@ -1100,7 +1100,7 @@ class UserView:
         permission="view",
     )
     @view_config(
-        route_name="user_watched_more",
+        route_name="user_more_watched",
         renderer="project_more.mako",
         permission="view",
     )
@@ -1141,7 +1141,7 @@ class UserView:
         search_query = {}
 
         next_page = self.request.route_url(
-            "user_watched_more",
+            "user_more_watched",
             username=user.name,
             _query={
                 **search_query,
@@ -1169,7 +1169,7 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_watched_export",
+        route_name="user_export_watched",
         permission="view",
     )
     def export_watched(self):
@@ -1199,7 +1199,7 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_watched_clear",
+        route_name="user_clear_watched",
         request_method="POST",
         permission="view",
     )
