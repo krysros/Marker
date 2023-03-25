@@ -76,9 +76,7 @@ class TagView:
         dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
 
         # Recreate the search form to display the search criteria
-        form = None
-        if any(x for x in search_query.values() if x):
-            form = TagSearchForm(**search_query)
+        form = TagSearchForm(**search_query)
 
         return {
             "search_query": search_query,

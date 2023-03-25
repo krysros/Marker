@@ -16,7 +16,7 @@
   <div>${button.dropdown('comment_all', dd_order)}</div>
 </div>
 
-% if form:
+% if any(x for x in form.data.values() if x):
 <div class="alert alert-info" role="alert">
   <strong>Kryteria wyszukiwania: </strong>
   % for k, v in form.data.items():
