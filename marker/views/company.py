@@ -852,12 +852,12 @@ class CompanyView:
         return {"company": company, "stages": stages, "company_roles": company_roles}
 
     @view_config(
-        route_name="unlink_project",
+        route_name="unlink_company_project",
         request_method="POST",
         permission="edit",
         renderer="string",
     )
-    def unlink_project(self):
+    def unlink_company_project(self):
         company_id = int(self.request.matchdict["company_id"])
         project_id = int(self.request.matchdict["project_id"])
 
