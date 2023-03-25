@@ -20,102 +20,6 @@ def includeme(config):
     config.add_route("account", "/account", factory=account_factory)
     config.add_route("password", "/password", factory=account_factory)
 
-    config.add_route("report", "/report", factory=default_factory)
-    config.add_route("report_all", "/report/{rel}", factory=default_factory)
-    config.add_route("report_more", "/report/{rel}/more", factory=default_factory)
-
-    config.add_route("tag_all", "/tag", factory=default_factory)
-    config.add_route("tag_more", "/tag/more", factory=default_factory)
-    config.add_route("tag_count", "/tag/count", factory=default_factory)
-    config.add_route("tag_add", "/tag/add", factory=default_factory)
-    config.add_route("tag_search", "/tag/search", factory=default_factory)
-    config.add_route("tag_select", "/tag/select", factory=default_factory)
-    config.add_route(
-        "tag_view",
-        r"/tag/{tag_id:\d+}/{slug}",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_json_companies",
-        r"/tag/{tag_id:\d+}/{slug}/json_companies",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_json_projects",
-        r"/tag/{tag_id:\d+}/{slug}/json_projects",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_companies",
-        r"/tag/{tag_id:\d+}/{slug}/companies",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_more_companies",
-        r"/tag/{tag_id:\d+}/{slug}/more_companies",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_map_companies",
-        r"/tag/{tag_id:\d+}/{slug}/map_companies",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_export_companies",
-        r"/tag/{tag_id:\d+}/{slug}/export_companies",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_count_companies",
-        r"/tag/{tag_id:\d+}/{slug}/count_companies",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_projects",
-        r"/tag/{tag_id:\d+}/{slug}/projects",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_more_projects",
-        r"/tag/{tag_id:\d+}/{slug}/more_projects",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_map_projects",
-        r"/tag/{tag_id:\d+}/{slug}/map_projects",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_export_projects",
-        r"/tag/{tag_id:\d+}/{slug}/export_projects",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_count_projects",
-        r"/tag/{tag_id:\d+}/{slug}/count_projects",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_edit",
-        r"/tag/{tag_id:\d+}/{slug}/edit",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_delete",
-        r"/tag/{tag_id:\d+}/{slug}/delete",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_del_row",
-        r"/tag/{tag_id:\d+}/{slug}/del_row",
-        factory=tag_factory,
-    )
-    config.add_route(
-        "tag_check",
-        r"/check/tag/{tag_id:\d+}",
-        factory=tag_factory,
-    )
-
     config.add_route("company_all", "/company", factory=default_factory)
     config.add_route("company_more", "/company/more", factory=default_factory)
     config.add_route("company_json", "/company/json", factory=default_factory)
@@ -265,51 +169,6 @@ def includeme(config):
         factory=default_factory,
     )
 
-    config.add_route("comment_all", "/comment", factory=default_factory)
-    config.add_route("comment_more", "/comment/more", factory=default_factory)
-    config.add_route("comment_search", "/comment/search", factory=default_factory)
-    config.add_route("comment_count", "/comment/count", factory=default_factory)
-    config.add_route(
-        "comment_delete",
-        r"/comment/{comment_id:\d+}/delete",
-        factory=comment_factory,
-    )
-
-    config.add_route("contact_all", "/contact", factory=default_factory)
-    config.add_route("contact_more", "/contact/more", factory=default_factory)
-    config.add_route("contact_search", "/contact/search", factory=default_factory)
-    config.add_route("contact_count", "/contact/count", factory=default_factory)
-    config.add_route(
-        "contact_view",
-        r"/contact/{contact_id:\d+}/{slug}",
-        factory=contact_factory,
-    )
-    config.add_route(
-        "contact_edit",
-        r"/contact/{contact_id:\d+}/{slug}/edit",
-        factory=contact_factory,
-    )
-    config.add_route(
-        "contact_delete",
-        r"/contact/{contact_id:\d+}/{slug}/delete",
-        factory=contact_factory,
-    )
-    config.add_route(
-        "contact_del_row",
-        r"/contact/{contact_id:\d+}/{slug}/del_row",
-        factory=contact_factory,
-    )
-    config.add_route(
-        "contact_vcard",
-        r"/contact/{contact_id:\d+}/{slug}/vcard",
-        factory=contact_factory,
-    )
-    config.add_route(
-        "contact_check",
-        r"/check/contact/{contact_id:\d+}",
-        factory=contact_factory,
-    )
-
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
     config.add_route("project_json", "/project/json", factory=default_factory)
@@ -443,6 +302,147 @@ def includeme(config):
         r"/project/{project_id:\d+}/{slug}/add_comment",
         factory=project_factory,
     )
+
+    config.add_route("tag_all", "/tag", factory=default_factory)
+    config.add_route("tag_more", "/tag/more", factory=default_factory)
+    config.add_route("tag_count", "/tag/count", factory=default_factory)
+    config.add_route("tag_add", "/tag/add", factory=default_factory)
+    config.add_route("tag_search", "/tag/search", factory=default_factory)
+    config.add_route("tag_select", "/tag/select", factory=default_factory)
+    config.add_route(
+        "tag_view",
+        r"/tag/{tag_id:\d+}/{slug}",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_json_companies",
+        r"/tag/{tag_id:\d+}/{slug}/json_companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_json_projects",
+        r"/tag/{tag_id:\d+}/{slug}/json_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_companies",
+        r"/tag/{tag_id:\d+}/{slug}/companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_more_companies",
+        r"/tag/{tag_id:\d+}/{slug}/more_companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_map_companies",
+        r"/tag/{tag_id:\d+}/{slug}/map_companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_export_companies",
+        r"/tag/{tag_id:\d+}/{slug}/export_companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_count_companies",
+        r"/tag/{tag_id:\d+}/{slug}/count_companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_projects",
+        r"/tag/{tag_id:\d+}/{slug}/projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_more_projects",
+        r"/tag/{tag_id:\d+}/{slug}/more_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_map_projects",
+        r"/tag/{tag_id:\d+}/{slug}/map_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_export_projects",
+        r"/tag/{tag_id:\d+}/{slug}/export_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_count_projects",
+        r"/tag/{tag_id:\d+}/{slug}/count_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_edit",
+        r"/tag/{tag_id:\d+}/{slug}/edit",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_delete",
+        r"/tag/{tag_id:\d+}/{slug}/delete",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_del_row",
+        r"/tag/{tag_id:\d+}/{slug}/del_row",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_check",
+        r"/check/tag/{tag_id:\d+}",
+        factory=tag_factory,
+    )
+
+    config.add_route("contact_all", "/contact", factory=default_factory)
+    config.add_route("contact_more", "/contact/more", factory=default_factory)
+    config.add_route("contact_search", "/contact/search", factory=default_factory)
+    config.add_route("contact_count", "/contact/count", factory=default_factory)
+    config.add_route(
+        "contact_view",
+        r"/contact/{contact_id:\d+}/{slug}",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_edit",
+        r"/contact/{contact_id:\d+}/{slug}/edit",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_delete",
+        r"/contact/{contact_id:\d+}/{slug}/delete",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_del_row",
+        r"/contact/{contact_id:\d+}/{slug}/del_row",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_vcard",
+        r"/contact/{contact_id:\d+}/{slug}/vcard",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_check",
+        r"/check/contact/{contact_id:\d+}",
+        factory=contact_factory,
+    )
+
+    config.add_route("comment_all", "/comment", factory=default_factory)
+    config.add_route("comment_more", "/comment/more", factory=default_factory)
+    config.add_route("comment_search", "/comment/search", factory=default_factory)
+    config.add_route("comment_count", "/comment/count", factory=default_factory)
+    config.add_route(
+        "comment_delete",
+        r"/comment/{comment_id:\d+}/delete",
+        factory=comment_factory,
+    )
+
+    config.add_route("report", "/report", factory=default_factory)
+    config.add_route("report_all", "/report/{rel}", factory=default_factory)
+    config.add_route("report_more", "/report/{rel}/more", factory=default_factory)
 
     config.add_route("user_all", "/user", factory=default_factory)
     config.add_route("user_more", "/user/more", factory=default_factory)
