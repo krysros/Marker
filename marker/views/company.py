@@ -440,7 +440,7 @@ class CompanyView:
         }
 
     @view_config(
-        route_name="add_tag_to_company",
+        route_name="company_add_tag",
         renderer="tag_row_company.mako",
         request_method="POST",
         permission="edit",
@@ -467,7 +467,7 @@ class CompanyView:
         return {"company": company, "tag": new_tag}
 
     @view_config(
-        route_name="add_contact_to_company",
+        route_name="company_add_contact",
         renderer="contact_row.mako",
         request_method="POST",
         permission="edit",
@@ -788,7 +788,7 @@ class CompanyView:
         return {"heading": "Znajdź firmę", "form": form}
 
     @view_config(
-        route_name="unlink_tag_from_company",
+        route_name="unlink_tag_company",
         request_method="POST",
         permission="edit",
         renderer="string",
@@ -817,7 +817,7 @@ class CompanyView:
         return ""
 
     @view_config(
-        route_name="add_project_to_company",
+        route_name="company_add_project",
         renderer="project_list_companies.mako",
         request_method="POST",
         permission="edit",

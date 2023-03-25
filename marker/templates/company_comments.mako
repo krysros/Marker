@@ -57,7 +57,7 @@
 <div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('add_comment_to_company', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
+      <form hx-post="${request.route_url('company_add_comment', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="add-comment-modal-label">Dodaj komentarz</h5>

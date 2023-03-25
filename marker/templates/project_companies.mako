@@ -57,7 +57,7 @@
 <div class="modal fade" id="add-company-to-project-modal" tabindex="-1" aria-labelledby="add-company-to-project-modal-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('add_company_to_project', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML show:window:top">
+      <form hx-post="${request.route_url('project_add_company', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML show:window:top">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="add-company-to-project-modal-label">Dodaj firmę</h5>

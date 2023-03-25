@@ -102,12 +102,12 @@ class CommentView:
         ).scalar()
 
     @view_config(
-        route_name="add_comment_to_company",
+        route_name="company_add_comment",
         renderer="comment.mako",
         request_method="POST",
         permission="edit",
     )
-    def add_comment_to_company(self):
+    def company_add_comment(self):
         company = self.request.context.company
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -122,12 +122,12 @@ class CommentView:
         return {"comment": comment}
 
     @view_config(
-        route_name="add_comment_to_project",
+        route_name="project_add_comment",
         renderer="comment.mako",
         request_method="POST",
         permission="edit",
     )
-    def add_comment_to_project(self):
+    def project_add_comment(self):
         project = self.request.context.project
         comment = None
         comment_text = self.request.POST.get("comment")

@@ -134,29 +134,24 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "add_tag_to_company",
+        "company_add_tag",
         r"/company/{company_id:\d+}/{slug}/add_tag",
         factory=company_factory,
     )
     config.add_route(
-        "add_project_to_company",
+        "company_add_project",
         r"/company/{company_id:\d+}/{slug}/add_project",
         factory=company_factory,
     )
     config.add_route(
-        "add_contact_to_company",
+        "company_add_contact",
         r"/company/{company_id:\d+}/{slug}/add_contact",
         factory=company_factory,
     )
     config.add_route(
-        "add_comment_to_company",
+        "company_add_comment",
         r"/company/{company_id:\d+}/{slug}/add_comment",
         factory=company_factory,
-    )
-    config.add_route(
-        "unlink_company_project",
-        r"/unlink/company/{company_id:\d+}/project/{project_id:\d+}",
-        factory=default_factory,
     )
 
     config.add_route("project_all", "/project", factory=default_factory)
@@ -273,22 +268,22 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "add_tag_to_project",
+        "project_add_tag",
         r"/project/{project_id:\d+}/{slug}/add_tag",
         factory=project_factory,
     )
     config.add_route(
-        "add_company_to_project",
+        "project_add_company",
         r"/project/{project_id:\d+}/{slug}/add_company",
         factory=project_factory,
     )
     config.add_route(
-        "add_contact_to_project",
+        "project_add_contact",
         r"/project/{project_id:\d+}/{slug}/add_contact",
         factory=project_factory,
     )
     config.add_route(
-        "add_comment_to_project",
+        "project_add_comment",
         r"/project/{project_id:\d+}/{slug}/add_comment",
         factory=project_factory,
     )
@@ -383,16 +378,6 @@ def includeme(config):
         "tag_check",
         r"/tag/{tag_id:\d+}/{slug}/check",
         factory=tag_factory,
-    )
-    config.add_route(
-        "unlink_tag_from_company",
-        r"/unlink/tag/{tag_id:\d+}/company/{company_id:\d+}",
-        factory=default_factory,
-    )
-    config.add_route(
-        "unlink_tag_from_project",
-        r"/unlink/tag/{tag_id:\d+}/project/{project_id:\d+}",
-        factory=default_factory,
     )
 
     config.add_route("contact_all", "/contact", factory=default_factory)
@@ -600,4 +585,20 @@ def includeme(config):
         "user_clear_watched",
         "/user/{username}/clear_watched",
         factory=user_factory,
+    )
+
+    config.add_route(
+        "unlink_company_project",
+        r"/unlink/company/{company_id:\d+}/project/{project_id:\d+}",
+        factory=default_factory,
+    )
+    config.add_route(
+        "unlink_tag_company",
+        r"/unlink/tag/{tag_id:\d+}/company/{company_id:\d+}",
+        factory=default_factory,
+    )
+    config.add_route(
+        "unlink_tag_project",
+        r"/unlink/tag/{tag_id:\d+}/project/{project_id:\d+}",
+        factory=default_factory,
     )

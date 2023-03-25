@@ -708,7 +708,7 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="add_company_to_project",
+        route_name="project_add_company",
         renderer="company_list_projects.mako",
         request_method="POST",
         permission="edit",
@@ -774,7 +774,7 @@ class ProjectView:
         return {"projects": projects}
 
     @view_config(
-        route_name="add_tag_to_project",
+        route_name="project_add_tag",
         renderer="tag_row_project.mako",
         request_method="POST",
         permission="edit",
@@ -803,7 +803,7 @@ class ProjectView:
         return {"project": project, "tag": new_tag}
 
     @view_config(
-        route_name="add_contact_to_project",
+        route_name="project_add_contact",
         renderer="contact_row.mako",
         request_method="POST",
         permission="edit",
@@ -830,7 +830,7 @@ class ProjectView:
         return {"contact": contact}
 
     @view_config(
-        route_name="unlink_tag_from_project",
+        route_name="unlink_tag_project",
         request_method="POST",
         permission="edit",
         renderer="string",
