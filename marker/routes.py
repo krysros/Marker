@@ -125,12 +125,12 @@ def includeme(config):
     )
     config.add_route(
         "company_recommend",
-        r"/recommend/company/{company_id:\d+}",
+        r"/company/{company_id:\d+}/{slug}/recommend",
         factory=company_factory,
     )
     config.add_route(
         "company_check",
-        r"/check/company/{company_id:\d+}",
+        r"/company/{company_id:\d+}/{slug}/check",
         factory=company_factory,
     )
     config.add_route(
@@ -264,12 +264,12 @@ def includeme(config):
     )
     config.add_route(
         "project_check",
-        r"/check/project/{project_id:\d+}",
+        r"/project/{project_id:\d+}/{slug}/check",
         factory=project_factory,
     )
     config.add_route(
         "project_watch",
-        r"/watch/project/{project_id:\d+}",
+        r"/project/{project_id:\d+}/{slug}/watch",
         factory=project_factory,
     )
     config.add_route(
@@ -381,7 +381,7 @@ def includeme(config):
     )
     config.add_route(
         "tag_check",
-        r"/check/tag/{tag_id:\d+}",
+        r"/tag/{tag_id:\d+}/{slug}/check",
         factory=tag_factory,
     )
     config.add_route(
@@ -426,7 +426,7 @@ def includeme(config):
     )
     config.add_route(
         "contact_check",
-        r"/check/contact/{contact_id:\d+}",
+        r"/contact/{contact_id:\d+}/{slug}/check",
         factory=contact_factory,
     )
 
