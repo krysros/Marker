@@ -91,11 +91,11 @@ class TagView:
         }
 
     @view_config(
-        route_name="tag_count_all",
+        route_name="tag_count",
         renderer="json",
         permission="view",
     )
-    def count_all(self):
+    def count(self):
         return self.request.dbsession.execute(
             select(func.count()).select_from(select(Tag))
         ).scalar()

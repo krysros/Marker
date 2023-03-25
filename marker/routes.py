@@ -26,7 +26,7 @@ def includeme(config):
 
     config.add_route("tag_all", "/tag", factory=default_factory)
     config.add_route("tag_more", "/tag/more", factory=default_factory)
-    config.add_route("tag_count_all", "/tag/count", factory=default_factory)
+    config.add_route("tag_count", "/tag/count", factory=default_factory)
     config.add_route(
         "tag_view",
         r"/tag/{tag_id:\d+}/{slug}",
