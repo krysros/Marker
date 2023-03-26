@@ -66,8 +66,8 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="project-name" class="form-label">Nazwa</label>
-            <input list="projects" type="text" class="form-control" id="project-name" name="name" autocomplete="off" hx-get="${request.route_url('project_select')}" hx-target="#project-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="200">
+            <label for="name" class="form-label">Nazwa</label>
+            <input list="projects" type="text" class="form-control" id="name" name="name" autocomplete="off" hx-get="${request.route_url('project_select')}" hx-target="#project-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="200">
             <div id="project-list"></div>
           </div>
           <div class="mb-3">
@@ -89,7 +89,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-project">Zapisz</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
         </div>
       </form>
     </div>
@@ -100,13 +100,13 @@
   // Hide Project Modal
   var modalProjectEl = document.getElementById("add-project-modal");
   var modalProject = new bootstrap.Modal(modalProjectEl);
-  document.getElementById("btn-save-project").addEventListener("click", function () {
+  document.getElementById("submit").addEventListener("click", function () {
     modalProject.hide();
   });
   // Clear input fields in Project Modal
   var btnAddProject = document.getElementById("btn-add-project");
   btnAddProject.addEventListener('click', function handleClick(event) {
-    var projectName = document.getElementById("project-name");
+    var projectName = document.getElementById("name");
     projectName.value = '';
     var stageElement = document.getElementById("stage");
     stageElement.selectedIndex = 0;

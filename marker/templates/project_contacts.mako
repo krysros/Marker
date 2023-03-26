@@ -41,7 +41,7 @@
   </div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
-    <button id="btn-add-contact" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-contact-modal">
+    <button id="btn-add-contact" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-contact">
       <i class="bi bi-plus-lg"></i>
     </button>
     % else:
@@ -83,19 +83,19 @@
   </table>
 </div>
 
-<div class="modal fade" id="add-contact-modal" tabindex="-1" aria-labelledby="add-contact-modal-label" aria-hidden="true">
+<div class="modal fade" id="modal-add-contact" tabindex="-1" aria-labelledby="modal-add-contact-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form hx-post="${request.route_url('project_add_contact', project_id=project.id, slug=project.slug)}" hx-target="#new-contact" hx-swap="beforeend">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
-          <h5 class="modal-title" id="add-contact-modal-label">Dodaj kontakt</h5>
+          <h5 class="modal-title" id="modal-add-contact-label">Dodaj kontakt</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="contact-name" class="form-label">Imię i nazwisko</label>
-            <input type="text" class="form-control" id="contact-name" name="name" required minlength="5" maxlength="100">
+            <label for="name" class="form-label">Imię i nazwisko</label>
+            <input type="text" class="form-control" id="name" name="name" required minlength="5" maxlength="100">
           </div>
           <div class="mb-3">
             <label for="role" class="form-label">Rola</label>
@@ -112,7 +112,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-contact">Zapisz</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
         </div>
       </form>
     </div>
@@ -121,11 +121,11 @@
 
 <script>
   // Hide modal
-  var modalContactEl = document.getElementById("add-contact-modal");
+  var modalContactEl = document.getElementById("modal-add-contact");
   var modalContact = new bootstrap.Modal(modalContactEl);
-  var contactName = document.getElementById("contact-name");
+  var contactName = document.getElementById("name");
   var contactEmail = document.getElementById("email");
-  document.getElementById("btn-save-contact").addEventListener("click", function () {
+  document.getElementById("submit").addEventListener("click", function () {
     if (contactName.checkValidity() && contactEmail.checkValidity()) {
       modalContact.hide();
     };
@@ -133,7 +133,7 @@
   // Clear input fields
   var btnAddContact = document.getElementById("btn-add-contact");
   btnAddContact.addEventListener('click', function handleClick(event) {
-    var inputs = document.querySelectorAll("#contact-name, #role, #phone, #email");
+    var inputs = document.querySelectorAll("#name, #role, #phone, #email");
     inputs.forEach(input => {
       input.value = '';
     });

@@ -42,7 +42,7 @@
   </div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
-    <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-tag-modal">
+    <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-tag">
       <i class="bi bi-plus-lg"></i>
     </button>
     % else:
@@ -74,24 +74,24 @@
   </table>
 </div>
 
-<div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="add-tag-modal-label" aria-hidden="true">
+<div class="modal fade" id="modal-add-tag" tabindex="-1" aria-labelledby="modal-add-tag-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form hx-post="${request.route_url('company_add_tag', company_id=company.id, slug=company.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#new-tag" hx-swap="beforeend">
         <div class="modal-header">
-          <h5 class="modal-title" id="add-tag-modal-label">Dodaj tag</h5>
+          <h5 class="modal-title" id="modal-add-tag-label">Dodaj tag</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="tag-name" class="form-label">Nazwa</label>
-            <input list="tags" type="text" class="form-control" id="tag-name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required minlength="3" maxlength="50">
+            <label for="name" class="form-label">Nazwa</label>
+            <input list="tags" type="text" class="form-control" id="name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required minlength="3" maxlength="50">
             <div id="tag-list"></div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-tag">Zapisz</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
         </div>
       </form>
     </div>
@@ -100,10 +100,10 @@
 
 <script>
   // Hide modal
-  var modalTagEl = document.getElementById("add-tag-modal");
+  var modalTagEl = document.getElementById("modal-add-tag");
   var modalTag = new bootstrap.Modal(modalTagEl);
-  var tagName = document.getElementById("tag-name");
-  document.getElementById("btn-save-tag").addEventListener("click", function () {
+  var tagName = document.getElementById("name");
+  document.getElementById("submit").addEventListener("click", function () {
     if (tagName.checkValidity()) {
       modalTag.hide();
     };
@@ -111,7 +111,7 @@
   // Clear input fields
   var btnAddTag = document.getElementById("btn-add-tag");
   btnAddTag.addEventListener('click', function handleClick(event) {
-    var tagName = document.getElementById("tag-name");
+    var tagName = document.getElementById("name");
     tagName.value = '';
   });
 </script>

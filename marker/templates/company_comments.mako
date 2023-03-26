@@ -40,7 +40,7 @@
   </div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
-    <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-comment-modal">
+    <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
       <i class="bi bi-plus-lg"></i>
     </button>
     % else:
@@ -54,13 +54,13 @@
 <div id="last-comment"></div>
 <%include file="comment_more.mako"/>
 
-<div class="modal fade" id="add-comment-modal" tabindex="-1" aria-labelledby="add-comment-modal-label" aria-hidden="true">
+<div class="modal fade" id="modal-add-comment" tabindex="-1" aria-labelledby="modal-add-comment-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form hx-post="${request.route_url('company_add_comment', company_id=company.id, slug=company.slug)}" hx-target="#last-comment" hx-swap="afterbegin">
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
-          <h5 class="modal-title" id="add-comment-modal-label">Dodaj komentarz</h5>
+          <h5 class="modal-title" id="modal-add-comment-label">Dodaj komentarz</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -74,7 +74,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-comment">Zapisz</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
         </div>
       </form>
     </div>
@@ -83,9 +83,9 @@
 
 <script>
   // Hide Comment Modal
-  var modalCommentEl = document.getElementById("add-comment-modal");
+  var modalCommentEl = document.getElementById("modal-add-comment");
   var modalComment = new bootstrap.Modal(modalCommentEl);
-  document.getElementById("btn-save-comment").addEventListener("click", function () {
+  document.getElementById("submit").addEventListener("click", function () {
     modalComment.hide();
   });
   // Clear input fields in Comment Modal

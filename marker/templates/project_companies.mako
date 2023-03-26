@@ -65,8 +65,8 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="company-name" class="form-label">Nazwa</label>
-            <input list="companies" type="text" class="form-control" id="company-name" name="name" autocomplete="off" hx-get="${request.route_url('company_select')}" hx-target="#company-list"  hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="100">
+            <label for="name" class="form-label">Nazwa</label>
+            <input list="companies" type="text" class="form-control" id="name" name="name" autocomplete="off" hx-get="${request.route_url('company_select')}" hx-target="#company-list"  hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="100">
             <div id="company-list"></div>
           </div>
           <div class="mb-3">
@@ -88,7 +88,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-company">Zapisz</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
         </div>
       </form>
     </div>
@@ -99,13 +99,13 @@
   // Hide Company Modal
   var modalCompanyEl = document.getElementById("add-company-to-project-modal");
   var modalCompany = new bootstrap.Modal(modalCompanyEl);
-  document.getElementById("btn-save-company").addEventListener("click", function () {
+  document.getElementById("submit").addEventListener("click", function () {
     modalCompany.hide();
   });
   // Clear input fields in Company Modal
   var btnAddCompany = document.getElementById("btn-add-company-to-project");
   btnAddCompany.addEventListener('click', function handleClick(event) {
-    var companyName = document.getElementById("company-name");
+    var companyName = document.getElementById("name");
     companyName.value = '';
     var stageElement = document.getElementById("stage");
     stageElement.selectedIndex = 0;
