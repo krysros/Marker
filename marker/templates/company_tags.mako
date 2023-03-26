@@ -1,45 +1,10 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
+<%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">
-    <ul class="nav nav-pills">
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">Firma</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
-          Projekty <span class="badge text-bg-secondary">${company.count_projects}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-          Tagi <span class="badge text-bg-secondary"><div hx-get="${request.route_url('company_count_tags', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${company.count_tags}</div></span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_contacts', company_id=company.id, slug=company.slug)}">
-          Kontakty <span class="badge text-bg-secondary">${company.count_contacts}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-          Komentarze <span class="badge text-bg-secondary">${company.count_comments}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-          Rekomendacje <span class="badge text-bg-secondary">${company.count_recommended}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-          Podobne <span class="badge text-bg-secondary"><div id="similar-companies" hx-get="${request.route_url('company_count_similar', company_id=company.id, slug=company.slug)}" hx-trigger="tagEvent from:body">${company.count_similar}</div></span>
-        </a>
-      </li>
-    </ul>
-  </div>
+  <div class="me-auto">${nav_pills.nav_company(company, active_link="tags")}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
     <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-tag">

@@ -1,51 +1,9 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
+<%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">
-    <ul class="nav nav-pills">
-      <li class="nav-item">
-        <a class="nav-link active position-relative" aria-current="page" href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">
-          Firma
-          % if company.color != "default":
-          <span class="position-absolute top-0 start-100 translate-middle p-2 bg-${company.color} border border-light rounded-circle">
-            <span class="visually-hidden">Color</span>
-          </span>
-          % endif
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
-          Projekty <span class="badge text-bg-secondary">${company.count_projects}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_tags', company_id=company.id, slug=company.slug)}">
-          Tagi <span class="badge text-bg-secondary">${company.count_tags}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_contacts', company_id=company.id, slug=company.slug)}">
-          Kontakty <span class="badge text-bg-secondary">${company.count_contacts}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_comments', company_id=company.id, slug=company.slug)}">
-          Komentarze <span class="badge text-bg-secondary">${company.count_comments}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
-          Rekomendacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('company_count_recommended', company_id=company.id, slug=company.slug)}" hx-trigger="recommendEvent from:body">${company.count_recommended}</div></span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('company_similar', company_id=company.id, slug=company.slug)}">
-          Podobne <span class="badge text-bg-secondary">${company.count_similar}</span>
-        </a>
-      </li>
-    </ul>
-  </div>
+  <div class="me-auto">${nav_pills.nav_company(company, active_link="company")}</div>
   <div>${button.recommend(company)}</div>
   <div>${button.edit('company_edit', company_id=company.id, slug=company.slug)}</div>
   <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>

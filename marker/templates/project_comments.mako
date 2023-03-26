@@ -1,43 +1,9 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
+<%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">
-    <ul class="nav nav-pills">
-      <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">Projekt</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('project_companies', project_id=project.id, slug=project.slug)}">
-          Firmy <span class="badge text-bg-secondary">${project.count_companies}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('project_tags', project_id=project.id, slug=project.slug)}">
-          Tagi <span class="badge text-bg-secondary">${project.count_tags}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('project_contacts', project_id=project.id, slug=project.slug)}">
-          Kontakty <span class="badge text-bg-secondary">${project.count_contacts}</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link active" href="${request.route_url('project_comments', project_id=project.id, slug=project.slug)}">
-        Komentarze <span class="badge text-bg-secondary"><div hx-get="${request.route_url('project_count_comments', project_id=project.id, slug=project.slug)}" hx-trigger="commentEvent from:body">${project.count_comments}</div></span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-          Obserwacje <span class="badge text-bg-secondary"><div hx-get="${request.route_url('project_count_watched', project_id=project.id, slug=project.slug)}" hx-trigger="watchEvent from:body">${project.count_watched}</div></span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${request.route_url('project_similar', project_id=project.id, slug=project.slug)}">
-          Podobne <span class="badge text-bg-secondary">${project.count_similar}</span></a>
-        </a>
-      </li>
-    </ul>
-  </div>
+  <div class="me-auto">${nav_pills.nav_project(project, active_link="comments")}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
     <button id="btn-add-comment" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-comment">
