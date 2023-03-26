@@ -63,11 +63,7 @@
     </thead>
     <tbody id="new-tag">
       % for tag in project.tags:
-      <tr>
-        <td>${checkbox.tag(tag)}</td>
-        <td><a href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a></td>
-        <td class="col-2">${button.unlink('unlink_tag_project', project_id=project.id, tag_id=tag.id, size='sm')}</td>
-      </tr>
+        <%include file="tag_row_project.mako" args="tag=tag, project=project"/>
       % endfor
     </tbody>
   </table>
@@ -76,7 +72,8 @@
 <div class="modal fade" id="modal-add-tag" tabindex="-1" aria-labelledby="modal-add-tag-label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form hx-post="${request.route_url('project_add_tag', project_id=project.id, slug=project.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#new-tag" hx-swap="beforeend">
+      <form hx-post="${request.route_url('project_add_tag', project_id=project.id, slug=project.slug)}" hx-target="#new-tag" hx-swap="beforeend">
+        <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
           <h5 class="modal-title" id="modal-add-tag-label">Dodaj tag</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

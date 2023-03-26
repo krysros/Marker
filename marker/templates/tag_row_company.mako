@@ -1,5 +1,6 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
+<%page args="tag, company"/>
 
 % if tag:
 <tr>
