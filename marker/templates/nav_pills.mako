@@ -29,6 +29,12 @@
     {"title": "Komentarze", "route_name": "user_comments"},
   ]
 
+  tag_pills = [
+    {"title": "Tag", "route_name": "tag_view"},
+    {"title": "Firmy", "route_name": "tag_companies"},
+    {"title": "Projekty", "route_name": "tag_projects"},
+  ]
+
 %>
 
 
@@ -101,6 +107,41 @@
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}"
                  hx-trigger="projectCompanyEvent from:body">
               ${getattr(project, pill["route_name"].replace("project_", "count_"))}
+            </div>
+          </span>
+        % endif
+      </a>
+    % endif
+    </li>
+  % endfor
+  </ul>
+</%def>
+
+
+<%def name="tag_pill(tag)">
+  <ul class="nav nav-pills">
+  % for pill in tag_pills:
+    <li class="nav-item">
+    % if request.matched_route.name == pill["route_name"]:
+      <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], tag_id=tag.id, slug=tag.slug)}">
+        ${pill["title"]}
+        % if not pill["route_name"].endswith("_view"):
+          <span class="badge text-bg-secondary">
+            <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), tag_id=tag.id, slug=tag.slug)}"
+                 hx-trigger="tagEvent from:body">
+              ${getattr(tag, pill["route_name"].replace("tag_", "count_"))}
+            </div>
+          </span>
+        % endif
+      </a>
+    % else:
+      <a class="nav-link" href="${request.route_url(pill['route_name'], tag_id=tag.id, slug=tag.slug)}">
+        ${pill["title"]}
+        % if not pill["route_name"].endswith("_view"):
+          <span class="badge text-bg-secondary">
+            <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), tag_id=tag.id, slug=tag.slug)}"
+                 hx-trigger="tagEvent from:body">
+              ${getattr(tag, pill["route_name"].replace("tag_", "count_"))}
             </div>
           </span>
         % endif
