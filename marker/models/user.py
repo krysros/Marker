@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 import argon2
 from sqlalchemy import Unicode, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
