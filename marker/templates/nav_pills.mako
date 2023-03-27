@@ -20,6 +20,12 @@
     {"title": "Podobne", "route_name": "project_similar", "event": "tagEvent"},
   ]
 
+  tag_pills = [
+    {"title": "Tag", "route_name": "tag_view", "event": "tagEvent"},
+    {"title": "Firmy", "route_name": "tag_companies", "event": "tagEvent"},
+    {"title": "Projekty", "route_name": "tag_projects", "event": "tagEvent"},
+  ]
+
   user_pills = [
     {"title": "Użytkownik", "route_name": "user_view"},
     {"title": "Firmy", "route_name": "user_companies"},
@@ -27,12 +33,6 @@
     {"title": "Tagi", "route_name": "user_tags"},
     {"title": "Kontakty", "route_name": "user_contacts"},
     {"title": "Komentarze", "route_name": "user_comments"},
-  ]
-
-  tag_pills = [
-    {"title": "Tag", "route_name": "tag_view", "event": "tagEvent"},
-    {"title": "Firmy", "route_name": "tag_companies", "event": "tagEvent"},
-    {"title": "Projekty", "route_name": "tag_projects", "event": "tagEvent"},
   ]
 
 %>
