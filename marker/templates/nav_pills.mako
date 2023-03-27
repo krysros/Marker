@@ -122,7 +122,7 @@
   <ul class="nav nav-pills">
   % for pill in tag_pills:
     <li class="nav-item">
-    % if request.matched_route.name == pill["route_name"]:
+    % if request.matched_route.name == pill["route_name"] or request.matched_route.name == '_map_'.join(pill['route_name'].split('_')):
       <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], tag_id=tag.id, slug=tag.slug)}">
         ${pill["title"]}
         % if not pill["route_name"].endswith("_view"):
@@ -157,7 +157,7 @@
   <ul class="nav nav-pills">
   % for pill in user_pills:
     <li class="nav-item">
-    % if request.matched_route.name == pill["route_name"]:
+    % if request.matched_route.name == pill["route_name"] or request.matched_route.name == '_map_'.join(pill['route_name'].split('_')):
       <a class="nav-link active" aria-current="page" href="${request.route_url(pill['route_name'], username=user.name)}">
         ${pill["title"]}
         % if not pill["route_name"].endswith("_view"):
