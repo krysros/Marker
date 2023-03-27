@@ -1,6 +1,6 @@
 <%!
 
-  pills_for_company = [
+  company_pills = [
     {"title": "Firma", "route_name": "company_view"},
     {"title": "Projekty", "route_name": "company_projects"},
     {"title": "Tagi", "route_name": "company_tags"},
@@ -10,7 +10,7 @@
     {"title": "Podobne", "route_name": "company_similar"},
   ]
 
-  pills_for_project = [
+  project_pills = [
     {"title": "Projekt", "route_name": "project_view"},
     {"title": "Firmy", "route_name": "project_companies"},
     {"title": "Tagi", "route_name": "project_tags"},
@@ -25,7 +25,7 @@
 
 <%def name="company_pill(company)">
   <ul class="nav nav-pills">
-  % for pill in pills_for_company:
+  % for pill in company_pills:
     <li class="nav-item">
     % if request.matched_route.name == pill["route_name"]:
       <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], company_id=company.id, slug=company.slug)}">${pill["title"]}
@@ -54,7 +54,7 @@
 
 <%def name="project_pill(project)">
   <ul class="nav nav-pills">
-  % for pill in pills_for_project:
+  % for pill in project_pills:
     <li class="nav-item">
     % if request.matched_route.name == pill["route_name"]:
       <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], project_id=project.id, slug=project.slug)}">${pill["title"]}
