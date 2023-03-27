@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%namespace name="button" file="button.mako"/>
 <%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
