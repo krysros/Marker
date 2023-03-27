@@ -28,21 +28,32 @@
   % for pill in company_pills:
     <li class="nav-item">
     % if request.matched_route.name == pill["route_name"]:
-      <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], company_id=company.id, slug=company.slug)}">${pill["title"]}
+      <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], company_id=company.id, slug=company.slug)}">
+        ${pill["title"]}
         % if company.color != "default":
           <span class="position-absolute top-0 start-100 translate-middle p-2 bg-${company.color} border border-light rounded-circle">
             <span class="visually-hidden">Color</span>
           </span>
         % endif
         % if not pill["route_name"].endswith("_view"):
-          <span class="badge text-bg-secondary"><div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), company_id=company.id, slug=company.slug)}" hx-trigger="projectCompanyEvent from:body">${getattr(company, pill["route_name"].replace("company_", "count_"))}</div></span>
+          <span class="badge text-bg-secondary">
+            <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), company_id=company.id, slug=company.slug)}"
+                 hx-trigger="projectCompanyEvent from:body">
+              ${getattr(company, pill["route_name"].replace("company_", "count_"))}
+            </div>
+          </span>
         % endif
       </a>
     % else:
       <a class="nav-link" href="${request.route_url(pill['route_name'], company_id=company.id, slug=company.slug)}">
         ${pill["title"]}
         % if not pill["route_name"].endswith("_view"):
-          <span class="badge text-bg-secondary"><div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), company_id=company.id, slug=company.slug)}" hx-trigger="projectCompanyEvent from:body">${getattr(company, pill["route_name"].replace("company_", "count_"))}</div></span>
+          <span class="badge text-bg-secondary">
+            <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), company_id=company.id, slug=company.slug)}"
+                 hx-trigger="projectCompanyEvent from:body">
+              ${getattr(company, pill["route_name"].replace("company_", "count_"))}
+            </div>
+          </span>
         % endif
       </a>
     % endif
@@ -57,21 +68,32 @@
   % for pill in project_pills:
     <li class="nav-item">
     % if request.matched_route.name == pill["route_name"]:
-      <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], project_id=project.id, slug=project.slug)}">${pill["title"]}
+      <a class="nav-link active position-relative" aria-current="page" href="${request.route_url(pill['route_name'], project_id=project.id, slug=project.slug)}">
+        ${pill["title"]}
         % if project.color != "default":
           <span class="position-absolute top-0 start-100 translate-middle p-2 bg-${project.color} border border-light rounded-circle">
             <span class="visually-hidden">Color</span>
           </span>
         % endif
         % if not pill["route_name"].endswith("_view"):
-          <span class="badge text-bg-secondary"><div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}" hx-trigger="projectprojectEvent from:body">${getattr(project, pill["route_name"].replace("project_", "count_"))}</div></span>
+          <span class="badge text-bg-secondary">
+            <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}"
+                 hx-trigger="projectprojectEvent from:body">
+              ${getattr(project, pill["route_name"].replace("project_", "count_"))}
+            </div>
+          </span>
         % endif
       </a>
     % else:
       <a class="nav-link" href="${request.route_url(pill['route_name'], project_id=project.id, slug=project.slug)}">
         ${pill["title"]}
         % if not pill["route_name"].endswith("_view"):
-          <span class="badge text-bg-secondary"><div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}" hx-trigger="projectprojectEvent from:body">${getattr(project, pill["route_name"].replace("project_", "count_"))}</div></span>
+          <span class="badge text-bg-secondary">
+            <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}"
+                 hx-trigger="projectprojectEvent from:body">
+              ${getattr(project, pill["route_name"].replace("project_", "count_"))}
+            </div>
+          </span>
         % endif
       </a>
     % endif
