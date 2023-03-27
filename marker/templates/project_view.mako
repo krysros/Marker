@@ -3,7 +3,7 @@
 <%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${nav_pills.nav_project(project, active_link="project")}</div>
+  <div class="me-auto">${nav_pills.project_pill(project)}</div>
   <div>${button.watch(project)}</div>
   <div>${button.edit('project_edit', project_id=project.id, slug=project.slug)}</div>
   <div>${button.delete('project_delete', project_id=project.id, slug=project.slug)}</div>

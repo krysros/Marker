@@ -2,7 +2,7 @@
 <%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${nav_pills.nav_project(project, active_link="companies")}</div>
+  <div class="me-auto">${nav_pills.project_pill(project)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
     <button id="btn-add-company-to-project" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-to-project-modal">

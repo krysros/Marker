@@ -4,7 +4,7 @@
 <%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${nav_pills.nav_project(project, active_link="tags")}</div>
+  <div class="me-auto">${nav_pills.project_pill(project)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
     <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-tag">

@@ -3,7 +3,7 @@
 <%namespace name="nav_pills" file="nav_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${nav_pills.nav_company(company, active_link="company")}</div>
+  <div class="me-auto">${nav_pills.company_pill(company)}</div>
   <div>${button.recommend(company)}</div>
   <div>${button.edit('company_edit', company_id=company.id, slug=company.slug)}</div>
   <div>${button.delete('company_delete', company_id=company.id, slug=company.slug)}</div>
