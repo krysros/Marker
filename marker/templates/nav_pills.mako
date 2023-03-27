@@ -1,23 +1,23 @@
 <%!
 
   company_pills = [
-    {"title": "Firma", "route_name": "company_view"},
-    {"title": "Projekty", "route_name": "company_projects"},
-    {"title": "Tagi", "route_name": "company_tags"},
-    {"title": "Kontakty", "route_name": "company_contacts"},
-    {"title": "Komentarze", "route_name": "company_comments"},
-    {"title": "Rekomendacje", "route_name": "company_recommended"},
-    {"title": "Podobne", "route_name": "company_similar"},
+    {"title": "Firma", "route_name": "company_view", "event": "projectCompanyEvent"},
+    {"title": "Projekty", "route_name": "company_projects", "event": "projectCompanyEvent"},
+    {"title": "Tagi", "route_name": "company_tags", "event": "tagEvent"},
+    {"title": "Kontakty", "route_name": "company_contacts", "event": "contactEvent"},
+    {"title": "Komentarze", "route_name": "company_comments", "event": "commentEvent"},
+    {"title": "Rekomendacje", "route_name": "company_recommended", "event": "recommendEvent"},
+    {"title": "Podobne", "route_name": "company_similar", "event": "tagEvent"},
   ]
 
   project_pills = [
-    {"title": "Projekt", "route_name": "project_view"},
-    {"title": "Firmy", "route_name": "project_companies"},
-    {"title": "Tagi", "route_name": "project_tags"},
-    {"title": "Kontakty", "route_name": "project_contacts"},
-    {"title": "Komentarze", "route_name": "project_comments"},
-    {"title": "Obserwacje", "route_name": "project_watched"},
-    {"title": "Podobne", "route_name": "project_similar"},
+    {"title": "Projekt", "route_name": "project_view", "event": "projectCompanyEvent"},
+    {"title": "Firmy", "route_name": "project_companies", "event": "projectCompanyEvent"},
+    {"title": "Tagi", "route_name": "project_tags", "event": "tagEvent"},
+    {"title": "Kontakty", "route_name": "project_contacts", "event": "contactEvent"},
+    {"title": "Komentarze", "route_name": "project_comments", "event": "commentEvent"},
+    {"title": "Obserwacje", "route_name": "project_watched", "event": "watchEvent"},
+    {"title": "Podobne", "route_name": "project_similar", "event": "tagEvent"},
   ]
 
   user_pills = [
@@ -30,9 +30,9 @@
   ]
 
   tag_pills = [
-    {"title": "Tag", "route_name": "tag_view"},
-    {"title": "Firmy", "route_name": "tag_companies"},
-    {"title": "Projekty", "route_name": "tag_projects"},
+    {"title": "Tag", "route_name": "tag_view", "event": "tagEvent"},
+    {"title": "Firmy", "route_name": "tag_companies", "event": "tagEvent"},
+    {"title": "Projekty", "route_name": "tag_projects", "event": "tagEvent"},
   ]
 
 %>
@@ -53,7 +53,7 @@
         % if not pill["route_name"].endswith("_view"):
           <span class="badge text-bg-secondary">
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), company_id=company.id, slug=company.slug)}"
-                 hx-trigger="projectCompanyEvent from:body">
+                 hx-trigger="${pill['event']} from:body">
               ${getattr(company, pill["route_name"].replace("company_", "count_"))}
             </div>
           </span>
@@ -65,7 +65,7 @@
         % if not pill["route_name"].endswith("_view"):
           <span class="badge text-bg-secondary">
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), company_id=company.id, slug=company.slug)}"
-                 hx-trigger="projectCompanyEvent from:body">
+                 hx-trigger="${pill['event']} from:body">
               ${getattr(company, pill["route_name"].replace("company_", "count_"))}
             </div>
           </span>
@@ -93,7 +93,7 @@
         % if not pill["route_name"].endswith("_view"):
           <span class="badge text-bg-secondary">
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}"
-                 hx-trigger="projectCompanyEvent from:body">
+                 hx-trigger="${pill['event']} from:body">
               ${getattr(project, pill["route_name"].replace("project_", "count_"))}
             </div>
           </span>
@@ -105,7 +105,7 @@
         % if not pill["route_name"].endswith("_view"):
           <span class="badge text-bg-secondary">
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), project_id=project.id, slug=project.slug)}"
-                 hx-trigger="projectCompanyEvent from:body">
+                 hx-trigger="${pill['event']} from:body">
               ${getattr(project, pill["route_name"].replace("project_", "count_"))}
             </div>
           </span>
@@ -128,7 +128,7 @@
         % if not pill["route_name"].endswith("_view"):
           <span class="badge text-bg-secondary">
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), tag_id=tag.id, slug=tag.slug)}"
-                 hx-trigger="tagEvent from:body">
+                 hx-trigger="${pill['event']} from:body">
               ${getattr(tag, pill["route_name"].replace("tag_", "count_"))}
             </div>
           </span>
@@ -140,7 +140,7 @@
         % if not pill["route_name"].endswith("_view"):
           <span class="badge text-bg-secondary">
             <div hx-get="${request.route_url('_count_'.join(pill['route_name'].split('_')), tag_id=tag.id, slug=tag.slug)}"
-                 hx-trigger="tagEvent from:body">
+                 hx-trigger="${pill['event']} from:body">
               ${getattr(tag, pill["route_name"].replace("tag_", "count_"))}
             </div>
           </span>
