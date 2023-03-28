@@ -113,6 +113,7 @@ class CommentView:
             comment = Comment(comment=comment_text)
             comment.created_by = self.request.identity
             company.comments.append(comment)
+            log.info(f"Użytkownik {self.request.identity.name} dodał komentarz")
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -133,6 +134,7 @@ class CommentView:
             comment = Comment(comment=comment_text)
             comment.created_by = self.request.identity
             project.comments.append(comment)
+            log.info(f"Użytkownik {self.request.identity.name} dodał komentarz")
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
