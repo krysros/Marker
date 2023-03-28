@@ -1,11 +1,12 @@
 <%inherit file="layout.mako"/>
 <%namespace name="nav_pills" file="nav_pills.mako"/>
+<%namespace name="modals" file="modals.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${nav_pills.project_pill(project)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
-    <button id="btn-add-company-to-project" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-company-to-project-modal">
+    <button id="btn-add-relation" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-relation">
       <i class="bi bi-plus-lg"></i>
     </button>
     % else:
@@ -16,66 +17,8 @@
 
 <%include file="project_lead.mako"/>
 
-<div id="project-companies">
+<div id="relation">
   <%include file="company_list_projects.mako"/>
 </div>
 
-<div class="modal fade" id="add-company-to-project-modal" tabindex="-1" aria-labelledby="add-company-to-project-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form hx-post="${request.route_url('project_add_company', project_id=project.id, slug=project.slug)}" hx-target="#project-companies" hx-swap="innerHTML show:window:top">
-        <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
-        <div class="modal-header">
-          <h5 class="modal-title" id="add-company-to-project-modal-label">Dodaj firmę</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="name" class="form-label">Nazwa</label>
-            <input list="companies" type="text" class="form-control" id="name" name="name" autocomplete="off" hx-get="${request.route_url('company_select')}" hx-target="#company-list"  hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="100">
-            <div id="company-list"></div>
-          </div>
-          <div class="mb-3">
-            <label for="stage">Etap</label>
-            <select class="form-control" id="stage" name="stage">
-            % for key, value in stages.items():
-              <option value="${key}">${value}</option>
-            % endfor
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="role">Rola</label>
-            <select class="form-control" id="role" name="role">
-            % for key, value in company_roles.items():
-              <option value="${key}">${value}</option>
-            % endfor
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Hide Company Modal
-  var modalCompanyEl = document.getElementById("add-company-to-project-modal");
-  var modalCompany = new bootstrap.Modal(modalCompanyEl);
-  document.getElementById("submit").addEventListener("click", function () {
-    modalCompany.hide();
-  });
-  // Clear input fields in Company Modal
-  var btnAddCompany = document.getElementById("btn-add-company-to-project");
-  btnAddCompany.addEventListener('click', function handleClick(event) {
-    var companyName = document.getElementById("name");
-    companyName.value = '';
-    var stageElement = document.getElementById("stage");
-    stageElement.selectedIndex = 0;
-    var roleElement = document.getElementById("role");
-    roleElement.selectedIndex = 0;
-  });
-</script>
+${modals.add_company_project(project)}
