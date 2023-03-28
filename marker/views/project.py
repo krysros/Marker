@@ -734,7 +734,9 @@ class ProjectView:
                     a = CompaniesProjects(stage=stage, role=role)
                     a.company = company
                     project.companies.append(a)
-                    log.info(f"Użytkownik {self.request.identity.name} dodał firmę do projektu")
+                    log.info(
+                        f"Użytkownik {self.request.identity.name} dodał firmę do projektu"
+                    )
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
