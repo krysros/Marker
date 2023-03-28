@@ -816,7 +816,7 @@ class CompanyView:
 
     @view_config(
         route_name="company_add_project",
-        renderer="project_list_companies.mako",
+        renderer="project_assoc.mako",
         request_method="POST",
         permission="edit",
     )

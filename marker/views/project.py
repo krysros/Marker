@@ -707,7 +707,7 @@ class ProjectView:
 
     @view_config(
         route_name="project_add_company",
-        renderer="company_list_projects.mako",
+        renderer="company_assoc.mako",
         request_method="POST",
         permission="edit",
     )

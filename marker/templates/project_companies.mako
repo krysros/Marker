@@ -18,7 +18,7 @@
 <%include file="project_lead.mako"/>
 
 <div id="relation">
-  <%include file="company_list_projects.mako"/>
+  <%include file="company_assoc.mako"/>
 </div>
 
 ${modals.add_company_project(project)}
