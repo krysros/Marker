@@ -1,9 +1,9 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
-<%namespace name="nav_pills" file="nav_pills.mako"/>
+<%namespace name="pills" file="pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${nav_pills.user_pill(user)}</div>
+  <div class="me-auto">${pills.user_pill(user)}</div>
 </div>
 
 <p class="lead">${user.fullname}</p>
