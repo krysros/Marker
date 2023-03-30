@@ -51,16 +51,15 @@ class UserForm(Form):
     )
     submit = SubmitField("Zapisz")
 
-    def __init__(self, *args, request, username=None, **kwargs):
+    def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = request
-        self.username = username
 
     def validate_name(self, field):
         exists = self.request.dbsession.execute(
             select(User).filter_by(name=field.data)
         ).scalar_one_or_none()
-        if exists and self.username != exists.name:
+        if exists and self.request.identity.name != exists.name:
             raise ValidationError("Ta nazwa jest już zajęta")
 
     def validate_password(form, field):
