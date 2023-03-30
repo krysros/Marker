@@ -11,6 +11,7 @@ def main(global_config, **settings):
             ".subscribers.add_renderer_globals", "pyramid.events.BeforeRender"
         )
         config.add_subscriber(".subscribers.add_localizer", "pyramid.events.NewRequest")
+        config.add_translation_dirs("marker:locale")
         config.include(".models")
         config.include(".routes")
         config.include(".security")
