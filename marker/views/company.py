@@ -606,7 +606,7 @@ class CompanyView:
         route_name="company_add", renderer="company_form.mako", permission="edit"
     )
     def add(self):
-        form = CompanyForm(self.request.POST, dbsession=self.request.dbsession)
+        form = CompanyForm(self.request.POST, request=self.request)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
 
@@ -653,7 +653,7 @@ class CompanyView:
     )
     def edit(self):
         company = self.request.context.company
-        form = CompanyForm(self.request.POST, company, dbsession=self.request.dbsession)
+        form = CompanyForm(self.request.POST, company, request=self.request)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
 

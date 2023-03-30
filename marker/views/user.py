@@ -454,7 +454,7 @@ class UserView:
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
     def add(self):
-        form = UserForm(self.request.POST, dbsession=self.request.dbsession)
+        form = UserForm(self.request.POST, request=self.request)
 
         if self.request.method == "POST" and form.validate():
             user = User(

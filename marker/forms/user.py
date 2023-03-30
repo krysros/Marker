@@ -51,13 +51,13 @@ class UserForm(Form):
     )
     submit = SubmitField("Zapisz")
 
-    def __init__(self, *args, dbsession, username=None, **kwargs):
+    def __init__(self, *args, request, username=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.dbsession = dbsession
+        self.request = request
         self.username = username
 
     def validate_name(self, field):
-        exists = self.dbsession.execute(
+        exists = self.request.dbsession.execute(
             select(User).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists and self.username != exists.name:

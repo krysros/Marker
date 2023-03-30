@@ -464,7 +464,7 @@ class TagView:
 
     @view_config(route_name="tag_add", renderer="tag_form.mako", permission="edit")
     def add(self):
-        form = TagForm(self.request.POST, dbsession=self.request.dbsession)
+        form = TagForm(self.request.POST, request=self.request)
 
         if self.request.method == "POST" and form.validate():
             tag = Tag(form.name.data)
@@ -480,7 +480,7 @@ class TagView:
     @view_config(route_name="tag_edit", renderer="tag_form.mako", permission="edit")
     def edit(self):
         tag = self.request.context.tag
-        form = TagForm(self.request.POST, tag, dbsession=self.request.dbsession)
+        form = TagForm(self.request.POST, tag, request=self.request)
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(tag)

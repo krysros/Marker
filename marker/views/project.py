@@ -521,7 +521,7 @@ class ProjectView:
         route_name="project_add", renderer="project_form.mako", permission="edit"
     )
     def add(self):
-        form = ProjectForm(self.request.POST, dbsession=self.request.dbsession)
+        form = ProjectForm(self.request.POST, request=self.request)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
 
@@ -567,7 +567,7 @@ class ProjectView:
     )
     def edit(self):
         project = self.request.context.project
-        form = ProjectForm(self.request.POST, project, dbsession=self.request.dbsession)
+        form = ProjectForm(self.request.POST, project, request=self.request)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
 

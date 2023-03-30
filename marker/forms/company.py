@@ -115,19 +115,20 @@ class CompanyForm(Form):
     color = SelectField("Kolor", choices=COLORS, default="default")
     submit = SubmitField("Zapisz")
 
-    def __init__(self, *args, dbsession, **kwargs):
+    def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
+        self.request = request
+
         try:
             self.edited_item = args[1]
         except IndexError:
             self.edited_item = None
-        self.dbsession = dbsession
 
     def validate_name(self, field):
         if self.edited_item:
             if self.edited_item.name == field.data:
                 return
-        exists = self.dbsession.execute(
+        exists = self.request.dbsession.execute(
             select(Company).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists:

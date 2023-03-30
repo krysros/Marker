@@ -7,6 +7,10 @@ def main(global_config, **settings):
     with Configurator(settings=settings) as config:
         session_factory = SignedCookieSessionFactory(settings["session.secret"])
         config.set_session_factory(session_factory)
+        config.add_subscriber(
+            ".subscribers.add_renderer_globals", "pyramid.events.BeforeRender"
+        )
+        config.add_subscriber(".subscribers.add_localizer", "pyramid.events.NewRequest")
         config.include(".models")
         config.include(".routes")
         config.include(".security")
