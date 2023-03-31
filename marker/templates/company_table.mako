@@ -8,7 +8,7 @@
         <th>${_("Region")}</th>
         <th>${_("Created at")}</th>
         <th>${_("Updated at")}</th>
-        <th>${_("Recommendations")}</th>
+        <th>${_("Recommended")}</th>
         <th>${_("Comments")}</th>
         <th class="col-2">${_("Action")}</th>
       </tr>

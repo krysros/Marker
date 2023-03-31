@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0a6\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-03-31 16:15+0200\n"
+"POT-Creation-Date: 2023-03-31 16:34+0200\n"
 "PO-Revision-Date: 2023-03-31 16:16+0200\n"
 "Last-Translator: \n"
-"Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
+"Language-Team: pl <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.12.1\n"
-"X-Generator: Poedit 3.2.2\n"
 
 #: marker/dropdown.py:24
 msgid "Filter"
@@ -56,8 +55,10 @@ msgid "Region"
 msgstr "Region"
 
 #: marker/export.py:24 marker/templates/company_table.mako:11
-msgid "Recommendations"
-msgstr "Rekomendacje"
+#: marker/templates/navbar.mako:66 marker/templates/pills.mako:9
+#: marker/templates/user_recommended.mako:5
+msgid "Recommended"
+msgstr "Rekomendowane"
 
 #: marker/export.py:25 marker/export.py:77 marker/forms/company.py:67
 #: marker/forms/company.py:170 marker/forms/project.py:38
@@ -633,11 +634,6 @@ msgstr "Raporty"
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: marker/templates/navbar.mako:66 marker/templates/pills.mako:9
-#: marker/templates/user_recommended.mako:5
-msgid "Recommended"
-msgstr "Rekomendowane"
-
 #: marker/templates/navbar.mako:71 marker/templates/pills.mako:19
 #: marker/templates/project_table.mako:12 marker/templates/user_watched.mako:5
 msgid "Watched"
@@ -979,3 +975,7 @@ msgstr "Użytkownik %s wyczyścił obserwowane projekty"
 
 #~ msgid "The user deleted the company"
 #~ msgstr "Użytkownik %s usunął komentarz"
+
+#~ msgid "Recommendations"
+#~ msgstr "Rekomendacje"
+

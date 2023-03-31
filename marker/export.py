@@ -21,7 +21,7 @@ def export_companies_to_xlsx(request, companies):
         _("Company"),
         _("City"),
         _("Region"),
-        _("Recommendations"),
+        _("Recommended"),
         _("Link"),
     ]
 
