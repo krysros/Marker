@@ -3,13 +3,9 @@
 
 <div class="p-4 mb-4 border rounded-3">
   <div class="container">
-    <h1>${project} <small class="text-muted">Informacje o firmach i projektach</small></h1>
+    <h1>${project} <small class="text-muted">${_("Information about companies and projects")}</small></h1>
     <p class="fs-4">
-      Znajdź najczęściej rekomendowane firmy o określonym profilu działalności
-      oraz projekty spełniające wymagane kryteria.
-      Sprawdź, które firmy zrealizowały największą liczbę projektów,
-      które regiony są najbardziej przedsiębiorcze
-      i w jakich branżach jest największa konkurencja.
+      ${_("Find the most frequently recommended companies with a specific business profile and projects that meet the required criteria. Check which companies have implemented the largest number of projects, which regions are the most entrepreneurial and in which industries there is the greatest competition.")}
     </p>
   </div>
 </div>
@@ -17,9 +13,9 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h2><i class="bi bi-buildings"></i> Firmy</h2>
+      <h2><i class="bi bi-buildings"></i> ${_("Companies")}</h2>
       <p>
-        Ostatnio dodane firmy.
+        ${_("Recently added companies.")}
       </p>
       <p>
         ${button.show('company_all')}
@@ -28,9 +24,9 @@
       </p>
     </div>
     <div class="col">
-      <h2><i class="bi bi-briefcase"></i> Projekty</h2>
+      <h2><i class="bi bi-briefcase"></i> ${_("Projects")}</h2>
       <p>
-        Realizowane lub zakończone projekty.
+        ${_("Currently implemented or completed projects.")}
       </p>
       <p>
         ${button.show('project_all')}
@@ -39,9 +35,9 @@
       </p>
     </div>
     <div class="col">
-      <h2><i class="bi bi-tags"></i> Tagi</h2>
+      <h2><i class="bi bi-tags"></i> ${_("Tags")}</h2>
       <p>
-        Profile działalności firm i typy projektów.
+        ${_("Business profiles of companies and types of projects.")}
       </p>
       <p>
         ${button.show('tag_all')}
@@ -52,9 +48,9 @@
   </div>
   <div class="row">
     <div class="col">
-      <h2><i class="bi bi-people"></i> Kontakty</h2>
+      <h2><i class="bi bi-people"></i> ${_("Contacts")}</h2>
       <p>
-        Kontakty przypisane do firm i projektów.
+        ${_("Contacts assigned to the company and projects.")}
       </p>
       <p>
         ${button.show('contact_all')}
@@ -62,9 +58,9 @@
       </p>
     </div>
     <div class="col">
-      <h2><i class="bi bi-chat-left-text"></i> Komentarze</h2>
+      <h2><i class="bi bi-chat-left-text"></i> ${_("Comments")}</h2>
       <p>
-        Komentarze dotyczące firm i projektów.
+        ${_("Comments on companies and projects.")}
       </p>
       <p>
         ${button.show('comment_all')}
@@ -72,26 +68,13 @@
       </p>
     </div>
     <div class="col">
-      <h2><i class="bi bi-bar-chart"></i> Raporty</h2>
+      <h2><i class="bi bi-bar-chart"></i> ${_("Reports")}</h2>
       <p>
-        Podsumowanie zawartości bazy danych.
+        ${_("Summary of the database content.")}
       </p>
       <p>
         ${button.show('report')}
       </p>
     </div>
   </div>
-##  <div class="row">
-##    <div class="col">
-##      <h2><i class="bi bi-person-circle"></i> Użytkownicy</h2>
-##      <p>
-##        Użytkownicy aplikacji.
-##      </p>
-##      <p>
-##        ${button.show('user_all')}
-##        ${button.search('user_search')}
-##        ${button.add('user_add')}
-##      </p>
-##    </div>
-##  </div>
 </div>
