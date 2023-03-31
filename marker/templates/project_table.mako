@@ -3,15 +3,15 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Projekt</th>
-        <th>Miasto</th>
-        <th>Region</th>
-        <th>Termin</th>
-        <th>Utworzono</th>
-        <th>Zmodyfikowano</th>
-        <th>Obserwacje</th>
-        <th>Komentarze</th>
-        <th class="col-2">Akcja</th>
+        <th>${_("Project")}</th>
+        <th>${_("City")}</th>
+        <th>${_("Region")}</th>
+        <th>${_("Deadline")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
+        <th>${_("Watched")}</th>
+        <th>${_("Comments")}</th>
+        <th class="col-2">${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

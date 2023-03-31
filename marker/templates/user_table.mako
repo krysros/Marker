@@ -2,12 +2,12 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Nazwa</th>
-        <th>Imię i nazwisko</th>
-        <th>Email</th>
-        <th>Rola</th>
-        <th>Dodano</th>
-        <th>Zmodyfikowano</th>
+        <th>${_("Name")}</th>
+        <th>${_("Fullname")}</th>
+        <th>${_("Email")}</th>
+        <th>${_("Role")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
       </tr>
     </thead>
     <tbody>

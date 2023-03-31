@@ -2,8 +2,8 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Opis</th>
-        <th class="col-2">Liczba</th>
+        <th>${_("Description")}</th>
+        <th class="col-2">${_("Number")}</th>
       </tr>
     </thead>
     <tbody>

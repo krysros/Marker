@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
+  <i class="bi bi-hand-thumbs-up"></i> ${_("Recommended")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.clear('user_clear_recommended', icon='hand-thumbs-up', username=user.name)}

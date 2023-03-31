@@ -2,7 +2,7 @@
 <%include file="errors.mako"/> 
 
 <h2>
-  <i class="bi bi-bar-chart"></i> Raporty
+  <i class="bi bi-bar-chart"></i> ${_("Reports")}
   <span class="badge bg-secondary">${counter}</span>
 </h2>
 

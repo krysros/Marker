@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako" />
 
 <h2>
-  <i class="bi bi-chat-left-text"></i> Komentarze
+  <i class="bi bi-chat-left-text"></i> ${_("Comments")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('comment_count')}" hx-trigger="commentEvent from:body">${counter}</div></span>
   <div class="float-end">
     ${button.search('comment_search')}

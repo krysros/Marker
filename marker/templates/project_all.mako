@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-briefcase"></i> Projekty
+  <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('project_count')}" hx-trigger="projectEvent from:body">${counter}</div></span>
   <div class="float-end">
     ${button.map('project_map', _query=search_query)}
@@ -21,7 +21,7 @@
 
 % if any(x for x in form.data.values() if x):
 <div class="alert alert-info" role="alert">
-  <strong>Kryteria wyszukiwania: </strong> 
+  <strong>${_("Search criteria")}: </strong> 
   % for k, v in form.data.items():
     % if v:
       % if k == "color":

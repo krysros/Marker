@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-person-circle"></i> Użytkownicy
+  <i class="bi bi-person-circle"></i> ${_("Users")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.search('user_search')}
@@ -20,7 +20,7 @@
 
 % if any(x for x in form.data.values() if x):
 <div class="alert alert-info" role="alert">
-  <strong>Kryteria wyszukiwania: </strong>
+  <strong>${_("Search criteria")}: </strong>
   % for k, v in form.data.items():
     % if v:
       % if k == "role":

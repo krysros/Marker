@@ -5,10 +5,10 @@
   <div class="card-header">
     <ul class="nav nav-tabs card-header-tabs">
       <li class="nav-item">
-        <a class="nav-link active" role="button" href="${request.route_url('account', username=request.identity.name)}">Konto</a>
+        <a class="nav-link active" role="button" href="${request.route_url('account', username=request.identity.name)}">${_("Account")}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" role="button" href="${request.route_url('password', username=request.identity.name)}">Hasło</a>
+        <a class="nav-link" role="button" href="${request.route_url('password', username=request.identity.name)}">${_("Password")}</a>
       </li>
     </ul>
   </div>

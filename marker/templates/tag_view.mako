@@ -11,12 +11,12 @@
 <%include file="tag_lead.mako"/>
 
 <div class="card mt-4 mb-4">
-  <div class="card-header"><i class="bi bi-tag"></i> Tag</div>
+  <div class="card-header"><i class="bi bi-tag"></i> ${_("Tag")}</div>
   <div class="card-body">
     <div class="row">
       <div class="col">
         <dl>
-          <dt>Nazwa</dt>
+          <dt>${_("Name")}</dt>
           <dd>${tag.name}</dd>
         </dl>
       </div>
@@ -25,18 +25,18 @@
 </div>
 
 <div class="card mt-4 mb-4">
-  <div class="card-header"><i class="bi bi-clock"></i> Data modyfikacji</div>
+  <div class="card-header"><i class="bi bi-clock"></i> ${_("Modification date")}</div>
   <div class="card-body">
     <p>
-      Utworzono: ${tag.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+      ${_("Created at")}: ${tag.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if tag.created_by:
-        przez <a href="${request.route_url('user_view', username=tag.created_by.name)}">${tag.created_by.name}</a>
+        ${_("by")} <a href="${request.route_url('user_view', username=tag.created_by.name)}">${tag.created_by.name}</a>
       % endif
       <br>
       % if tag.updated_at:
-        Zmodyfikowano: ${tag.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
+        ${_("Updated at")}: ${tag.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if tag.updated_by:
-          przez <a href="${request.route_url('user_view', username=tag.updated_by.name)}">${tag.updated_by.name}</a>
+          ${_("by")} <a href="${request.route_url('user_view', username=tag.updated_by.name)}">${tag.updated_by.name}</a>
         % endif
       % endif
     </p>

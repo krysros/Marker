@@ -17,42 +17,42 @@
 
 <div class="card mt-4 mb-4">
   <div class="card-header">
-    <i class="bi bi-buildings"></i> Firma
+    <i class="bi bi-buildings"></i> ${_("Company")}
   </div>
   <div class="card-body">
     <div class="row">
       <div class="col">
         <dl>
-          <dt>Nazwa</dt>
+          <dt>${_("Name")}</dt>
           <dd>${company.name}</dd>
-          <dt>Ulica</dt>
+          <dt>${_("Street")}</dt>
           <dd>${company.street or "---"}</dd>
-          <dt>Kod pocztowy</dt>
+          <dt>${_("Post code")}</dt>
           <dd>${company.postcode or "---"}</dd>
-          <dt>Miasto</dt>
+          <dt>${_("City")}</dt>
           <dd>${company.city or "---"}</dd>
-          <dt>Region</dt>
+          <dt>${_("Region")}</dt>
           <dd>${regions.get(company.region) or "---"}</dd>
-          <dt>Kraj</dt>
+          <dt>${_("Country")}</dt>
           <dd>${countries.get(company.country) or "---"}</dd>
         </dl>
       </div>
       <div class="col">
         <dl>
-          <dt>Link</dt>
+          <dt>${_("Link")}</dt>
           % if company.link:
           <dd><a href="${company.link}" target="_blank">${company.link}</a></dd>
           % else:
           <dd>---</dd>
           % endif
           </dd>
-          <dt>NIP</dt>
+          <dt>${_("NIP")}</dt>
           <dd>${company.NIP or "---"}</dd>
-          <dt>REGON</dt>
+          <dt>${_("REGON")}</dt>
           <dd>${company.REGON or "---"}</dd>
-          <dt>KRS</dt>
+          <dt>${_("KRS")}</dt>
           <dd>${company.KRS or "---"}</dd>
-          <dt>Sąd</dt>
+          <dt>${_("Court")}</dt>
           <dd>${courts.get(company.court) or "---"}</dd>
         </dl>
       </div>
@@ -61,18 +61,18 @@
 </div>
 
 <div class="card mt-4 mb-4">
-  <div class="card-header"><i class="bi bi-clock"></i> Data modyfikacji</div>
+  <div class="card-header"><i class="bi bi-clock"></i> ${_("Modification date")}</div>
   <div class="card-body">
     <p>
-      Utworzono: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+      ${_("Created at")}: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if company.created_by:
-        przez <a href="${request.route_url('user_view', username=company.created_by.name)}">${company.created_by.name}</a>
+        ${_("by")} <a href="${request.route_url('user_view', username=company.created_by.name)}">${company.created_by.name}</a>
       % endif
       <br>
       % if company.updated_at:
-        Zmodyfikowano: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
+        ${_("Updated at")}: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if company.updated_by:
-          przez <a href="${request.route_url('user_view', username=company.updated_by.name)}">${company.updated_by.name}</a>
+        ${_("by")} <a href="${request.route_url('user_view', username=company.updated_by.name)}">${company.updated_by.name}</a>
         % endif
       % endif
     </p>

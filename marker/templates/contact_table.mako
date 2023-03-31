@@ -3,14 +3,14 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Imię i nazwisko</th>
-        <th>Firma / Projekt</th>
-        <th>Rola</th>
-        <th>Telefon</th>
-        <th>Email</th>
-        <th>Utworzono</th>
-        <th>Zmodyfikowano</th>
-        <th class="col-2">Akcja</th>
+        <th>${_("Fullname")}</th>
+        <th>${_("Company/Project")}</th>
+        <th>${_("Role")}</th>
+        <th>${_("Phone")}</th>
+        <th>${_("Email")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
+        <th class="col-2">${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

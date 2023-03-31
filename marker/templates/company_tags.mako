@@ -24,8 +24,8 @@
     <thead>
       <tr>
         <th class="col-1">#</th>
-        <th>Tag</th>
-        <th class="col-2">Akcja</th>
+        <th>${_("Tag")}</th>
+        <th class="col-2">${_("Action")}</th>
       </tr>
     </thead>
     <tbody id="new-tag">

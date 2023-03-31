@@ -1,7 +1,7 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<h2><i class="bi bi-briefcase"></i> Projekty
+<h2><i class="bi bi-briefcase"></i> ${_("Projects")}
   <div class="float-end">
     ${button.table('project_all', _query=search_query)}
     ${button.search('project_search')}

@@ -6,10 +6,10 @@
     <thead>
       <tr>
         <th class="col-1">#</th>
-        <th>Firma</th>
-        <th>Etap</th>
-        <th>Rola</th>
-        <th class="col-2">Akcja</th>
+        <th>${_("Company")}</th>
+        <th>${_("Stage")}</th>
+        <th>${_("Role")}</th>
+        <th class="col-2">${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

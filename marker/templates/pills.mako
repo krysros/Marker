@@ -1,38 +1,38 @@
 <%!
 
   company_pills = [
-    {"title": "Firma", "route_name": "company_view", "event": "projectCompanyEvent"},
-    {"title": "Projekty", "route_name": "company_projects", "event": "projectCompanyEvent"},
-    {"title": "Tagi", "route_name": "company_tags", "event": "tagEvent"},
-    {"title": "Kontakty", "route_name": "company_contacts", "event": "contactEvent"},
-    {"title": "Komentarze", "route_name": "company_comments", "event": "commentEvent"},
-    {"title": "Rekomendacje", "route_name": "company_recommended", "event": "recommendEvent"},
-    {"title": "Podobne", "route_name": "company_similar", "event": "tagEvent"},
+    {"title": _("Company"), "route_name": "company_view", "event": "projectCompanyEvent"},
+    {"title": _("Projects"), "route_name": "company_projects", "event": "projectCompanyEvent"},
+    {"title": _("Tags"), "route_name": "company_tags", "event": "tagEvent"},
+    {"title": _("Contacts"), "route_name": "company_contacts", "event": "contactEvent"},
+    {"title": _("Comments"), "route_name": "company_comments", "event": "commentEvent"},
+    {"title": _("Recommended"), "route_name": "company_recommended", "event": "recommendEvent"},
+    {"title": _("Similar"), "route_name": "company_similar", "event": "tagEvent"},
   ]
 
   project_pills = [
-    {"title": "Projekt", "route_name": "project_view", "event": "projectCompanyEvent"},
-    {"title": "Firmy", "route_name": "project_companies", "event": "projectCompanyEvent"},
-    {"title": "Tagi", "route_name": "project_tags", "event": "tagEvent"},
-    {"title": "Kontakty", "route_name": "project_contacts", "event": "contactEvent"},
-    {"title": "Komentarze", "route_name": "project_comments", "event": "commentEvent"},
-    {"title": "Obserwacje", "route_name": "project_watched", "event": "watchEvent"},
-    {"title": "Podobne", "route_name": "project_similar", "event": "tagEvent"},
+    {"title": _("Project"), "route_name": "project_view", "event": "projectCompanyEvent"},
+    {"title": _("Companies"), "route_name": "project_companies", "event": "projectCompanyEvent"},
+    {"title": _("Tags"), "route_name": "project_tags", "event": "tagEvent"},
+    {"title": _("Contacts"), "route_name": "project_contacts", "event": "contactEvent"},
+    {"title": _("Companies"), "route_name": "project_comments", "event": "commentEvent"},
+    {"title": _("Watched"), "route_name": "project_watched", "event": "watchEvent"},
+    {"title": _("Similar"), "route_name": "project_similar", "event": "tagEvent"},
   ]
 
   tag_pills = [
-    {"title": "Tag", "route_name": "tag_view", "event": "tagEvent"},
-    {"title": "Firmy", "route_name": "tag_companies", "event": "tagEvent"},
-    {"title": "Projekty", "route_name": "tag_projects", "event": "tagEvent"},
+    {"title": _("Tag"), "route_name": "tag_view", "event": "tagEvent"},
+    {"title": _("Companies"), "route_name": "tag_companies", "event": "tagEvent"},
+    {"title": _("Projects"), "route_name": "tag_projects", "event": "tagEvent"},
   ]
 
   user_pills = [
-    {"title": "Użytkownik", "route_name": "user_view"},
-    {"title": "Firmy", "route_name": "user_companies"},
-    {"title": "Projekty", "route_name": "user_projects"},
-    {"title": "Tagi", "route_name": "user_tags"},
-    {"title": "Kontakty", "route_name": "user_contacts"},
-    {"title": "Komentarze", "route_name": "user_comments"},
+    {"title": _("User"), "route_name": "user_view"},
+    {"title": _("Companies"), "route_name": "user_companies"},
+    {"title": _("Projects"), "route_name": "user_projects"},
+    {"title": _("Tags"), "route_name": "user_tags"},
+    {"title": _("Contacts"), "route_name": "user_contacts"},
+    {"title": _("Comments"), "route_name": "user_comments"},
   ]
 
 %>

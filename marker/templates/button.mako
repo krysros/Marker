@@ -40,7 +40,7 @@
 
 <%def name="delete(route_name, size=None, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor' or 'admin':
-<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-trash"></i></button>
+<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Are you sure?")}'><i class="bi bi-trash"></i></button>
 % else:
 <button type="button" class="btn btn-danger${' btn-' + size if size else ''}" disabled><i class="bi bi-trash"></i></button>
 % endif
@@ -48,7 +48,7 @@
 
 <%def name="clear(route_name, icon, size=None, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor' or 'admin':
-<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?"><i class="bi bi-${icon}"></i></button>
+<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Are you sure?")}'><i class="bi bi-${icon}"></i></button>
 % else:
 <button type="button" class="btn btn-danger${' btn-' + size if size else ''}" disabled><i class="bi bi-${icon}"></i></button>
 % endif
@@ -56,7 +56,7 @@
 
 <%def name="unlink(route_name, size=None, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor' or 'admin':
-<button type="button" class="btn btn-warning${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-dash-lg"></i></button>
+<button type="button" class="btn btn-warning${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Are you sure?")}' hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-dash-lg"></i></button>
 % else:
 <button type="button" class="btn btn-warning${' btn-' + size if size else ''}" disabled><i class="bi bi-dash-lg"></i></button>
 % endif
@@ -64,7 +64,7 @@
 
 <%def name="del_card(route_name, size=None, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor' or 'admin':
-<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest .card" hx-swap="outerHTML swap:1s"><i class="bi bi-trash"></i></button>
+<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Are you sure?")}' hx-target="closest .card" hx-swap="outerHTML swap:1s"><i class="bi bi-trash"></i></button>
 % else:
 <button type="button" class="btn btn-danger${' btn-' + size if size else ''}" disabled><i class="bi bi-trash"></i></button>
 % endif
@@ -72,7 +72,7 @@
 
 <%def name="del_row(route_name, size=None, **kwargs)">
 % if request.is_authenticated and request.identity.role == 'editor' or 'admin':
-<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm="Czy jesteś pewny?" hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-trash"></i></button>
+<button type="button" class="btn btn-danger${' btn-' + size if size else ''}" hx-post="${request.route_url(route_name, **kwargs)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Are you sure?")}' hx-target="closest tr" hx-swap="outerHTML swap:1s"><i class="bi bi-trash"></i></button>
 % else:
 <button type="button" class="btn btn-danger${' btn-' + size if size else ''}" disabled><i class="bi bi-trash"></i></button>
 % endif

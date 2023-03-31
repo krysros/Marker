@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-eye"></i> Obserwowane
+  <i class="bi bi-eye"></i> ${_("Watched")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.clear('user_clear_watched', icon='eye', username=user.name)}

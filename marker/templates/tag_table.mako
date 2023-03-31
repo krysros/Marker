@@ -3,12 +3,12 @@
     <thead>
       <tr>
         <th class="col-1">#</th>
-        <th>Tag</th>
-        <th>Dodano</th>
-        <th>Zmodyfikowano</th>
-        <th>Firmy</th>
-        <th>Projekty</th>
-        <th class="col-2">Akcja</th>
+        <th>${_("Tag")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
+        <th>${_("Companies")}</th>
+        <th>${_("Projects")}</th>
+        <th class="col-2">${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

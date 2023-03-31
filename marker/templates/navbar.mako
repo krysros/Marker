@@ -8,31 +8,31 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('company_all')}"><i class="bi bi-buildings"></i> Firmy</a>
+          <a class="nav-link" role="button" href="${request.route_url('company_all')}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('project_all')}"><i class="bi bi-briefcase"></i> Projekty</a>
+          <a class="nav-link" role="button" href="${request.route_url('project_all')}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> Tagi</a>
+          <a class="nav-link" role="button" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> Kontakty</a>
+          <a class="nav-link" role="button" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('comment_all')}"><i class="bi bi-chat-left-text"></i> Komentarze</a>
+          <a class="nav-link" role="button" href="${request.route_url('comment_all')}"><i class="bi bi-chat-left-text"></i> ${_("Comments")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('report')}"><i class="bi bi-bar-chart"></i> Raporty</a>
+          <a class="nav-link" role="button" href="${request.route_url('report')}"><i class="bi bi-bar-chart"></i> ${_("Reports")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> Użytkownicy</a>
+          <a class="nav-link" role="button" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> ${_("Users")}</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         % if not request.is_authenticated:
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.application_url}/login">Zaloguj</a>
+          <a class="nav-link" role="button" href="${request.application_url}/login">${_("Log in")}</a>
         </li>
         % else:
         <li class="nav-item dropdown">
@@ -42,56 +42,56 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_selected_companies', username=request.identity.name)}">
-                <i class="bi bi-check-square"></i> Firmy
+                <i class="bi bi-check-square"></i> ${_("Companies")}
               </a>
             </li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_selected_projects', username=request.identity.name)}">
-                <i class="bi bi-check-square"></i> Projekty
+                <i class="bi bi-check-square"></i> ${_("Projects")}
               </a>
             </li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_selected_tags', username=request.identity.name)}">
-                <i class="bi bi-check-square"></i> Tagi
+                <i class="bi bi-check-square"></i> ${_("Tags")}
               </a>
             </li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_selected_contacts', username=request.identity.name)}">
-                <i class="bi bi-check-square"></i> Kontakty
+                <i class="bi bi-check-square"></i> ${_("Contacts")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_recommended', username=request.identity.name)}">
-                <i class="bi bi-hand-thumbs-up"></i> Rekomendowane
+                <i class="bi bi-hand-thumbs-up"></i> ${_("Recommended")}
               </a>
             </li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_watched', username=request.identity.name)}">
-                <i class="bi bi-eye"></i> Obserwowane
+                <i class="bi bi-eye"></i> ${_("Watched")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <a class="dropdown-item" role="button" hx-get="${request.route_url('theme')}" hx-swap="none">
               % if theme == "dark":
-                <i class="bi bi-sun"></i> Jasny
+                <i class="bi bi-sun"></i> ${_("Light")}
               % else:
-                <i class="bi bi-moon"></i> Ciemny
+                <i class="bi bi-moon"></i> ${_("Dark")}
               % endif
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('account', username=request.identity.name)}">
-                Konto
+                ${_("Account")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <form action="${request.route_url('logout')}" method="post">
                 <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
-                <button type="submit" class="dropdown-item">Wyloguj</button>
+                <button type="submit" class="dropdown-item">${_("Log out")}</button>
               </form>
             </li>
           </ul>

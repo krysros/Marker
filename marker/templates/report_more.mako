@@ -6,7 +6,7 @@
 % else:
 <tr>
 % endif
-% if 'regions' in rel:
+% if "regions" in rel:
   <td>${regions[k]}</td>
 % else:
   <td>${k}</td>

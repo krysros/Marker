@@ -13,21 +13,21 @@
       % endif
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
-          <h5 class="modal-title" id="modal-add-comment-label">Dodaj komentarz</h5>
+          <h5 class="modal-title" id="modal-add-comment-label">${_("Add comment")}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="comment" class="form-label">Komentarz</label>
+            <label for="comment" class="form-label">${_("Comment")}</label>
             <textarea class="form-control" id="comment" name="comment"></textarea>
           </div>
           <div class="mb-3">
-            <p><small class="text-muted">W tym polu możesz skorzystać z Markdown.</small></p>
+            <p><small class="text-muted">${_("You can use Markdown for this field.")}</small></p>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_("Close")}</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">${_("Save")}</button>
         </div>
       </form>
     </div>
@@ -62,19 +62,19 @@
       % endif
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
-          <h5 class="modal-title" id="modal-add-tag-label">Dodaj tag</h5>
+          <h5 class="modal-title" id="modal-add-tag-label">${_("Add tag")}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="name" class="form-label">Nazwa</label>
+            <label for="name" class="form-label">${_("Name")}</label>
             <input list="tags" type="text" class="form-control" id="name" name="name" autocomplete="off" hx-get="${request.route_url('tag_select')}" hx-target="#tag-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required minlength="3" maxlength="50">
             <div id="tag-list"></div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_("Close")}</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">${_("Save")}</button>
         </div>
       </form>
     </div>
@@ -111,30 +111,30 @@
       % endif
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">
-          <h5 class="modal-title" id="modal-add-contact-label">Dodaj kontakt</h5>
+          <h5 class="modal-title" id="modal-add-contact-label">${_("Add contact")}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="name" class="form-label">Imię i nazwisko</label>
+            <label for="name" class="form-label">${_("Fullname")}</label>
             <input type="text" class="form-control" id="name" name="name" required minlength="5" maxlength="100">
           </div>
           <div class="mb-3">
-            <label for="role" class="form-label">Rola</label>
+            <label for="role" class="form-label">${_("Role")}</label>
             <input type="text" class="form-control" id="role" name="role" maxlength="100">
           </div>
           <div class="mb-3">
-            <label for="phone" class="form-label">Telefon</label>
+            <label for="phone" class="form-label">${_("Phone")}</label>
             <input type="text" class="form-control" id="phone" name="phone" maxlength="50">
           </div>
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">${_("Email")}</label>
             <input type="email" class="form-control" id="email" name="email" maxlength="50">
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_("Close")}</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">${_("Save")}</button>
         </div>
       </form>
     </div>
@@ -179,7 +179,7 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="name" class="form-label">Nazwa</label>
+            <label for="name" class="form-label">${_("Name")}</label>
             % if isinstance(obj, Company):
             <input list="projects" type="text" class="form-control" id="name" name="name" autocomplete="off" hx-get="${request.route_url('project_select')}" hx-target="#select-list" hx-swap="innerHTML" hx-trigger="keyup changed delay:250ms" required maxlength="200">
             % elif isinstance(obj, Project):
@@ -188,7 +188,7 @@
             <div id="select-list"></div>
           </div>
           <div class="mb-3">
-            <label for="stage">Etap</label>
+            <label for="stage">${_("Stage")}</label>
             <select class="form-control" id="stage" name="stage">
             % for key, value in stages.items():
               <option value="${key}">${value}</option>
@@ -196,7 +196,7 @@
             </select>
           </div>
           <div class="mb-3">
-            <label for="role">Rola</label>
+            <label for="role">${_("Role")}</label>
             <select class="form-control" id="role" name="role">
             % for key, value in company_roles.items():
               <option value="${key}">${value}</option>
@@ -205,8 +205,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-          <button type="submit" class="btn btn-primary" id="submit" name="submit">Zapisz</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${_("Close")}</button>
+          <button type="submit" class="btn btn-primary" id="submit" name="submit">${_("Save")}</button>
         </div>
       </form>
     </div>

@@ -21,33 +21,33 @@
     <div class="row">
       <div class="col">
         <dl>
-          <dt>Nazwa</dt>
+          <dt>${_("Name")}</dt>
           <dd>${project.name}</dd>
-          <dt>Ulica</dt>
+          <dt>${_("Street")}</dt>
           <dd>${project.street or "---"}</dd>
-          <dt>Kod pocztowy</dt>
+          <dt>${_("Post code")}</dt>
           <dd>${project.postcode or "---"}</dd>
-          <dt>Miasto</dt>
+          <dt>${_("City")}</dt>
           <dd>${project.city or "---"}</dd>
-          <dt>Region</dt>
+          <dt>${_("Region")}</dt>
           <dd>${regions.get(project.region) or "---"}</dd>
-          <dt>Kraj</dt>
+          <dt>${_("Country")}</dt>
           <dd>${countries.get(project.country) or "---"}</dd>      
         </dl>
       </div>
       <div class="col">
         <dl>
-          <dt>Link</dt>
+          <dt>${_("Link")}</dt>
           % if project.link:
           <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
           % else:
           <dd>---</dd>
           % endif
-          <dt>Termin</dt>
+          <dt>${_("Deadline")}</dt>
           <dd>${project.deadline or "---"}</dd>
-          <dt>Etap</dt>
+          <dt>${_("Stage")}</dt>
           <dd>${stages.get(project.stage) or "---"}</dd>
-          <dt>Sposób realizacji</dt>
+          <dt>${_("Project delivery method")}</dt>
           <dd>${delivery_methods.get(project.delivery_method) or "---"}</dd>
         </dl>
       </div>
@@ -56,18 +56,18 @@
 </div>
 
 <div class="card mt-4 mb-4">
-  <div class="card-header"><i class="bi bi-clock"></i> Data modyfikacji</div>
+  <div class="card-header"><i class="bi bi-clock"></i> ${_("Modification date")}</div>
   <div class="card-body">
     <p>
-      Utworzono: ${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+      ${_("Created at")}: ${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}
       % if project.created_by:
-        przez <a href="${request.route_url('user_view', username=project.created_by.name)}">${project.created_by.name}</a>
+        ${_("by")} <a href="${request.route_url('user_view', username=project.created_by.name)}">${project.created_by.name}</a>
       % endif
       <br>
       % if project.updated_at:
-        Zmodyfikowano: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
+        ${_("Updated at")}: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if project.updated_by:
-          przez <a href="${request.route_url('user_view', username=project.updated_by.name)}">${project.updated_by.name}</a>
+          ${_("by")} <a href="${request.route_url('user_view', username=project.updated_by.name)}">${project.updated_by.name}</a>
         % endif
       % endif
     </p>
