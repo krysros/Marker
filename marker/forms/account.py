@@ -3,38 +3,39 @@ from wtforms.validators import EqualTo, InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
 
 from .filters import strip_filter
+from .ts import TranslationString as _
 
 
 class Account(Form):
     fullname = StringField(
-        "Imię i nazwisko",
+        _("First name and last name"),
         validators=[
-            InputRequired("Podaj imię i nazwisko"),
-            Length(
-                min=5,
-                max=50,
-                message="Długość musi zawierać się w przedziale %(min)d-%(max)d",
-            ),
+            InputRequired(),
+            Length(min=5, max=50),
         ],
         filters=[strip_filter],
     )
-    email = EmailField("Email", filters=[strip_filter])
-    submit = SubmitField("Zapisz")
+    email = EmailField(_("Email"), filters=[strip_filter])
+    submit = SubmitField(_("Save"))
 
 
 class ChangePassword(Form):
     password = PasswordField(
-        "Nowe hasło",
+        _("New password"),
         validators=[
             InputRequired(),
-            Length(min=5, message="Minimalna długość hasła to %(min)d znaków"),
-            EqualTo("confirm", message="Hasła muszą pasować"),
+            Length(min=5),
         ],
     )
-    confirm = PasswordField("Powtórz hasło")
-    submit = SubmitField("Zapisz")
+    confirm = PasswordField(
+        _("Confirm password"),
+        validators=[
+            EqualTo("password"),
+        ],
+    )
+    submit = SubmitField(_("Save"))
 
     def validate_password(form, field):
         results = zxcvbn(field.data)
         if results["score"] < 3:
-            raise ValidationError("Zbyt proste hasło")
+            raise ValidationError(_("The password is too simple"))

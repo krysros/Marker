@@ -1,7 +1,9 @@
 from wtforms import Form, PasswordField, StringField, SubmitField
 
+from .ts import TranslationString as _
+
 
 class LoginForm(Form):
-    username = StringField("Nazwa użytkownika")
-    password = PasswordField("Hasło")
-    submit = SubmitField("Zaloguj się")
+    username = StringField(_("User name"))
+    password = PasswordField(_("Password"))
+    submit = SubmitField(_("Log in"))

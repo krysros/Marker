@@ -8,7 +8,8 @@ from pyramid.response import Response
 from unidecode import unidecode
 
 
-def export_companies_to_xlsx(companies):
+def export_companies_to_xlsx(request, companies):
+    _ = request.translate
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(output, {"constant_memory": True})
@@ -17,11 +18,11 @@ def export_companies_to_xlsx(companies):
 
     # Write rows.
     header = [
-        "Firma",
-        "Miasto",
-        "Region",
-        "Rekomendacje",
-        "Link",
+        _("Company"),
+        _("City"),
+        _("Region"),
+        _("Recommendations"),
+        _("Link"),
     ]
 
     for j, col in enumerate(header):
@@ -54,11 +55,12 @@ def export_companies_to_xlsx(companies):
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response.content_disposition = 'attachment; filename="firmy.xlsx"'
+    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Companies")
     return response
 
 
-def export_projects_to_xlsx(projects):
+def export_projects_to_xlsx(request, projects):
+    _ = request.translate
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
@@ -68,11 +70,11 @@ def export_projects_to_xlsx(projects):
     bold = workbook.add_format({"bold": True})
     # Write rows.
     header = [
-        "Projekt",
-        "Termin",
-        "Miasto",
-        "Region",
-        "Link",
+        _("Project"),
+        _("Deadline"),
+        _("City"),
+        _("Region"),
+        _("Link"),
     ]
 
     for j, col in enumerate(header):
@@ -105,11 +107,12 @@ def export_projects_to_xlsx(projects):
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response.content_disposition = 'attachment; filename="projekty.xlsx"'
+    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Projects")
     return response
 
 
-def export_tags_to_xlsx(tags):
+def export_tags_to_xlsx(request, tags):
+    _ = request.translate
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
@@ -118,7 +121,7 @@ def export_tags_to_xlsx(tags):
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({"bold": True})
     # Write rows.
-    header = ["Tag", "Firmy", "Projekty"]
+    header = [_("Tag"), _("Companies"), _("Projects")]
 
     for j, col in enumerate(header):
         worksheet.write(0, j, col, bold)
@@ -144,11 +147,12 @@ def export_tags_to_xlsx(tags):
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response.content_disposition = 'attachment; filename="tagi.xlsx"'
+    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Tags")
     return response
 
 
-def export_contacts_to_xlsx(contacts):
+def export_contacts_to_xlsx(request, contacts):
+    _ = request.translate
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
@@ -158,11 +162,11 @@ def export_contacts_to_xlsx(contacts):
     bold = workbook.add_format({"bold": True})
     # Write rows.
     header = [
-        "Imię i nazwisko",
-        "Firma/Projekt",
-        "Rola",
-        "Telefon",
-        "Email",
+        _("First name and last name"),
+        _("Company/Project"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
     ]
 
     for j, col in enumerate(header):
@@ -201,7 +205,7 @@ def export_contacts_to_xlsx(contacts):
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response.content_disposition = 'attachment; filename="kontakty.xlsx"'
+    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Contacts")
     return response
 
 

@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 @view_config(route_name="login", renderer="login.mako")
 def login(request):
+    _ = request.translate
     next_url = request.params.get("next")
     if not next_url:
         next_url = request.route_url("home")
@@ -30,36 +31,38 @@ def login(request):
         if user is not None and user.check_password(password):
             new_csrf_token(request)
             headers = remember(request, user.id)
-            request.session.flash("success:Witaj!")
-            log.info(f"Użytkownik {user.name} zalogował się")
+            request.session.flash(_("success:Hello!"))
+            log.info(_("The user %s has logged in") % user.name)
             return HTTPSeeOther(location=next_url, headers=headers)
         request.response.status = 400
-        request.session.flash("danger:Logowanie nie powiodło się")
+        request.session.flash(_("danger:Login failed"))
     return {
         "url": request.route_url("login"),
         "next_url": next_url,
-        "heading": "Zaloguj się",
+        "heading": _("Log in"),
         "form": form,
     }
 
 
 @view_config(route_name="logout")
 def logout(request):
+    _ = request.translate
     next_url = request.route_url("home")
     if request.method == "POST":
         new_csrf_token(request)
         headers = forget(request)
-        request.session.flash("success:Wylogowano")
-        log.info(f"Użytkownik {request.identity.name} wylogował się")
+        request.session.flash(_("success:Logged out"))
+        log.info(_("The user %s has logged out") % request.identity.name)
         return HTTPSeeOther(location=next_url, headers=headers)
     return HTTPSeeOther(location=next_url)
 
 
 @forbidden_view_config()
 def forbidden(exc, request):
+    _ = request.translate
     if not request.is_authenticated:
         next_url = request.route_url("login", _query={"next": request.url})
-        request.session.flash("warning:Brak wymaganych uprawnień")
+        request.session.flash(_("warning:No required permissions"))
         return HTTPSeeOther(location=next_url)
     return httpexception_view(exc, request)
 

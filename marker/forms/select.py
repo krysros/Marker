@@ -1,59 +1,61 @@
+from .ts import TranslationString as _
+
 SORT_CRITERIA = [
-    ("name", "wg nazwy"),
-    ("created_at", "wg daty dodania"),
-    ("updated_at", "wg daty edycji"),
+    ("name", _("by name")),
+    ("created_at", _("by date added")),
+    ("updated_at", _("by edit date")),
 ]
 
 
 SORT_CRITERIA_EXT = [
-    ("name", "wg nazwy"),
-    ("city", "wg miasta"),
-    ("region", "wg regionu"),
-    ("created_at", "wg daty dodania"),
-    ("updated_at", "wg daty edycji"),
+    ("name", _("by name")),
+    ("city", _("by city")),
+    ("region", _("by region")),
+    ("created_at", _("by date added")),
+    ("updated_at", _("by edit date")),
 ]
 
 
 SORT_CRITERIA_COMPANIES = [
-    ("name", "wg nazwy"),
-    ("city", "wg miasta"),
-    ("region", "wg regionu"),
-    ("created_at", "wg daty dodania"),
-    ("updated_at", "wg daty edycji"),
-    ("recommended", "wg rekomendacji"),
+    ("name", _("by name")),
+    ("city", _("by city")),
+    ("region", _("by region")),
+    ("created_at", _("by date added")),
+    ("updated_at", _("by edit date")),
+    ("recommended", _("by the number of recommendations")),
 ]
 
 
 SORT_CRITERIA_PROJECTS = [
-    ("name", "wg nazwy"),
+    ("name", _("by name")),
     ("city", "wg miasta"),
-    ("region", "wg regionu"),
-    ("created_at", "wg daty dodania"),
-    ("updated_at", "wg daty edycji"),
-    ("watched", "wg obserwacji"),
+    ("region", _("by city")),
+    ("created_at", _("by date added")),
+    ("updated_at", _("by edit date")),
+    ("watched", _("by number of observations")),
 ]
 
 
 ORDER_CRITERIA = [
-    ("asc", "rosnąco"),
-    ("desc", "malejąco"),
+    ("asc", _("ascending")),
+    ("desc", _("descending")),
 ]
 
 
 STATUS = [
     ("", "---"),
-    ("in_progress", "w trakcie"),
-    ("completed", "zakończone"),
+    ("in_progress", _("in progress")),
+    ("completed", _("completed")),
 ]
 
 
 COLORS = [
     ("", "---"),
-    ("default", "domyślny"),
-    ("success", "zielony"),
-    ("info", "niebieski"),
-    ("warning", "pomarańczowy"),
-    ("danger", "czerwony"),
+    ("default", _("default")),
+    ("success", _("green")),
+    ("info", _("blue")),
+    ("warning", _("orange")),
+    ("danger", _("red")),
 ]
 
 
@@ -340,28 +342,28 @@ COUNTRIES = [
 
 USER_ROLES = [
     ("", "---"),
-    ("basic", "wyświetlanie"),
-    ("editor", "edytowanie"),
-    ("admin", "administrator"),
+    ("basic", _("display")),
+    ("editor", _("editing")),
+    ("admin", _("administrator")),
 ]
 
 
 COMPANY_ROLES = [
     ("", "---"),
-    ("designer", "Projektant"),
-    ("purchaser", "Zamawiający"),
-    ("investor", "Inwestor"),
-    ("general_contractor", "Generalny Wykonawca"),
-    ("subcontractor", "Podwykonawca"),
-    ("supplier", "Dostawca"),
+    ("designer", _("Designer")),
+    ("purchaser", _("Purchaser")),
+    ("investor", _("Investor")),
+    ("general_contractor", _("General Contractor")),
+    ("subcontractor", _("Subcontractor")),
+    ("supplier", _("Supplier")),
 ]
 
 
-RMS = [
-    ("R", "Robocizna"),
-    ("M", "Materiał"),
-    ("S", "Sprzęt"),
-]
+# RMS = [
+#     ("R", "Robocizna"),
+#     ("M", "Materiał"),
+#     ("S", "Sprzęt"),
+# ]
 
 
 CURRENCIES = [
@@ -372,27 +374,27 @@ CURRENCIES = [
 
 
 # Lista jednostek z programu RODOS
-UNITS = [
-    ("", "---"),
-    ("t", "tona"),
-    ("szt.", "sztuka"),
-    ("odc.", "odcinek"),
-    ("mp", "metr przestrzenny"),
-    ("m3", "metr sześcienny"),
-    ("m2", "metr kwadratowy"),
-    ("m", "metr"),
-    ("kpl.", "komplet"),
-    ("km", "kilometr"),
-    ("kg", "kilogram"),
-    ("ha", "hektar"),
-    ("elem.", "element"),
-    ("dm3", "decymetr sześcienny"),
-    ("dm2", "decymetr kwadratowy"),
-    ("dm", "decymetr"),
-    ("cm2", "centrymetr kwadratowy"),
-    ("cm", "centymetr"),
-    ("ar", "ar"),
-]
+# UNITS = [
+#     ("", "---"),
+#     ("t", "tona"),
+#     ("szt.", "sztuka"),
+#     ("odc.", "odcinek"),
+#     ("mp", "metr przestrzenny"),
+#     ("m3", "metr sześcienny"),
+#     ("m2", "metr kwadratowy"),
+#     ("m", "metr"),
+#     ("kpl.", "komplet"),
+#     ("km", "kilometr"),
+#     ("kg", "kilogram"),
+#     ("ha", "hektar"),
+#     ("elem.", "element"),
+#     ("dm3", "decymetr sześcienny"),
+#     ("dm2", "decymetr kwadratowy"),
+#     ("dm", "decymetr"),
+#     ("cm2", "centrymetr kwadratowy"),
+#     ("cm", "centymetr"),
+#     ("ar", "ar"),
+# ]
 
 
 # https://pl.wikipedia.org/wiki/Krajowy_Rejestr_S%C4%85dowy#Siedziba_i_obszary_w%C5%82a%C5%9Bciwo%C5%9Bci
@@ -510,55 +512,58 @@ COURTS = [
 
 
 REPORTS = [
-    ("companies-tags", "Najpopularniejsze tagi wśród firm"),
-    ("projects-tags", "Najpopularniejsze tagi wśród projektów"),
-    ("companies-regions", "Regiony o największej liczbie firm"),
-    ("companies-cities", "Miasta o największej liczbie firm"),
-    ("companies-comments", "Najczęściej komentowane firmy"),
-    ("projects-regions", "Regiony o największej liczbie projektów"),
-    ("projects-cities", "Miasta o największej liczbie projektów"),
-    ("projects-comments", "Najczęściej komentowane projekty"),
-    ("users-companies", "Aktywność użytkowników (dodane firmy)"),
-    ("users-projects", "Aktywność użytkowników (dodane projekty)"),
-    ("companies-projects", "Inwestorzy (liczba projektów)"),
-    ("recommended-companies", "Rekomendowane firmy"),
-    ("watched-projects", "Obserwowane projekty"),
-    ("companies-announcement", "Firmy, które ogłosiły największą liczbę inwestycji"),
+    ("companies-tags", _("The most popular tags among companies")),
+    ("projects-tags", _("The most popular tags among projects")),
+    ("companies-regions", _("Regions with the largest number of companies")),
+    ("companies-cities", _("Cities with the largest number of companies")),
+    ("companies-comments", _("The most commented companies")),
+    ("projects-regions", _("Regions with the largest number of projects")),
+    ("projects-cities", _("Cities with the largest number of projects")),
+    ("projects-comments", _("The most commented projects")),
+    ("users-companies", _("User activity (added companies)")),
+    ("users-projects", _("User activity (added projects)")),
+    ("companies-projects", _("Investors (number of projects)")),
+    ("recommended-companies", _("Recommended companies")),
+    ("watched-projects", _("Watched projects")),
+    (
+        "companies-announcement",
+        _("Companies that announced the largest number of investments"),
+    ),
     (
         "companies-tenders",
-        "Firmy, które wzięły udział w największej liczbie przetargów",
+        _("Companies that took part in the largest number of tenders"),
     ),
     (
         "companies-constructions",
-        "Firmy, które zrealizowały największą liczbę inwestycji",
+        _("Companies that have completed the largest number of investments"),
     ),
-    ("designers", "Najbardziej aktywni projektanci"),
-    ("purchasers", "Najbardziej aktywni zamawiający"),
-    ("investors", "Najbardziej aktywni inwestorzy"),
-    ("general-contractors", "Najbardziej aktywni generalni wykonawcy"),
-    ("subcontractors", "Najbardziej aktywni podwykonawcy"),
-    ("suppliers", "Najbardziej aktywni dostawcy"),
-    ("projects-companies", "Projekty o największym zainteresowaniu"),
+    ("designers", _("The most active designers")),
+    ("purchasers", _("The most active purchasers")),
+    ("investors", _("The most active investors")),
+    ("general-contractors", _("The most active general contractors")),
+    ("subcontractors", _("The most active subcontractors")),
+    ("suppliers", _("The most active suppliers")),
+    ("projects-companies", _("Projects with the greatest interest")),
 ]
 
 
 STAGES = [
     ("", "---"),
-    ("announcement", "Zapowiedź"),
-    ("tender", "Przetarg"),
-    ("construction", "Realizacja"),
+    ("announcement", _("Announcement")),
+    ("tender", _("Tender")),
+    ("construction", _("Construction")),
 ]
 
 
 PROJECT_DELIVERY_METHODS = [
     ("", "---"),
-    ("design-build", "Projektuj i buduj"),
-    ("build", "Buduj"),
+    ("design-build", _("Design–build")),
+    ("build", _("Build")),
 ]
 
 
 COMMENTS_FILTER = [
     ("", "---"),
-    ("companies", "Firmy"),
-    ("projects", "Projekty"),
+    ("companies", _("Companies")),
+    ("projects", _("Projects")),
 ]

@@ -72,8 +72,10 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         # Recreate the search form to display the search criteria
         form = TagSearchForm(**search_query)
@@ -258,9 +260,11 @@ class TagView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -277,6 +281,7 @@ class TagView:
 
     @view_config(route_name="tag_export_companies", permission="view")
     def export_companies(self):
+        _ = self.request.translate
         tag = self.request.context.tag
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
@@ -312,8 +317,8 @@ class TagView:
             stmt = stmt.filter(Company.color == _filter)
 
         companies = self.request.dbsession.execute(stmt).scalars()
-        response = export_companies_to_xlsx(companies)
-        log.info(f"Użytkownik {self.request.identity.name} eksportował dane firm")
+        response = export_companies_to_xlsx(self.request, companies)
+        log.info(_("The user %s exported company data") % self.request.identity.name)
         return response
 
     @view_config(
@@ -395,9 +400,11 @@ class TagView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -414,6 +421,7 @@ class TagView:
 
     @view_config(route_name="tag_export_projects", permission="view")
     def export_projects(self):
+        _ = self.request.translate
         tag = self.request.context.tag
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
@@ -449,8 +457,8 @@ class TagView:
             stmt = stmt.filter(Project.color == _filter)
 
         projects = self.request.dbsession.execute(stmt).scalars()
-        response = export_projects_to_xlsx(projects)
-        log.info(f"Użytkownik {self.request.identity.name} eksportował dane projektów")
+        response = export_projects_to_xlsx(self.request, projects)
+        log.info(_("The user %s exported project data") % self.request.identity.name)
         return response
 
     @view_config(
@@ -464,39 +472,42 @@ class TagView:
 
     @view_config(route_name="tag_add", renderer="tag_form.mako", permission="edit")
     def add(self):
+        _ = self.request.translate
         form = TagForm(self.request.POST, request=self.request)
 
         if self.request.method == "POST" and form.validate():
             tag = Tag(form.name.data)
             tag.created_by = self.request.identity
             self.request.dbsession.add(tag)
-            self.request.session.flash("success:Dodano do bazy danych")
-            log.info(f"Użytkownik {self.request.identity.name} dodał tag")
+            self.request.session.flash(_("success:Added to the database"))
+            log.info(_("The user %s has added a tag") % self.request.identity.name)
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
 
-        return {"heading": "Dodaj tag", "form": form}
+        return {"heading": _("Add tag"), "form": form}
 
     @view_config(route_name="tag_edit", renderer="tag_form.mako", permission="edit")
     def edit(self):
+        _ = self.request.translate
         tag = self.request.context.tag
         form = TagForm(self.request.POST, tag, request=self.request)
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(tag)
             tag.updated_by = self.request.identity
-            self.request.session.flash("success:Zmiany zostały zapisane")
-            log.info(f"Użytkownik {self.request.identity.name} zmienił nazwę tagu")
+            self.request.session.flash(_("success:Changes have been saved"))
+            log.info(_("The user %s changed the name of the tag") % self.request.identity.name)
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Edytuj tag", "form": form}
+        return {"heading": _("Edit tag"), "form": form}
 
     @view_config(route_name="tag_delete", request_method="POST", permission="edit")
     def delete(self):
+        _ = self.request.translate
         tag = self.request.context.tag
         self.request.dbsession.delete(tag)
-        self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął tag")
+        self.request.session.flash(_("success:Removed from the database"))
+        log.info(_("The user %s removed the tag") % self.request.identity.name)
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -510,9 +521,10 @@ class TagView:
         renderer="string",
     )
     def tag_del_row(self):
+        _ = self.request.translate
         tag = self.request.context.tag
         self.request.dbsession.delete(tag)
-        log.info(f"Użytkownik {self.request.identity.name} usunął tag")
+        log.info(_("The user %s removed the tag") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}
@@ -555,6 +567,7 @@ class TagView:
         permission="view",
     )
     def search(self):
+        _ = self.request.translate
         form = TagSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -562,4 +575,4 @@ class TagView:
                     "tag_all", _query={"name": form.name.data}
                 )
             )
-        return {"heading": "Znajdź tag", "form": form}
+        return {"heading": _("Find the tag"), "form": form}

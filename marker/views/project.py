@@ -169,9 +169,11 @@ class ProjectView:
             },
         )
 
-        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         # Recreate the search form to display the search criteria
         form = ProjectSearchForm(**search_query)
@@ -504,7 +506,7 @@ class ProjectView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -521,6 +523,7 @@ class ProjectView:
         route_name="project_add", renderer="project_form.mako", permission="edit"
     )
     def add(self):
+        _ = self.request.translate
         form = ProjectForm(self.request.POST, request=self.request)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
@@ -553,19 +556,20 @@ class ProjectView:
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
-            self.request.session.flash("success:Dodano do bazy danych")
-            self.request.session.flash("info:Dodaj tagi i kontakty")
-            log.info(f"Użytkownik {self.request.identity.name} dodał projekt")
+            self.request.session.flash(_("success:Added to the database"))
+            self.request.session.flash(_("info:Add tags and contacts"))
+            log.info(_("The user %s has added a project") % self.request.identity.name)
             next_url = self.request.route_url(
                 "project_view", project_id=project.id, slug=project.slug
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Dodaj projekt", "form": form}
+        return {"heading": _("Add a project"), "form": form}
 
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"
     )
     def edit(self):
+        _ = self.request.translate
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project, request=self.request)
         regions = dict(REGIONS)
@@ -585,15 +589,15 @@ class ProjectView:
                 project.longitude = loc["lon"]
 
             project.updated_by = self.request.identity
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            self.request.session.flash(_("success:Changes have been saved"))
             next_url = self.request.route_url(
                 "project_view",
                 project_id=project.id,
                 slug=project.slug,
             )
-            log.info(f"Użytkownik {self.request.identity.name} zmienił dane projektu")
+            log.info(_("The user %s changed the project details") % self.request.identity.name)
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Edytuj dane projektu", "form": form}
+        return {"heading": _("Edit project details"), "form": form}
 
     @view_config(
         route_name="project_delete",
@@ -601,10 +605,11 @@ class ProjectView:
         permission="edit",
     )
     def delete(self):
+        _ = self.request.translate
         project = self.request.context.project
         self.request.dbsession.delete(project)
-        self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął projekt")
+        self.request.session.flash(_("success:Removed from the database"))
+        log.info(_("The user %s deleted the project") % self.request.identity.name)
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -618,9 +623,10 @@ class ProjectView:
         renderer="string",
     )
     def del_row(self):
+        _ = self.request.translate
         project = self.request.context.project
         self.request.dbsession.delete(project)
-        log.info(f"Użytkownik {self.request.identity.name} usunął projekt")
+        log.info(_("The user %s deleted the project") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "projectEvent"}
@@ -632,6 +638,7 @@ class ProjectView:
         permission="view",
     )
     def search(self):
+        _ = self.request.translate
         form = ProjectSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -652,7 +659,7 @@ class ProjectView:
                     },
                 )
             )
-        return {"heading": "Znajdź projekt", "form": form}
+        return {"heading": _("Find a project"), "form": form}
 
     @view_config(
         route_name="project_watch",
@@ -712,6 +719,7 @@ class ProjectView:
         permission="edit",
     )
     def add_company(self):
+        _ = self.request.translate
         project = self.request.context.project
         name = self.request.POST.get("name")
         stage = self.request.POST.get("stage")
@@ -734,9 +742,7 @@ class ProjectView:
                     a = CompaniesProjects(stage=stage, role=role)
                     a.company = company
                     project.companies.append(a)
-                    log.info(
-                        f"Użytkownik {self.request.identity.name} dodał firmę do projektu"
-                    )
+                    log.info(_("The user %s added the company to the projekt") % self.request.identity.name)
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
@@ -781,6 +787,7 @@ class ProjectView:
         permission="edit",
     )
     def add_tag(self):
+        _ = self.request.translate
         project = self.request.context.project
         name = self.request.POST.get("name")
         new_tag = None
@@ -794,9 +801,7 @@ class ProjectView:
             if tag not in project.tags:
                 project.tags.append(tag)
                 new_tag = tag
-                log.info(
-                    f"Użytkownik {self.request.identity.name} dodał tag do projektu"
-                )
+                log.info(_("The user %s has added a tag to the project") % self.request.identity.name)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -810,6 +815,7 @@ class ProjectView:
         permission="edit",
     )
     def add_contact(self):
+        _ = self.request.translate
         project = self.request.context.project
         contact = None
         name = self.request.POST.get("name")
@@ -821,9 +827,7 @@ class ProjectView:
             contact.created_by = self.request.identity
             if contact not in project.contacts:
                 project.contacts.append(contact)
-                log.info(
-                    f"Użytkownik {self.request.identity.name} dodał kontakt do projektu"
-                )
+                log.info(_("The user %s has added a contact to the project") % self.request.identity.name)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -837,23 +841,26 @@ class ProjectView:
         renderer="string",
     )
     def unlink_tag(self):
+        _ = self.request.translate
         project_id = int(self.request.matchdict["project_id"])
         tag_id = int(self.request.matchdict["tag_id"])
 
         project = self.request.dbsession.execute(
             select(Project).filter_by(id=project_id)
         ).scalar_one_or_none()
+
         if not project:
             raise HTTPNotFound
 
         tag = self.request.dbsession.execute(
             select(Tag).filter_by(id=tag_id)
         ).scalar_one_or_none()
+
         if not tag:
             raise HTTPNotFound
 
         project.tags.remove(tag)
-        log.info(f"Użytkownik {self.request.identity.name} odpiął tag od projektu")
+        log.info(_("The user %s unlinked the tag from the project") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}

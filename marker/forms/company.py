@@ -12,6 +12,7 @@ from .filters import (
     strip_filter,
 )
 from .select import COLORS, COUNTRIES, COURTS, REGIONS
+from .ts import TranslationString as _
 
 
 def _check_sum_9(digits):
@@ -38,48 +39,38 @@ def _check_sum_14(digits):
 
 class CompanyForm(Form):
     name = StringField(
-        "Nazwa",
+        _("Name"),
         validators=[
-            InputRequired("Podaj nazwę"),
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków"),
+            InputRequired(),
+            Length(max=100),
         ],
         filters=[strip_filter],
     )
     street = StringField(
-        "Ulica",
-        validators=[
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("Street"),
+        validators=[Length(max=100)],
         filters=[strip_filter],
     )
     postcode = StringField(
-        "Kod pocztowy",
-        validators=[
-            Length(max=10, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("Post code"),
+        validators=[Length(max=10)],
         filters=[strip_filter, dash_filter, remove_multiple_spaces],
     )
     city = StringField(
-        "Miasto",
-        validators=[
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("City"),
+        validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    region = SelectField("Region", choices=REGIONS)
-    country = SelectField("Kraj", choices=COUNTRIES)
+    region = SelectField(_("Region"), choices=REGIONS)
+    country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(
-        "Link",
-        validators=[
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("Link"),
+        validators=[Length(max=100)],
         filters=[strip_filter],
     )
     NIP = StringField(
-        "NIP",
-        validators=[
-            Length(max=20, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("NIP"),
+        validators=[Length(max=20)],
         filters=[
             strip_filter,
             dash_filter,
@@ -88,10 +79,8 @@ class CompanyForm(Form):
         ],
     )
     REGON = StringField(
-        "REGON",
-        validators=[
-            Length(max=20, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("REGON"),
+        validators=[Length(max=20)],
         filters=[
             strip_filter,
             dash_filter,
@@ -100,10 +89,8 @@ class CompanyForm(Form):
         ],
     )
     KRS = StringField(
-        "KRS",
-        validators=[
-            Length(max=20, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("KRS"),
+        validators=[Length(max=20)],
         filters=[
             strip_filter,
             dash_filter,
@@ -111,9 +98,9 @@ class CompanyForm(Form):
             remove_dashes_and_spaces,
         ],
     )
-    court = SelectField("Sąd", choices=COURTS)
-    color = SelectField("Kolor", choices=COLORS, default="default")
-    submit = SubmitField("Zapisz")
+    court = SelectField(_("Court"), choices=COURTS)
+    color = SelectField(_("Color"), choices=COLORS, default="default")
+    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -132,27 +119,29 @@ class CompanyForm(Form):
             select(Company).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists:
-            raise ValidationError("Ta nazwa jest już zajęta")
+            raise ValidationError(_("This name is already taken"))
 
     def validate_NIP(self, field):
         if not field.data:
             return
 
         if len(field.data) != 10 or not field.data.isdigit():
-            raise ValidationError("Numer NIP powinien się składać z 10 cyfr")
+            raise ValidationError(_("The NIP number should consist of 10 digits"))
 
         digits = list(map(int, field.data))
         weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
         check_sum = sum(map(mul, digits[0:9], weights)) % 11
         if check_sum != digits[9]:
-            raise ValidationError("Nieprawidłowy numer NIP")
+            raise ValidationError(_("Invalid VAT number"))
 
     def validate_REGON(self, field):
         if not field.data:
             return
 
         if len(field.data) != 9 and len(field.data) != 14 or not field.data.isdigit():
-            raise ValidationError("Numer REGON powinien się składać z 9 lub 14 cyfr")
+            raise ValidationError(
+                _("The REGON number should consist of 9 or 14 digits")
+            )
         digits = list(map(int, field.data))
 
         if len(field.data) == 9:
@@ -161,27 +150,27 @@ class CompanyForm(Form):
             valid = _check_sum_9(digits) and _check_sum_14(digits)
 
         if not valid:
-            raise ValidationError("Nieprawidłowy numer REGON")
+            raise ValidationError(_("Invalid REGON number"))
 
     def validate_KRS(self, field):
         if not field.data:
             return
 
         if len(field.data) != 10 or not field.data.isdigit():
-            raise ValidationError("Numer KRS powinien się składać z 10 cyfr")
+            raise ValidationError(_("The KRS number should consist of 10 digits"))
 
 
 class CompanySearchForm(Form):
-    name = StringField("Nazwa", filters=[strip_filter])
-    street = StringField("Ulica", filters=[strip_filter])
-    postcode = StringField("Kod pocztowy", filters=[strip_filter])
-    city = StringField("Miasto", filters=[strip_filter])
-    region = SelectField("Region", choices=REGIONS)
-    country = SelectField("Kraj", choices=COUNTRIES)
-    link = StringField("Link", filters=[strip_filter])
-    NIP = StringField("NIP", filters=[strip_filter])
-    REGON = StringField("REGON", filters=[strip_filter])
-    KRS = StringField("KRS", filters=[strip_filter])
-    court = SelectField("Sąd", choices=COURTS)
-    color = SelectField("Kolor", choices=COLORS)
-    submit = SubmitField("Szukaj")
+    name = StringField(_("Name"), filters=[strip_filter])
+    street = StringField(_("Street"), filters=[strip_filter])
+    postcode = StringField(_("Post code"), filters=[strip_filter])
+    city = StringField(_("City"), filters=[strip_filter])
+    region = SelectField(_("Region"), choices=REGIONS)
+    country = SelectField(_("Country"), choices=COUNTRIES)
+    link = StringField(_("Link"), filters=[strip_filter])
+    NIP = StringField(_("NIP"), filters=[strip_filter])
+    REGON = StringField(_("REGON"), filters=[strip_filter])
+    KRS = StringField(_("KRS"), filters=[strip_filter])
+    court = SelectField(_("Court"), choices=COURTS)
+    color = SelectField(_("Color"), choices=COLORS)
+    submit = SubmitField(_("Search"))

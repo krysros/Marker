@@ -13,43 +13,36 @@ from zxcvbn import zxcvbn
 from ..models import User
 from .filters import strip_filter
 from .select import USER_ROLES
+from .ts import TranslationString as _
 
 
 class UserForm(Form):
     name = StringField(
-        "Nazwa",
+        _("Name"),
         validators=[
-            InputRequired("Podaj nazwę użytkownika"),
-            Length(
-                min=3,
-                max=30,
-                message="Długość musi zawierać się w przedziale %(min)d-%(max)d",
-            ),
+            InputRequired(),
+            Length(min=3, max=30),
         ],
         filters=[strip_filter],
     )
     fullname = StringField(
-        "Imię i nazwisko",
+        _("First name and last name"),
         validators=[
-            InputRequired("Podaj imię i nazwisko"),
-            Length(
-                min=3,
-                max=50,
-                message="Długość musi zawierać się w przedziale %(min)d-%(max)d",
-            ),
+            InputRequired(),
+            Length(min=3, max=50),
         ],
         filters=[strip_filter],
     )
-    email = EmailField("Email", validators=[InputRequired()], filters=[strip_filter])
-    role = SelectField("Rola", validators=[InputRequired()], choices=USER_ROLES)
+    email = EmailField(_("Email"), validators=[InputRequired()], filters=[strip_filter])
+    role = SelectField(_("Role"), validators=[InputRequired()], choices=USER_ROLES)
     password = PasswordField(
-        "Hasło",
+        _("Password"),
         validators=[
             InputRequired(),
-            Length(min=5, message="Minimalna długość hasła to %(min)d znaków"),
+            Length(min=5),
         ],
     )
-    submit = SubmitField("Zapisz")
+    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,17 +53,17 @@ class UserForm(Form):
             select(User).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists and self.request.identity.name != exists.name:
-            raise ValidationError("Ta nazwa jest już zajęta")
+            raise ValidationError(_("This name is already taken"))
 
     def validate_password(form, field):
         results = zxcvbn(field.data)
         if results["score"] < 3:
-            raise ValidationError("Zbyt proste hasło")
+            raise ValidationError(_("The password is too simple"))
 
 
 class UserSearchForm(Form):
-    name = StringField("Nazwa", filters=[strip_filter])
-    fullname = StringField("Imię i nazwisko", filters=[strip_filter])
-    email = StringField("Email", filters=[strip_filter])
-    role = SelectField("Rola", choices=USER_ROLES)
-    submit = SubmitField("Szukaj")
+    name = StringField(_("Name"), filters=[strip_filter])
+    fullname = StringField(_("First name and last name"), filters=[strip_filter])
+    email = StringField(_("Email"), filters=[strip_filter])
+    role = SelectField(_("Role"), choices=USER_ROLES)
+    submit = SubmitField(_("Search"))

@@ -4,22 +4,19 @@ from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Tag
 from .filters import strip_filter
+from .ts import TranslationString as _
 
 
 class TagForm(Form):
     name = StringField(
-        "Nazwa",
+        _("Name"),
         validators=[
-            InputRequired("Podaj tag"),
-            Length(
-                min=3,
-                max=50,
-                message="Długość musi zawierać się w przedziale %(min)d-%(max)d",
-            ),
+            InputRequired(),
+            Length(min=3, max=50),
         ],
         filters=[strip_filter],
     )
-    submit = SubmitField("Zapisz")
+    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,9 +35,9 @@ class TagForm(Form):
             select(Tag).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists:
-            raise ValidationError("Ta nazwa jest już zajęta")
+            raise ValidationError(_("This name is already taken"))
 
 
 class TagSearchForm(Form):
-    name = StringField("Nazwa", filters=[strip_filter])
-    submit = SubmitField("Szukaj")
+    name = StringField(_("Name"), filters=[strip_filter])
+    submit = SubmitField(_("Search"))

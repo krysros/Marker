@@ -83,8 +83,10 @@ class ContactView:
             },
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         # Recreate the search form to display the search criteria
         form = ContactSearchForm(**search_query)
@@ -120,25 +122,27 @@ class ContactView:
         route_name="contact_edit", renderer="contact_form.mako", permission="edit"
     )
     def edit(self):
+        _ = self.request.translate
         contact = self.request.context.contact
         form = ContactForm(self.request.POST, contact)
         if self.request.method == "POST" and form.validate():
             form.populate_obj(contact)
             contact.updated_by = self.request.identity
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            self.request.session.flash(_("success:Changes have been saved"))
             next_url = self.request.route_url(
                 "contact_view", contact_id=contact.id, slug=contact.slug
             )
-            log.info(f"Użytkownik {self.request.identity.name} zmienił dane kontaktowe")
+            log.info(_("User %s changed contact details") % self.request.identity.name)
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Edytuj kontakt", "form": form}
+        return {"heading": _("Edit contact"), "form": form}
 
     @view_config(route_name="contact_delete", request_method="POST", permission="edit")
     def delete(self):
+        _ = self.request.translate
         contact = self.request.context.contact
         self.request.dbsession.delete(contact)
-        self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął kontakt")
+        self.request.session.flash(_("success:Removed from the database"))
+        log.info(_("The user %s deleted the contact") % self.request.identity.name)
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -152,9 +156,10 @@ class ContactView:
         renderer="string",
     )
     def del_row(self):
+        _ = self.request.translate
         contact = self.request.context.contact
         self.request.dbsession.delete(contact)
-        log.info(f"Użytkownik {self.request.identity.name} usunął kontakt")
+        log.info(_("The user %s deleted the company") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "contactEvent"}
@@ -166,6 +171,7 @@ class ContactView:
         permission="view",
     )
     def search(self):
+        _ = self.request.translate
         form = ContactSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -179,7 +185,7 @@ class ContactView:
                     },
                 )
             )
-        return {"heading": "Znajdź kontakt", "form": form}
+        return {"heading": _("Find a contact"), "form": form}
 
     @view_config(route_name="contact_vcard", permission="view")
     def vcard(self):

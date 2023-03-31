@@ -4,53 +4,48 @@ from wtforms.validators import InputRequired, Length, Optional, ValidationError
 
 from ..models import Project
 from .filters import dash_filter, remove_multiple_spaces, strip_filter
-from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES, REGIONS
+from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, REGIONS, STAGES
+from .ts import TranslationString as _
 
 
 class ProjectForm(Form):
     name = StringField(
-        "Nazwa",
+        _("Name"),
         validators=[
-            InputRequired("Podaj nazwę"),
-            Length(max=200, message="Długość nie może przekraczać %(max)d znaków"),
+            InputRequired(),
+            Length(max=200),
         ],
         filters=[strip_filter],
     )
     street = StringField(
-        "Ulica",
-        validators=[
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("Street"),
+        validators=[Length(max=100)],
         filters=[strip_filter],
     )
     postcode = StringField(
-        "Kod pocztowy",
-        validators=[
-            Length(max=10, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("Post code"),
+        validators=[Length(max=10)],
         filters=[strip_filter, dash_filter, remove_multiple_spaces],
     )
     city = StringField(
-        "Miasto",
-        validators=[
-            Length(max=100, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("City"),
+        validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    region = SelectField("Region", choices=REGIONS)
-    country = SelectField("Kraj", choices=COUNTRIES)
+    region = SelectField(_("Region"), choices=REGIONS)
+    country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(
-        "Link",
-        validators=[
-            Length(max=2000, message="Długość nie może przekraczać %(max)d znaków")
-        ],
+        _("Link"),
+        validators=[Length(max=2000)],
         filters=[strip_filter],
     )
-    color = SelectField("Kolor", choices=COLORS, default="default")
-    deadline = DateField("Termin", validators=[Optional()])
-    stage = SelectField("Etap", choices=STAGES)
-    delivery_method = SelectField("Sposób realizacji", choices=PROJECT_DELIVERY_METHODS)
-    submit = SubmitField("Zapisz")
+    color = SelectField(_("Color"), choices=COLORS, default="default")
+    deadline = DateField(_("Deadline"), validators=[Optional()])
+    stage = SelectField(_("Stage"), choices=STAGES)
+    delivery_method = SelectField(
+        _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
+    )
+    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,19 +64,21 @@ class ProjectForm(Form):
             select(Project).filter_by(name=field.data)
         ).scalar_one_or_none()
         if exists:
-            raise ValidationError("Ta nazwa jest już zajęta")
+            raise ValidationError(_("This name is already taken"))
 
 
 class ProjectSearchForm(Form):
-    name = StringField("Nazwa", filters=[strip_filter])
-    street = StringField("Ulica", filters=[strip_filter])
-    postcode = StringField("Kod pocztowy", filters=[strip_filter])
-    city = StringField("Miasto", filters=[strip_filter])
-    region = SelectField("Region", choices=REGIONS)
-    country = SelectField("Kraj", choices=COUNTRIES)
-    link = StringField("Link", filters=[strip_filter])
-    deadline = DateField("Termin", validators=[Optional()])
-    stage = SelectField("Etap", choices=STAGES)
-    delivery_method = SelectField("Sposób realizacji", choices=PROJECT_DELIVERY_METHODS)
-    color = SelectField("Kolor", choices=COLORS)
-    submit = SubmitField("Szukaj")
+    name = StringField(_("Name"), filters=[strip_filter])
+    street = StringField(_("Street"), filters=[strip_filter])
+    postcode = StringField(_("Post code"), filters=[strip_filter])
+    city = StringField(_("City"), filters=[strip_filter])
+    region = SelectField(_("Region"), choices=REGIONS)
+    country = SelectField(_("Country"), choices=COUNTRIES)
+    link = StringField(_("Link"), filters=[strip_filter])
+    deadline = DateField(_("Deadline"), validators=[Optional()])
+    stage = SelectField(_("Stage"), choices=STAGES)
+    delivery_method = SelectField(
+        _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
+    )
+    color = SelectField(_("Color"), choices=COLORS)
+    submit = SubmitField(_("Search"))

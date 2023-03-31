@@ -73,8 +73,12 @@ class CommentView:
             },
         )
 
-        dd_filter = Dropdown(comments_filter, Dd.FILTER, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(
+            self.request, comments_filter, Dd.FILTER, _filter, _sort, _order
+        )
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         # Recreate the search form to display the search criteria
         form = CommentSearchForm(**search_query)
@@ -106,6 +110,7 @@ class CommentView:
         permission="edit",
     )
     def company_add_comment(self):
+        _ = self.request.translate
         company = self.request.context.company
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -113,7 +118,7 @@ class CommentView:
             comment = Comment(comment=comment_text)
             comment.created_by = self.request.identity
             company.comments.append(comment)
-            log.info(f"Użytkownik {self.request.identity.name} dodał komentarz")
+            log.info(_("The user %s added a comment") % self.request.identity.name)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -127,6 +132,7 @@ class CommentView:
         permission="edit",
     )
     def project_add_comment(self):
+        _ = self.request.translate
         project = self.request.context.project
         comment = None
         comment_text = self.request.POST.get("comment")
@@ -134,7 +140,7 @@ class CommentView:
             comment = Comment(comment=comment_text)
             comment.created_by = self.request.identity
             project.comments.append(comment)
-            log.info(f"Użytkownik {self.request.identity.name} dodał komentarz")
+            log.info(_("The user %s added a comment") % self.request.identity.name)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -148,9 +154,10 @@ class CommentView:
         renderer="string",
     )
     def delete(self):
+        _ = self.request.translate
         comment = self.request.context.comment
         self.request.dbsession.delete(comment)
-        log.info(f"Użytkownik {self.request.identity.name} usunął komentarz")
+        log.info(_("The user %s deleted the comment") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "commentEvent"}
@@ -162,6 +169,7 @@ class CommentView:
         permission="view",
     )
     def search(self):
+        _ = self.request.translate
         form = CommentSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -169,4 +177,4 @@ class CommentView:
                     "comment_all", _query={"comment": form.comment.data}
                 )
             )
-        return {"heading": "Znajdź komentarz", "form": form}
+        return {"heading": _("Find a comment"), "form": form}

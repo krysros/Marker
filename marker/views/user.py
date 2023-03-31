@@ -110,9 +110,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(roles, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, roles, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         # Recreate the search form to display the search criteria
         form = UserSearchForm(**search_query)
@@ -217,8 +219,10 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -294,9 +298,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -378,9 +384,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -439,8 +447,10 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -454,8 +464,8 @@ class UserView:
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
     def add(self):
+        _ = self.request.translate
         form = UserForm(self.request.POST, request=self.request)
-
         if self.request.method == "POST" and form.validate():
             user = User(
                 name=form.name.data,
@@ -465,15 +475,15 @@ class UserView:
                 password=form.password.data,
             )
             self.request.dbsession.add(user)
-            self.request.session.flash("success:Dodano do bazy danych")
-            log.info(f"Użytkownik {self.request.identity.name} dodał użytkownika")
+            self.request.session.flash(_("success:Added to the database"))
+            log.info(_("The user %s has added a user") % self.request.identity.name)
             next_url = self.request.route_url("user_all")
             return HTTPSeeOther(location=next_url)
-
-        return {"heading": "Dodaj użytkownika", "form": form}
+        return {"heading": _("Add user"), "form": form}
 
     @view_config(route_name="user_edit", renderer="user_form.mako", permission="admin")
     def edit(self):
+        _ = self.request.translate
         user = self.request.context.user
         form = UserForm(
             self.request.POST,
@@ -483,20 +493,19 @@ class UserView:
         )
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)
-            self.request.session.flash("success:Zmiany zostały zapisane")
-            log.info(
-                f"Użytkownik {self.request.identity.name} zmienił dane użytkownika"
-            )
+            self.request.session.flash(_("success:Changes have been saved"))
+            log.info(_("The user %s has changed the user's data") % self.request.identity.name)
             next_url = self.request.route_url("user_all")
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Edytuj dane użytkownika", "form": form}
+        return {"heading": _("Edit user details"), "form": form}
 
     @view_config(route_name="user_delete", request_method="POST", permission="admin")
     def delete(self):
+        _ = self.request.translate
         user = self.request.context.user
         self.request.dbsession.delete(user)
-        self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął użytkownika")
+        self.request.session.flash(_("success:Removed from the database"))
+        log.info(_("The user %s deleted the user") % self.request.identity.name)
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -509,6 +518,7 @@ class UserView:
         permission="view",
     )
     def search(self):
+        _ = self.request.translate
         form = UserSearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -522,7 +532,7 @@ class UserView:
                     },
                 )
             )
-        return {"heading": "Znajdź użytkownika", "form": form}
+        return {"heading": _("Find a user"), "form": form}
 
     @view_config(
         route_name="user_selected_companies",
@@ -582,9 +592,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -604,6 +616,7 @@ class UserView:
         permission="view",
     )
     def export_selected_companies(self):
+        _ = self.request.translate
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
@@ -620,10 +633,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
         companies = self.request.dbsession.execute(stmt).scalars()
-        response = export_companies_to_xlsx(companies)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych firm"
-        )
+        response = export_companies_to_xlsx(self.request, companies)
+        log.info(_("The user %s exported the data of selected companies") % self.request.identity.name)
         return response
 
     @view_config(
@@ -632,9 +643,10 @@ class UserView:
         permission="view",
     )
     def clear_selected_companies(self):
+        _ = self.request.translate
         user = self.request.context.user
         user.selected_companies = []
-        log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone firmy")
+        log.info(_("The user %s cleared the selected companies") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_companies", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -703,9 +715,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -725,6 +739,7 @@ class UserView:
         permission="view",
     )
     def export_selected_projects(self):
+        _ = self.request.translate
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
@@ -741,10 +756,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Project, sort).desc())
 
         projects = self.request.dbsession.execute(stmt).scalars()
-        response = export_projects_to_xlsx(projects)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych projektów"
-        )
+        response = export_projects_to_xlsx(self.request, projects)
+        log.info(_("The user %s exported the data of selected projects") % self.request.identity.name)
         return response
 
     @view_config(
@@ -753,11 +766,10 @@ class UserView:
         permission="view",
     )
     def clear_selected_projects(self):
+        _ = self.request.translate
         user = self.request.context.user
         user.selected_projects = []
-        log.info(
-            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone projekty"
-        )
+        log.info(_("The user %s cleared the selected projects") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_projects", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -815,8 +827,10 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -833,6 +847,7 @@ class UserView:
         permission="view",
     )
     def export_selected_tags(self):
+        _ = self.request.translate
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
@@ -847,10 +862,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Tag, sort).desc())
 
         tags = self.request.dbsession.execute(stmt).scalars()
-        response = export_tags_to_xlsx(tags)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych tagów"
-        )
+        response = export_tags_to_xlsx(self.request, tags)
+        log.info(_("The user %s exported the data of selected tags") % self.request.identity.name)
         return response
 
     @view_config(
@@ -859,9 +872,10 @@ class UserView:
         permission="view",
     )
     def clear_selected_tags(self):
+        _ = self.request.translate
         user = self.request.context.user
         user.selected_tags = []
-        log.info(f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone tagi")
+        log.info(_("The user %s cleared the selected tags") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -921,8 +935,10 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -939,6 +955,7 @@ class UserView:
         permission="view",
     )
     def export_selected_contacts(self):
+        _ = self.request.translate
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
@@ -956,9 +973,7 @@ class UserView:
 
         contacts = self.request.dbsession.execute(stmt).scalars()
         response = export_contacts_to_xlsx(contacts)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane zaznaczonych kontaktów"
-        )
+        log.info(_("The user %s exported the data of selected contacts") % self.request.identity.name)
         return response
 
     @view_config(
@@ -967,11 +982,10 @@ class UserView:
         permission="view",
     )
     def clear_selected_contacts(self):
+        _ = self.request.translate
         user = self.request.context.user
         user.selected_contacts = []
-        log.info(
-            f"Użytkownik {self.request.identity.name} wyczyścił zaznaczone kontakty"
-        )
+        log.info(_("The user %s cleared the selected contacts") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_contacts", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -1035,9 +1049,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -1057,6 +1073,7 @@ class UserView:
         permission="view",
     )
     def export_recommended(self):
+        _ = self.request.translate
         user = self.request.context.user
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
@@ -1071,10 +1088,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
         companies = self.request.dbsession.execute(stmt).scalars()
-        response = export_companies_to_xlsx(companies)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane rekomendowanych firm"
-        )
+        response = export_companies_to_xlsx(self.request, companies)
+        log.info(_("The user %s exported the data of recommended companies") % self.request.identity.name)
         return response
 
     @view_config(
@@ -1083,9 +1098,10 @@ class UserView:
         permission="view",
     )
     def clear_recommended(self):
+        _ = self.request.translate
         user = self.request.context.user
         user.recommended = []
-        log.info(f"Użytkownik {self.request.identity.name} wyczyścił rekomendacje")
+        log.info(_("The user %s cleared recommendations") % self.request.identity.name)
         next_url = self.request.route_url("user_recommended", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -1150,9 +1166,11 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,
@@ -1171,6 +1189,7 @@ class UserView:
         permission="view",
     )
     def export_watched(self):
+        _ = self.request.translate
         user = self.request.context.user
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
@@ -1190,10 +1209,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Project, _sort).desc())
 
         projects = self.request.dbsession.execute(stmt).scalars()
-        response = export_projects_to_xlsx(projects)
-        log.info(
-            f"Użytkownik {self.request.identity.name} eksportował dane obserwowanych projektów"
-        )
+        response = export_projects_to_xlsx(self.request, projects)
+        log.info(_("The user %s exported the data of the observed projects") % self.request.identity.name)
         return response
 
     @view_config(
@@ -1202,11 +1219,10 @@ class UserView:
         permission="view",
     )
     def clear_watched(self):
+        _ = self.request.translate
         user = self.request.context.user
         user.watched = []
-        log.info(
-            f"Użytkownik {self.request.identity.name} wyczyścił obserwowane projekty"
-        )
+        log.info(_("The user %s cleared watched projects") % self.request.identity.name)
         next_url = self.request.route_url("user_watched", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}

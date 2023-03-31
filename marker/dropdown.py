@@ -8,7 +8,8 @@ class Dd(Enum):
 
 
 class Dropdown:
-    def __init__(self, items, typ, _filter=None, _sort=None, _order=None):
+    def __init__(self, request, items, typ, _filter=None, _sort=None, _order=None):
+        self.request = request
         self.items = items
         self.typ = typ
         self._filter = _filter
@@ -17,13 +18,14 @@ class Dropdown:
 
     @property
     def title(self):
+        _ = self.request.translate
         match self.typ:
             case Dd.FILTER:
-                return "Filtruj"
+                return _("Filter")
             case Dd.SORT:
-                return "Sortuj"
+                return _("Sort")
             case Dd.ORDER:
-                return "Kolejność"
+                return _("Order")
 
     @property
     def current_item(self):

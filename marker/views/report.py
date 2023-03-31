@@ -26,6 +26,7 @@ class ReportView:
 
     @view_config(route_name="report", renderer="report_form.mako", permission="view")
     def view(self):
+        _ = self.request.translate
         form = ReportForm(self.request.POST)
 
         if self.request.method == "POST" and form.validate():
@@ -35,7 +36,7 @@ class ReportView:
 
         return {
             "url": self.request.route_url("report"),
-            "heading": "Raport",
+            "heading": _("Report"),
             "form": form,
             "counter": len(REPORTS),
         }

@@ -15,7 +15,7 @@ def setup_models(dbsession):
     model = models.user.User(
         name="admin",
         password="admin",
-        fullname="Jan Kowalski",
+        fullname="John Doe",
         email="admin@example.com",
         role="admin",
     )

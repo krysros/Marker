@@ -135,8 +135,10 @@ class CompanyView:
             .all()
         )
 
-        dd_sort = Dropdown(sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(order_criteria, Dd.ORDER, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+        )
 
         search_query = {
             "name": name,
@@ -444,6 +446,7 @@ class CompanyView:
         permission="edit",
     )
     def add_tag(self):
+        _ = self.request.translate
         company = self.request.context.company
         name = self.request.POST.get("name")
         new_tag = None
@@ -457,7 +460,7 @@ class CompanyView:
             if tag not in company.tags:
                 company.tags.append(tag)
                 new_tag = tag
-                log.info(f"Użytkownik {self.request.identity.name} dodał tag do firmy")
+                log.info(_("The user %s has added a tag to the company") % self.request.identity.name)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -471,6 +474,7 @@ class CompanyView:
         permission="edit",
     )
     def add_contact(self):
+        _ = self.request.translate
         company = self.request.context.company
         contact = None
         name = self.request.POST.get("name")
@@ -482,9 +486,7 @@ class CompanyView:
             contact.created_by = self.request.identity
             if contact not in company.contacts:
                 company.contacts.append(contact)
-                log.info(
-                    f"Użytkownik {self.request.identity.name} dodał kontakt do firmy"
-                )
+                log.info(_("The user %s has added a contact to the company") % self.request.identity.name)
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -589,7 +591,7 @@ class CompanyView:
             },
         )
 
-        dd_filter = Dropdown(colors, Dd.FILTER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
 
         return {
             "search_query": search_query,
@@ -606,6 +608,7 @@ class CompanyView:
         route_name="company_add", renderer="company_form.mako", permission="edit"
     )
     def add(self):
+        _ = self.request.translate
         form = CompanyForm(self.request.POST, request=self.request)
         regions = dict(REGIONS)
         countries = dict(COUNTRIES)
@@ -639,19 +642,20 @@ class CompanyView:
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
-            self.request.session.flash("success:Dodano do bazy danych")
-            self.request.session.flash("info:Dodaj tagi i kontakty")
-            log.info(f"Użytkownik {self.request.identity.name} dodał firmę")
+            self.request.session.flash(_("success:Added to the database"))
+            self.request.session.flash(_("info:Add tags and contacts"))
+            log.info(_("The user %s has added a company") % self.request.identity.name)
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Dodaj firmę", "form": form}
+        return {"heading": _("Add a company"), "form": form}
 
     @view_config(
         route_name="company_edit", renderer="company_form.mako", permission="edit"
     )
     def edit(self):
+        _ = self.request.translate
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, request=self.request)
         regions = dict(REGIONS)
@@ -671,20 +675,21 @@ class CompanyView:
                 company.longitude = loc["lon"]
 
             company.updated_by = self.request.identity
-            self.request.session.flash("success:Zmiany zostały zapisane")
+            self.request.session.flash(_("success:Changes have been saved"))
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
-            log.info(f"Użytkownik {self.request.identity.name} zmienił dane firmy")
+            log.info(_("The user %s changed the name of the tag") % self.request.identity.name)
             return HTTPSeeOther(location=next_url)
-        return {"heading": "Edytuj dane firmy", "form": form}
+        return {"heading": _("Edit company details"), "form": form}
 
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
+        _ = self.request.translate
         company = self.request.context.company
         self.request.dbsession.delete(company)
-        self.request.session.flash("success:Usunięto z bazy danych")
-        log.info(f"Użytkownik {self.request.identity.name} usunął firmę")
+        self.request.session.flash(_("success:Removed from the database"))
+        log.info(_("The user %s deleted the company") % self.request.identity.name)
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -698,9 +703,10 @@ class CompanyView:
         renderer="string",
     )
     def del_row(self):
+        _ = self.request.translate
         company = self.request.context.company
         self.request.dbsession.delete(company)
-        log.info(f"Użytkownik {self.request.identity.name} usunął firmę")
+        log.info(_("The user %s deleted the company") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "companyEvent"}
@@ -762,6 +768,7 @@ class CompanyView:
         permission="view",
     )
     def search(self):
+        _ = self.request.translate
         form = CompanySearchForm(self.request.POST)
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -783,7 +790,7 @@ class CompanyView:
                     },
                 )
             )
-        return {"heading": "Znajdź firmę", "form": form}
+        return {"heading": _("Find a company"), "form": form}
 
     @view_config(
         route_name="unlink_tag_company",
@@ -792,6 +799,7 @@ class CompanyView:
         renderer="string",
     )
     def unlink_tag(self):
+        _ = self.request.translate
         company_id = int(self.request.matchdict["company_id"])
         tag_id = int(self.request.matchdict["tag_id"])
 
@@ -808,7 +816,7 @@ class CompanyView:
             raise HTTPNotFound
 
         company.tags.remove(tag)
-        log.info(f"Użytkownik {self.request.identity.name} odpiął tag od firmy")
+        log.info(_("The user %s unlinked the tag from the company") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}
@@ -821,6 +829,7 @@ class CompanyView:
         permission="edit",
     )
     def add_project(self):
+        _ = self.request.translate
         company = self.request.context.company
         name = self.request.POST.get("name")
         stage = self.request.POST.get("stage")
@@ -843,9 +852,7 @@ class CompanyView:
                     a = CompaniesProjects(stage=stage, role=role)
                     a.project = project
                     company.projects.append(a)
-                    log.info(
-                        f"Użytkownik {self.request.identity.name} dodał projekt do firmy"
-                    )
+                    log.info(_("The user %s added the project to the company") % self.request.identity.name)
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
@@ -859,18 +866,22 @@ class CompanyView:
         renderer="string",
     )
     def unlink_company_project(self):
+        _ = self.request.translate
+
         company_id = int(self.request.matchdict["company_id"])
         project_id = int(self.request.matchdict["project_id"])
 
         company = self.request.dbsession.execute(
             select(Company).filter_by(id=company_id)
         ).scalar_one_or_none()
+
         if not company:
             raise HTTPNotFound
 
         project = self.request.dbsession.execute(
             select(Project).filter_by(id=project_id)
         ).scalar_one_or_none()
+
         if not project:
             raise HTTPNotFound
 
@@ -881,7 +892,7 @@ class CompanyView:
         ).scalar()
 
         self.request.dbsession.delete(assoc)
-        log.info(f"Użytkownik {self.request.identity.name} odpiął firmę od projektu")
+        log.info(_("The user %s unlinked the company from the project") % self.request.identity.name)
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
