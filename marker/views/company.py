@@ -460,7 +460,10 @@ class CompanyView:
             if tag not in company.tags:
                 company.tags.append(tag)
                 new_tag = tag
-                log.info(_("The user %s has added a tag to the company") % self.request.identity.name)
+                log.info(
+                    _("The user %s has added a tag to the company")
+                    % self.request.identity.name
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -486,7 +489,10 @@ class CompanyView:
             contact.created_by = self.request.identity
             if contact not in company.contacts:
                 company.contacts.append(contact)
-                log.info(_("The user %s has added a contact to the company") % self.request.identity.name)
+                log.info(
+                    _("The user %s has added a contact to the company")
+                    % self.request.identity.name
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -679,7 +685,10 @@ class CompanyView:
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
-            log.info(_("The user %s changed the name of the tag") % self.request.identity.name)
+            log.info(
+                _("The user %s changed the name of the tag")
+                % self.request.identity.name
+            )
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Edit company details"), "form": form}
 
@@ -816,7 +825,10 @@ class CompanyView:
             raise HTTPNotFound
 
         company.tags.remove(tag)
-        log.info(_("The user %s unlinked the tag from the company") % self.request.identity.name)
+        log.info(
+            _("The user %s unlinked the tag from the company")
+            % self.request.identity.name
+        )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}
@@ -852,7 +864,10 @@ class CompanyView:
                     a = CompaniesProjects(stage=stage, role=role)
                     a.project = project
                     company.projects.append(a)
-                    log.info(_("The user %s added the project to the company") % self.request.identity.name)
+                    log.info(
+                        _("The user %s added the project to the company")
+                        % self.request.identity.name
+                    )
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
@@ -892,7 +907,10 @@ class CompanyView:
         ).scalar()
 
         self.request.dbsession.delete(assoc)
-        log.info(_("The user %s unlinked the company from the project") % self.request.identity.name)
+        log.info(
+            _("The user %s unlinked the company from the project")
+            % self.request.identity.name
+        )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}

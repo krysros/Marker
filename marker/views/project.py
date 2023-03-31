@@ -595,7 +595,10 @@ class ProjectView:
                 project_id=project.id,
                 slug=project.slug,
             )
-            log.info(_("The user %s changed the project details") % self.request.identity.name)
+            log.info(
+                _("The user %s changed the project details")
+                % self.request.identity.name
+            )
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Edit project details"), "form": form}
 
@@ -742,7 +745,10 @@ class ProjectView:
                     a = CompaniesProjects(stage=stage, role=role)
                     a.company = company
                     project.companies.append(a)
-                    log.info(_("The user %s added the company to the projekt") % self.request.identity.name)
+                    log.info(
+                        _("The user %s added the company to the projekt")
+                        % self.request.identity.name
+                    )
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
@@ -801,7 +807,10 @@ class ProjectView:
             if tag not in project.tags:
                 project.tags.append(tag)
                 new_tag = tag
-                log.info(_("The user %s has added a tag to the project") % self.request.identity.name)
+                log.info(
+                    _("The user %s has added a tag to the project")
+                    % self.request.identity.name
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -827,7 +836,10 @@ class ProjectView:
             contact.created_by = self.request.identity
             if contact not in project.contacts:
                 project.contacts.append(contact)
-                log.info(_("The user %s has added a contact to the project") % self.request.identity.name)
+                log.info(
+                    _("The user %s has added a contact to the project")
+                    % self.request.identity.name
+                )
             # If you want to use the id of a newly created object
             # in the middle of a transaction, you must call dbsession.flush()
             self.request.dbsession.flush()
@@ -860,7 +872,10 @@ class ProjectView:
             raise HTTPNotFound
 
         project.tags.remove(tag)
-        log.info(_("The user %s unlinked the tag from the project") % self.request.identity.name)
+        log.info(
+            _("The user %s unlinked the tag from the project")
+            % self.request.identity.name
+        )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}

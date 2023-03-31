@@ -494,7 +494,10 @@ class UserView:
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)
             self.request.session.flash(_("success:Changes have been saved"))
-            log.info(_("The user %s has changed the user's data") % self.request.identity.name)
+            log.info(
+                _("The user %s has changed the user's data")
+                % self.request.identity.name
+            )
             next_url = self.request.route_url("user_all")
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Edit user details"), "form": form}
@@ -634,7 +637,10 @@ class UserView:
 
         companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(self.request, companies)
-        log.info(_("The user %s exported the data of selected companies") % self.request.identity.name)
+        log.info(
+            _("The user %s exported the data of selected companies")
+            % self.request.identity.name
+        )
         return response
 
     @view_config(
@@ -646,7 +652,9 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         user.selected_companies = []
-        log.info(_("The user %s cleared the selected companies") % self.request.identity.name)
+        log.info(
+            _("The user %s cleared the selected companies") % self.request.identity.name
+        )
         next_url = self.request.route_url("user_selected_companies", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -757,7 +765,10 @@ class UserView:
 
         projects = self.request.dbsession.execute(stmt).scalars()
         response = export_projects_to_xlsx(self.request, projects)
-        log.info(_("The user %s exported the data of selected projects") % self.request.identity.name)
+        log.info(
+            _("The user %s exported the data of selected projects")
+            % self.request.identity.name
+        )
         return response
 
     @view_config(
@@ -769,7 +780,9 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         user.selected_projects = []
-        log.info(_("The user %s cleared the selected projects") % self.request.identity.name)
+        log.info(
+            _("The user %s cleared the selected projects") % self.request.identity.name
+        )
         next_url = self.request.route_url("user_selected_projects", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -863,7 +876,10 @@ class UserView:
 
         tags = self.request.dbsession.execute(stmt).scalars()
         response = export_tags_to_xlsx(self.request, tags)
-        log.info(_("The user %s exported the data of selected tags") % self.request.identity.name)
+        log.info(
+            _("The user %s exported the data of selected tags")
+            % self.request.identity.name
+        )
         return response
 
     @view_config(
@@ -875,7 +891,9 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         user.selected_tags = []
-        log.info(_("The user %s cleared the selected tags") % self.request.identity.name)
+        log.info(
+            _("The user %s cleared the selected tags") % self.request.identity.name
+        )
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -973,7 +991,10 @@ class UserView:
 
         contacts = self.request.dbsession.execute(stmt).scalars()
         response = export_contacts_to_xlsx(contacts)
-        log.info(_("The user %s exported the data of selected contacts") % self.request.identity.name)
+        log.info(
+            _("The user %s exported the data of selected contacts")
+            % self.request.identity.name
+        )
         return response
 
     @view_config(
@@ -985,7 +1006,9 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         user.selected_contacts = []
-        log.info(_("The user %s cleared the selected contacts") % self.request.identity.name)
+        log.info(
+            _("The user %s cleared the selected contacts") % self.request.identity.name
+        )
         next_url = self.request.route_url("user_selected_contacts", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -1089,7 +1112,10 @@ class UserView:
 
         companies = self.request.dbsession.execute(stmt).scalars()
         response = export_companies_to_xlsx(self.request, companies)
-        log.info(_("The user %s exported the data of recommended companies") % self.request.identity.name)
+        log.info(
+            _("The user %s exported the data of recommended companies")
+            % self.request.identity.name
+        )
         return response
 
     @view_config(
@@ -1210,7 +1236,10 @@ class UserView:
 
         projects = self.request.dbsession.execute(stmt).scalars()
         response = export_projects_to_xlsx(self.request, projects)
-        log.info(_("The user %s exported the data of the observed projects") % self.request.identity.name)
+        log.info(
+            _("The user %s exported the data of the observed projects")
+            % self.request.identity.name
+        )
         return response
 
     @view_config(

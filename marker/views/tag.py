@@ -496,7 +496,10 @@ class TagView:
             form.populate_obj(tag)
             tag.updated_by = self.request.identity
             self.request.session.flash(_("success:Changes have been saved"))
-            log.info(_("The user %s changed the name of the tag") % self.request.identity.name)
+            log.info(
+                _("The user %s changed the name of the tag")
+                % self.request.identity.name
+            )
             next_url = self.request.route_url("tag_all")
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Edit tag"), "form": form}
