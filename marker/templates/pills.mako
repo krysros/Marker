@@ -1,5 +1,7 @@
-<%!
+<%! from marker.forms.ts import TranslationString as _ %>
 
+<%def name="company_pill(company)">
+  <%
   company_pills = [
     {"title": _("Company"), "route_name": "company_view", "event": "projectCompanyEvent"},
     {"title": _("Projects"), "route_name": "company_projects", "event": "projectCompanyEvent"},
@@ -9,36 +11,7 @@
     {"title": _("Recommended"), "route_name": "company_recommended", "event": "recommendEvent"},
     {"title": _("Similar"), "route_name": "company_similar", "event": "tagEvent"},
   ]
-
-  project_pills = [
-    {"title": _("Project"), "route_name": "project_view", "event": "projectCompanyEvent"},
-    {"title": _("Companies"), "route_name": "project_companies", "event": "projectCompanyEvent"},
-    {"title": _("Tags"), "route_name": "project_tags", "event": "tagEvent"},
-    {"title": _("Contacts"), "route_name": "project_contacts", "event": "contactEvent"},
-    {"title": _("Companies"), "route_name": "project_comments", "event": "commentEvent"},
-    {"title": _("Watched"), "route_name": "project_watched", "event": "watchEvent"},
-    {"title": _("Similar"), "route_name": "project_similar", "event": "tagEvent"},
-  ]
-
-  tag_pills = [
-    {"title": _("Tag"), "route_name": "tag_view", "event": "tagEvent"},
-    {"title": _("Companies"), "route_name": "tag_companies", "event": "tagEvent"},
-    {"title": _("Projects"), "route_name": "tag_projects", "event": "tagEvent"},
-  ]
-
-  user_pills = [
-    {"title": _("User"), "route_name": "user_view"},
-    {"title": _("Companies"), "route_name": "user_companies"},
-    {"title": _("Projects"), "route_name": "user_projects"},
-    {"title": _("Tags"), "route_name": "user_tags"},
-    {"title": _("Contacts"), "route_name": "user_contacts"},
-    {"title": _("Comments"), "route_name": "user_comments"},
-  ]
-
-%>
-
-
-<%def name="company_pill(company)">
+  %>
   <ul class="nav nav-pills">
   % for pill in company_pills:
     <li class="nav-item">
@@ -79,6 +52,17 @@
 
 
 <%def name="project_pill(project)">
+  <%
+  project_pills = [
+    {"title": _("Project"), "route_name": "project_view", "event": "projectCompanyEvent"},
+    {"title": _("Companies"), "route_name": "project_companies", "event": "projectCompanyEvent"},
+    {"title": _("Tags"), "route_name": "project_tags", "event": "tagEvent"},
+    {"title": _("Contacts"), "route_name": "project_contacts", "event": "contactEvent"},
+    {"title": _("Companies"), "route_name": "project_comments", "event": "commentEvent"},
+    {"title": _("Watched"), "route_name": "project_watched", "event": "watchEvent"},
+    {"title": _("Similar"), "route_name": "project_similar", "event": "tagEvent"},
+  ]
+  %>
   <ul class="nav nav-pills">
   % for pill in project_pills:
     <li class="nav-item">
@@ -119,6 +103,13 @@
 
 
 <%def name="tag_pill(tag)">
+  <%
+  tag_pills = [
+    {"title": _("Tag"), "route_name": "tag_view", "event": "tagEvent"},
+    {"title": _("Companies"), "route_name": "tag_companies", "event": "tagEvent"},
+    {"title": _("Projects"), "route_name": "tag_projects", "event": "tagEvent"},
+  ]
+  %>
   <ul class="nav nav-pills">
   % for pill in tag_pills:
     <li class="nav-item">
@@ -154,6 +145,16 @@
 
 
 <%def name="user_pill(user)">
+  <%
+  user_pills = [
+    {"title": _("User"), "route_name": "user_view"},
+    {"title": _("Companies"), "route_name": "user_companies"},
+    {"title": _("Projects"), "route_name": "user_projects"},
+    {"title": _("Tags"), "route_name": "user_tags"},
+    {"title": _("Contacts"), "route_name": "user_contacts"},
+    {"title": _("Comments"), "route_name": "user_comments"},
+  ]
+  %>
   <ul class="nav nav-pills">
   % for pill in user_pills:
     <li class="nav-item">
