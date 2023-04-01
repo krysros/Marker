@@ -29,6 +29,7 @@ requires = [
     "Babel",
     "Unidecode",
     "markdown",
+    "pycountry",
 ]
 
 tests_require = [

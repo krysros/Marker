@@ -18,7 +18,7 @@ class Company(Base):
     street: Mapped[Optional[str]] = mapped_column(Unicode(100))
     postcode: Mapped[Optional[str]] = mapped_column(Unicode(10))
     city: Mapped[Optional[str]] = mapped_column(Unicode(100))
-    region: Mapped[Optional[str]] = mapped_column(Unicode(2))
+    region: Mapped[Optional[str]] = mapped_column(Unicode(10))
     country: Mapped[Optional[str]] = mapped_column(Unicode(2))
     latitude: Mapped[Optional[float]]
     longitude: Mapped[Optional[float]]
