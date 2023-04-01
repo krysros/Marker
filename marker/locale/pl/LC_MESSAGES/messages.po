@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0a6\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-03-31 19:50+0200\n"
-"PO-Revision-Date: 2023-03-31 19:51+0200\n"
+"POT-Creation-Date: 2023-04-01 09:27+0200\n"
+"PO-Revision-Date: 2023-04-01 09:26+0200\n"
 "Last-Translator: \n"
-"Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
+"Language-Team: pl <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.12.1\n"
-"X-Generator: Poedit 3.2.2\n"
 
 #: marker/dropdown.py:24
 msgid "Filter"
@@ -35,7 +34,7 @@ msgstr "Kolejność"
 #: marker/export.py:21 marker/templates/comment_card.mako:8
 #: marker/templates/company_assoc.mako:9 marker/templates/company_table.mako:6
 #: marker/templates/company_view.mako:20 marker/templates/contact_view.mako:27
-#: marker/templates/pills.mako:4
+#: marker/templates/pills.mako:6
 msgid "Company"
 msgstr "Firma"
 
@@ -56,7 +55,7 @@ msgid "Region"
 msgstr "Region"
 
 #: marker/export.py:24 marker/templates/company_table.mako:11
-#: marker/templates/navbar.mako:66 marker/templates/pills.mako:9
+#: marker/templates/navbar.mako:66 marker/templates/pills.mako:11
 #: marker/templates/user_recommended.mako:5
 msgid "Recommended"
 msgstr "Rekomendowane"
@@ -71,15 +70,15 @@ msgstr "Link"
 #: marker/export.py:58 marker/export.py:124 marker/forms/select.py:567
 #: marker/templates/company_all.mako:5 marker/templates/company_map.mako:4
 #: marker/templates/home.mako:16 marker/templates/navbar.mako:11
-#: marker/templates/navbar.mako:45 marker/templates/pills.mako:15
-#: marker/templates/pills.mako:18 marker/templates/pills.mako:25
-#: marker/templates/pills.mako:31 marker/templates/tag_table.mako:9
+#: marker/templates/navbar.mako:45 marker/templates/pills.mako:58
+#: marker/templates/pills.mako:61 marker/templates/pills.mako:109
+#: marker/templates/pills.mako:151 marker/templates/tag_table.mako:9
 #: marker/templates/user_selected_companies.mako:5
 msgid "Companies"
 msgstr "Firmy"
 
 #: marker/export.py:73 marker/templates/comment_card.mako:11
-#: marker/templates/contact_view.mako:32 marker/templates/pills.mako:14
+#: marker/templates/contact_view.mako:32 marker/templates/pills.mako:57
 #: marker/templates/project_assoc.mako:9 marker/templates/project_table.mako:6
 msgid "Project"
 msgstr "Projekt"
@@ -91,8 +90,8 @@ msgstr "Termin"
 
 #: marker/export.py:110 marker/export.py:124 marker/forms/select.py:568
 #: marker/templates/home.mako:27 marker/templates/navbar.mako:14
-#: marker/templates/navbar.mako:50 marker/templates/pills.mako:5
-#: marker/templates/pills.mako:26 marker/templates/pills.mako:32
+#: marker/templates/navbar.mako:50 marker/templates/pills.mako:7
+#: marker/templates/pills.mako:110 marker/templates/pills.mako:152
 #: marker/templates/project_all.mako:5 marker/templates/project_map.mako:4
 #: marker/templates/tag_table.mako:10
 #: marker/templates/user_selected_projects.mako:5
@@ -100,15 +99,15 @@ msgid "Projects"
 msgstr "Projekty"
 
 #: marker/export.py:124 marker/templates/company_tags.mako:27
-#: marker/templates/pills.mako:24 marker/templates/project_tags.mako:27
+#: marker/templates/pills.mako:108 marker/templates/project_tags.mako:27
 #: marker/templates/tag_table.mako:6 marker/templates/tag_view.mako:14
 msgid "Tag"
 msgstr "Tag"
 
 #: marker/export.py:150 marker/templates/home.mako:38
 #: marker/templates/navbar.mako:17 marker/templates/navbar.mako:55
-#: marker/templates/pills.mako:6 marker/templates/pills.mako:16
-#: marker/templates/pills.mako:33 marker/templates/tag_all.mako:5
+#: marker/templates/pills.mako:8 marker/templates/pills.mako:59
+#: marker/templates/pills.mako:153 marker/templates/tag_all.mako:5
 #: marker/templates/user_selected_tags.mako:5
 msgid "Tags"
 msgstr "Tagi"
@@ -152,8 +151,8 @@ msgstr "Email"
 
 #: marker/export.py:208 marker/templates/contact_all.mako:5
 #: marker/templates/home.mako:51 marker/templates/navbar.mako:20
-#: marker/templates/navbar.mako:60 marker/templates/pills.mako:7
-#: marker/templates/pills.mako:17 marker/templates/pills.mako:34
+#: marker/templates/navbar.mako:60 marker/templates/pills.mako:9
+#: marker/templates/pills.mako:60 marker/templates/pills.mako:154
 #: marker/templates/user_selected_contacts.mako:5
 msgid "Contacts"
 msgstr "Kontakty"
@@ -542,7 +541,7 @@ msgstr "Czy jesteś pewien?"
 
 #: marker/templates/comment_all.mako:5 marker/templates/company_table.mako:12
 #: marker/templates/home.mako:61 marker/templates/navbar.mako:23
-#: marker/templates/pills.mako:8 marker/templates/pills.mako:35
+#: marker/templates/pills.mako:10 marker/templates/pills.mako:155
 #: marker/templates/project_table.mako:13
 msgid "Comments"
 msgstr "Komentarze"
@@ -615,9 +614,10 @@ msgstr "Informacje o firmach i projektach"
 #: marker/templates/home.mako:8
 msgid ""
 "Find the most frequently recommended companies with a specific business "
-"profile and projects that meet the required criteria. Check which companies "
-"have implemented the largest number of projects, which regions are the most "
-"entrepreneurial and in which industries there is the greatest competition."
+"profile and projects that meet the required criteria. Check which "
+"companies have implemented the largest number of projects, which regions "
+"are the most entrepreneurial and in which industries there is the "
+"greatest competition."
 msgstr ""
 "Znajdź najczęściej rekomendowane firmy o określonym profilu działalności "
 "oraz projekty spełniające wymagane kryteria. Sprawdź, które firmy "
@@ -678,7 +678,7 @@ msgstr "Dodaj kontakt"
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: marker/templates/navbar.mako:71 marker/templates/pills.mako:19
+#: marker/templates/navbar.mako:71 marker/templates/pills.mako:62
 #: marker/templates/project_table.mako:12 marker/templates/user_watched.mako:5
 msgid "Watched"
 msgstr "Obserwowane"
@@ -695,11 +695,11 @@ msgstr "Ciemny"
 msgid "Log out"
 msgstr "Wyloguj się"
 
-#: marker/templates/pills.mako:10 marker/templates/pills.mako:20
+#: marker/templates/pills.mako:12 marker/templates/pills.mako:63
 msgid "Similar"
 msgstr "Podobne"
 
-#: marker/templates/pills.mako:30 marker/templates/user_view.mako:14
+#: marker/templates/pills.mako:150 marker/templates/user_view.mako:14
 msgid "User"
 msgstr "Użytkownik"
 
@@ -709,7 +709,7 @@ msgstr "Opis"
 
 #: marker/templates/report_table.mako:6
 msgid "Number"
-msgstr "Numer"
+msgstr "Liczba"
 
 #: marker/views/account.py:23 marker/views/account.py:38
 #: marker/views/company.py:684 marker/views/contact.py:131
@@ -1022,3 +1022,4 @@ msgstr "Użytkownik %s wyczyścił obserwowane projekty"
 
 #~ msgid "Recommendations"
 #~ msgstr "Rekomendacje"
+
