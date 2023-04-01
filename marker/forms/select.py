@@ -2,8 +2,12 @@ import pycountry
 from .ts import TranslationString as _
 
 
-COUNTRIES = [("", "---")] + [(country.alpha_2, country.name) for country in pycountry.countries]
-REGIONS = [("", "---")] + [(subdivision.code, subdivision.name) for subdivision in pycountry.subdivisions]
+COUNTRIES = [("", "---")] + [
+    (country.alpha_2, country.name) for country in pycountry.countries
+]
+REGIONS = [("", "---")] + [
+    (subdivision.code, subdivision.name) for subdivision in pycountry.subdivisions
+]
 
 
 SORT_CRITERIA = [
@@ -80,6 +84,64 @@ COMPANY_ROLES = [
     ("general_contractor", _("General Contractor")),
     ("subcontractor", _("Subcontractor")),
     ("supplier", _("Supplier")),
+]
+
+
+STAGES = [
+    ("", "---"),
+    ("announcement", _("Announcement")),
+    ("tender", _("Tender")),
+    ("construction", _("Construction")),
+]
+
+
+PROJECT_DELIVERY_METHODS = [
+    ("", "---"),
+    ("design-build", _("Design–build")),
+    ("build", _("Build")),
+]
+
+
+COMMENTS_FILTER = [
+    ("", "---"),
+    ("companies", _("Companies")),
+    ("projects", _("Projects")),
+]
+
+
+REPORTS = [
+    ("companies-tags", _("The most popular tags among companies")),
+    ("projects-tags", _("The most popular tags among projects")),
+    ("companies-regions", _("Regions with the largest number of companies")),
+    ("companies-cities", _("Cities with the largest number of companies")),
+    ("companies-comments", _("The most commented companies")),
+    ("projects-regions", _("Regions with the largest number of projects")),
+    ("projects-cities", _("Cities with the largest number of projects")),
+    ("projects-comments", _("The most commented projects")),
+    ("users-companies", _("User activity (added companies)")),
+    ("users-projects", _("User activity (added projects)")),
+    ("companies-projects", _("Investors (number of projects)")),
+    ("recommended-companies", _("Recommended companies")),
+    ("watched-projects", _("Watched projects")),
+    (
+        "companies-announcement",
+        _("Companies that announced the largest number of investments"),
+    ),
+    (
+        "companies-tenders",
+        _("Companies that took part in the largest number of tenders"),
+    ),
+    (
+        "companies-constructions",
+        _("Companies that have completed the largest number of investments"),
+    ),
+    ("designers", _("The most active designers")),
+    ("purchasers", _("The most active purchasers")),
+    ("investors", _("The most active investors")),
+    ("general-contractors", _("The most active general contractors")),
+    ("subcontractors", _("The most active subcontractors")),
+    ("suppliers", _("The most active suppliers")),
+    ("projects-companies", _("Projects with the greatest interest")),
 ]
 
 
@@ -194,62 +256,4 @@ COURTS = [
         "Zielona Góra VIII",
         "Sąd Rejonowy w Zielonej Górze, VIII Wydział Gospodarczy KRS",
     ),
-]
-
-
-REPORTS = [
-    ("companies-tags", _("The most popular tags among companies")),
-    ("projects-tags", _("The most popular tags among projects")),
-    ("companies-regions", _("Regions with the largest number of companies")),
-    ("companies-cities", _("Cities with the largest number of companies")),
-    ("companies-comments", _("The most commented companies")),
-    ("projects-regions", _("Regions with the largest number of projects")),
-    ("projects-cities", _("Cities with the largest number of projects")),
-    ("projects-comments", _("The most commented projects")),
-    ("users-companies", _("User activity (added companies)")),
-    ("users-projects", _("User activity (added projects)")),
-    ("companies-projects", _("Investors (number of projects)")),
-    ("recommended-companies", _("Recommended companies")),
-    ("watched-projects", _("Watched projects")),
-    (
-        "companies-announcement",
-        _("Companies that announced the largest number of investments"),
-    ),
-    (
-        "companies-tenders",
-        _("Companies that took part in the largest number of tenders"),
-    ),
-    (
-        "companies-constructions",
-        _("Companies that have completed the largest number of investments"),
-    ),
-    ("designers", _("The most active designers")),
-    ("purchasers", _("The most active purchasers")),
-    ("investors", _("The most active investors")),
-    ("general-contractors", _("The most active general contractors")),
-    ("subcontractors", _("The most active subcontractors")),
-    ("suppliers", _("The most active suppliers")),
-    ("projects-companies", _("Projects with the greatest interest")),
-]
-
-
-STAGES = [
-    ("", "---"),
-    ("announcement", _("Announcement")),
-    ("tender", _("Tender")),
-    ("construction", _("Construction")),
-]
-
-
-PROJECT_DELIVERY_METHODS = [
-    ("", "---"),
-    ("design-build", _("Design–build")),
-    ("build", _("Build")),
-]
-
-
-COMMENTS_FILTER = [
-    ("", "---"),
-    ("companies", _("Companies")),
-    ("projects", _("Projects")),
 ]
