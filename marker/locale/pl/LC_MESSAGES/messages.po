@@ -7,17 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0a6\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-01 09:27+0200\n"
-"PO-Revision-Date: 2023-04-01 09:26+0200\n"
+"POT-Creation-Date: 2023-04-01 10:36+0200\n"
+"PO-Revision-Date: 2023-04-01 10:36+0200\n"
 "Last-Translator: \n"
-"Language: pl\n"
 "Language-Team: pl <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
-"(n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.12.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: marker/dropdown.py:24
 msgid "Filter"
@@ -67,7 +68,7 @@ msgstr "Rekomendowane"
 msgid "Link"
 msgstr "Link"
 
-#: marker/export.py:58 marker/export.py:124 marker/forms/select.py:567
+#: marker/export.py:58 marker/export.py:124 marker/forms/select.py:566
 #: marker/templates/company_all.mako:5 marker/templates/company_map.mako:4
 #: marker/templates/home.mako:16 marker/templates/navbar.mako:11
 #: marker/templates/navbar.mako:45 marker/templates/pills.mako:58
@@ -88,7 +89,7 @@ msgstr "Projekt"
 msgid "Deadline"
 msgstr "Termin"
 
-#: marker/export.py:110 marker/export.py:124 marker/forms/select.py:568
+#: marker/export.py:110 marker/export.py:124 marker/forms/select.py:567
 #: marker/templates/home.mako:27 marker/templates/navbar.mako:14
 #: marker/templates/navbar.mako:50 marker/templates/pills.mako:7
 #: marker/templates/pills.mako:110 marker/templates/pills.mako:152
@@ -348,7 +349,7 @@ msgstr "w trakcie"
 msgid "completed"
 msgstr "zakończone"
 
-#: marker/forms/select.py:54
+#: marker/forms/select.py:54 marker/forms/select.py:344
 msgid "default"
 msgstr "domyślny"
 
@@ -369,150 +370,146 @@ msgid "red"
 msgstr "czerwony"
 
 #: marker/forms/select.py:345
-msgid "display"
-msgstr "wyświetlanie"
+msgid "editor"
+msgstr "edytor"
 
 #: marker/forms/select.py:346
-msgid "editing"
-msgstr "edytowanie"
-
-#: marker/forms/select.py:347
 msgid "administrator"
 msgstr "administrator"
 
-#: marker/forms/select.py:353
+#: marker/forms/select.py:352
 msgid "Designer"
 msgstr "Projektant"
 
-#: marker/forms/select.py:354
+#: marker/forms/select.py:353
 msgid "Purchaser"
 msgstr "Zamawiający"
 
-#: marker/forms/select.py:355
+#: marker/forms/select.py:354
 msgid "Investor"
 msgstr "Inwestor"
 
-#: marker/forms/select.py:356
+#: marker/forms/select.py:355
 msgid "General Contractor"
 msgstr "Generalny Wykonawca"
 
-#: marker/forms/select.py:357
+#: marker/forms/select.py:356
 msgid "Subcontractor"
 msgstr "Podwykonawca"
 
-#: marker/forms/select.py:358
+#: marker/forms/select.py:357
 msgid "Supplier"
 msgstr "Dostawca"
 
-#: marker/forms/select.py:515
+#: marker/forms/select.py:514
 msgid "The most popular tags among companies"
 msgstr "Najpopularniejsze tagi wśród firm"
 
-#: marker/forms/select.py:516
+#: marker/forms/select.py:515
 msgid "The most popular tags among projects"
 msgstr "Najpopularniejsze tagi wśród projektów"
 
-#: marker/forms/select.py:517
+#: marker/forms/select.py:516
 msgid "Regions with the largest number of companies"
 msgstr "Regiony o największej liczbie firm"
 
-#: marker/forms/select.py:518
+#: marker/forms/select.py:517
 msgid "Cities with the largest number of companies"
 msgstr "Miasta o największej liczbie firm"
 
-#: marker/forms/select.py:519
+#: marker/forms/select.py:518
 msgid "The most commented companies"
 msgstr "Najczęściej komentowane firmy"
 
-#: marker/forms/select.py:520
+#: marker/forms/select.py:519
 msgid "Regions with the largest number of projects"
 msgstr "Regiony o największej liczbie projektów"
 
-#: marker/forms/select.py:521
+#: marker/forms/select.py:520
 msgid "Cities with the largest number of projects"
 msgstr "Miasta o największej liczbie projektów"
 
-#: marker/forms/select.py:522
+#: marker/forms/select.py:521
 msgid "The most commented projects"
 msgstr "Najczęściej komentowane projekty"
 
-#: marker/forms/select.py:523
+#: marker/forms/select.py:522
 msgid "User activity (added companies)"
 msgstr "Aktywność użytkowników (dodane firmy)"
 
-#: marker/forms/select.py:524
+#: marker/forms/select.py:523
 msgid "User activity (added projects)"
 msgstr "Aktywność użytkowników (dodane projekty)"
 
-#: marker/forms/select.py:525
+#: marker/forms/select.py:524
 msgid "Investors (number of projects)"
 msgstr "Inwestorzy (liczba projektów)"
 
-#: marker/forms/select.py:526
+#: marker/forms/select.py:525
 msgid "Recommended companies"
 msgstr "Rekomendowane firmy"
 
-#: marker/forms/select.py:527
+#: marker/forms/select.py:526
 msgid "Watched projects"
 msgstr "Obserwowane projekty"
 
-#: marker/forms/select.py:530
+#: marker/forms/select.py:529
 msgid "Companies that announced the largest number of investments"
 msgstr "Firmy, które ogłosiły największą liczbę inwestycji"
 
-#: marker/forms/select.py:534
+#: marker/forms/select.py:533
 msgid "Companies that took part in the largest number of tenders"
 msgstr "Firmy, które wzięły udział w największej liczbie przetargów"
 
-#: marker/forms/select.py:538
+#: marker/forms/select.py:537
 msgid "Companies that have completed the largest number of investments"
 msgstr "Firmy, które zrealizowały największą liczbę inwestycji"
 
-#: marker/forms/select.py:540
+#: marker/forms/select.py:539
 msgid "The most active designers"
 msgstr "Najbardziej aktywni projektanci"
 
-#: marker/forms/select.py:541
+#: marker/forms/select.py:540
 msgid "The most active purchasers"
 msgstr "Najbardziej aktywni zamawiający"
 
-#: marker/forms/select.py:542
+#: marker/forms/select.py:541
 msgid "The most active investors"
 msgstr "Najbardziej aktywni inwestorzy"
 
-#: marker/forms/select.py:543
+#: marker/forms/select.py:542
 msgid "The most active general contractors"
 msgstr "Najbardziej aktywni generalni wykonawcy"
 
-#: marker/forms/select.py:544
+#: marker/forms/select.py:543
 msgid "The most active subcontractors"
 msgstr "Najbardziej aktywni podwykonawcy"
 
-#: marker/forms/select.py:545
+#: marker/forms/select.py:544
 msgid "The most active suppliers"
 msgstr "Najbardziej aktywni dostawcy"
 
-#: marker/forms/select.py:546
+#: marker/forms/select.py:545
 msgid "Projects with the greatest interest"
 msgstr "Projekty o największym zainteresowaniu"
 
-#: marker/forms/select.py:552
+#: marker/forms/select.py:551
 msgid "Announcement"
 msgstr "Zapowiedź"
 
-#: marker/forms/select.py:553
+#: marker/forms/select.py:552
 msgid "Tender"
 msgstr "Przetarg"
 
-#: marker/forms/select.py:554
+#: marker/forms/select.py:553
 msgid "Construction"
 msgstr "Realizacja"
 
-#: marker/forms/select.py:560
+#: marker/forms/select.py:559
 msgid "Design–build"
 msgstr "Projektuj i buduj"
 
-#: marker/forms/select.py:561
+#: marker/forms/select.py:560
 msgid "Build"
 msgstr "Buduj"
 
@@ -614,10 +611,9 @@ msgstr "Informacje o firmach i projektach"
 #: marker/templates/home.mako:8
 msgid ""
 "Find the most frequently recommended companies with a specific business "
-"profile and projects that meet the required criteria. Check which "
-"companies have implemented the largest number of projects, which regions "
-"are the most entrepreneurial and in which industries there is the "
-"greatest competition."
+"profile and projects that meet the required criteria. Check which companies "
+"have implemented the largest number of projects, which regions are the most "
+"entrepreneurial and in which industries there is the greatest competition."
 msgstr ""
 "Znajdź najczęściej rekomendowane firmy o określonym profilu działalności "
 "oraz projekty spełniające wymagane kryteria. Sprawdź, które firmy "
@@ -1023,3 +1019,5 @@ msgstr "Użytkownik %s wyczyścił obserwowane projekty"
 #~ msgid "Recommendations"
 #~ msgstr "Rekomendacje"
 
+#~ msgid "display"
+#~ msgstr "wyświetlanie"

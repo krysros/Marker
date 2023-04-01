@@ -341,9 +341,8 @@ COUNTRIES = [
 
 
 USER_ROLES = [
-    ("", "---"),
-    ("basic", _("display")),
-    ("editor", _("editing")),
+    ("default", _("default")),
+    ("editor", _("editor")),
     ("admin", _("administrator")),
 ]
 
