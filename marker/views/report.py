@@ -4,7 +4,7 @@ from sqlalchemy.sql import func, select
 from sqlalchemy.sql.expression import desc
 
 from ..forms import ReportForm
-from ..forms.select import REPORTS, REGIONS
+from ..forms.select import REPORTS, SUBDIVISIONS
 from ..models import (
     Comment,
     CompaniesProjects,
@@ -50,7 +50,7 @@ class ReportView:
     def all(self):
         rel = self.request.matchdict.get("rel", "companies-tags")
         page = int(self.request.params.get("page", 1))
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         reports = dict(REPORTS)
 
         match rel:
@@ -74,14 +74,14 @@ class ReportView:
                     .group_by(Tag)
                     .order_by(desc("projects-tags"))
                 )
-            case "companies-regions":
+            case "companies-subdivisions":
                 stmt = (
                     select(
-                        Company.region,
-                        func.count(Company.region).label("companies-regions"),
+                        Company.subdivision,
+                        func.count(Company.subdivision).label("companies-subdivisions"),
                     )
-                    .group_by(Company.region)
-                    .order_by(desc("companies-regions"))
+                    .group_by(Company.subdivision)
+                    .order_by(desc("companies-subdivisions"))
                 )
             case "companies-cities":
                 stmt = (
@@ -101,14 +101,14 @@ class ReportView:
                     .group_by(Company)
                     .order_by(desc("companies-comments"))
                 )
-            case "projects-regions":
+            case "projects-subdivisions":
                 stmt = (
                     select(
-                        Project.region,
-                        func.count(Project.region).label("projects-regions"),
+                        Project.subdivision,
+                        func.count(Project.subdivision).label("projects-subdivisions"),
                     )
-                    .group_by(Project.region)
-                    .order_by(desc("projects-regions"))
+                    .group_by(Project.subdivision)
+                    .order_by(desc("projects-subdivisions"))
                 )
             case "projects-cities":
                 stmt = (
@@ -308,13 +308,13 @@ class ReportView:
         next_page = self.request.route_url(
             "report_more",
             rel=rel,
-            regions=regions,
+            subdivisions=subdivisions,
             _query={"page": page + 1},
         )
         return {
             "rel": rel,
             "lead": reports[rel],
-            "regions": regions,
+            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
         }

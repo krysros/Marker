@@ -11,7 +11,7 @@ from .filters import (
     remove_multiple_spaces,
     strip_filter,
 )
-from .select import COLORS, COUNTRIES, COURTS, REGIONS
+from .select import COLORS, COUNTRIES, COURTS, SUBDIVISIONS
 from .ts import TranslationString as _
 
 
@@ -61,7 +61,7 @@ class CompanyForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    region = SelectField(_("Region"), choices=REGIONS)
+    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(
         _("Link"),
@@ -165,7 +165,7 @@ class CompanySearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    region = SelectField(_("Region"), choices=REGIONS)
+    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(_("Link"), filters=[strip_filter])
     NIP = StringField(_("NIP"), filters=[strip_filter])

@@ -26,8 +26,8 @@
     % if v:
       % if k == "color":
         ${form[k].label.text}: <strong>${colors.get(v)}</strong>;
-      % elif k == "region":
-        ${form[k].label.text}: <strong>${regions.get(v)}</strong>;
+      % elif k == "subdivision":
+        ${form[k].label.text}: <strong>${subdivisions.get(v)}</strong>;
       % elif k == "country":
         ${form[k].label.text}: <strong>${countries.get(v)}</strong>;
       % elif k == "stages":

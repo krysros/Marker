@@ -5,7 +5,7 @@ from .ts import TranslationString as _
 COUNTRIES = [("", "---")] + [
     (country.alpha_2, country.name) for country in pycountry.countries
 ]
-REGIONS = [("", "---")] + [
+SUBDIVISIONS = [("", "---")] + [
     (subdivision.code, subdivision.name) for subdivision in pycountry.subdivisions
 ]
 
@@ -20,7 +20,7 @@ SORT_CRITERIA = [
 SORT_CRITERIA_EXT = [
     ("name", _("by name")),
     ("city", _("by city")),
-    ("region", _("by region")),
+    ("subdivision", _("by subdivision")),
     ("created_at", _("by date added")),
     ("updated_at", _("by edit date")),
 ]
@@ -29,7 +29,7 @@ SORT_CRITERIA_EXT = [
 SORT_CRITERIA_COMPANIES = [
     ("name", _("by name")),
     ("city", _("by city")),
-    ("region", _("by region")),
+    ("subdivision", _("by subdivision")),
     ("created_at", _("by date added")),
     ("updated_at", _("by edit date")),
     ("recommended", _("by the number of recommendations")),
@@ -39,7 +39,7 @@ SORT_CRITERIA_COMPANIES = [
 SORT_CRITERIA_PROJECTS = [
     ("name", _("by name")),
     ("city", "wg miasta"),
-    ("region", _("by city")),
+    ("subdivision", _("by city")),
     ("created_at", _("by date added")),
     ("updated_at", _("by edit date")),
     ("watched", _("by number of observations")),
@@ -112,10 +112,10 @@ COMMENTS_FILTER = [
 REPORTS = [
     ("companies-tags", _("The most popular tags among companies")),
     ("projects-tags", _("The most popular tags among projects")),
-    ("companies-regions", _("Regions with the largest number of companies")),
+    ("companies-subdivisions", _("Subdivisions with the largest number of companies")),
     ("companies-cities", _("Cities with the largest number of companies")),
     ("companies-comments", _("The most commented companies")),
-    ("projects-regions", _("Regions with the largest number of projects")),
+    ("projects-subdivisions", _("Subdivisions with the largest number of projects")),
     ("projects-cities", _("Cities with the largest number of projects")),
     ("projects-comments", _("The most commented projects")),
     ("users-companies", _("User activity (added companies)")),

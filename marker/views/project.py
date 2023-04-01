@@ -17,7 +17,7 @@ from ..forms.select import (
     STATUS,
     PROJECT_DELIVERY_METHODS,
     STAGES,
-    REGIONS,
+    SUBDIVISIONS,
 )
 from ..geo import location
 from ..models import (
@@ -55,7 +55,7 @@ class ProjectView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        region = self.request.params.get("region", None)
+        subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         color = self.request.params.get("color", None)
@@ -69,7 +69,7 @@ class ProjectView:
         status = dict(STATUS)
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
         colors = dict(COLORS)
         stages = dict(STAGES)
@@ -91,8 +91,8 @@ class ProjectView:
         if link:
             stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
 
-        if region:
-            stmt = stmt.filter(Project.region == region)
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision == subdivision)
 
         if country:
             stmt = stmt.filter(Project.country == country)
@@ -149,7 +149,7 @@ class ProjectView:
             "street": street,
             "postcode": postcode,
             "city": city,
-            "region": region,
+            "subdivision": subdivision,
             "country": country,
             "link": link,
             "color": color,
@@ -181,7 +181,7 @@ class ProjectView:
         return {
             "search_query": search_query,
             "form": form,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "countries": countries,
             "stages": stages,
             "project_delivery_methods": projects_delivery_methods,
@@ -250,7 +250,7 @@ class ProjectView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        region = self.request.params.get("region", None)
+        subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         color = self.request.params.get("color", None)
@@ -263,7 +263,7 @@ class ProjectView:
             "street": street,
             "postcode": postcode,
             "city": city,
-            "region": region,
+            "subdivision": subdivision,
             "country": country,
             "link": link,
             "color": color,
@@ -285,7 +285,7 @@ class ProjectView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        region = self.request.params.get("region", None)
+        subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         color = self.request.params.get("color", None)
@@ -310,8 +310,8 @@ class ProjectView:
         if link:
             stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
 
-        if region:
-            stmt = stmt.filter(Project.region == region)
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision == subdivision)
 
         if country:
             stmt = stmt.filter(Project.country == country)
@@ -338,7 +338,7 @@ class ProjectView:
                 "street": project.street,
                 "postcode": project.postcode,
                 "city": project.city,
-                "region": project.region,
+                "subdivision": project.subdivision,
                 "country": project.country,
                 "latitude": project.latitude,
                 "longitude": project.longitude,
@@ -428,7 +428,7 @@ class ProjectView:
     )
     def view(self):
         project = self.request.context.project
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         stages = dict(STAGES)
         countries = dict(COUNTRIES)
         company_roles = dict(COMPANY_ROLES)
@@ -436,7 +436,7 @@ class ProjectView:
 
         return {
             "project": project,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "stages": stages,
             "countries": countries,
             "company_roles": company_roles,
@@ -461,7 +461,7 @@ class ProjectView:
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
 
         stmt = (
             select(Project)
@@ -515,7 +515,7 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "title": project.name,
         }
 
@@ -525,7 +525,7 @@ class ProjectView:
     def add(self):
         _ = self.request.translate
         form = ProjectForm(self.request.POST, request=self.request)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -534,7 +534,7 @@ class ProjectView:
                 street=form.street.data,
                 postcode=form.city.data,
                 city=form.city.data,
-                region=form.region.data,
+                subdivision=form.subdivision.data,
                 country=form.country.data,
                 link=form.link.data,
                 color=form.color.data,
@@ -545,7 +545,7 @@ class ProjectView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                region=regions.get(form.region.data),
+                subdivision=subdivisions.get(form.subdivision.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -572,7 +572,7 @@ class ProjectView:
         _ = self.request.translate
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project, request=self.request)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -580,7 +580,7 @@ class ProjectView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                region=regions.get(form.region.data),
+                subdivision=subdivisions.get(form.subdivision.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -652,7 +652,7 @@ class ProjectView:
                         "street": form.street.data,
                         "postcode": form.postcode.data,
                         "city": form.city.data,
-                        "region": form.region.data,
+                        "subdivision": form.subdivision.data,
                         "country": form.country.data,
                         "link": form.link.data,
                         "color": form.color.data,

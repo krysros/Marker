@@ -15,7 +15,7 @@ from ..forms.select import (
     ORDER_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     STAGES,
-    REGIONS,
+    SUBDIVISIONS,
 )
 from ..geo import location
 from ..models import (
@@ -53,7 +53,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        region = self.request.params.get("region", None)
+        subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -65,7 +65,7 @@ class CompanyView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Company)
@@ -94,8 +94,8 @@ class CompanyView:
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
 
-        if region:
-            stmt = stmt.filter(Company.region == region)
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision == subdivision)
 
         if country:
             stmt = stmt.filter(Company.country == country)
@@ -145,7 +145,7 @@ class CompanyView:
             "street": street,
             "postcode": postcode,
             "city": city,
-            "region": region,
+            "subdivision": subdivision,
             "country": country,
             "link": link,
             "NIP": NIP,
@@ -176,7 +176,7 @@ class CompanyView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "colors": colors,
             "counter": counter,
         }
@@ -213,7 +213,7 @@ class CompanyView:
     )
     def view(self):
         company = self.request.context.company
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         courts = dict(COURTS)
         countries = dict(COUNTRIES)
         stages = dict(STAGES)
@@ -221,7 +221,7 @@ class CompanyView:
 
         return {
             "company": company,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "courts": courts,
             "countries": countries,
             "stages": stages,
@@ -239,7 +239,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        region = self.request.params.get("region", None)
+        subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -253,7 +253,7 @@ class CompanyView:
             "street": street,
             "postcode": postcode,
             "city": city,
-            "region": region,
+            "subdivision": subdivision,
             "country": country,
             "link": link,
             "NIP": NIP,
@@ -276,7 +276,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        region = self.request.params.get("region", None)
+        subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -311,8 +311,8 @@ class CompanyView:
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
 
-        if region:
-            stmt = stmt.filter(Company.region == region)
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision == subdivision)
 
         if country:
             stmt = stmt.filter(Company.country == country)
@@ -332,7 +332,7 @@ class CompanyView:
                 "street": company.street,
                 "postcode": company.postcode,
                 "city": company.city,
-                "region": company.region,
+                "subdivision": company.subdivision,
                 "country": company.country,
                 "latitude": company.latitude,
                 "longitude": company.longitude,
@@ -552,7 +552,7 @@ class CompanyView:
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
 
         stmt = (
             select(Company)
@@ -606,7 +606,7 @@ class CompanyView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "title": company.name,
         }
 
@@ -616,7 +616,7 @@ class CompanyView:
     def add(self):
         _ = self.request.translate
         form = CompanyForm(self.request.POST, request=self.request)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -625,7 +625,7 @@ class CompanyView:
                 street=form.street.data,
                 postcode=form.postcode.data,
                 city=form.city.data,
-                region=form.region.data,
+                subdivision=form.subdivision.data,
                 country=form.country.data,
                 link=form.link.data,
                 NIP=form.NIP.data,
@@ -637,7 +637,7 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                region=regions.get(form.region.data),
+                subdivision=subdivisions.get(form.subdivision.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -664,7 +664,7 @@ class CompanyView:
         _ = self.request.translate
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, request=self.request)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -672,7 +672,7 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                region=regions.get(form.region.data),
+                subdivision=subdivisions.get(form.subdivision.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -788,7 +788,7 @@ class CompanyView:
                         "street": form.street.data,
                         "postcode": form.postcode.data,
                         "city": form.city.data,
-                        "region": form.region.data,
+                        "subdivision": form.subdivision.data,
                         "country": form.country.data,
                         "link": form.link.data,
                         "NIP": form.NIP.data,

@@ -13,7 +13,7 @@ from ..forms.select import (
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
-    REGIONS,
+    SUBDIVISIONS,
 )
 from ..models import Company, Project, Tag, recommended, watched
 from ..paginator import get_paginator
@@ -145,7 +145,7 @@ class TagView:
                 "street": company.street,
                 "postcode": company.postcode,
                 "city": company.city,
-                "region": company.region,
+                "subdivision": company.subdivision,
                 "country": company.country,
                 "latitude": company.latitude,
                 "longitude": company.longitude,
@@ -176,7 +176,7 @@ class TagView:
                 "street": project.street,
                 "postcode": project.postcode,
                 "city": project.city,
-                "region": project.region,
+                "subdivision": project.subdivision,
                 "country": project.country,
                 "latitude": project.latitude,
                 "longitude": project.longitude,
@@ -207,7 +207,7 @@ class TagView:
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Company)
@@ -273,7 +273,7 @@ class TagView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
@@ -347,7 +347,7 @@ class TagView:
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Project)
@@ -413,7 +413,7 @@ class TagView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,

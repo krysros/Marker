@@ -31,8 +31,8 @@
           <dd>${company.postcode or "---"}</dd>
           <dt>${_("City")}</dt>
           <dd>${company.city or "---"}</dd>
-          <dt>${_("Region")}</dt>
-          <dd>${regions.get(company.region) or "---"}</dd>
+          <dt>${_("Subdivision")}</dt>
+          <dd>${subdivisions.get(company.subdivision) or "---"}</dd>
           <dt>${_("Country")}</dt>
           <dd>${countries.get(company.country) or "---"}</dd>
         </dl>
@@ -86,7 +86,7 @@
       attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${company.latitude}, ${company.longitude}]).addTo(map);
-  let title = `<b>${company.name}</b><br>${company.street}<br>${company.city}<br>${company.region}<br>${company.country}`;
+  let title = `<b>${company.name}</b><br>${company.street}<br>${company.city}<br>${company.subdivision}<br>${company.country}`;
   marker.bindPopup(title);
   marker.openPopup();
 </script>

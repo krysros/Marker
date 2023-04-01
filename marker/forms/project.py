@@ -4,7 +4,7 @@ from wtforms.validators import InputRequired, Length, Optional, ValidationError
 
 from ..models import Project
 from .filters import dash_filter, remove_multiple_spaces, strip_filter
-from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, REGIONS, STAGES
+from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, SUBDIVISIONS, STAGES
 from .ts import TranslationString as _
 
 
@@ -32,7 +32,7 @@ class ProjectForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    region = SelectField(_("Region"), choices=REGIONS)
+    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(
         _("Link"),
@@ -72,7 +72,7 @@ class ProjectSearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    region = SelectField(_("Region"), choices=REGIONS)
+    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(_("Link"), filters=[strip_filter])
     deadline = DateField(_("Deadline"), validators=[Optional()])

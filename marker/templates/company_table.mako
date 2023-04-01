@@ -5,7 +5,7 @@
         <th class="col-1">#</th>
         <th>${_("Company")}</th>
         <th>${_("City")}</th>
-        <th>${_("Region")}</th>
+        <th>${_("Subdivision")}</th>
         <th>${_("Created at")}</th>
         <th>${_("Updated at")}</th>
         <th>${_("Recommended")}</th>

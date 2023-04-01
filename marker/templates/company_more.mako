@@ -15,7 +15,7 @@
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
   </td>
   <td>${company.city or "---"}</td>
-  <td>${regions.get(company.region) or "---"}</td>
+  <td>${subdivisions.get(company.subdivision) or "---"}</td>
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>

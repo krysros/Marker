@@ -21,7 +21,7 @@ from ..forms.select import (
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
     STATUS,
-    REGIONS,
+    SUBDIVISIONS,
     USER_ROLES,
 )
 from ..models import (
@@ -253,7 +253,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         stmt = select(Company).filter(Company.created_by == user)
 
         if _sort == "recommended":
@@ -311,7 +311,7 @@ class UserView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
@@ -337,7 +337,7 @@ class UserView:
         status = dict(STATUS)
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         stmt = select(Project).filter(Project.created_by == user)
 
         if _sort == "watched":
@@ -393,7 +393,7 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
@@ -556,7 +556,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         stmt = (
             select(Company)
             .join(selected_companies)
@@ -610,7 +610,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "counter": counter,
         }
 
@@ -681,7 +681,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         now = datetime.datetime.now()
         stmt = (
             select(Project)
@@ -738,7 +738,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "counter": counter,
         }
 
@@ -1034,7 +1034,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
 
         stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
@@ -1087,7 +1087,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "counter": counter,
         }
 
@@ -1153,7 +1153,7 @@ class UserView:
         status = dict(STATUS)
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
-        regions = dict(REGIONS)
+        subdivisions = dict(SUBDIVISIONS)
         now = datetime.datetime.now()
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
@@ -1204,7 +1204,7 @@ class UserView:
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
-            "regions": regions,
+            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,

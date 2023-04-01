@@ -5,7 +5,7 @@
   <div class="container">
     <h1>${project} <small class="text-muted">${_("Information about companies and projects")}</small></h1>
     <p class="fs-4">
-      ${_("Find the most frequently recommended companies with a specific business profile and projects that meet the required criteria. Check which companies have implemented the largest number of projects, which regions are the most entrepreneurial and in which industries there is the greatest competition.")}
+      ${_("Find the most frequently recommended companies with a specific business profile and projects that meet the required criteria. Check which companies have implemented the largest number of projects, which subdivisions are the most entrepreneurial and in which industries there is the greatest competition.")}
     </p>
   </div>
 </div>

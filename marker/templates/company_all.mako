@@ -25,8 +25,8 @@
     % if v:
       % if k == "color":
         ${form[k].label.text}: <strong>${colors.get(v)}</strong>;
-      % elif k == "region":
-        ${form[k].label.text}: <strong>${regions.get(v)}</strong>;
+      % elif k == "subdivision":
+        ${form[k].label.text}: <strong>${subdivisions.get(v)}</strong>;
       % else:
         ${form[k].label.text}: <strong>${v}</strong>;
       % endif
