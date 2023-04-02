@@ -23,12 +23,12 @@
         ${form.city(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.subdivision.label}
-        ${form.subdivision(class_="form-control")}
+        ${form.country.label}
+        ${form.country(class_="form-control", **{"hx-get": "/subdivision", "hx-target": "#subdivision"})}
       </div>
       <div class="mb-3">
-        ${form.country.label}
-        ${form.country(class_="form-control")}
+        ${form.subdivision.label}
+        ${form.subdivision(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.link.label}

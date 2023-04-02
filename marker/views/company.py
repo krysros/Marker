@@ -1,5 +1,6 @@
 import logging
 
+import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
@@ -9,13 +10,12 @@ from ..forms import CompanyForm, CompanySearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
-    USER_ROLES,
     COUNTRIES,
     COURTS,
     ORDER_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     STAGES,
-    SUBDIVISIONS,
+    USER_ROLES,
 )
 from ..geo import location
 from ..models import (
@@ -65,7 +65,6 @@ class CompanyView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Company)
@@ -176,7 +175,6 @@ class CompanyView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
-            "subdivisions": subdivisions,
             "colors": colors,
             "counter": counter,
         }
@@ -213,7 +211,6 @@ class CompanyView:
     )
     def view(self):
         company = self.request.context.company
-        subdivisions = dict(SUBDIVISIONS)
         courts = dict(COURTS)
         countries = dict(COUNTRIES)
         stages = dict(STAGES)
@@ -221,7 +218,6 @@ class CompanyView:
 
         return {
             "company": company,
-            "subdivisions": subdivisions,
             "courts": courts,
             "countries": countries,
             "stages": stages,
@@ -552,7 +548,6 @@ class CompanyView:
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
 
         stmt = (
             select(Company)
@@ -606,7 +601,6 @@ class CompanyView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "subdivisions": subdivisions,
             "title": company.name,
         }
 
@@ -616,9 +610,7 @@ class CompanyView:
     def add(self):
         _ = self.request.translate
         form = CompanyForm(self.request.POST, request=self.request)
-        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
-
         if self.request.method == "POST" and form.validate():
             company = Company(
                 name=form.name.data,
@@ -637,7 +629,9 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                subdivision=subdivisions.get(form.subdivision.data),
+                subdivision=getattr(
+                    pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
+                ),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -664,7 +658,6 @@ class CompanyView:
         _ = self.request.translate
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, request=self.request)
-        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -672,7 +665,9 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                subdivision=subdivisions.get(form.subdivision.data),
+                subdivision=getattr(
+                    pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
+                ),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -686,7 +681,7 @@ class CompanyView:
                 "company_view", company_id=company.id, slug=company.slug
             )
             log.info(
-                _("The user %s changed the name of the tag")
+                _("The user %s changed the company details")
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)

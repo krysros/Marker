@@ -1,6 +1,10 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
+<%!
+  import pycountry
+%>
+
 % for company in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
@@ -15,7 +19,7 @@
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
   </td>
   <td>${company.city or "---"}</td>
-  <td>${subdivisions.get(company.subdivision) or "---"}</td>
+  <td>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</td>
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>

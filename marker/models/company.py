@@ -1,13 +1,14 @@
 import datetime
 from typing import Optional
+
 from slugify import slugify
 from sqlalchemy import ForeignKey, Unicode, and_, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import CompaniesProjects, companies_tags, recommended
 from .comment import Comment
-from .meta import Base
 from .contact import Contact
+from .meta import Base
 from .tag import Tag
 
 

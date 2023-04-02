@@ -1,4 +1,4 @@
-from pyramid.i18n import get_localizer, TranslationStringFactory
+from pyramid.i18n import TranslationStringFactory, get_localizer
 
 
 def add_renderer_globals(event):

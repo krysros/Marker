@@ -1,12 +1,20 @@
 import pycountry
+
 from .ts import TranslationString as _
+
+
+def get_subdivisions(country_code):
+    subdivisions = [
+        (subdivision.code, subdivision.name)
+        for subdivision in pycountry.subdivisions.get(country_code=country_code)
+    ]
+    subdivisions = sorted(subdivisions)
+    subdivisions = [("", "---")] + subdivisions
+    return subdivisions
 
 
 COUNTRIES = [("", "---")] + [
     (country.alpha_2, country.name) for country in pycountry.countries
-]
-SUBDIVISIONS = [("", "---")] + [
-    (subdivision.code, subdivision.name) for subdivision in pycountry.subdivisions
 ]
 
 

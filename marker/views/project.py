@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
@@ -10,14 +11,13 @@ from ..forms.project import ProjectForm, ProjectSearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
-    USER_ROLES,
     COUNTRIES,
     ORDER_CRITERIA,
-    SORT_CRITERIA_PROJECTS,
-    STATUS,
     PROJECT_DELIVERY_METHODS,
+    SORT_CRITERIA_PROJECTS,
     STAGES,
-    SUBDIVISIONS,
+    STATUS,
+    USER_ROLES,
 )
 from ..geo import location
 from ..models import (
@@ -69,7 +69,6 @@ class ProjectView:
         status = dict(STATUS)
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
         colors = dict(COLORS)
         stages = dict(STAGES)
@@ -181,7 +180,6 @@ class ProjectView:
         return {
             "search_query": search_query,
             "form": form,
-            "subdivisions": subdivisions,
             "countries": countries,
             "stages": stages,
             "project_delivery_methods": projects_delivery_methods,
@@ -428,7 +426,6 @@ class ProjectView:
     )
     def view(self):
         project = self.request.context.project
-        subdivisions = dict(SUBDIVISIONS)
         stages = dict(STAGES)
         countries = dict(COUNTRIES)
         company_roles = dict(COMPANY_ROLES)
@@ -436,7 +433,6 @@ class ProjectView:
 
         return {
             "project": project,
-            "subdivisions": subdivisions,
             "stages": stages,
             "countries": countries,
             "company_roles": company_roles,
@@ -461,7 +457,6 @@ class ProjectView:
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
 
         stmt = (
             select(Project)
@@ -515,7 +510,6 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "subdivisions": subdivisions,
             "title": project.name,
         }
 
@@ -525,14 +519,13 @@ class ProjectView:
     def add(self):
         _ = self.request.translate
         form = ProjectForm(self.request.POST, request=self.request)
-        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
             project = Project(
                 name=form.name.data,
                 street=form.street.data,
-                postcode=form.city.data,
+                postcode=form.postcode.data,
                 city=form.city.data,
                 subdivision=form.subdivision.data,
                 country=form.country.data,
@@ -545,7 +538,9 @@ class ProjectView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                subdivision=subdivisions.get(form.subdivision.data),
+                subdivision=getattr(
+                    pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
+                ),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
@@ -572,7 +567,6 @@ class ProjectView:
         _ = self.request.translate
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project, request=self.request)
-        subdivisions = dict(SUBDIVISIONS)
         countries = dict(COUNTRIES)
 
         if self.request.method == "POST" and form.validate():
@@ -580,7 +574,9 @@ class ProjectView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                subdivision=subdivisions.get(form.subdivision.data),
+                subdivision=getattr(
+                    pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
+                ),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )

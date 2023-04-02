@@ -2,9 +2,10 @@ from sqlalchemy import select
 from wtforms import DateField, Form, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
 
+from ..forms.select import get_subdivisions
 from ..models import Project
 from .filters import dash_filter, remove_multiple_spaces, strip_filter
-from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, SUBDIVISIONS, STAGES
+from .select import COLORS, COUNTRIES, PROJECT_DELIVERY_METHODS, STAGES
 from .ts import TranslationString as _
 
 
@@ -32,7 +33,9 @@ class ProjectForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
+    subdivision = SelectField(
+        _("Subdivision"), choices=[], validate_choice=False
+    )
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(
         _("Link"),
@@ -56,6 +59,11 @@ class ProjectForm(Form):
         except IndexError:
             self.edited_item = None
 
+        try:
+            self.subdivision.choices = get_subdivisions(self.edited_item.country)
+        except AttributeError:
+            self.subdivision.choices = [("", "---")]
+
     def validate_name(self, field):
         if self.edited_item:
             if self.edited_item.name == field.data:
@@ -72,7 +80,9 @@ class ProjectSearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
+    subdivision = SelectField(
+        _("Subdivision"), choices=[], validate_choice=False
+    )
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(_("Link"), filters=[strip_filter])
     deadline = DateField(_("Deadline"), validators=[Optional()])

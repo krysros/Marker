@@ -8,20 +8,19 @@ from sqlalchemy import func, select
 from ..dropdown import Dd, Dropdown
 from ..export import (
     export_companies_to_xlsx,
-    export_projects_to_xlsx,
     export_contacts_to_xlsx,
+    export_projects_to_xlsx,
     export_tags_to_xlsx,
 )
 from ..forms import UserForm, UserSearchForm
 from ..forms.select import (
     COLORS,
-    SORT_CRITERIA_EXT,
     ORDER_CRITERIA,
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
+    SORT_CRITERIA_EXT,
     SORT_CRITERIA_PROJECTS,
     STATUS,
-    SUBDIVISIONS,
     USER_ROLES,
 )
 from ..models import (
@@ -31,11 +30,11 @@ from ..models import (
     Project,
     Tag,
     User,
+    recommended,
     selected_companies,
+    selected_contacts,
     selected_projects,
     selected_tags,
-    selected_contacts,
-    recommended,
     watched,
 )
 from ..paginator import get_paginator
@@ -253,7 +252,6 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
         stmt = select(Company).filter(Company.created_by == user)
 
         if _sort == "recommended":
@@ -311,7 +309,6 @@ class UserView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
@@ -337,7 +334,6 @@ class UserView:
         status = dict(STATUS)
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        subdivisions = dict(SUBDIVISIONS)
         stmt = select(Project).filter(Project.created_by == user)
 
         if _sort == "watched":
@@ -393,7 +389,6 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "subdivisions": subdivisions,
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
@@ -556,7 +551,6 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
         stmt = (
             select(Company)
             .join(selected_companies)
@@ -610,7 +604,6 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "subdivisions": subdivisions,
             "counter": counter,
         }
 
@@ -681,7 +674,6 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
         now = datetime.datetime.now()
         stmt = (
             select(Project)
@@ -738,7 +730,6 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "subdivisions": subdivisions,
             "counter": counter,
         }
 
@@ -1034,7 +1025,6 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
 
         stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
@@ -1087,7 +1077,6 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
-            "subdivisions": subdivisions,
             "counter": counter,
         }
 
@@ -1153,7 +1142,6 @@ class UserView:
         status = dict(STATUS)
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
-        subdivisions = dict(SUBDIVISIONS)
         now = datetime.datetime.now()
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
@@ -1204,7 +1192,6 @@ class UserView:
             "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
-            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,

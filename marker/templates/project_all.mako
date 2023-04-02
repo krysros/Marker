@@ -1,6 +1,10 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
+<%!
+  import pycountry
+%>
+
 <h2>
   <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('project_count')}" hx-trigger="projectEvent from:body">${counter}</div></span>
@@ -27,7 +31,7 @@
       % if k == "color":
         ${form[k].label.text}: <strong>${colors.get(v)}</strong>;
       % elif k == "subdivision":
-        ${form[k].label.text}: <strong>${subdivisions.get(v)}</strong>;
+        ${form[k].label.text}: <strong>${getattr(pycountry.subdivisions.get(code=v), "name", "---")}</strong>;
       % elif k == "country":
         ${form[k].label.text}: <strong>${countries.get(v)}</strong>;
       % elif k == "stages":

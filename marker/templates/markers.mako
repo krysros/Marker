@@ -23,7 +23,7 @@
   
       for (let i = 0; i < items.length; i++) {
         let a = items[i];
-        let title = `<%text><b>${a.name}</b><br>${a.street}<br>${a.city}<br>${a.subdivision}<br>${a.country}</%text>`;
+        let title = `<%text><b>${a.name}</b><br>${a.street}<br>${a.city}<br>${a.country}</%text>`;
         if (a.latitude != null && a.longitude != null) {
           let marker = L.marker(new L.LatLng(a.latitude, a.longitude), { title: title });
           marker.bindPopup(title);

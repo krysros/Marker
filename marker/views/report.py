@@ -4,7 +4,7 @@ from sqlalchemy.sql import func, select
 from sqlalchemy.sql.expression import desc
 
 from ..forms import ReportForm
-from ..forms.select import REPORTS, SUBDIVISIONS
+from ..forms.select import REPORTS
 from ..models import (
     Comment,
     CompaniesProjects,
@@ -50,7 +50,6 @@ class ReportView:
     def all(self):
         rel = self.request.matchdict.get("rel", "companies-tags")
         page = int(self.request.params.get("page", 1))
-        subdivisions = dict(SUBDIVISIONS)
         reports = dict(REPORTS)
 
         match rel:
@@ -308,13 +307,11 @@ class ReportView:
         next_page = self.request.route_url(
             "report_more",
             rel=rel,
-            subdivisions=subdivisions,
             _query={"page": page + 1},
         )
         return {
             "rel": rel,
             "lead": reports[rel],
-            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
         }

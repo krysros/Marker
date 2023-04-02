@@ -4,6 +4,7 @@ from sqlalchemy import select
 from wtforms import Form, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 
+from ..forms.select import get_subdivisions
 from ..models import Company
 from .filters import (
     dash_filter,
@@ -11,7 +12,7 @@ from .filters import (
     remove_multiple_spaces,
     strip_filter,
 )
-from .select import COLORS, COUNTRIES, COURTS, SUBDIVISIONS
+from .select import COLORS, COUNTRIES, COURTS
 from .ts import TranslationString as _
 
 
@@ -61,7 +62,9 @@ class CompanyForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
+    subdivision = SelectField(
+        _("Subdivision"), choices=[], validate_choice=False
+    )
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(
         _("Link"),
@@ -110,6 +113,11 @@ class CompanyForm(Form):
             self.edited_item = args[1]
         except IndexError:
             self.edited_item = None
+
+        try:
+            self.subdivision.choices = get_subdivisions(self.edited_item.country)
+        except AttributeError:
+            self.subdivision.choices = [("", "---")]
 
     def validate_name(self, field):
         if self.edited_item:
@@ -165,7 +173,9 @@ class CompanySearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    subdivision = SelectField(_("Subdivision"), choices=SUBDIVISIONS)
+    subdivision = SelectField(
+        _("Subdivision"), choices=[], validate_choice=False
+    )
     country = SelectField(_("Country"), choices=COUNTRIES)
     link = StringField(_("Link"), filters=[strip_filter])
     NIP = StringField(_("NIP"), filters=[strip_filter])

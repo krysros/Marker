@@ -4,9 +4,9 @@ from .comment import CommentForm  # flake8: noqa
 from .comment import CommentSearchForm  # flake8: noqa
 from .company import CompanyForm  # flake8: noqa
 from .company import CompanySearchForm  # flake8: noqa
-from .login import LoginForm  # flake8: noqa
 from .contact import ContactForm  # flaske8: noqa
 from .contact import ContactSearchForm  # flake8: noqa
+from .login import LoginForm  # flake8: noqa
 from .project import ProjectForm  # flake8: noqa
 from .project import ProjectSearchForm  # flake8: noqa
 from .report import ReportForm  # flake8: noqa

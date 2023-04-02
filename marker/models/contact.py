@@ -1,5 +1,6 @@
 import datetime
 from typing import Optional
+
 from slugify import slugify
 from sqlalchemy import ForeignKey, Unicode
 from sqlalchemy.orm import Mapped, mapped_column, relationship

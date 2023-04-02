@@ -1,3 +1,7 @@
+<%!
+  import pycountry
+%>
+
 % for k, v in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
@@ -7,7 +11,7 @@
 <tr>
 % endif
 % if "subdivisions" in rel:
-  <td>${subdivisions[k]}</td>
+  <td>${getattr(pycountry.subdivisions.get(code=k), "name", "---")}</td>
 % else:
   <td>${k}</td>
 % endif

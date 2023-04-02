@@ -13,7 +13,6 @@ from ..forms.select import (
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
-    SUBDIVISIONS,
 )
 from ..models import Company, Project, Tag, recommended, watched
 from ..paginator import get_paginator
@@ -207,7 +206,6 @@ class TagView:
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Company)
@@ -273,7 +271,6 @@ class TagView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
@@ -347,7 +344,6 @@ class TagView:
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
-        subdivisions = dict(SUBDIVISIONS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         stmt = select(Project)
@@ -413,7 +409,6 @@ class TagView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
-            "subdivisions": subdivisions,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,

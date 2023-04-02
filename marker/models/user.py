@@ -1,20 +1,21 @@
 import datetime
+
 import argon2
 from sqlalchemy import Unicode, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import (
+    recommended,
     selected_companies,
+    selected_contacts,
     selected_projects,
     selected_tags,
-    selected_contacts,
-    recommended,
     watched,
 )
 from .comment import Comment
 from .company import Company
-from .meta import Base
 from .contact import Contact
+from .meta import Base
 from .project import Project
 from .tag import Tag
 

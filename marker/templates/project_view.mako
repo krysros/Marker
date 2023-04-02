@@ -2,6 +2,10 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
+<%!
+  import pycountry
+%>
+
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.project_pill(project)}</div>
   <div>${button.watch(project)}</div>
@@ -30,7 +34,7 @@
           <dt>${_("City")}</dt>
           <dd>${project.city or "---"}</dd>
           <dt>${_("Subdivision")}</dt>
-          <dd>${subdivisions.get(project.subdivision) or "---"}</dd>
+          <dd>${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</dd>
           <dt>${_("Country")}</dt>
           <dd>${countries.get(project.country) or "---"}</dd>      
         </dl>
@@ -81,7 +85,7 @@
       attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
-  let title = `<b>${project.name}</b><br>${project.street}<br>${project.city}<br>${project.subdivision}<br>${project.country}`;
+  let title = `<b>${project.name}</b><br>${project.street}<br>${project.city}<br>${project.country}`;
   marker.bindPopup(title);
   marker.openPopup();
 </script>
