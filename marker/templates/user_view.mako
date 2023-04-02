@@ -1,9 +1,9 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
-<%namespace name="pills" file="pills.mako"/>
+<%namespace name="pills" file="user_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${pills.user_pill(user)}</div>
+  <div class="me-auto">${pills.pills(user)}</div>
   <div>${button.edit('user_edit', username=user.name)}</div>
   <div>${button.delete('user_delete', username=user.name)}</div>
 </div>

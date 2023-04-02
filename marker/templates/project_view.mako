@@ -1,13 +1,13 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
-<%namespace name="pills" file="pills.mako"/>
+<%namespace name="pills" file="project_pills.mako"/>
 
 <%!
   import pycountry
 %>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${pills.project_pill(project)}</div>
+  <div class="me-auto">${pills.pills(project)}</div>
   <div>${button.watch(project)}</div>
   <div>${button.edit('project_edit', project_id=project.id, slug=project.slug)}</div>
   <div>${button.delete('project_delete', project_id=project.id, slug=project.slug)}</div>
