@@ -4,12 +4,15 @@ from .ts import TranslationString as _
 
 
 def get_subdivisions(country_code):
-    subdivisions = [
-        (subdivision.code, subdivision.name)
-        for subdivision in pycountry.subdivisions.get(country_code=country_code)
-    ]
-    subdivisions = sorted(subdivisions)
-    subdivisions = [("", "---")] + subdivisions
+    first_option = [("", "---")]
+    subdivisions = []
+    if country_code:
+        subdivisions = [
+            (subdivision.code, subdivision.name)
+            for subdivision in pycountry.subdivisions.get(country_code=country_code)
+        ]
+        subdivisions = sorted(subdivisions)
+    subdivisions = first_option + subdivisions
     return subdivisions
 
 
