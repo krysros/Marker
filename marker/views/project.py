@@ -11,13 +11,13 @@ from ..forms.project import ProjectForm, ProjectSearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
-    COUNTRIES,
     ORDER_CRITERIA,
     PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA_PROJECTS,
     STAGES,
     STATUS,
     USER_ROLES,
+    select_countries,
 )
 from ..geo import location
 from ..models import (
@@ -69,7 +69,7 @@ class ProjectView:
         status = dict(STATUS)
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
         colors = dict(COLORS)
         stages = dict(STAGES)
         projects_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
@@ -427,7 +427,7 @@ class ProjectView:
     def view(self):
         project = self.request.context.project
         stages = dict(STAGES)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
         company_roles = dict(COMPANY_ROLES)
         delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
@@ -519,7 +519,7 @@ class ProjectView:
     def add(self):
         _ = self.request.translate
         form = ProjectForm(self.request.POST, request=self.request)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
             project = Project(
@@ -567,7 +567,7 @@ class ProjectView:
         _ = self.request.translate
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project, request=self.request)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)

@@ -4,7 +4,6 @@ from sqlalchemy import select
 from wtforms import Form, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 
-from ..forms.select import get_subdivisions
 from ..models import Company
 from .filters import (
     dash_filter,
@@ -12,7 +11,7 @@ from .filters import (
     remove_multiple_spaces,
     strip_filter,
 )
-from .select import COLORS, COUNTRIES, COURTS
+from .select import COLORS, COURTS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
 
@@ -62,10 +61,8 @@ class CompanyForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    subdivision = SelectField(
-        _("Subdivision"), choices=[], validate_choice=False
-    )
-    country = SelectField(_("Country"), choices=COUNTRIES)
+    subdivision = SelectField(_("Subdivision"), choices=[], validate_choice=False)
+    country = SelectField(_("Country"), choices=select_countries())
     link = StringField(
         _("Link"),
         validators=[Length(max=100)],
@@ -119,7 +116,7 @@ class CompanyForm(Form):
         except AttributeError:
             country = None
 
-        self.subdivision.choices = get_subdivisions(country)
+        self.subdivision.choices = select_subdivisions(country)
 
     def validate_name(self, field):
         if self.edited_item:
@@ -175,10 +172,8 @@ class CompanySearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    subdivision = SelectField(
-        _("Subdivision"), choices=[], validate_choice=False
-    )
-    country = SelectField(_("Country"), choices=COUNTRIES)
+    subdivision = SelectField(_("Subdivision"), choices=[], validate_choice=False)
+    country = SelectField(_("Country"), choices=select_countries())
     link = StringField(_("Link"), filters=[strip_filter])
     NIP = StringField(_("NIP"), filters=[strip_filter])
     REGON = StringField(_("REGON"), filters=[strip_filter])

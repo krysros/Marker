@@ -3,7 +3,14 @@ import pycountry
 from .ts import TranslationString as _
 
 
-def get_subdivisions(country_code):
+def select_countries():
+    first_option = [("", "---")]
+    countries = [(country.alpha_2, country.name) for country in pycountry.countries]
+    countries = first_option + countries
+    return countries
+
+
+def select_subdivisions(country_code):
     first_option = [("", "---")]
     subdivisions = []
     if country_code:
@@ -14,11 +21,6 @@ def get_subdivisions(country_code):
         subdivisions = sorted(subdivisions)
     subdivisions = first_option + subdivisions
     return subdivisions
-
-
-COUNTRIES = [("", "---")] + [
-    (country.alpha_2, country.name) for country in pycountry.countries
-]
 
 
 SORT_CRITERIA = [

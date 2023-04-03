@@ -10,12 +10,12 @@ from ..forms import CompanyForm, CompanySearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
-    COUNTRIES,
     COURTS,
     ORDER_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     STAGES,
     USER_ROLES,
+    select_countries,
 )
 from ..geo import location
 from ..models import (
@@ -212,7 +212,7 @@ class CompanyView:
     def view(self):
         company = self.request.context.company
         courts = dict(COURTS)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
 
@@ -610,7 +610,7 @@ class CompanyView:
     def add(self):
         _ = self.request.translate
         form = CompanyForm(self.request.POST, request=self.request)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
         if self.request.method == "POST" and form.validate():
             company = Company(
                 name=form.name.data,
@@ -658,7 +658,7 @@ class CompanyView:
         _ = self.request.translate
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, request=self.request)
-        countries = dict(COUNTRIES)
+        countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
