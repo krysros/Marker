@@ -10,7 +10,7 @@ def select_countries():
     return countries
 
 
-def select_subdivisions(country_code):
+def select_subdivisions(country_code=None):
     first_option = [("", "---")]
     subdivisions = []
     if country_code:
