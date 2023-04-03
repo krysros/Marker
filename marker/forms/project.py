@@ -38,7 +38,7 @@ class ProjectForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    subdivision = SelectField(_("Subdivision"), choices=[], validate_choice=False)
+    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
     country = SelectField(_("Country"), choices=select_countries())
     link = StringField(
         _("Link"),
@@ -85,7 +85,7 @@ class ProjectSearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    subdivision = SelectField(_("Subdivision"), choices=[], validate_choice=False)
+    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
     country = SelectField(_("Country"), choices=select_countries())
     link = StringField(_("Link"), filters=[strip_filter])
     deadline = DateField(_("Deadline"), validators=[Optional()])
