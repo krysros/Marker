@@ -60,9 +60,11 @@ class ProjectForm(Form):
             self.edited_item = None
 
         try:
-            self.subdivision.choices = get_subdivisions(self.edited_item.country)
+            country = self.edited_item.country
         except AttributeError:
-            self.subdivision.choices = [("", "---")]
+            country = None
+
+        self.subdivision.choices = get_subdivisions(country)
 
     def validate_name(self, field):
         if self.edited_item:
