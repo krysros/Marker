@@ -24,7 +24,7 @@
       </div>
       <div class="mb-3">
         ${form.country.label}
-        ${form.country(class_="form-control", **{"hx-get": "/subdivision", "hx-target": "#subdivision"})}
+        ${form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
       </div>
       <div class="mb-3">
         ${form.subdivision.label}
