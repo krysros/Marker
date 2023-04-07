@@ -38,7 +38,7 @@ class ProjectForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
-    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
+    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
     country = SelectField(_("Country"), choices=select_countries())
     link = StringField(
         _("Link"),
