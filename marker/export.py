@@ -7,7 +7,7 @@ from pyramid.path import AssetResolver
 from pyramid.response import Response
 from unidecode import unidecode
 
-from .models import Company, Project, Tag, Contact
+from .models import Company, Contact, Project, Tag
 
 
 def response_xlsx(items, columns):
