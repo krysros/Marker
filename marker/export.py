@@ -7,8 +7,10 @@ from pyramid.path import AssetResolver
 from pyramid.response import Response
 from unidecode import unidecode
 
+from .models import Company, Project, Tag, Contact
 
-def response_xlsx(items, header, cols):
+
+def response_xlsx(items, columns):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
@@ -18,17 +20,12 @@ def response_xlsx(items, header, cols):
     bold = workbook.add_format({"bold": True})
 
     # Write rows.
-    for j, col in enumerate(header):
+    for j, col in enumerate(columns):
         worksheet.write(0, j, col, bold)
 
-    i = 1
-    for item in items:
-        for j, col in enumerate(cols):
+    for i, item in enumerate(items, start=1):
+        for j, col in enumerate(columns):
             worksheet.write(i, j, getattr(item, col))
-        i += 1
-
-    for col, width in enumerate(cols.values()):
-        worksheet.set_column(col, col, width)
 
     # Close the workbook before streaming the data.
     workbook.close()
@@ -46,60 +43,26 @@ def response_xlsx(items, header, cols):
 
 def export_companies_to_xlsx(request, companies):
     _ = request.translate
-
-    header = [
-        _("Company"),
-        _("City"),
-        _("Subdivision"),
-        _("Recommended"),
-        _("Link"),
-    ]
-
-    cols = {
-        "name": 40,
-        "city": 20,
-        "subdivision": 20,
-        "count_recommended": 20,
-        "link": 20,
-    }
-    return response_xlsx(companies, header, cols)
+    columns = Company.__table__.columns.keys()
+    return response_xlsx(companies, columns)
 
 
 def export_projects_to_xlsx(request, projects):
     _ = request.translate
-
-    header = [
-        _("Project"),
-        _("Deadline"),
-        _("City"),
-        _("Subdivision"),
-        _("Link"),
-    ]
-
-    cols = {"name": 70, "deadline": 10, "city": 20, "subdivision": 5, "link": 50}
-    return response_xlsx(projects, header, cols)
+    columns = Project.__table__.columns.keys()
+    return response_xlsx(projects, columns)
 
 
 def export_tags_to_xlsx(request, tags):
     _ = request.translate
-
-    header = [_("Tag"), _("Companies"), _("Projects")]
-    cols = {"name": 70, "count_companies": 10, "count_projects": 10}
-    return response_xlsx(tags, header, cols)
+    columns = Tag.__table__.columns.keys()
+    return response_xlsx(tags, columns)
 
 
 def export_contacts_to_xlsx(request, contacts):
     _ = request.translate
-
-    header = [
-        _("First name and last name"),
-        _("Role"),
-        _("Phone"),
-        _("Email"),
-    ]
-
-    cols = {"name": 70, "role": 20, "phone": 20, "email": 20}
-    return response_xlsx(contacts, header, cols)
+    columns = Contact.__table__.columns.keys()
+    return response_xlsx(contacts, columns)
 
 
 def response_vcard(contact):
