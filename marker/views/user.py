@@ -981,7 +981,7 @@ class UserView:
             stmt = stmt.order_by(getattr(Contact, sort).desc())
 
         contacts = self.request.dbsession.execute(stmt).scalars()
-        response = export_contacts_to_xlsx(contacts)
+        response = export_contacts_to_xlsx(self.request, contacts)
         log.info(
             _("The user %s exported the data of selected contacts")
             % self.request.identity.name

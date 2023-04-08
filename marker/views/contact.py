@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
-from ..export import export_vcard
+from ..export import response_vcard
 from ..forms import ContactForm, ContactSearchForm
 from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA
 from ..models import Contact
@@ -190,7 +190,7 @@ class ContactView:
     @view_config(route_name="contact_vcard", permission="view")
     def vcard(self):
         contact = self.request.context.contact
-        response = export_vcard(contact)
+        response = response_vcard(contact)
         return response
 
     @view_config(

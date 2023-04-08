@@ -8,15 +8,45 @@ from pyramid.response import Response
 from unidecode import unidecode
 
 
-def export_companies_to_xlsx(request, companies):
-    _ = request.translate
+def response_xlsx(items, header, cols):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
-    workbook = xlsxwriter.Workbook(output, {"constant_memory": True})
+    workbook = xlsxwriter.Workbook(
+        output, {"constant_memory": True, "default_date_format": "dd.mm.yyyy"}
+    )
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({"bold": True})
 
     # Write rows.
+    for j, col in enumerate(header):
+        worksheet.write(0, j, col, bold)
+
+    i = 1
+    for item in items:
+        for j, col in enumerate(cols):
+            worksheet.write(i, j, getattr(item, col))
+        i += 1
+
+    for col, width in enumerate(cols.values()):
+        worksheet.set_column(col, col, width)
+
+    # Close the workbook before streaming the data.
+    workbook.close()
+    # Rewind the buffer.
+    output.seek(0)
+    # Construct a server response.
+    response = Response()
+    response.body_file = output
+    response.content_type = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response.content_disposition = 'attachment; filename="Marker.xlsx"'
+    return response
+
+
+def export_companies_to_xlsx(request, companies):
+    _ = request.translate
+
     header = [
         _("Company"),
         _("City"),
@@ -25,50 +55,19 @@ def export_companies_to_xlsx(request, companies):
         _("Link"),
     ]
 
-    for j, col in enumerate(header):
-        worksheet.write(0, j, col, bold)
-
-    i = 1
-    for company in companies:
-        cols = [
-            company.name,
-            company.city,
-            company.subdivision,
-            company.count_recommended,
-            company.link,
-        ]
-        for j, col in enumerate(cols):
-            worksheet.write(i, j, col)
-        i += 1
-
-    cols_width = [40, 20, 20, 20, 20]
-    for col, width in enumerate(cols_width):
-        worksheet.set_column(col, col, width)
-
-    # Close the workbook before streaming the data.
-    workbook.close()
-    # Rewind the buffer.
-    output.seek(0)
-    # Construct a server response.
-    response = Response()
-    response.body_file = output
-    response.content_type = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Companies")
-    return response
+    cols = {
+        "name": 40,
+        "city": 20,
+        "subdivision": 20,
+        "count_recommended": 20,
+        "link": 20,
+    }
+    return response_xlsx(companies, header, cols)
 
 
 def export_projects_to_xlsx(request, projects):
     _ = request.translate
-    # Create an in-memory output file for the new workbook.
-    output = io.BytesIO()
-    workbook = xlsxwriter.Workbook(
-        output, {"constant_memory": True, "default_date_format": "dd.mm.yyyy"}
-    )
-    worksheet = workbook.add_worksheet()
-    bold = workbook.add_format({"bold": True})
-    # Write rows.
+
     header = [
         _("Project"),
         _("Deadline"),
@@ -77,139 +76,33 @@ def export_projects_to_xlsx(request, projects):
         _("Link"),
     ]
 
-    for j, col in enumerate(header):
-        worksheet.write(0, j, col, bold)
-
-    i = 1
-    for project in projects:
-        cols = [
-            project.name,
-            project.deadline,
-            project.city,
-            project.subdivision,
-            project.link,
-        ]
-        for j, col in enumerate(cols):
-            worksheet.write(i, j, col)
-        i += 1
-
-    cols_width = [70, 10, 20, 5, 50, 20]
-    for col, width in enumerate(cols_width):
-        worksheet.set_column(col, col, width)
-
-    # Close the workbook before streaming the data.
-    workbook.close()
-    # Rewind the buffer.
-    output.seek(0)
-    # Construct a server response.
-    response = Response()
-    response.body_file = output
-    response.content_type = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Projects")
-    return response
+    cols = {"name": 70, "deadline": 10, "city": 20, "subdivision": 5, "link": 50}
+    return response_xlsx(projects, header, cols)
 
 
 def export_tags_to_xlsx(request, tags):
     _ = request.translate
-    # Create an in-memory output file for the new workbook.
-    output = io.BytesIO()
-    workbook = xlsxwriter.Workbook(
-        output, {"constant_memory": True, "default_date_format": "dd.mm.yyyy"}
-    )
-    worksheet = workbook.add_worksheet()
-    bold = workbook.add_format({"bold": True})
-    # Write rows.
+
     header = [_("Tag"), _("Companies"), _("Projects")]
-
-    for j, col in enumerate(header):
-        worksheet.write(0, j, col, bold)
-
-    i = 1
-    for tag in tags:
-        cols = [tag.name, tag.count_companies, tag.count_projects]
-        for j, col in enumerate(cols):
-            worksheet.write(i, j, col)
-        i += 1
-
-    cols_width = [70, 10, 10]
-    for col, width in enumerate(cols_width):
-        worksheet.set_column(col, col, width)
-
-    # Close the workbook before streaming the data.
-    workbook.close()
-    # Rewind the buffer.
-    output.seek(0)
-    # Construct a server response.
-    response = Response()
-    response.body_file = output
-    response.content_type = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Tags")
-    return response
+    cols = {"name": 70, "count_companies": 10, "count_projects": 10}
+    return response_xlsx(tags, header, cols)
 
 
 def export_contacts_to_xlsx(request, contacts):
     _ = request.translate
-    # Create an in-memory output file for the new workbook.
-    output = io.BytesIO()
-    workbook = xlsxwriter.Workbook(
-        output, {"constant_memory": True, "default_date_format": "dd.mm.yyyy"}
-    )
-    worksheet = workbook.add_worksheet()
-    bold = workbook.add_format({"bold": True})
-    # Write rows.
+
     header = [
         _("First name and last name"),
-        _("Company/Project"),
         _("Role"),
         _("Phone"),
         _("Email"),
     ]
 
-    for j, col in enumerate(header):
-        worksheet.write(0, j, col, bold)
-
-    i = 1
-    for contact in contacts:
-        if contact.company:
-            member = contact.company.name
-        elif contact.project:
-            member = contact.project.name
-        else:
-            member = "---"
-        cols = [
-            contact.name,
-            member,
-            contact.role,
-            contact.phone,
-            contact.email,
-        ]
-        for j, col in enumerate(cols):
-            worksheet.write(i, j, col)
-        i += 1
-
-    cols_width = [70, 20, 20, 20, 20]
-    for col, width in enumerate(cols_width):
-        worksheet.set_column(col, col, width)
-
-    # Close the workbook before streaming the data.
-    workbook.close()
-    # Rewind the buffer.
-    output.seek(0)
-    # Construct a server response.
-    response = Response()
-    response.body_file = output
-    response.content_type = (
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response.content_disposition = 'attachment; filename="%s.xlsx"' % _("Contacts")
-    return response
+    cols = {"name": 70, "role": 20, "phone": 20, "email": 20}
+    return response_xlsx(contacts, header, cols)
 
 
-def export_vcard(contact):
+def response_vcard(contact):
     response = Response()
     a = AssetResolver("marker")
     resolver = a.resolve("templates/vcard.mako")
