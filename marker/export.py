@@ -7,25 +7,23 @@ from pyramid.path import AssetResolver
 from pyramid.response import Response
 from unidecode import unidecode
 
-from .models import Company, Contact, Project, Tag
 
-
-def response_xlsx(items, columns):
+def response_xlsx(rows, header_row):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
         output, {"constant_memory": True, "default_date_format": "dd.mm.yyyy"}
     )
     worksheet = workbook.add_worksheet()
-    bold = workbook.add_format({"bold": True})
+    cell_format = workbook.add_format({"bold": True})
 
     # Write rows.
-    for j, col in enumerate(columns):
-        worksheet.write(0, j, col, bold)
+    for j, elem in enumerate(header_row):
+        worksheet.write(0, j, elem, cell_format)
 
-    for i, item in enumerate(items, start=1):
-        for j, col in enumerate(columns):
-            worksheet.write(i, j, getattr(item, col))
+    for i, row in enumerate(rows, start=1):
+        for j, elem in enumerate(row):
+            worksheet.write(i, j, elem)
 
     # Close the workbook before streaming the data.
     workbook.close()
@@ -43,26 +41,49 @@ def response_xlsx(items, columns):
 
 def export_companies_to_xlsx(request, companies):
     _ = request.translate
-    columns = Company.__table__.columns.keys()
-    return response_xlsx(companies, columns)
+    header_row = [
+        _("Name"),
+        _("Street"),
+        _("Post code"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+        _("Link"),
+        _("NIP"),
+        _("REGON"),
+        _("KRS"),
+        _("Court"),
+    ]
+    return response_xlsx(companies, header_row)
 
 
 def export_projects_to_xlsx(request, projects):
     _ = request.translate
-    columns = Project.__table__.columns.keys()
-    return response_xlsx(projects, columns)
+    header_row = [
+        _("Name"),
+        _("Street"),
+        _("Post code"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+        _("Link"),
+        _("Deadline"),
+        _("Stage"),
+        _("Project delivery method"),
+    ]
+    return response_xlsx(projects, header_row)
 
 
 def export_tags_to_xlsx(request, tags):
     _ = request.translate
-    columns = Tag.__table__.columns.keys()
-    return response_xlsx(tags, columns)
+    header_row = [_("Tag")]
+    return response_xlsx(tags, header_row)
 
 
 def export_contacts_to_xlsx(request, contacts):
     _ = request.translate
-    columns = Contact.__table__.columns.keys()
-    return response_xlsx(contacts, columns)
+    header_row = [_("Fullname"), _("Role"), _("Phone"), _("Email")]
+    return response_xlsx(contacts, header_row)
 
 
 def response_vcard(contact):

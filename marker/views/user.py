@@ -618,7 +618,19 @@ class UserView:
         order = self.request.params.get("order", "asc")
 
         stmt = (
-            select(Company)
+            select(
+                Company.name,
+                Company.street,
+                Company.postcode,
+                Company.city,
+                Company.subdivision,
+                Company.country,
+                Company.link,
+                Company.NIP,
+                Company.REGON,
+                Company.KRS,
+                Company.court,
+            )
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
         )
@@ -628,7 +640,7 @@ class UserView:
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).all()
         response = export_companies_to_xlsx(self.request, companies)
         log.info(
             _("The user %s exported the data of selected companies")
@@ -744,7 +756,18 @@ class UserView:
         order = self.request.params.get("order", "asc")
 
         stmt = (
-            select(Project)
+            select(
+                Project.name,
+                Project.street,
+                Project.postcode,
+                Project.city,
+                Project.subdivision,
+                Project.country,
+                Project.link,
+                Project.deadline,
+                Project.stage,
+                Project.delivery_method,
+            )
             .join(selected_projects)
             .filter(user.id == selected_projects.c.user_id)
         )
@@ -754,7 +777,7 @@ class UserView:
         elif order == "desc":
             stmt = stmt.order_by(getattr(Project, sort).desc())
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).all()
         response = export_projects_to_xlsx(self.request, projects)
         log.info(
             _("The user %s exported the data of selected projects")
@@ -857,7 +880,9 @@ class UserView:
         order = self.request.params.get("order", "asc")
 
         stmt = (
-            select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
+            select(Tag.name)
+            .join(selected_tags)
+            .filter(user.id == selected_tags.c.user_id)
         )
 
         if order == "asc":
@@ -865,7 +890,7 @@ class UserView:
         elif order == "desc":
             stmt = stmt.order_by(getattr(Tag, sort).desc())
 
-        tags = self.request.dbsession.execute(stmt).scalars()
+        tags = self.request.dbsession.execute(stmt).all()
         response = export_tags_to_xlsx(self.request, tags)
         log.info(
             _("The user %s exported the data of selected tags")
@@ -970,7 +995,7 @@ class UserView:
         order = self.request.params.get("order", "asc")
 
         stmt = (
-            select(Contact)
+            select(Contact.name, Contact.role, Contact.phone, Contact.email)
             .join(selected_contacts)
             .filter(user.id == selected_contacts.c.user_id)
         )
@@ -980,7 +1005,7 @@ class UserView:
         elif order == "desc":
             stmt = stmt.order_by(getattr(Contact, sort).desc())
 
-        contacts = self.request.dbsession.execute(stmt).scalars()
+        contacts = self.request.dbsession.execute(stmt).all()
         response = export_contacts_to_xlsx(self.request, contacts)
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -1091,7 +1116,21 @@ class UserView:
         order = self.request.params.get("order", "asc")
 
         stmt = (
-            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+            select(
+                Company.name,
+                Company.street,
+                Company.postcode,
+                Company.city,
+                Company.subdivision,
+                Company.country,
+                Company.link,
+                Company.NIP,
+                Company.REGON,
+                Company.KRS,
+                Company.court,
+            )
+            .join(recommended)
+            .filter(user.id == recommended.c.user_id)
         )
 
         if order == "asc":
@@ -1099,7 +1138,7 @@ class UserView:
         elif order == "desc":
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).all()
         response = export_companies_to_xlsx(self.request, companies)
         log.info(
             _("The user %s exported the data of recommended companies")
@@ -1209,7 +1248,22 @@ class UserView:
         _order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()
 
-        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        stmt = (
+            select(
+                Project.name,
+                Project.street,
+                Project.postcode,
+                Project.city,
+                Project.subdivision,
+                Project.country,
+                Project.link,
+                Project.deadline,
+                Project.stage,
+                Project.delivery_method,
+            )
+            .join(watched)
+            .filter(user.id == watched.c.user_id)
+        )
 
         if _filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now.date())
@@ -1221,7 +1275,7 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).all()
         response = export_projects_to_xlsx(self.request, projects)
         log.info(
             _("The user %s exported the data of the observed projects")

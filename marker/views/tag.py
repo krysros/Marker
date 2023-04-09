@@ -283,7 +283,19 @@ class TagView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        stmt = select(Company)
+        stmt = select(
+            Company.name,
+            Company.street,
+            Company.postcode,
+            Company.city,
+            Company.subdivision,
+            Company.country,
+            Company.link,
+            Company.NIP,
+            Company.REGON,
+            Company.KRS,
+            Company.court,
+        )
 
         if _sort == "recommended":
             if _order == "asc":
@@ -313,7 +325,7 @@ class TagView:
         if _filter:
             stmt = stmt.filter(Company.color == _filter)
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).all()
         response = export_companies_to_xlsx(self.request, companies)
         log.info(_("The user %s exported company data") % self.request.identity.name)
         return response
@@ -421,7 +433,18 @@ class TagView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        stmt = select(Project)
+        stmt = select(
+            Project.name,
+            Project.street,
+            Project.postcode,
+            Project.city,
+            Project.subdivision,
+            Project.country,
+            Project.link,
+            Project.deadline,
+            Project.stage,
+            Project.delivery_method,
+        )
 
         if _sort == "watched":
             if _order == "asc":
@@ -451,7 +474,7 @@ class TagView:
         if _filter:
             stmt = stmt.filter(Project.color == _filter)
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).all()
         response = export_projects_to_xlsx(self.request, projects)
         log.info(_("The user %s exported project data") % self.request.identity.name)
         return response
