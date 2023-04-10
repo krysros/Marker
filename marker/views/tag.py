@@ -337,7 +337,6 @@ class TagView:
             _("NIP"),
             _("REGON"),
             _("KRS"),
-            _("Court"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(_("The user %s exported company data") % self.request.identity.name)

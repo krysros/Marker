@@ -647,7 +647,6 @@ class UserView:
             _("NIP"),
             _("REGON"),
             _("KRS"),
-            _("Court"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(
@@ -1172,7 +1171,6 @@ class UserView:
             _("NIP"),
             _("REGON"),
             _("KRS"),
-            _("Court"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(
