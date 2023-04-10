@@ -1,6 +1,5 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
-<%namespace name="checkbox" file="checkbox.mako"/>
 <%namespace name="pills" file="company_pills.mako"/>
 <%namespace name="modals" file="modals.mako"/>
 

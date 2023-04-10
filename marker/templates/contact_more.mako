@@ -9,7 +9,7 @@
 % else:
 <tr>
 % endif
-  <td>${checkbox.contact(contact)}</td>
+  <td>${checkbox.checkbox(contact, selected=request.identity.selected_contacts, url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
   <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name}</a></td>
   % if contact.company:
   <td><a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a></td>

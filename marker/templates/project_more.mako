@@ -14,7 +14,7 @@
 % else:
 <tr class="table-${project.color}">
 % endif
-  <td>${checkbox.project(project)}</td>
+  <td>${checkbox.checkbox(project, selected=request.identity.selected_projects, url=request.route_url('project_check', project_id=project.id, slug=project.slug))}</td>
   <td>
     <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
   </td>

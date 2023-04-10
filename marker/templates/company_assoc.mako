@@ -15,7 +15,7 @@
     <tbody>
       % for assoc in project.companies:
       <tr>
-        <td>${checkbox.project(assoc.project)}</td>
+        <td>${checkbox.checkbox(assoc.project, selected=request.identity.selected_projects, url=request.route_url('project_check', project_id=assoc.project.id, slug=assoc.project.slug))}</td>
         <td>
           <a href="${request.route_url('company_view', company_id=assoc.company.id, slug=assoc.company.slug)}">${assoc.company.name}</a>
         </td>

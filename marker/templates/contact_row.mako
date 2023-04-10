@@ -4,7 +4,7 @@
 
 % if contact:
 <tr>
-  <td>${checkbox.contact(contact)}</td>
+  <td>${checkbox.checkbox(contact, selected=request.identity.selected_contacts, url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
   <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a></td>
   <td>${contact.role or "---"}</td>
   <td>${contact.phone or "---"}</td>

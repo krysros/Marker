@@ -14,7 +14,7 @@
 % else:
 <tr class="table-${company.color}">
 % endif
-  <td>${checkbox.company(company)}</td>
+  <td>${checkbox.checkbox(company, selected=request.identity.selected_companies, url=request.route_url('company_check', company_id=company.id, slug=company.slug))}</td>
   <td>
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
   </td>
