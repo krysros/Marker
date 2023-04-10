@@ -12,7 +12,7 @@ def response_xlsx(rows, header_row):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
-        output, {"constant_memory": True, "default_date_format": "dd.mm.yyyy"}
+        output, {"constant_memory": True, "default_date_format": "yyyy-mm-dd"}
     )
     worksheet = workbook.add_worksheet()
     cell_format = workbook.add_format({"bold": True})
