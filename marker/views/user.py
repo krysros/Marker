@@ -6,12 +6,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
-from ..export import (
-    export_companies_to_xlsx,
-    export_contacts_to_xlsx,
-    export_projects_to_xlsx,
-    export_tags_to_xlsx,
-)
+from ..export import response_xlsx
 from ..forms import UserForm, UserSearchForm
 from ..forms.select import (
     COLORS,
@@ -641,7 +636,20 @@ class UserView:
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
         companies = self.request.dbsession.execute(stmt).all()
-        response = export_companies_to_xlsx(self.request, companies)
+        header_row = [
+            _("Name"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Link"),
+            _("NIP"),
+            _("REGON"),
+            _("KRS"),
+            _("Court"),
+        ]
+        response = response_xlsx(companies, header_row)
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -778,7 +786,19 @@ class UserView:
             stmt = stmt.order_by(getattr(Project, sort).desc())
 
         projects = self.request.dbsession.execute(stmt).all()
-        response = export_projects_to_xlsx(self.request, projects)
+        header_row = [
+            _("Name"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Link"),
+            _("Deadline"),
+            _("Stage"),
+            _("Project delivery method"),
+        ]
+        response = response_xlsx(projects, header_row)
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -891,7 +911,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Tag, sort).desc())
 
         tags = self.request.dbsession.execute(stmt).all()
-        response = export_tags_to_xlsx(self.request, tags)
+        header_row = [_("Tag")]
+        response = response_xlsx(tags, header_row)
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -1006,7 +1027,8 @@ class UserView:
             stmt = stmt.order_by(getattr(Contact, sort).desc())
 
         contacts = self.request.dbsession.execute(stmt).all()
-        response = export_contacts_to_xlsx(self.request, contacts)
+        header_row = [_("Fullname"), _("Role"), _("Phone"), _("Email")]
+        response = response_xlsx(contacts, header_row)
         log.info(
             _("The user %s exported the data of selected contacts")
             % self.request.identity.name
@@ -1139,7 +1161,20 @@ class UserView:
             stmt = stmt.order_by(getattr(Company, sort).desc())
 
         companies = self.request.dbsession.execute(stmt).all()
-        response = export_companies_to_xlsx(self.request, companies)
+        header_row = [
+            _("Name"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Link"),
+            _("NIP"),
+            _("REGON"),
+            _("KRS"),
+            _("Court"),
+        ]
+        response = response_xlsx(companies, header_row)
         log.info(
             _("The user %s exported the data of recommended companies")
             % self.request.identity.name
@@ -1276,7 +1311,19 @@ class UserView:
             stmt = stmt.order_by(getattr(Project, _sort).desc())
 
         projects = self.request.dbsession.execute(stmt).all()
-        response = export_projects_to_xlsx(self.request, projects)
+        header_row = [
+            _("Name"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Link"),
+            _("Deadline"),
+            _("Stage"),
+            _("Project delivery method"),
+        ]
+        response = response_xlsx(projects, header_row)
         log.info(
             _("The user %s exported the data of the observed projects")
             % self.request.identity.name

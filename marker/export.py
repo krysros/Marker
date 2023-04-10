@@ -39,53 +39,6 @@ def response_xlsx(rows, header_row):
     return response
 
 
-def export_companies_to_xlsx(request, companies):
-    _ = request.translate
-    header_row = [
-        _("Name"),
-        _("Street"),
-        _("Post code"),
-        _("City"),
-        _("Subdivision"),
-        _("Country"),
-        _("Link"),
-        _("NIP"),
-        _("REGON"),
-        _("KRS"),
-        _("Court"),
-    ]
-    return response_xlsx(companies, header_row)
-
-
-def export_projects_to_xlsx(request, projects):
-    _ = request.translate
-    header_row = [
-        _("Name"),
-        _("Street"),
-        _("Post code"),
-        _("City"),
-        _("Subdivision"),
-        _("Country"),
-        _("Link"),
-        _("Deadline"),
-        _("Stage"),
-        _("Project delivery method"),
-    ]
-    return response_xlsx(projects, header_row)
-
-
-def export_tags_to_xlsx(request, tags):
-    _ = request.translate
-    header_row = [_("Tag")]
-    return response_xlsx(tags, header_row)
-
-
-def export_contacts_to_xlsx(request, contacts):
-    _ = request.translate
-    header_row = [_("Fullname"), _("Role"), _("Phone"), _("Email")]
-    return response_xlsx(contacts, header_row)
-
-
 def response_vcard(contact):
     response = Response()
     a = AssetResolver("marker")

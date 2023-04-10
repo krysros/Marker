@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..dropdown import Dd, Dropdown
-from ..export import export_companies_to_xlsx, export_projects_to_xlsx
+from ..export import response_xlsx
 from ..forms import TagForm, TagSearchForm
 from ..forms.select import (
     COLORS,
@@ -326,7 +326,20 @@ class TagView:
             stmt = stmt.filter(Company.color == _filter)
 
         companies = self.request.dbsession.execute(stmt).all()
-        response = export_companies_to_xlsx(self.request, companies)
+        header_row = [
+            _("Name"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Link"),
+            _("NIP"),
+            _("REGON"),
+            _("KRS"),
+            _("Court"),
+        ]
+        response = response_xlsx(companies, header_row)
         log.info(_("The user %s exported company data") % self.request.identity.name)
         return response
 
@@ -475,7 +488,19 @@ class TagView:
             stmt = stmt.filter(Project.color == _filter)
 
         projects = self.request.dbsession.execute(stmt).all()
-        response = export_projects_to_xlsx(self.request, projects)
+        header_row = [
+            _("Name"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Link"),
+            _("Deadline"),
+            _("Stage"),
+            _("Project delivery method"),
+        ]
+        response = response_xlsx(projects, header_row)
         log.info(_("The user %s exported project data") % self.request.identity.name)
         return response
 
