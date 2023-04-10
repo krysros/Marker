@@ -8,11 +8,11 @@ from pyramid.response import Response
 from unidecode import unidecode
 
 
-def response_xlsx(rows, header_row):
+def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
-        output, {"constant_memory": True, "default_date_format": "yyyy-mm-dd"}
+        output, {"constant_memory": True, "default_date_format": default_date_format}
     )
     worksheet = workbook.add_worksheet()
     cell_format = workbook.add_format({"bold": True})
