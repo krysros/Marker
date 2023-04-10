@@ -1,17 +1,18 @@
 <%! from marker.forms.ts import TranslationString as _ %>
 
+<%!
+project_pills = [
+  {"title": _("Project"), "route_name": "project_view", "event": "projectCompanyEvent"},
+  {"title": _("Companies"), "route_name": "project_companies", "event": "projectCompanyEvent"},
+  {"title": _("Tags"), "route_name": "project_tags", "event": "tagEvent"},
+  {"title": _("Contacts"), "route_name": "project_contacts", "event": "contactEvent"},
+  {"title": _("Companies"), "route_name": "project_comments", "event": "commentEvent"},
+  {"title": _("Watched"), "route_name": "project_watched", "event": "watchEvent"},
+  {"title": _("Similar"), "route_name": "project_similar", "event": "tagEvent"},
+]
+%>
+
 <%def name="pills(project)">
-  <%
-  project_pills = [
-    {"title": _("Project"), "route_name": "project_view", "event": "projectCompanyEvent"},
-    {"title": _("Companies"), "route_name": "project_companies", "event": "projectCompanyEvent"},
-    {"title": _("Tags"), "route_name": "project_tags", "event": "tagEvent"},
-    {"title": _("Contacts"), "route_name": "project_contacts", "event": "contactEvent"},
-    {"title": _("Companies"), "route_name": "project_comments", "event": "commentEvent"},
-    {"title": _("Watched"), "route_name": "project_watched", "event": "watchEvent"},
-    {"title": _("Similar"), "route_name": "project_similar", "event": "tagEvent"},
-  ]
-  %>
   <ul class="nav nav-pills">
   % for pill in project_pills:
     <li class="nav-item">

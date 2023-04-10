@@ -1,13 +1,14 @@
 <%! from marker.forms.ts import TranslationString as _ %>
 
+<%!
+tag_pills = [
+  {"title": _("Tag"), "route_name": "tag_view", "event": "tagEvent"},
+  {"title": _("Companies"), "route_name": "tag_companies", "event": "tagEvent"},
+  {"title": _("Projects"), "route_name": "tag_projects", "event": "tagEvent"},
+]
+%>
+
 <%def name="pills(tag)">
-  <%
-  tag_pills = [
-    {"title": _("Tag"), "route_name": "tag_view", "event": "tagEvent"},
-    {"title": _("Companies"), "route_name": "tag_companies", "event": "tagEvent"},
-    {"title": _("Projects"), "route_name": "tag_projects", "event": "tagEvent"},
-  ]
-  %>
   <ul class="nav nav-pills">
   % for pill in tag_pills:
     <li class="nav-item">

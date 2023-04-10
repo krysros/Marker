@@ -1,16 +1,17 @@
 <%! from marker.forms.ts import TranslationString as _ %>
 
+<%!
+user_pills = [
+  {"title": _("User"), "route_name": "user_view"},
+  {"title": _("Companies"), "route_name": "user_companies"},
+  {"title": _("Projects"), "route_name": "user_projects"},
+  {"title": _("Tags"), "route_name": "user_tags"},
+  {"title": _("Contacts"), "route_name": "user_contacts"},
+  {"title": _("Comments"), "route_name": "user_comments"},
+]
+%>
+
 <%def name="pills(user)">
-  <%
-  user_pills = [
-    {"title": _("User"), "route_name": "user_view"},
-    {"title": _("Companies"), "route_name": "user_companies"},
-    {"title": _("Projects"), "route_name": "user_projects"},
-    {"title": _("Tags"), "route_name": "user_tags"},
-    {"title": _("Contacts"), "route_name": "user_contacts"},
-    {"title": _("Comments"), "route_name": "user_comments"},
-  ]
-  %>
   <ul class="nav nav-pills">
   % for pill in user_pills:
     <li class="nav-item">

@@ -1,17 +1,18 @@
 <%! from marker.forms.ts import TranslationString as _ %>
 
+<%!
+company_pills = [
+  {"title": _("Company"), "route_name": "company_view", "event": "projectCompanyEvent"},
+  {"title": _("Projects"), "route_name": "company_projects", "event": "projectCompanyEvent"},
+  {"title": _("Tags"), "route_name": "company_tags", "event": "tagEvent"},
+  {"title": _("Contacts"), "route_name": "company_contacts", "event": "contactEvent"},
+  {"title": _("Comments"), "route_name": "company_comments", "event": "commentEvent"},
+  {"title": _("Recommended"), "route_name": "company_recommended", "event": "recommendEvent"},
+  {"title": _("Similar"), "route_name": "company_similar", "event": "tagEvent"},
+]
+%>
+
 <%def name="pills(company)">
-  <%
-  company_pills = [
-    {"title": _("Company"), "route_name": "company_view", "event": "projectCompanyEvent"},
-    {"title": _("Projects"), "route_name": "company_projects", "event": "projectCompanyEvent"},
-    {"title": _("Tags"), "route_name": "company_tags", "event": "tagEvent"},
-    {"title": _("Contacts"), "route_name": "company_contacts", "event": "contactEvent"},
-    {"title": _("Comments"), "route_name": "company_comments", "event": "commentEvent"},
-    {"title": _("Recommended"), "route_name": "company_recommended", "event": "recommendEvent"},
-    {"title": _("Similar"), "route_name": "company_similar", "event": "tagEvent"},
-  ]
-  %>
   <ul class="nav nav-pills">
   % for pill in company_pills:
     <li class="nav-item">
