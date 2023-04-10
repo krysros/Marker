@@ -294,7 +294,6 @@ class TagView:
             Company.NIP,
             Company.REGON,
             Company.KRS,
-            Company.court,
         )
 
         if _sort == "recommended":

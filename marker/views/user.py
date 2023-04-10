@@ -624,7 +624,6 @@ class UserView:
                 Company.NIP,
                 Company.REGON,
                 Company.KRS,
-                Company.court,
             )
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
@@ -1148,7 +1147,6 @@ class UserView:
                 Company.NIP,
                 Company.REGON,
                 Company.KRS,
-                Company.court,
             )
             .join(recommended)
             .filter(user.id == recommended.c.user_id)
