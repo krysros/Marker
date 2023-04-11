@@ -11,6 +11,7 @@ from unidecode import unidecode
 def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
+    # Create a workbook.
     workbook = xlsxwriter.Workbook(
         output, {"constant_memory": True, "default_date_format": default_date_format}
     )
