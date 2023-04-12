@@ -40,8 +40,8 @@
   </td>
   <td>
     ${button.watch(project, size='sm')}
-    ${button.edit('project_edit', project_id=project.id, slug=project.slug, size='sm')}
-    ${button.del_row('project_del_row', project_id=project.id, slug=project.slug, size='sm')}
+    ${button.a_btn(icon='pencil-square', color='warning', size='sm', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}
+    ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('project_del_row', project_id=project.id, slug=project.slug))}
   </td>
 </tr>
 % endfor

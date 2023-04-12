@@ -24,8 +24,8 @@
     </a>
   </td>
   <td>
-    ${button.edit('tag_edit', tag_id=tag.id, slug=tag.slug, size='sm')}
-    ${button.del_row('tag_del_row', tag_id=tag.id, slug=tag.slug, size='sm')}
+    ${button.a_btn(icon='pencil-square', color='warning', size='sm', url=request.route_url('tag_edit', tag_id=tag.id, slug=tag.slug))}
+    ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('tag_del_row', tag_id=tag.id, slug=tag.slug))}
   </td>
 </tr>
 % endfor

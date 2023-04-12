@@ -4,8 +4,8 @@
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(user)}</div>
-  <div>${button.edit('user_edit', username=user.name)}</div>
-  <div>${button.delete('user_delete', username=user.name)}</div>
+  <div>${button.a_btn(icon='pencil-square', color='warning', url=request.route_url('user_edit', username=user.name))}</div>
+  <div>${button.button(icon='trash', color='danger', url=request.route_url('user_delete', username=user.name))}</div>
 </div>
 
 <p class="lead">${user.fullname}</p>

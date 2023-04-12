@@ -36,9 +36,9 @@
   <td>---</td>
   % endif
   <td>
-    ${button.button('contact_vcard', color='primary', icon='person-vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
-    ${button.edit('contact_edit', contact_id=contact.id, slug=contact.slug, size='sm')}
-    ${button.del_row('contact_del_row', contact_id=contact.id, slug=contact.slug, size='sm')}
+    ${button.a_btn(icon='person-vcard', color='primary', size='sm', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}
+    ${button.a_btn(icon='pencil-square', color='warning', size='sm', url=request.route_url('contact_edit', contact_id=contact.id, slug=contact.slug))}
+    ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('contact_del_row', contact_id=contact.id, slug=contact.slug))}
   </td>
 </tr>
 % endfor

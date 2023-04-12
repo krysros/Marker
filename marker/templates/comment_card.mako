@@ -13,7 +13,7 @@
     % endif
     % if comment.created_by == request.identity or request.identity.name == 'admin':
     <span style="float:right;">
-      ${button.del_card('comment_delete', comment_id=comment.id, size='sm')}
+      ${button.del_card(icon='trash', color='danger', size='sm', url=request.route_url('comment_delete', comment_id=comment.id))}
     </span>
     % endif
   </div>

@@ -9,9 +9,9 @@
   <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('project_count')}" hx-trigger="projectEvent from:body">${counter}</div></span>
   <div class="float-end">
-    ${button.button('project_map', color='secondary', icon='map', _query=search_query)}
-    ${button.button('project_search', color='primary', icon='search')}
-    ${button.add('project_add')}
+    ${button.a_btn(icon='map', color='secondary', url=request.route_url('project_map', _query=search_query))}
+    ${button.a_btn(icon='search', color='primary', url=request.route_url('project_search'))}
+    ${button.a_btn(icon='plus-lg', color='success', url=request.route_url('project_add'))}
   </div>
 </h2>
 

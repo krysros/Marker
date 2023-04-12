@@ -9,9 +9,9 @@
       </li>
     </ul>
   </div>
-  <div>${button.button('contact_vcard', color='primary', icon='person-vcard', contact_id=contact.id, slug=contact.slug)}</div>
-  <div>${button.edit('contact_edit', contact_id=contact.id, slug=contact.slug)}</div>
-  <div>${button.delete('contact_delete', contact_id=contact.id, slug=contact.slug)}</div>
+  <div>${button.a_btn(icon='person-vcard', color='primary', size='sm', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}</div>
+  <div>${button.a_btn(icon='pencil-square', color='warning', size='sm', url=request.route_url('contact_edit', contact_id=contact.id, slug=contact.slug))}</div>
+  <div>${button.button(icon='trash', color='danger', url=request.route_url('contact_delete', contact_id=contact.id, slug=contact.slug))}</div>
 </div>
 
 <%include file="contact_lead.mako"/>

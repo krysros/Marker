@@ -5,8 +5,8 @@
   <i class="bi bi-person-circle"></i> ${_("Users")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.button('user_search', color='primary', icon='search')}
-    ${button.add('user_add')}
+    ${button.a_btn(icon='search', color='primary', url=request.route_url('user_search'))}
+    ${button.a_btn(icon='plus-lg', color='success', url=request.route_url('user_add'))}
   </div>
 </h2>
 
