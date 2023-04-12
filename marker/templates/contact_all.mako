@@ -5,7 +5,7 @@
   <i class="bi bi-people"></i> ${_("Contacts")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('contact_count')}" hx-trigger="contactEvent from:body">${counter}</div></span>
   <div class="float-end">
-    ${button.search('contact_search')}
+    ${button.button('contact_search', color='primary', icon='search')}
   </div>
 </h2>
 

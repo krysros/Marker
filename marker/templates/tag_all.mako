@@ -5,7 +5,7 @@
   <i class="bi bi-tags"></i> ${_("Tags")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('tag_count')}" hx-trigger="tagEvent from:body">${counter}</div></span>
   <div class="float-end">
-    ${button.search('tag_search')}
+    ${button.button('tag_search', color='primary', icon='search')}
     ${button.add('tag_add')}
   </div>
 </h2>

@@ -4,7 +4,7 @@
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(tag)}</div>
-  <div>${button.table('tag_projects', tag_id=tag.id, slug=tag.slug)}</div>
+  <div>${button.button('tag_projects', color='secondary', icon='table', tag_id=tag.id, slug=tag.slug)}</div>
 </div>
 
 <%include file="tag_lead.mako"/>

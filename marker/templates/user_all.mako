@@ -5,7 +5,7 @@
   <i class="bi bi-person-circle"></i> ${_("Users")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.search('user_search')}
+    ${button.button('user_search', color='primary', icon='search')}
     ${button.add('user_add')}
   </div>
 </h2>

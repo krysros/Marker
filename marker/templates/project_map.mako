@@ -3,8 +3,8 @@
 
 <h2><i class="bi bi-briefcase"></i> ${_("Projects")}
   <div class="float-end">
-    ${button.table('project_all', _query=search_query)}
-    ${button.search('project_search')}
+    ${button.button('project_all', color='secondary', icon='table', _query=search_query)}
+    ${button.button('project_search', color='primary', icon='search')}
     ${button.add('project_add')}
   </div>
 </h2>

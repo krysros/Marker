@@ -14,7 +14,7 @@
   <div>${button.dropdown('user_selected_projects', dd_filter, username=user.name)}</div>
   <div>${button.dropdown('user_selected_projects', dd_sort, username=user.name)}</div>
   <div class="me-auto">${button.dropdown('user_selected_projects', dd_order, username=user.name)}</div>
-  <div>${button.export('user_export_selected_projects', username=user.name, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
+  <div>${button.button('user_export_selected_projects', color='primary', icon='download', username=user.name, _query={'filter': dd_filter._filter, 'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="project_table.mako"/>

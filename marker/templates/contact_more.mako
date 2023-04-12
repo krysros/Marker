@@ -36,7 +36,7 @@
   <td>---</td>
   % endif
   <td>
-    ${button.vcard('contact_vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
+    ${button.button('contact_vcard', color='primary', icon='person-vcard', contact_id=contact.id, slug=contact.slug, size='sm')}
     ${button.edit('contact_edit', contact_id=contact.id, slug=contact.slug, size='sm')}
     ${button.del_row('contact_del_row', contact_id=contact.id, slug=contact.slug, size='sm')}
   </td>

@@ -1,25 +1,12 @@
-<%def name="show(route_name, size=None, **kwargs)">
-<a class="btn btn-secondary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-folder"></i></a>
-</%def>
-
-<%def name="search(route_name, size=None, **kwargs)">
-<a class="btn btn-primary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-search"></i></a>
-</%def>
-
-<%def name="export(route_name, size=None, **kwargs)">
-<a class="btn btn-primary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-download"></i></a>
-</%def>
-
-<%def name="table(route_name, size=None, **kwargs)">
-<a class="btn btn-secondary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-table"></i></a>
-</%def>
-
-<%def name="map(route_name, size=None, **kwargs)">
-<a class="btn btn-secondary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-map"></i></a>
-</%def>
-
-<%def name="vcard(route_name, size=None, **kwargs)">
-<a class="btn btn-primary${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}"><i class="bi bi-person-vcard"></i></a>
+<%def name="button(route_name, title=None, icon=None, color=None, size=None, **kwargs)">
+<a class="btn${' btn-' + color if color else ''}${' btn-' + size if size else ''}" role="button" href="${request.route_url(route_name, **kwargs)}">
+  % if icon:
+    <i class="bi bi-${icon}"></i>
+  % endif
+  % if title:
+    ${title}
+  % endif
+</a>
 </%def>
 
 <%def name="add(route_name, size=None, **kwargs)">

@@ -18,8 +18,8 @@
         ${_("Recently added companies.")}
       </p>
       <p>
-        ${button.show('company_all')}
-        ${button.search('company_search')}
+        ${button.button('company_all', color='secondary', icon='folder')}
+        ${button.button('company_search', color='primary', icon='search')}
         ${button.add('company_add')}
       </p>
     </div>
@@ -29,8 +29,8 @@
         ${_("Currently implemented or completed projects.")}
       </p>
       <p>
-        ${button.show('project_all')}
-        ${button.search('project_search')}
+        ${button.button('project_all', color='secondary', icon='folder')}
+        ${button.button('project_search', color='primary', icon='search')}
         ${button.add('project_add')}
       </p>
     </div>
@@ -40,8 +40,8 @@
         ${_("Business profiles of companies and types of projects.")}
       </p>
       <p>
-        ${button.show('tag_all')}
-        ${button.search('tag_search')}
+        ${button.button('tag_all', color='secondary', icon='folder')}
+        ${button.button('tag_search', color='primary', icon='search')}
         ${button.add('tag_add')}
       </p>
     </div>
@@ -53,8 +53,8 @@
         ${_("Contacts assigned to the company and projects.")}
       </p>
       <p>
-        ${button.show('contact_all')}
-        ${button.search('contact_search')}
+        ${button.button('contact_all', color='secondary', icon='folder')}
+        ${button.button('contact_search', color='primary', icon='search')}
       </p>
     </div>
     <div class="col">
@@ -63,8 +63,8 @@
         ${_("Comments on companies and projects.")}
       </p>
       <p>
-        ${button.show('comment_all')}
-        ${button.search('comment_search')}
+        ${button.button('comment_all', color='secondary', icon='folder')}
+        ${button.button('comment_search', color='primary', icon='search')}
       </p>
     </div>
     <div class="col">
@@ -73,7 +73,7 @@
         ${_("Summary of the database content.")}
       </p>
       <p>
-        ${button.show('report')}
+        ${button.button('report', color='secondary', icon='folder')}
       </p>
     </div>
   </div>

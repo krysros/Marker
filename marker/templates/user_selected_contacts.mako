@@ -13,7 +13,7 @@
 <div class="hstack gap-2 mb-4">
   <div>${button.dropdown('user_selected_contacts', dd_sort, username=user.name)}</div>
   <div class="me-auto">${button.dropdown('user_selected_contacts', dd_order, username=user.name)}</div>
-  <div>${button.export('user_export_selected_contacts', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order})}</div>
+  <div>${button.button('user_export_selected_contacts', color='primary', icon='download', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order})}</div>
 </div>
 
 <%include file="contact_table.mako"/>
