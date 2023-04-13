@@ -5,7 +5,7 @@
   <i class="bi bi-eye"></i> ${_("Watched")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.button(icon='eye', url=request.route_url('user_clear_watched', username=user.name))}
+    ${button.button(icon='eye', color='warning', url=request.route_url('user_clear_watched', username=user.name))}
   </div>
 </h2>
 <hr>
