@@ -9,7 +9,7 @@
 <%include file="company_lead.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('company_similar', dd_filter, company_id=company.id, slug=company.slug)}</div>
+  <div>${button.dropdown(dd_filter, url=request.route_url('company_similar', company_id=company.id, slug=company.slug))}</div>
 </div>
 
 <%include file="company_table.mako"/>

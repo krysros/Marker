@@ -11,8 +11,8 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('user_selected_contacts', dd_sort, username=user.name)}</div>
-  <div class="me-auto">${button.dropdown('user_selected_contacts', dd_order, username=user.name)}</div>
+  <div>${button.dropdown(dd_sort, url=request.route_url('user_selected_contacts', username=user.name))}</div>
+  <div class="me-auto">${button.dropdown(dd_order, url=request.route_url('user_selected_contacts', username=user.name))}</div>
   <div>${button.a_btn(icon='download', color='primary', url=request.route_url('user_export_selected_contacts', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order}))}</div>
 </div>
 

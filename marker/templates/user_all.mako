@@ -13,9 +13,9 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('user_all', dd_filter)}</div>
-  <div>${button.dropdown('user_all', dd_sort)}</div>
-  <div>${button.dropdown('user_all', dd_order)}</div>
+  <div>${button.dropdown(dd_filter, url=request.route_url('user_all'))}</div>
+  <div>${button.dropdown(dd_sort, url=request.route_url('user_all'))}</div>
+  <div>${button.dropdown(dd_order, url=request.route_url('user_all'))}</div>
 </div>
 
 % if any(x for x in form.data.values() if x):

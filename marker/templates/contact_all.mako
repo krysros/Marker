@@ -12,8 +12,8 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown('contact_all', dd_sort)}</div>
-  <div>${button.dropdown('contact_all', dd_order)}</div>
+  <div>${button.dropdown(dd_sort, url=request.route_url('contact_all'))}</div>
+  <div>${button.dropdown(dd_order, url=request.route_url('contact_all'))}</div>
 </div>
 
 % if any(x for x in form.data.values() if x):
