@@ -23,7 +23,7 @@
         <td>${company_roles.get(assoc.role)}</td>
         <td class="col-2">
           ${button.recommend(assoc.company, size='sm')}
-          ${button.button(icon='dash-lg', color='warning', size='sm', url=request.route_url('unlink_company_project', company_id=assoc.company.id, project_id=assoc.project.id))}
+          ${button.del_row(icon='dash-lg', color='warning', size='sm', url=request.route_url('unlink_company_project', company_id=assoc.company.id, project_id=assoc.project.id))}
         </td>
       </tr>
       % endfor

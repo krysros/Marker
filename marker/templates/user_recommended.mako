@@ -5,7 +5,7 @@
   <i class="bi bi-hand-thumbs-up"></i> ${_("Recommended")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.button(icon='hand-thumbs-up', url=request.route_url('user_clear_recommended', username=user.name))}
+    ${button.button(icon='hand-thumbs-up', color='warning', url=request.route_url('user_clear_recommended', username=user.name))}
   </div>
 </h2>
 <hr>
