@@ -104,10 +104,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, roles, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, roles, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         # Recreate the search form to display the search criteria
@@ -213,9 +213,9 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -291,10 +291,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -375,10 +375,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -437,9 +437,9 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -584,10 +584,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -733,10 +733,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -872,9 +872,9 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -988,9 +988,9 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -1107,10 +1107,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {
@@ -1250,10 +1250,10 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(self.request, status, Dd.FILTER, _filter, _sort, _order)
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, status, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
         return {

@@ -134,11 +134,6 @@ class CompanyView:
             .all()
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, _filter, _sort, _order)
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, _filter, _sort, _order
-        )
-
         search_query = {
             "name": name,
             "street": street,
@@ -153,6 +148,11 @@ class CompanyView:
             "court": court,
             "color": color,
         }
+
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
+        dd_order = Dropdown(
+            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+        )
 
         next_page = self.request.route_url(
             "company_more",
@@ -592,7 +592,7 @@ class CompanyView:
             },
         )
 
-        dd_filter = Dropdown(self.request, colors, Dd.FILTER, _filter, _sort, _order)
+        dd_filter = Dropdown(self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order)
 
         return {
             "search_query": search_query,

@@ -8,10 +8,11 @@ class Dd(Enum):
 
 
 class Dropdown:
-    def __init__(self, request, items, typ, _filter=None, _sort=None, _order=None):
+    def __init__(self, request, items, typ, search_query=None, _filter=None, _sort=None, _order=None):
         self.request = request
         self.items = items
         self.typ = typ
+        self.search_query = search_query or {}
         self._filter = _filter
         self._sort = _sort
         self._order = _order

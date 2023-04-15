@@ -76,7 +76,7 @@
 </button>
 </%def>
 
-<%def name="dropdown(dd_obj, search_query)">
+<%def name="dropdown(dd_obj)">
 <div class="btn-group">
   <div class="dropdown">
     <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -85,11 +85,11 @@
     <ul class="dropdown-menu">
       % for k, v in dd_obj.items.items():
         % if dd_obj.typ.name == "FILTER":
-          <% query = {**search_query, 'filter': k, 'sort': dd_obj._sort, 'order': dd_obj._order} %>
+          <% query = {**dd_obj.search_query, 'filter': k, 'sort': dd_obj._sort, 'order': dd_obj._order} %>
         % elif dd_obj.typ.name == "SORT":
-          <% query = {**search_query, 'filter': dd_obj._filter, 'sort': k, 'order': dd_obj._order} %>
+          <% query = {**dd_obj.search_query, 'filter': dd_obj._filter, 'sort': k, 'order': dd_obj._order} %>
         % elif dd_obj.typ.name == "ORDER":
-          <% query = {**search_query, 'filter': dd_obj._filter, 'sort': dd_obj._sort, 'order': k} %>
+          <% query = {**dd_obj.search_query, 'filter': dd_obj._filter, 'sort': dd_obj._sort, 'order': k} %>
         % endif
       <li>
         <a class="dropdown-item" role="button" href="${request.current_route_url(_query=query)}">
