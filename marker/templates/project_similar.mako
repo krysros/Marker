@@ -9,7 +9,7 @@
 <%include file="project_lead.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown(dd_filter, url=request.route_url('project_similar', project_id=project.id, slug=project.slug))}</div>
+  <div>${button.dropdown(dd_filter, search_query)}</div>
 </div>
 
 <%include file="project_table.mako"/>

@@ -18,8 +18,8 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown(dd_sort, url=request.route_url('company_all', _query={**search_query, "filter": dd_filter, "sort": _sort, "order": _order, "page": page + 1}))}</div>
-  <div>${button.dropdown(dd_order, url=request.route_url('company_all', _query={**search_query, "filter": _filter, "sort": _sort, "order": _order, "page": page + 1}))}</div>
+  <div>${button.dropdown(dd_sort, search_query)}</div>
+  <div>${button.dropdown(dd_order, search_query)}</div>
 </div>
 
 % if any(x for x in form.data.values() if x):

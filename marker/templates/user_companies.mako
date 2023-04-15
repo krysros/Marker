@@ -9,9 +9,9 @@
 <p class="lead">${user.fullname}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown(dd_filter, url=request.route_url('user_companies', username=user.name))}</div>
-  <div>${button.dropdown(dd_sort, url=request.route_url('user_companies', username=user.name))}</div>
-  <div>${button.dropdown(dd_order, url=request.route_url('user_companies', username=user.name))}</div>
+  <div>${button.dropdown(dd_filter, search_query)}</div>
+  <div>${button.dropdown(dd_sort, search_query)}</div>
+  <div>${button.dropdown(dd_order, search_query)}</div>
 </div>
 
 <%include file="company_table.mako"/>
