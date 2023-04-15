@@ -76,24 +76,24 @@
 </button>
 </%def>
 
-<%def name="dropdown(dd_obj)">
+<%def name="dropdown(dd)">
 <div class="btn-group">
   <div class="dropdown">
     <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-      ${dd_obj.icon | n} ${dd_obj.title}
+      ${dd.icon | n} ${dd.title}
     </a>
     <ul class="dropdown-menu">
-      % for k, v in dd_obj.items.items():
-        % if dd_obj.typ.name == "FILTER":
-          <% query = {**dd_obj.search_query, 'filter': k, 'sort': dd_obj._sort, 'order': dd_obj._order} %>
-        % elif dd_obj.typ.name == "SORT":
-          <% query = {**dd_obj.search_query, 'filter': dd_obj._filter, 'sort': k, 'order': dd_obj._order} %>
-        % elif dd_obj.typ.name == "ORDER":
-          <% query = {**dd_obj.search_query, 'filter': dd_obj._filter, 'sort': dd_obj._sort, 'order': k} %>
+      % for k, v in dd.items.items():
+        % if dd.typ.name == "FILTER":
+          <% query = {**dd.search_query, 'filter': k, 'sort': dd._sort, 'order': dd._order} %>
+        % elif dd.typ.name == "SORT":
+          <% query = {**dd.search_query, 'filter': dd._filter, 'sort': k, 'order': dd._order} %>
+        % elif dd.typ.name == "ORDER":
+          <% query = {**dd.search_query, 'filter': dd._filter, 'sort': dd._sort, 'order': k} %>
         % endif
       <li>
         <a class="dropdown-item" role="button" href="${request.current_route_url(_query=query)}">
-          % if k == dd_obj.current_item:
+          % if k == dd.current_item:
             <strong>${v}</strong>
           % else:
             ${v}
