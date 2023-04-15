@@ -149,7 +149,9 @@ class CompanyView:
             "color": color,
         }
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order)
+        dd_sort = Dropdown(
+            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+        )
         dd_order = Dropdown(
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
@@ -592,7 +594,9 @@ class CompanyView:
             },
         )
 
-        dd_filter = Dropdown(self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order)
+        dd_filter = Dropdown(
+            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
+        )
 
         return {
             "search_query": search_query,

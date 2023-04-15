@@ -74,7 +74,13 @@ class CommentView:
         )
 
         dd_filter = Dropdown(
-            self.request, comments_filter, Dd.FILTER, search_query, _filter, _sort, _order
+            self.request,
+            comments_filter,
+            Dd.FILTER,
+            search_query,
+            _filter,
+            _sort,
+            _order,
         )
         dd_order = Dropdown(
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
