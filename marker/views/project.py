@@ -338,17 +338,12 @@ class ProjectView:
                 "id": project.id,
                 "name": project.name,
                 "street": project.street,
-                "postcode": project.postcode,
                 "city": project.city,
-                "subdivision": project.subdivision,
                 "country": project.country,
                 "latitude": project.latitude,
                 "longitude": project.longitude,
-                "link": project.link,
                 "color": project.color,
-                "deadline": project.deadline.strftime("%Y-%m-%d"),
-                "stage": project.stage,
-                "delivery_method": project.delivery_method,
+                "url": self.request.route_url('project_view', project_id=project.id, slug=project.slug),
             }
             for project in projects
         ]

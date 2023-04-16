@@ -144,18 +144,12 @@ class TagView:
                 "id": company.id,
                 "name": company.name,
                 "street": company.street,
-                "postcode": company.postcode,
                 "city": company.city,
-                "subdivision": company.subdivision,
                 "country": company.country,
                 "latitude": company.latitude,
                 "longitude": company.longitude,
-                "link": company.link,
-                "NIP": company.NIP,
-                "REGON": company.REGON,
-                "KRS": company.KRS,
-                "court": company.court,
                 "color": company.color,
+                "url": self.request.route_url('company_view', company_id=company.id, slug=company.slug),
             }
             for company in companies
         ]
@@ -175,17 +169,12 @@ class TagView:
                 "id": project.id,
                 "name": project.name,
                 "street": project.street,
-                "postcode": project.postcode,
                 "city": project.city,
-                "subdivision": project.subdivision,
                 "country": project.country,
                 "latitude": project.latitude,
                 "longitude": project.longitude,
-                "link": project.link,
                 "color": project.color,
-                # "deadline": project.deadline,
-                # "stage": project.stage,
-                # "delivery_method": project.delivery_method,
+                "url": self.request.route_url('project_view', project_id=project.id, slug=project.slug),
             }
             for project in projects
         ]
