@@ -91,12 +91,6 @@
       modalTag.hide();
     };
   });
-  // Clear input fields
-  var btnAddTag = document.getElementById("btn-add-tag");
-  btnAddTag.addEventListener('click', function handleClick(event) {
-    var tagName = document.getElementById("name");
-    tagName.value = '';
-  });
 </script>
 </%def>
 
@@ -151,14 +145,6 @@
     if (contactName.checkValidity() && contactEmail.checkValidity()) {
       modalContact.hide();
     };
-  });
-  // Clear input fields
-  var btnAddContact = document.getElementById("btn-add-contact");
-  btnAddContact.addEventListener('click', function handleClick(event) {
-    var inputs = document.querySelectorAll("#name, #role, #phone, #email");
-    inputs.forEach(input => {
-      input.value = '';
-    });
   });
 </script>
 </%def>
@@ -219,16 +205,6 @@
   var modalRelation = new bootstrap.Modal(modalRelationEl);
   document.getElementById("submit").addEventListener("click", function () {
     modalRelation.hide();
-  });
-  // Clear input fields in Relation Modal
-  var btnAddRelation = document.getElementById("btn-add-relation");
-  btnAddRelation.addEventListener('click', function handleClick(event) {
-    var nameElement = document.getElementById("name");
-    nameElement.value = '';
-    var stageElement = document.getElementById("stage");
-    stageElement.selectedIndex = 0;
-    var roleElement = document.getElementById("role");
-    roleElement.selectedIndex = 0;
   });
 </script>
 </%def>
