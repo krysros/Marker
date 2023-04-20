@@ -4,23 +4,16 @@
     <li class="nav-item">
     % if request.url == pill["url"]:
       <a class="nav-link active position-relative" aria-current="page" href="${pill['url']}">
-        ${pill["title"]}
-        % if pill["counter"]:
-          <span class="badge text-bg-secondary">
-            ${pill['counter']}
-          </span>
-        % endif
-      </a>
     % else:
       <a class="nav-link" href="${pill['url']}">
+    % endif
         ${pill["title"]}
-        % if pill["counter"]:
+        % if pill["counter"] is not None:
           <span class="badge text-bg-secondary">
             ${pill['counter']}
           </span>
         % endif
       </a>
-    % endif
     </li>
   % endfor
   </ul>
