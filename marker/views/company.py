@@ -45,6 +45,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": None,
                 "event": "projectCompanyEvent",
                 "counter": None,
@@ -54,6 +55,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_projects", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": self.request.route_url(
                     "company_projects", company_id=company.id, slug=company.slug
                 ),
@@ -65,6 +67,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_tags", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": self.request.route_url(
                     "company_count_tags", company_id=company.id, slug=company.slug
                 ),
@@ -76,6 +79,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_contacts", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": self.request.route_url(
                     "company_count_contacts", company_id=company.id, slug=company.slug
                 ),
@@ -87,6 +91,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_comments", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": self.request.route_url(
                     "company_count_comments", company_id=company.id, slug=company.slug
                 ),
@@ -98,6 +103,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_recommended", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": self.request.route_url(
                     "company_count_recommended",
                     company_id=company.id,
@@ -111,6 +117,7 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_similar", company_id=company.id, slug=company.slug
                 ),
+                "map": None,
                 "count": self.request.route_url(
                     "company_count_similar", company_id=company.id, slug=company.slug
                 ),

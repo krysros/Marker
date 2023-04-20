@@ -101,7 +101,7 @@ class CompanyForm(Form):
         ],
     )
     court = SelectField(_("Court"), choices=COURTS)
-    color = SelectField(_("Color"), choices=COLORS, default="default")
+    color = SelectField(_("Color"), choices=COLORS, default="")
     submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):

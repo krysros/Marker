@@ -1,6 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
-<%namespace name="pills" file="company_pills.mako"/>
+<%namespace name="pills" file="pills.mako"/>
 
 <%!
   import pycountry

@@ -47,7 +47,7 @@ class ProjectForm(Form):
         validators=[Length(max=2000)],
         filters=[strip_filter],
     )
-    color = SelectField(_("Color"), choices=COLORS, default="default")
+    color = SelectField(_("Color"), choices=COLORS, default="")
     deadline = DateField(_("Deadline"), validators=[Optional()])
     stage = SelectField(_("Stage"), choices=STAGES)
     delivery_method = SelectField(

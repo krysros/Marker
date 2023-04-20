@@ -51,7 +51,7 @@ SORT_CRITERIA_COMPANIES = [
 
 SORT_CRITERIA_PROJECTS = [
     ("name", _("by name")),
-    ("city", "wg miasta"),
+    ("city", _("wg miasta")),
     ("subdivision", _("by city")),
     ("created_at", _("by date added")),
     ("updated_at", _("by edit date")),
@@ -72,13 +72,17 @@ STATUS = [
 ]
 
 
+# https://getbootstrap.com/docs/5.3/utilities/colors/
 COLORS = [
     ("", "---"),
-    ("default", _("default")),
-    ("success", _("green")),
-    ("info", _("blue")),
-    ("warning", _("orange")),
-    ("danger", _("red")),
+    ("primary", _("primary")),
+    ("secondary", _("secondary")),
+    ("success", _("success")),
+    ("danger", _("danger")),
+    ("warning", _("warning")),
+    ("info", _("info")),
+    ("light", _("light")),
+    ("dark", _("dark")),
 ]
 
 

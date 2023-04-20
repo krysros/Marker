@@ -2,13 +2,8 @@
   <ul class="nav nav-pills">
   % for pill in pills:
     <li class="nav-item">
-    % if request.url == pill["url"]:
+    % if request.url == pill["url"] or request.url == pill["map"]:
       <a class="nav-link active position-relative" aria-current="page" href="${pill['url']}">
-        % if company.color != "default":
-          <span class="position-absolute top-0 start-100 translate-middle p-2 bg-${company.color} border border-light rounded-circle">
-            <span class="visually-hidden">Color</span>
-          </span>
-        % endif
     % else:
       <a class="nav-link" href="${pill['url']}">  
     % endif

@@ -1,6 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
-<%namespace name="pills" file="company_pills.mako"/>
+<%namespace name="pills" file="pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(company_pills)}</div>

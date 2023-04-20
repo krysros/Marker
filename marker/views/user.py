@@ -47,31 +47,43 @@ class UserView:
             {
                 "title": _("User"),
                 "url": self.request.route_url("user_view", username=user.name),
+                "map": None,
+                "count": None,
                 "counter": None,
             },
             {
                 "title": _("Companies"),
                 "url": self.request.route_url("user_companies", username=user.name),
+                "map": None,
+                "count": None,
                 "counter": user.count_companies,
             },
             {
                 "title": _("Projects"),
                 "url": self.request.route_url("user_projects", username=user.name),
+                "map": None,
+                "count": None,
                 "counter": user.count_projects,
             },
             {
                 "title": _("Tags"),
                 "url": self.request.route_url("user_tags", username=user.name),
+                "map": None,
+                "count": None,
                 "counter": user.count_tags,
             },
             {
                 "title": _("Contacts"),
                 "url": self.request.route_url("user_contacts", username=user.name),
+                "map": None,
+                "count": None,
                 "counter": user.count_contacts,
             },
             {
                 "title": _("Comments"),
                 "url": self.request.route_url("user_comments", username=user.name),
+                "map": None,
+                "count": None,
                 "counter": user.count_comments,
             },
         ]
