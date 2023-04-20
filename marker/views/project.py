@@ -39,6 +39,88 @@ class ProjectView:
     def __init__(self, request):
         self.request = request
 
+    def pills(self, project):
+        _ = self.request.translate
+        return [
+            {
+                "title": _("Project"),
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+                "count": None,
+                "event": "projectCompanyEvent",
+                "counter": None,
+            },
+            {
+                "title": _("Companies"),
+                "url": self.request.route_url(
+                    "project_companies", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_companies", project_id=project.id, slug=project.slug
+                ),
+                "event": "projectCompanyEvent",
+                "counter": project.count_companies,
+            },
+            {
+                "title": _("Tags"),
+                "url": self.request.route_url(
+                    "project_tags", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_count_tags", project_id=project.id, slug=project.slug
+                ),
+                "event": "tagEvent",
+                "counter": project.count_tags,
+            },
+            {
+                "title": _("Contacts"),
+                "url": self.request.route_url(
+                    "project_contacts", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_count_contacts", project_id=project.id, slug=project.slug
+                ),
+                "event": "contactEvent",
+                "counter": project.count_contacts,
+            },
+            {
+                "title": _("Comments"),
+                "url": self.request.route_url(
+                    "project_comments", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_count_comments", project_id=project.id, slug=project.slug
+                ),
+                "event": "commentEvent",
+                "counter": project.count_comments,
+            },
+            {
+                "title": _("Watched"),
+                "url": self.request.route_url(
+                    "project_watched", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_count_watched",
+                    project_id=project.id,
+                    slug=project.slug,
+                ),
+                "event": "watchEvent",
+                "counter": project.count_watched,
+            },
+            {
+                "title": _("Similar"),
+                "url": self.request.route_url(
+                    "project_similar", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_count_similar", project_id=project.id, slug=project.slug
+                ),
+                "event": "tagEvent",
+                "counter": project.count_similar,
+            },
+        ]
+
     @view_config(
         route_name="project_all",
         renderer="project_all.mako",
@@ -240,6 +322,7 @@ class ProjectView:
             "next_page": next_page,
             "project": project,
             "title": project.name,
+            "project_pills": self.pills(project),
         }
 
     @view_config(
@@ -343,7 +426,9 @@ class ProjectView:
                 "latitude": project.latitude,
                 "longitude": project.longitude,
                 "color": project.color,
-                "url": self.request.route_url('project_view', project_id=project.id, slug=project.slug),
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
             }
             for project in projects
         ]
@@ -437,6 +522,7 @@ class ProjectView:
             "company_roles": company_roles,
             "delivery_methods": delivery_methods,
             "title": project.name,
+            "project_pills": self.pills(project),
         }
 
     @view_config(
@@ -512,6 +598,7 @@ class ProjectView:
             "next_page": next_page,
             "colors": colors,
             "title": project.name,
+            "project_pills": self.pills(project),
         }
 
     @view_config(
@@ -710,6 +797,7 @@ class ProjectView:
             "project": project,
             "title": project.name,
             "roles": user_roles,
+            "project_pills": self.pills(project),
         }
 
     @view_config(

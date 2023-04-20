@@ -24,6 +24,51 @@ class TagView:
     def __init__(self, request):
         self.request = request
 
+    def pills(self, tag):
+        _ = self.request.translate
+        return [
+            {
+                "title": _("Tag"),
+                "url": self.request.route_url("tag_view", tag_id=tag.id, slug=tag.slug),
+                "map": None,
+                "count": None,
+                "event": "tagEvent",
+                "counter": None,
+            },
+            {
+                "title": _("Companies"),
+                "url": self.request.route_url(
+                    "tag_companies", tag_id=tag.id, slug=tag.slug
+                ),
+                "map": self.request.route_url(
+                    "tag_map_companies",
+                    tag_id=tag.id,
+                    slug=tag.slug,
+                ),
+                "count": self.request.route_url(
+                    "tag_count_companies", tag_id=tag.id, slug=tag.slug
+                ),
+                "event": "tagEvent",
+                "counter": tag.count_companies,
+            },
+            {
+                "title": _("Projects"),
+                "url": self.request.route_url(
+                    "tag_projects", tag_id=tag.id, slug=tag.slug
+                ),
+                "map": self.request.route_url(
+                    "tag_map_projects",
+                    tag_id=tag.id,
+                    slug=tag.slug,
+                ),
+                "count": self.request.route_url(
+                    "tag_projects", tag_id=tag.id, slug=tag.slug
+                ),
+                "event": "tagEvent",
+                "counter": tag.count_projects,
+            },
+        ]
+
     @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
     @view_config(
         route_name="tag_more",
@@ -108,7 +153,7 @@ class TagView:
     )
     def view(self):
         tag = self.request.context.tag
-        return {"tag": tag, "title": tag.name}
+        return {"tag": tag, "title": tag.name, "tag_pills": self.pills(tag)}
 
     @view_config(
         route_name="tag_map_companies",
@@ -118,7 +163,7 @@ class TagView:
     def map_companies(self):
         tag = self.request.context.tag
         url = self.request.route_url("tag_json_companies", tag_id=tag.id, slug=tag.slug)
-        return {"tag": tag, "url": url}
+        return {"tag": tag, "url": url, "tag_pills": self.pills(tag)}
 
     @view_config(
         route_name="tag_map_projects",
@@ -128,7 +173,7 @@ class TagView:
     def map_projects(self):
         tag = self.request.context.tag
         url = self.request.route_url("tag_json_projects", tag_id=tag.id, slug=tag.slug)
-        return {"tag": tag, "url": url}
+        return {"tag": tag, "url": url, "tag_pills": self.pills(tag)}
 
     @view_config(
         route_name="tag_json_companies",
@@ -149,7 +194,9 @@ class TagView:
                 "latitude": company.latitude,
                 "longitude": company.longitude,
                 "color": company.color,
-                "url": self.request.route_url('company_view', company_id=company.id, slug=company.slug),
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
             }
             for company in companies
         ]
@@ -174,7 +221,9 @@ class TagView:
                 "latitude": project.latitude,
                 "longitude": project.longitude,
                 "color": project.color,
-                "url": self.request.route_url('project_view', project_id=project.id, slug=project.slug),
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
             }
             for project in projects
         ]
@@ -269,6 +318,7 @@ class TagView:
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
+            "tag_pills": self.pills(tag),
         }
 
     @view_config(route_name="tag_export_companies", permission="view")
@@ -434,6 +484,7 @@ class TagView:
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
+            "tag_pills": self.pills(tag),
         }
 
     @view_config(route_name="tag_export_projects", permission="view")

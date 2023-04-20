@@ -37,6 +37,88 @@ class CompanyView:
     def __init__(self, request):
         self.request = request
 
+    def pills(self, company):
+        _ = self.request.translate
+        return [
+            {
+                "title": _("Company"),
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+                "count": None,
+                "event": "projectCompanyEvent",
+                "counter": None,
+            },
+            {
+                "title": _("Projects"),
+                "url": self.request.route_url(
+                    "company_projects", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_projects", company_id=company.id, slug=company.slug
+                ),
+                "event": "projectCompanyEvent",
+                "counter": company.count_projects,
+            },
+            {
+                "title": _("Tags"),
+                "url": self.request.route_url(
+                    "company_tags", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_count_tags", company_id=company.id, slug=company.slug
+                ),
+                "event": "tagEvent",
+                "counter": company.count_tags,
+            },
+            {
+                "title": _("Contacts"),
+                "url": self.request.route_url(
+                    "company_contacts", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_count_contacts", company_id=company.id, slug=company.slug
+                ),
+                "event": "contactEvent",
+                "counter": company.count_contacts,
+            },
+            {
+                "title": _("Comments"),
+                "url": self.request.route_url(
+                    "company_comments", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_count_comments", company_id=company.id, slug=company.slug
+                ),
+                "event": "commentEvent",
+                "counter": company.count_comments,
+            },
+            {
+                "title": _("Recommended"),
+                "url": self.request.route_url(
+                    "company_recommended", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_count_recommended",
+                    company_id=company.id,
+                    slug=company.slug,
+                ),
+                "event": "recommendEvent",
+                "counter": company.count_recommended,
+            },
+            {
+                "title": _("Similar"),
+                "url": self.request.route_url(
+                    "company_similar", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_count_similar", company_id=company.id, slug=company.slug
+                ),
+                "event": "tagEvent",
+                "counter": company.count_similar,
+            },
+        ]
+
     @view_config(
         route_name="company_all",
         renderer="company_all.mako",
@@ -212,6 +294,7 @@ class CompanyView:
         permission="view",
     )
     def view(self):
+        _ = self.request.translate
         company = self.request.context.company
         courts = dict(COURTS)
         countries = dict(select_countries())
@@ -225,6 +308,7 @@ class CompanyView:
             "stages": stages,
             "company_roles": company_roles,
             "title": company.name,
+            "company_pills": self.pills(company),
         }
 
     @view_config(
@@ -333,7 +417,9 @@ class CompanyView:
                 "latitude": company.latitude,
                 "longitude": company.longitude,
                 "color": company.color,
-                "url": self.request.route_url('company_view', company_id=company.id, slug=company.slug),
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
             }
             for company in companies
         ]
@@ -429,6 +515,7 @@ class CompanyView:
             "company": company,
             "title": company.name,
             "roles": user_roles,
+            "company_pills": self.pills(company),
         }
 
     @view_config(
@@ -502,6 +589,7 @@ class CompanyView:
         permission="view",
     )
     def comments(self):
+        _ = self.request.translate
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         stmt = (
@@ -520,11 +608,13 @@ class CompanyView:
             slug=company.slug,
             _query={"page": page + 1},
         )
+
         return {
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
             "title": company.name,
+            "company_pills": self.pills(company),
         }
 
     @view_config(
@@ -600,6 +690,7 @@ class CompanyView:
             "next_page": next_page,
             "colors": colors,
             "title": company.name,
+            "company_pills": self.pills(company),
         }
 
     @view_config(

@@ -2,7 +2,7 @@
 <%namespace name="pills" file="company_pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${pills.pills(company)}</div>
+  <div class="me-auto">${pills.pills(company_pills)}</div>
 </div>
 
 <%include file="company_lead.mako"/>

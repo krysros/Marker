@@ -41,6 +41,41 @@ class UserView:
     def __init__(self, request):
         self.request = request
 
+    def pills(self, user):
+        _ = self.request.translate
+        return [
+            {
+                "title": _("User"),
+                "url": self.request.route_url("user_view", username=user.name),
+                "counter": None,
+            },
+            {
+                "title": _("Companies"),
+                "url": self.request.route_url("user_companies", username=user.name),
+                "counter": user.count_companies,
+            },
+            {
+                "title": _("Projects"),
+                "url": self.request.route_url("user_projects", username=user.name),
+                "counter": user.count_projects,
+            },
+            {
+                "title": _("Tags"),
+                "url": self.request.route_url("user_tags", username=user.name),
+                "counter": user.count_tags,
+            },
+            {
+                "title": _("Contacts"),
+                "url": self.request.route_url("user_contacts", username=user.name),
+                "counter": user.count_contacts,
+            },
+            {
+                "title": _("Comments"),
+                "url": self.request.route_url("user_comments", username=user.name),
+                "counter": user.count_comments,
+            },
+        ]
+
     @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
     @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
     def all(self):
@@ -135,6 +170,7 @@ class UserView:
         return {
             "user": user,
             "title": user.fullname,
+            "user_pills": self.pills(user),
         }
 
     @view_config(
@@ -170,6 +206,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
+            "user_pills": self.pills(user),
         }
 
     @view_config(
@@ -232,6 +269,7 @@ class UserView:
             "dd_order": dd_order,
             "next_page": next_page,
             "title": user.fullname,
+            "user_pills": self.pills(user),
         }
 
     @view_config(
@@ -317,6 +355,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
+            "user_pills": self.pills(user),
         }
 
     @view_config(
@@ -404,6 +443,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
+            "user_pills": self.pills(user),
         }
 
     @view_config(
@@ -466,6 +506,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
+            "user_pills": self.pills(user),
         }
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")

@@ -4,7 +4,7 @@
 <%namespace name="modals" file="modals.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${pills.pills(project)}</div>
+  <div class="me-auto">${pills.pills(project_pills)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
     <button id="btn-add-contact" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-contact">
