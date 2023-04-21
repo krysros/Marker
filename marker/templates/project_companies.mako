@@ -30,7 +30,7 @@
     </thead>
     <tbody id="new-assoc">
       % for assoc in project.companies:
-        <%include file="company_row_assoc.mako" args="assoc=assoc"/>
+        <%include file="company_row.mako" args="assoc=assoc"/>
       % endfor
     </tbody>
   </table>

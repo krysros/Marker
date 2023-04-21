@@ -920,7 +920,7 @@ class CompanyView:
 
     @view_config(
         route_name="company_add_project",
-        renderer="project_row_assoc.mako",
+        renderer="project_row.mako",
         request_method="POST",
         permission="edit",
     )
