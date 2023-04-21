@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0a6\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-21 12:02+0200\n"
-"PO-Revision-Date: 2023-04-21 12:03+0200\n"
+"POT-Creation-Date: 2023-04-21 20:33+0200\n"
+"PO-Revision-Date: 2023-04-21 20:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
@@ -196,11 +196,11 @@ msgstr "Numer KRS powinien się składać z 10 cyfr"
 
 #: marker/forms/contact.py:18 marker/forms/contact.py:43
 #: marker/forms/user.py:37 marker/forms/user.py:68
-#: marker/templates/company_assoc.mako:11
 #: marker/templates/company_contacts.mako:27
+#: marker/templates/company_projects.mako:30
 #: marker/templates/contact_table.mako:8 marker/templates/contact_view.mako:36
 #: marker/templates/modals.mako:123 marker/templates/modals.mako:199
-#: marker/templates/project_assoc.mako:11
+#: marker/templates/project_companies.mako:27
 #: marker/templates/project_contacts.mako:27 marker/templates/user_table.mako:8
 #: marker/templates/user_view.mako:30 marker/views/user.py:1109
 msgid "Role"
@@ -235,9 +235,10 @@ msgid "Deadline"
 msgstr "Termin"
 
 #: marker/forms/project.py:52 marker/forms/project.py:94
-#: marker/templates/company_assoc.mako:10 marker/templates/modals.mako:191
-#: marker/templates/project_assoc.mako:10 marker/templates/project_view.mako:52
-#: marker/views/tag.py:568 marker/views/user.py:873 marker/views/user.py:1408
+#: marker/templates/company_projects.mako:29 marker/templates/modals.mako:191
+#: marker/templates/project_companies.mako:26
+#: marker/templates/project_view.mako:52 marker/views/tag.py:568
+#: marker/views/user.py:873 marker/views/user.py:1408
 msgid "Stage"
 msgstr "Etap"
 
@@ -530,14 +531,15 @@ msgstr "Czy jesteś pewien?"
 msgid "Comments"
 msgstr "Komentarze"
 
-#: marker/templates/comment_card.mako:8 marker/templates/company_assoc.mako:9
-#: marker/templates/company_table.mako:6 marker/templates/company_view.mako:24
-#: marker/templates/contact_view.mako:27 marker/views/company.py:44
+#: marker/templates/comment_card.mako:8 marker/templates/company_table.mako:6
+#: marker/templates/company_view.mako:24 marker/templates/contact_view.mako:27
+#: marker/templates/project_companies.mako:25 marker/views/company.py:44
 msgid "Company"
 msgstr "Firma"
 
-#: marker/templates/comment_card.mako:11 marker/templates/contact_view.mako:32
-#: marker/templates/project_assoc.mako:9 marker/templates/project_table.mako:6
+#: marker/templates/comment_card.mako:11
+#: marker/templates/company_projects.mako:28
+#: marker/templates/contact_view.mako:32 marker/templates/project_table.mako:6
 #: marker/views/project.py:46
 msgid "Project"
 msgstr "Projekt"
@@ -555,17 +557,6 @@ msgstr "przez"
 #: marker/templates/user_all.mako:23
 msgid "Search criteria"
 msgstr "Kryteria wyszukiwania"
-
-#: marker/templates/company_assoc.mako:12
-#: marker/templates/company_contacts.mako:32
-#: marker/templates/company_table.mako:13 marker/templates/company_tags.mako:27
-#: marker/templates/contact_table.mako:13
-#: marker/templates/project_assoc.mako:12
-#: marker/templates/project_contacts.mako:32
-#: marker/templates/project_table.mako:14 marker/templates/project_tags.mako:27
-#: marker/templates/tag_table.mako:11
-msgid "Action"
-msgstr "Akcja"
 
 #: marker/templates/company_contacts.mako:26
 #: marker/templates/contact_table.mako:6 marker/templates/contact_view.mako:23
@@ -594,6 +585,17 @@ msgstr "Utworzono"
 #: marker/templates/user_table.mako:10 marker/templates/user_view.mako:43
 msgid "Updated at"
 msgstr "Zmodyfikowano"
+
+#: marker/templates/company_contacts.mako:32
+#: marker/templates/company_projects.mako:31
+#: marker/templates/company_table.mako:13 marker/templates/company_tags.mako:27
+#: marker/templates/contact_table.mako:13
+#: marker/templates/project_companies.mako:28
+#: marker/templates/project_contacts.mako:32
+#: marker/templates/project_table.mako:14 marker/templates/project_tags.mako:27
+#: marker/templates/tag_table.mako:11
+msgid "Action"
+msgstr "Akcja"
 
 #: marker/templates/company_table.mako:11 marker/templates/navbar.mako:66
 #: marker/templates/user_recommended.mako:5 marker/views/company.py:102
@@ -1065,30 +1067,3 @@ msgstr "Użytkownik %s eksportował dane obserwowanych projektów"
 #, python-format
 msgid "The user %s cleared watched projects"
 msgstr "Użytkownik %s wyczyścił obserwowane projekty"
-
-#~ msgid "Full name is required"
-#~ msgstr "Imię i nazwisko jest wymagane"
-
-#~ msgid "The user deleted the company"
-#~ msgstr "Użytkownik %s usunął komentarz"
-
-#~ msgid "Recommendations"
-#~ msgstr "Rekomendacje"
-
-#~ msgid "display"
-#~ msgstr "wyświetlanie"
-
-#~ msgid "Region"
-#~ msgstr "Region"
-
-#~ msgid "by region"
-#~ msgstr "wg regionu"
-
-#~ msgid "green"
-#~ msgstr "zielony"
-
-#~ msgid "blue"
-#~ msgstr "niebieski"
-
-#~ msgid "red"
-#~ msgstr "czerwony"

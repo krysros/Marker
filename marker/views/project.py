@@ -49,7 +49,7 @@ class ProjectView:
                     "project_view", project_id=project.id, slug=project.slug
                 ),
                 "count": None,
-                "event": "projectCompanyEvent",
+                "event": None,
                 "counter": None,
             },
             {
@@ -59,9 +59,9 @@ class ProjectView:
                     "project_companies", project_id=project.id, slug=project.slug
                 ),
                 "count": self.request.route_url(
-                    "project_companies", project_id=project.id, slug=project.slug
+                    "project_count_companies", project_id=project.id, slug=project.slug
                 ),
-                "event": "projectCompanyEvent",
+                "event": "assocEvent",
                 "counter": project.count_companies,
             },
             {
@@ -809,7 +809,7 @@ class ProjectView:
 
     @view_config(
         route_name="project_add_company",
-        renderer="company_assoc.mako",
+        renderer="company_row_assoc.mako",
         request_method="POST",
         permission="edit",
     )
@@ -821,6 +821,7 @@ class ProjectView:
         role = self.request.POST.get("role")
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
+        a = None
         if name:
             company = self.request.dbsession.execute(
                 select(Company).filter_by(name=name)
@@ -844,8 +845,8 @@ class ProjectView:
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
-        return {"project": project, "stages": stages, "company_roles": company_roles}
+        self.request.response.headers = {"HX-Trigger": "assocEvent"}
+        return {"assoc": a, "stages": stages, "company_roles": company_roles}
 
     @view_config(
         route_name="project_check",

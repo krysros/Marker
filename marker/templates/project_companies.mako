@@ -17,8 +17,23 @@
 
 <%include file="project_lead.mako"/>
 
-<div id="relation">
-  <%include file="company_assoc.mako"/>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="col-1">#</th>
+        <th>${_("Company")}</th>
+        <th>${_("Stage")}</th>
+        <th>${_("Role")}</th>
+        <th class="col-2">${_("Action")}</th>
+      </tr>
+    </thead>
+    <tbody id="new-assoc">
+      % for assoc in project.companies:
+        <%include file="company_row_assoc.mako" args="assoc=assoc"/>
+      % endfor
+    </tbody>
+  </table>
 </div>
 
 ${modals.add_company_project(project)}

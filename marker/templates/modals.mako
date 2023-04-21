@@ -168,9 +168,9 @@
   <div class="modal-dialog">
     <div class="modal-content">
       % if isinstance(obj, Company):
-      <form hx-post="${request.route_url('company_add_project', company_id=obj.id, slug=obj.slug)}" hx-target="#relation" hx-swap="innerHTML show:window:top">
+      <form hx-post="${request.route_url('company_add_project', company_id=obj.id, slug=obj.slug)}" hx-target="#new-assoc" hx-swap="beforeend">
       % elif isinstance(obj, Project):
-      <form hx-post="${request.route_url('project_add_company', project_id=obj.id, slug=obj.slug)}" hx-target="#relation" hx-swap="innerHTML show:window:top">
+      <form hx-post="${request.route_url('project_add_company', project_id=obj.id, slug=obj.slug)}" hx-target="#new-assoc" hx-swap="beforeend">
       % endif
         <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
         <div class="modal-header">

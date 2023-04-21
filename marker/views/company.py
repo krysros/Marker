@@ -47,7 +47,7 @@ class CompanyView:
                     "company_view", company_id=company.id, slug=company.slug
                 ),
                 "count": None,
-                "event": "projectCompanyEvent",
+                "event": None,
                 "counter": None,
             },
             {
@@ -57,9 +57,9 @@ class CompanyView:
                     "company_projects", company_id=company.id, slug=company.slug
                 ),
                 "count": self.request.route_url(
-                    "company_projects", company_id=company.id, slug=company.slug
+                    "company_count_projects", company_id=company.id, slug=company.slug
                 ),
-                "event": "projectCompanyEvent",
+                "event": "assocEvent",
                 "counter": company.count_projects,
             },
             {
@@ -927,7 +927,7 @@ class CompanyView:
 
     @view_config(
         route_name="company_add_project",
-        renderer="project_assoc.mako",
+        renderer="project_row_assoc.mako",
         request_method="POST",
         permission="edit",
     )
@@ -939,6 +939,7 @@ class CompanyView:
         role = self.request.POST.get("role")
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
+        a = None
         if name:
             project = self.request.dbsession.execute(
                 select(Project).filter_by(name=name)
@@ -962,8 +963,8 @@ class CompanyView:
                 # If you want to use the id of a newly created object
                 # in the middle of a transaction, you must call dbsession.flush()
                 self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
-        return {"company": company, "stages": stages, "company_roles": company_roles}
+        self.request.response.headers = {"HX-Trigger": "assocEvent"}
+        return {"assoc": a, "stages": stages, "company_roles": company_roles}
 
     @view_config(
         route_name="unlink_company_project",
@@ -1004,5 +1005,5 @@ class CompanyView:
         )
         # This request responds with empty content,
         # indicating that the row should be replaced with nothing.
-        self.request.response.headers = {"HX-Trigger": "projectCompanyEvent"}
+        self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
