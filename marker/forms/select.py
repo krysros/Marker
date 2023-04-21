@@ -51,7 +51,7 @@ SORT_CRITERIA_COMPANIES = [
 
 SORT_CRITERIA_PROJECTS = [
     ("name", _("by name")),
-    ("city", _("wg miasta")),
+    ("city", _("by city")),
     ("subdivision", _("by city")),
     ("created_at", _("by date added")),
     ("updated_at", _("by edit date")),

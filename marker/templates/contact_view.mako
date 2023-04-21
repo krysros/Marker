@@ -5,7 +5,7 @@
   <div class="me-auto">
     <ul class="nav nav-pills">
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${_("Contact")}</a>
+        <a class="nav-link active" aria-current="page" href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}"><i class="bi bi-person"></i> ${_("Contact")}</a>
       </li>
     </ul>
   </div>

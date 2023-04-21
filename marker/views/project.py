@@ -44,20 +44,20 @@ class ProjectView:
         return [
             {
                 "title": _("Project"),
+                "icon": "briefcase",
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": None,
                 "event": "projectCompanyEvent",
                 "counter": None,
             },
             {
                 "title": _("Companies"),
+                "icon": "buildings",
                 "url": self.request.route_url(
                     "project_companies", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": self.request.route_url(
                     "project_companies", project_id=project.id, slug=project.slug
                 ),
@@ -66,23 +66,22 @@ class ProjectView:
             },
             {
                 "title": _("Tags"),
+                "icon": "tags",
                 "url": self.request.route_url(
                     "project_tags", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": self.request.route_url(
                     "project_count_tags", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "event": "tagEvent",
                 "counter": project.count_tags,
             },
             {
                 "title": _("Contacts"),
+                "icon": "people",
                 "url": self.request.route_url(
                     "project_contacts", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": self.request.route_url(
                     "project_count_contacts", project_id=project.id, slug=project.slug
                 ),
@@ -91,10 +90,10 @@ class ProjectView:
             },
             {
                 "title": _("Comments"),
+                "icon": "chat-left-text",
                 "url": self.request.route_url(
                     "project_comments", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": self.request.route_url(
                     "project_count_comments", project_id=project.id, slug=project.slug
                 ),
@@ -103,10 +102,10 @@ class ProjectView:
             },
             {
                 "title": _("Watched"),
+                "icon": "eye",
                 "url": self.request.route_url(
                     "project_watched", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": self.request.route_url(
                     "project_count_watched",
                     project_id=project.id,
@@ -117,10 +116,10 @@ class ProjectView:
             },
             {
                 "title": _("Similar"),
+                "icon": None,
                 "url": self.request.route_url(
                     "project_similar", project_id=project.id, slug=project.slug
                 ),
-                "map": None,
                 "count": self.request.route_url(
                     "project_count_similar", project_id=project.id, slug=project.slug
                 ),

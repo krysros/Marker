@@ -29,18 +29,28 @@ class TagView:
         return [
             {
                 "title": _("Tag"),
+                "icon": "tag",
                 "url": self.request.route_url("tag_view", tag_id=tag.id, slug=tag.slug),
-                "map": None,
                 "count": None,
                 "event": "tagEvent",
                 "counter": None,
             },
             {
-                "title": _("Companies"),
+                "title": _("Table of companies"),
+                "icon": "table",
                 "url": self.request.route_url(
                     "tag_companies", tag_id=tag.id, slug=tag.slug
                 ),
-                "map": self.request.route_url(
+                "count": self.request.route_url(
+                    "tag_count_companies", tag_id=tag.id, slug=tag.slug
+                ),
+                "event": "tagEvent",
+                "counter": tag.count_companies,
+            },
+            {
+                "title": _("Map of companies"),
+                "icon": "map",
+                "url": self.request.route_url(
                     "tag_map_companies",
                     tag_id=tag.id,
                     slug=tag.slug,
@@ -52,11 +62,21 @@ class TagView:
                 "counter": tag.count_companies,
             },
             {
-                "title": _("Projects"),
+                "title": _("Table of projects"),
+                "icon": "table",
                 "url": self.request.route_url(
                     "tag_projects", tag_id=tag.id, slug=tag.slug
                 ),
-                "map": self.request.route_url(
+                "count": self.request.route_url(
+                    "tag_projects", tag_id=tag.id, slug=tag.slug
+                ),
+                "event": "tagEvent",
+                "counter": tag.count_projects,
+            },
+            {
+                "title": _("Map of projects"),
+                "icon": "map",
+                "url": self.request.route_url(
                     "tag_map_projects",
                     tag_id=tag.id,
                     slug=tag.slug,
