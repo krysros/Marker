@@ -48,7 +48,6 @@ class CompanyView:
                 ),
                 "count": None,
                 "event": None,
-                "counter": None,
             },
             {
                 "title": _("Projects"),
@@ -60,7 +59,6 @@ class CompanyView:
                     "company_count_projects", company_id=company.id, slug=company.slug
                 ),
                 "event": "assocEvent",
-                "counter": company.count_projects,
             },
             {
                 "title": _("Tags"),
@@ -72,7 +70,6 @@ class CompanyView:
                     "company_count_tags", company_id=company.id, slug=company.slug
                 ),
                 "event": "tagEvent",
-                "counter": company.count_tags,
             },
             {
                 "title": _("Contacts"),
@@ -84,7 +81,6 @@ class CompanyView:
                     "company_count_contacts", company_id=company.id, slug=company.slug
                 ),
                 "event": "contactEvent",
-                "counter": company.count_contacts,
             },
             {
                 "title": _("Comments"),
@@ -96,7 +92,6 @@ class CompanyView:
                     "company_count_comments", company_id=company.id, slug=company.slug
                 ),
                 "event": "commentEvent",
-                "counter": company.count_comments,
             },
             {
                 "title": _("Recommended"),
@@ -110,7 +105,6 @@ class CompanyView:
                     slug=company.slug,
                 ),
                 "event": "recommendEvent",
-                "counter": company.count_recommended,
             },
             {
                 "title": _("Similar"),
@@ -122,7 +116,6 @@ class CompanyView:
                     "company_count_similar", company_id=company.id, slug=company.slug
                 ),
                 "event": "tagEvent",
-                "counter": company.count_similar,
             },
         ]
 

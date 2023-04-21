@@ -13,10 +13,7 @@
       ${pill["title"]}
       % if pill["count"]:
         <span class="badge text-bg-secondary">
-          <div hx-get="${pill['count']}"
-               hx-trigger="${pill['event']} from:body">
-            ${pill["counter"]}
-          </div>
+          <div hx-get="${pill['count']}" hx-trigger="load, ${pill['event']} from:body">0</div>
         </span>
       % endif
       </a>

@@ -50,7 +50,6 @@ class ProjectView:
                 ),
                 "count": None,
                 "event": None,
-                "counter": None,
             },
             {
                 "title": _("Companies"),
@@ -62,7 +61,6 @@ class ProjectView:
                     "project_count_companies", project_id=project.id, slug=project.slug
                 ),
                 "event": "assocEvent",
-                "counter": project.count_companies,
             },
             {
                 "title": _("Tags"),
@@ -74,7 +72,6 @@ class ProjectView:
                     "project_count_tags", project_id=project.id, slug=project.slug
                 ),
                 "event": "tagEvent",
-                "counter": project.count_tags,
             },
             {
                 "title": _("Contacts"),
@@ -86,7 +83,6 @@ class ProjectView:
                     "project_count_contacts", project_id=project.id, slug=project.slug
                 ),
                 "event": "contactEvent",
-                "counter": project.count_contacts,
             },
             {
                 "title": _("Comments"),
@@ -98,7 +94,6 @@ class ProjectView:
                     "project_count_comments", project_id=project.id, slug=project.slug
                 ),
                 "event": "commentEvent",
-                "counter": project.count_comments,
             },
             {
                 "title": _("Watched"),
@@ -112,7 +107,6 @@ class ProjectView:
                     slug=project.slug,
                 ),
                 "event": "watchEvent",
-                "counter": project.count_watched,
             },
             {
                 "title": _("Similar"),
@@ -124,7 +118,6 @@ class ProjectView:
                     "project_count_similar", project_id=project.id, slug=project.slug
                 ),
                 "event": "tagEvent",
-                "counter": project.count_similar,
             },
         ]
 
