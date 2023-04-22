@@ -13,15 +13,11 @@
       % if pill["title"]:
         ${pill["title"]}
       % endif
-      % if pill.get("init-val", None):
+      % if pill["count"]:
         <span class="badge text-bg-secondary">
-          % if pill["count"]:
-            <div hx-get="${pill['count']}" hx-trigger="${pill['event']} from:body">
-              ${pill["init-val"]}
-            </div>
-          % else:
-            ${pill["init-val"]}
-          % endif
+          <div hx-get="${pill['count']}" hx-trigger="${pill['event']} from:body">
+            ${pill.get("init-val", 0)}
+          </div>
         </span>
       % endif
       </a>

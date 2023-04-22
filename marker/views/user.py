@@ -48,6 +48,7 @@ class UserView:
                 "title": _("User"),
                 "icon": "person-circle",
                 "url": self.request.route_url("user_view", username=user.name),
+                "count": None,
             },
             {
                 "title": _("Companies"),

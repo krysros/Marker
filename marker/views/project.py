@@ -48,6 +48,7 @@ class ProjectView:
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
+                "count": None,
             },
             {
                 "title": _("Companies"),

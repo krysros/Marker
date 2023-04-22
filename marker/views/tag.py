@@ -31,6 +31,7 @@ class TagView:
                 "title": _("Tag"),
                 "icon": "tag",
                 "url": self.request.route_url("tag_view", tag_id=tag.id, slug=tag.slug),
+                "count": None,
             },
             {
                 "title": _("Table of companies"),
