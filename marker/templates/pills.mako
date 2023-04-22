@@ -10,7 +10,9 @@
       % if pill["icon"]:
         <i class="bi bi-${pill['icon']}"></i>
       % endif
-      ${pill["title"]}
+      % if pill["title"]:
+        ${pill["title"]}
+      % endif
       % if pill["count"]:
         <span class="badge text-bg-secondary">
           <div hx-get="${pill['count']}" hx-trigger="load, ${pill['event']} from:body">0</div>
