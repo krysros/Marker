@@ -46,8 +46,6 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
-                "count": None,
-                "event": None,
             },
             {
                 "title": _("Projects"),
@@ -59,6 +57,7 @@ class CompanyView:
                     "company_count_projects", company_id=company.id, slug=company.slug
                 ),
                 "event": "assocEvent",
+                "init-val": company.count_projects,
             },
             {
                 "title": _("Tags"),
@@ -70,6 +69,7 @@ class CompanyView:
                     "company_count_tags", company_id=company.id, slug=company.slug
                 ),
                 "event": "tagEvent",
+                "init-val": company.count_tags,
             },
             {
                 "title": _("Contacts"),
@@ -81,6 +81,7 @@ class CompanyView:
                     "company_count_contacts", company_id=company.id, slug=company.slug
                 ),
                 "event": "contactEvent",
+                "init-val": company.count_contacts,
             },
             {
                 "title": _("Comments"),
@@ -92,6 +93,7 @@ class CompanyView:
                     "company_count_comments", company_id=company.id, slug=company.slug
                 ),
                 "event": "commentEvent",
+                "init-val": company.count_comments,
             },
             {
                 "title": _("Recommended"),
@@ -105,6 +107,7 @@ class CompanyView:
                     slug=company.slug,
                 ),
                 "event": "recommendEvent",
+                "init-val": company.count_recommended,
             },
             {
                 "title": _("Similar"),
@@ -116,6 +119,7 @@ class CompanyView:
                     "company_count_similar", company_id=company.id, slug=company.slug
                 ),
                 "event": "tagEvent",
+                "init-val": company.count_similar,
             },
         ]
 

@@ -31,8 +31,6 @@ class TagView:
                 "title": _("Tag"),
                 "icon": "tag",
                 "url": self.request.route_url("tag_view", tag_id=tag.id, slug=tag.slug),
-                "count": None,
-                "event": None,
             },
             {
                 "title": _("Table of companies"),
@@ -44,6 +42,7 @@ class TagView:
                     "tag_count_companies", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
+                "init-val": tag.count_companies,
             },
             {
                 "title": _("Map of companies"),
@@ -57,6 +56,7 @@ class TagView:
                     "tag_count_companies", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
+                "init-val": tag.count_companies,
             },
             {
                 "title": _("Table of projects"),
@@ -68,6 +68,7 @@ class TagView:
                     "tag_count_projects", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
+                "init-val": tag.count_projects,
             },
             {
                 "title": _("Map of projects"),
@@ -81,6 +82,7 @@ class TagView:
                     "tag_count_projects", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
+                "init-val": tag.count_projects,
             },
         ]
 

@@ -48,37 +48,41 @@ class UserView:
                 "title": _("User"),
                 "icon": "person-circle",
                 "url": self.request.route_url("user_view", username=user.name),
-                "count": None,
             },
             {
                 "title": _("Companies"),
                 "icon": "buildings",
                 "url": self.request.route_url("user_companies", username=user.name),
                 "count": None,
+                "init-val": user.count_companies,
             },
             {
                 "title": _("Projects"),
                 "icon": "briefcase",
                 "url": self.request.route_url("user_projects", username=user.name),
                 "count": None,
+                "init-val": user.count_projects,
             },
             {
                 "title": _("Tags"),
                 "icon": "tags",
                 "url": self.request.route_url("user_tags", username=user.name),
                 "count": None,
+                "init-val": user.count_tags,
             },
             {
                 "title": _("Contacts"),
                 "icon": "people",
                 "url": self.request.route_url("user_contacts", username=user.name),
                 "count": None,
+                "init-val": user.count_contacts,
             },
             {
                 "title": _("Comments"),
                 "icon": "chat-left-text",
                 "url": self.request.route_url("user_comments", username=user.name),
                 "count": None,
+                "init-val": user.count_comments,
             },
         ]
 
