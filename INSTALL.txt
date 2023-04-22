@@ -5,38 +5,6 @@ Requirements
 ------------
 
 - Python 3 >= 3.10
-- PostgreSQL
-
-Create database
----------------
-
-- Run psql.
-
-    sudo -u postgres psql
-
-- If you are using Windows
-
-    psql -U postgres
-
-- Create database.
-
-    create database marker;
-
-- Create testing database (optional; only for pytest).
-
-    create database testing_marker;
-
-- Quit psql.
-
-    \q
-
-Configuration
--------------
-
-- Edit configuration files: development.ini, testing.ini, production.ini.
-  The typical form of a database URL is:
-
-    dialect+driver://username:password@host:port/database
 
 Getting Started
 ---------------

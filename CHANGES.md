@@ -1,3 +1,9 @@
+2.0a7
+-----
+
+- **BREAKING CHANGE**: Rename `region` to `subdivision`
+- **BREAKING CHANGE**: Back to SQLite by default
+
 2.0a6
 -----
 

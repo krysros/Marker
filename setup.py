@@ -12,13 +12,13 @@ requires = [
     "plaster_pastedeploy",
     "pyramid",
     "pyramid_mako",
-    # 'pyramid_debugtoolbar',
+    # "pyramid_debugtoolbar",
     "pyramid_retry",
     "pyramid_tm",
     "SQLAlchemy >= 2.0",
     "transaction",
     "zope.sqlalchemy",
-    "psycopg[binary]",
+    # "psycopg[binary]",
     "waitress",
     "argon2-cffi",
     "WTForms",
@@ -41,7 +41,7 @@ tests_require = [
 
 setup(
     name="marker",
-    version="2.0a6",
+    version="2.0a7",
     description="marker",
     long_description=README + "\n\n" + CHANGES,
     classifiers=[
