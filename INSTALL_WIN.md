@@ -14,7 +14,11 @@ Create a Python virtual environment, if not already created.
 
 Upgrade packaging tools, if necessary.
 
-    .\env\Scripts\pip.exe install --upgrade pip setuptools wheel
+    .\env\Scripts\pip.exe install --upgrade pip setuptools
+
+Install the wheel package.
+
+    .\env\Scripts\pip.exe install --upgrade wheel
 
 Install the project in editable mode with its testing requirements.
 
