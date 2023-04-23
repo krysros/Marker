@@ -4,7 +4,7 @@ Marker
 Getting Started
 ---------------
 
-Change directory into your newly created project if not already there. Your current directory should be the same as this INSTALL.md file and setup.py.
+Change directory into your newly created project if not already there. Your current directory should be the same as this INSTALL_WIN.md file and setup.py.
 
     cd marker
 
