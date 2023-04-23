@@ -18,7 +18,7 @@ Upgrade packaging tools, if necessary.
 
 Install the wheel package.
 
-    .\env\Scripts\pip.exe install --upgrade wheel
+    .\env\Scripts\pip.exe install wheel
 
 Install the project in editable mode with its testing requirements.
 
