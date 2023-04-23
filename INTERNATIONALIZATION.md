@@ -3,7 +3,7 @@ Internationalization
 
 Currently available languages:
 
-- [x] English
+- [x] English (en)
 - [x] Polish (pl)
 
 Run these commands in project's directory:
