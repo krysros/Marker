@@ -18,9 +18,9 @@
         ${_("Recently added companies.")}
       </p>
       <p>
-        ${button.a_btn(icon='folder', color='secondary', url=request.route_url('company_all'))}
-        ${button.a_btn(icon='search', color='primary', url=request.route_url('company_search'))}
-        ${button.a_btn(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+        ${button.a_button(icon='folder', color='secondary', url=request.route_url('company_all'))}
+        ${button.a_button(icon='search', color='primary', url=request.route_url('company_search'))}
+        ${button.a_button(icon='plus-lg', color='success', url=request.route_url('company_add'))}
       </p>
     </div>
     <div class="col">
@@ -29,9 +29,9 @@
         ${_("Currently implemented or completed projects.")}
       </p>
       <p>
-        ${button.a_btn(icon='folder', color='secondary', url=request.route_url('project_all'))}
-        ${button.a_btn(icon='search', color='primary', url=request.route_url('project_search'))}
-        ${button.a_btn(icon='plus-lg', color='success', url=request.route_url('project_add'))}
+        ${button.a_button(icon='folder', color='secondary', url=request.route_url('project_all'))}
+        ${button.a_button(icon='search', color='primary', url=request.route_url('project_search'))}
+        ${button.a_button(icon='plus-lg', color='success', url=request.route_url('project_add'))}
       </p>
     </div>
     <div class="col">
@@ -40,9 +40,9 @@
         ${_("Business profiles of companies and types of projects.")}
       </p>
       <p>
-        ${button.a_btn(icon='folder', color='secondary', url=request.route_url('tag_all'))}
-        ${button.a_btn(icon='search', color='primary', url=request.route_url('tag_search'))}
-        ${button.a_btn(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
+        ${button.a_button(icon='folder', color='secondary', url=request.route_url('tag_all'))}
+        ${button.a_button(icon='search', color='primary', url=request.route_url('tag_search'))}
+        ${button.a_button(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
       </p>
     </div>
   </div>
@@ -53,8 +53,8 @@
         ${_("Contacts assigned to the company and projects.")}
       </p>
       <p>
-        ${button.a_btn(icon='folder', color='secondary', url=request.route_url('contact_all'))}
-        ${button.a_btn(icon='search', color='primary', url=request.route_url('contact_search'))}
+        ${button.a_button(icon='folder', color='secondary', url=request.route_url('contact_all'))}
+        ${button.a_button(icon='search', color='primary', url=request.route_url('contact_search'))}
       </p>
     </div>
     <div class="col">
@@ -63,8 +63,8 @@
         ${_("Comments on companies and projects.")}
       </p>
       <p>
-        ${button.a_btn(icon='folder', color='secondary', url=request.route_url('comment_all'))}
-        ${button.a_btn(icon='search', color='primary', url=request.route_url('comment_search'))}
+        ${button.a_button(icon='folder', color='secondary', url=request.route_url('comment_all'))}
+        ${button.a_button(icon='search', color='primary', url=request.route_url('comment_search'))}
       </p>
     </div>
     <div class="col">
@@ -73,7 +73,7 @@
         ${_("Summary of the database content.")}
       </p>
       <p>
-        ${button.a_btn(icon='folder', color='secondary', url=request.route_url('report'))}
+        ${button.a_button(icon='folder', color='secondary', url=request.route_url('report'))}
       </p>
     </div>
   </div>

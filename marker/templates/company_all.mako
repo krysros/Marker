@@ -9,9 +9,9 @@
   <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('company_count')}" hx-trigger="companyEvent from:body">${counter}</div></span>
   <div class="float-end">
-    ${button.a_btn(icon='map', color='secondary', url=request.route_url('company_map', _query=search_query))}
-    ${button.a_btn(icon='search', color='primary', url=request.route_url('company_search'))}
-    ${button.a_btn(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+    ${button.a_button(icon='map', color='secondary', url=request.route_url('company_map', _query=search_query))}
+    ${button.a_button(icon='search', color='primary', url=request.route_url('company_search'))}
+    ${button.a_button(icon='plus-lg', color='success', url=request.route_url('company_add'))}
   </div>
 </h2>
 

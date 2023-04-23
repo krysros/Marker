@@ -9,7 +9,7 @@
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(project_pills)}</div>
   <div>${button.watch(project)}</div>
-  <div>${button.a_btn(icon='pencil-square', color='warning', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}</div>
+  <div>${button.a_button(icon='pencil-square', color='warning', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}</div>
   <div>${button.button(icon='trash', color='danger', url=request.route_url('project_delete', project_id=project.id, slug=project.slug))}</div>
 </div>
 

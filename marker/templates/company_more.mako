@@ -39,7 +39,7 @@
   </td>
   <td>
     ${button.recommend(company, size='sm')}
-    ${button.a_btn(icon='pencil-square', color='warning', size='sm', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}
+    ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}
     ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('company_del_row', company_id=company.id, slug=company.slug))}
   </td>
 </tr>
