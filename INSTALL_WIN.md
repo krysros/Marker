@@ -10,31 +10,31 @@ Change directory into your newly created project if not already there. Your curr
 
 Create a Python virtual environment, if not already created.
 
-    python3 -m venv env
+    python -m venv env
 
 Upgrade packaging tools, if necessary.
 
-    env/bin/pip install --upgrade pip setuptools wheel
+    .\env\Scripts\pip.exe install --upgrade pip setuptools wheel
 
 Install the project in editable mode with its testing requirements.
 
-    env/bin/pip install -e ".[testing]"
+    .\env\Scripts\pip.exe install -e ".[testing]"
 
 Initialize and upgrade the database using Alembic.
 
-    env/bin/alembic -c development.ini upgrade head
+    .\env\Scripts\alembic.exe -c development.ini upgrade head
 
 Load default data into the database using a script.
 
-    env/bin/initialize_marker_db development.ini
+    .\env\Scripts\initialize_marker_db.exe development.ini
 
 Run your project's tests.
 
-    env/bin/pytest
+    .\env\Scripts\pytest.exe
 
 Run your project.
 
-    env/bin/pserve development.ini
+    .\env\Scripts\pserve.exe development.ini
 
 Log in as admin using default password: admin
 
