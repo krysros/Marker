@@ -24,72 +24,72 @@ def select_subdivisions(country_code=None):
 
 
 SORT_CRITERIA = [
-    ("name", _("by name")),
-    ("created_at", _("by date added")),
-    ("updated_at", _("by edit date")),
+    ("name", _("Name")),
+    ("created_at", _("Date created")),
+    ("updated_at", _("Date modified")),
 ]
 
 
 SORT_CRITERIA_EXT = [
-    ("name", _("by name")),
-    ("city", _("by city")),
-    ("subdivision", _("by subdivision")),
-    ("created_at", _("by date added")),
-    ("updated_at", _("by edit date")),
+    ("name", _("Name")),
+    ("city", _("City")),
+    ("subdivision", _("Subdivision")),
+    ("created_at", _("Date created")),
+    ("updated_at", _("Date modified")),
 ]
 
 
 SORT_CRITERIA_COMPANIES = [
-    ("name", _("by name")),
-    ("city", _("by city")),
-    ("subdivision", _("by subdivision")),
-    ("created_at", _("by date added")),
-    ("updated_at", _("by edit date")),
-    ("recommended", _("by the number of recommendations")),
+    ("name", _("Name")),
+    ("city", _("City")),
+    ("subdivision", _("Subdivision")),
+    ("created_at", _("Date created")),
+    ("updated_at", _("Date modified")),
+    ("recommended", _("Recommended")),
 ]
 
 
 SORT_CRITERIA_PROJECTS = [
-    ("name", _("by name")),
-    ("city", _("by city")),
-    ("subdivision", _("by subdivision")),
-    ("created_at", _("by date added")),
-    ("updated_at", _("by edit date")),
-    ("watched", _("by number of observations")),
+    ("name", _("Name")),
+    ("city", _("City")),
+    ("subdivision", _("Subdivision")),
+    ("created_at", _("Date created")),
+    ("updated_at", _("Date modified")),
+    ("watched", _("Watched")),
 ]
 
 
 ORDER_CRITERIA = [
-    ("asc", _("ascending")),
-    ("desc", _("descending")),
+    ("asc", _("Ascending")),
+    ("desc", _("Descending")),
 ]
 
 
 STATUS = [
     ("", "---"),
-    ("in_progress", _("in progress")),
-    ("completed", _("completed")),
+    ("in_progress", _("In progress")),
+    ("completed", _("Completed")),
 ]
 
 
 # https://getbootstrap.com/docs/5.3/utilities/colors/
 COLORS = [
     ("", "---"),
-    ("primary", _("primary")),
-    ("secondary", _("secondary")),
-    ("success", _("success")),
-    ("danger", _("danger")),
-    ("warning", _("warning")),
-    ("info", _("info")),
-    ("light", _("light")),
-    ("dark", _("dark")),
+    ("primary", _("Primary")),
+    ("secondary", _("Secondary")),
+    ("success", _("Success")),
+    ("danger", _("Danger")),
+    ("warning", _("Warning")),
+    ("info", _("Info")),
+    ("light", _("Light")),
+    ("dark", _("Dark")),
 ]
 
 
 USER_ROLES = [
-    ("default", _("default")),
-    ("editor", _("editor")),
-    ("admin", _("administrator")),
+    ("default", _("Default")),
+    ("editor", _("Editor")),
+    ("admin", _("Administrator")),
 ]
 
 
