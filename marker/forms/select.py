@@ -34,6 +34,7 @@ SORT_CRITERIA_EXT = [
     ("name", _("Name")),
     ("city", _("City")),
     ("subdivision", _("Subdivision")),
+    ("country", _("Country")),
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
 ]
@@ -43,6 +44,7 @@ SORT_CRITERIA_COMPANIES = [
     ("name", _("Name")),
     ("city", _("City")),
     ("subdivision", _("Subdivision")),
+    ("country", _("Country")),
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
     ("recommended", _("Recommended")),
@@ -53,6 +55,7 @@ SORT_CRITERIA_PROJECTS = [
     ("name", _("Name")),
     ("city", _("City")),
     ("subdivision", _("Subdivision")),
+    ("country", _("Country")),
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
     ("watched", _("Watched")),

@@ -6,6 +6,7 @@
         <th>${_("Project")}</th>
         <th>${_("City")}</th>
         <th>${_("Subdivision")}</th>
+        <th>${_("Country")}</th>
         <th>${_("Deadline")}</th>
         <th>${_("Created at")}</th>
         <th>${_("Updated at")}</th>

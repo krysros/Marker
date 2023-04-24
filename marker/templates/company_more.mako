@@ -20,6 +20,7 @@
   </td>
   <td>${company.city or "---"}</td>
   <td>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</td>
+  <td>${getattr(pycountry.countries.get(alpha_2=company.country), "name", "---")}</td>
   <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
