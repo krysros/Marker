@@ -52,7 +52,7 @@ SORT_CRITERIA_COMPANIES = [
 SORT_CRITERIA_PROJECTS = [
     ("name", _("by name")),
     ("city", _("by city")),
-    ("subdivision", _("by city")),
+    ("subdivision", _("by subdivision")),
     ("created_at", _("by date added")),
     ("updated_at", _("by edit date")),
     ("watched", _("by number of observations")),
