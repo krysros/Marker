@@ -21,9 +21,7 @@
   <td>${project.city or "---"}</td>
   <td>${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</td>
   <td>${getattr(pycountry.countries.get(alpha_2=project.country), "name", "---")}</td>
-  <td>${project.deadline or "---"}</td>
-  <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${button.watch(project, size='sm')}</td>
   <td>
     <a href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
       <div hx-get="${request.route_url('project_count_watched', project_id=project.id, slug=project.slug)}"
@@ -39,10 +37,14 @@
       <span class="badge text-bg-secondary" role="button">${project.count_comments}</span>
     </a>
   </td>
+  <td>${project.deadline or "---"}</td>
+  <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
-    ${button.watch(project, size='sm')}
-    ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}
-    ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('project_del_row', project_id=project.id, slug=project.slug))}
+    <div class="hstack gap-2 mx-2">
+      ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}
+      ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('project_del_row', project_id=project.id, slug=project.slug))}
+    </div>
   </td>
 </tr>
 % endfor

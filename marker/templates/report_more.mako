@@ -15,6 +15,6 @@
 % else:
   <td>${k}</td>
 % endif
-  <td class="col-2">${v}</td>
+  <td>${v}</td>
 </tr>
 % endfor

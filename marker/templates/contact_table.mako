@@ -10,7 +10,7 @@
         <th>${_("Email")}</th>
         <th>${_("Created at")}</th>
         <th>${_("Updated at")}</th>
-        <th class="col-2">${_("Action")}</th>
+        <th>${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

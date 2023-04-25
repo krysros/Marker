@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th>${_("Description")}</th>
-        <th class="col-2">${_("Number")}</th>
+        <th>${_("Number")}</th>
       </tr>
     </thead>
     <tbody>

@@ -2,16 +2,17 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th class="col-1">#</th>
+        <th>#</th>
         <th>${_("Company")}</th>
         <th>${_("City")}</th>
         <th>${_("Subdivision")}</th>
         <th>${_("Country")}</th>
-        <th>${_("Created at")}</th>
-        <th>${_("Updated at")}</th>
+        <th>${_("Recommend")}</th>
         <th>${_("Recommended")}</th>
         <th>${_("Comments")}</th>
-        <th class="col-2">${_("Action")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
+        <th>${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

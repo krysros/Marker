@@ -7,12 +7,13 @@
         <th>${_("City")}</th>
         <th>${_("Subdivision")}</th>
         <th>${_("Country")}</th>
+        <th>${_("Watch")}</th>
+        <th>${_("Watched")}</th>
+        <th>${_("Comments")}</th>
         <th>${_("Deadline")}</th>
         <th>${_("Created at")}</th>
         <th>${_("Updated at")}</th>
-        <th>${_("Watched")}</th>
-        <th>${_("Comments")}</th>
-        <th class="col-2">${_("Action")}</th>
+        <th>${_("Action")}</th>
       </tr>
     </thead>
     <tbody>

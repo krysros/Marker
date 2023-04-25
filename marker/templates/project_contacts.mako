@@ -22,14 +22,14 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th class="col-1">#</th>
+        <th>#</th>
         <th>${_("Fullname")}</th>
         <th>${_("Role")}</th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
         <th>${_("Created at")}</th>
         <th>${_("Updated at")}</th>
-        <th class="col-2">${_("Action")}</th>
+        <th>${_("Action")}</th>
       </tr>
     </thead>
     <tbody id="new-contact">

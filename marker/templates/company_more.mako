@@ -21,8 +21,7 @@
   <td>${company.city or "---"}</td>
   <td>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</td>
   <td>${getattr(pycountry.countries.get(alpha_2=company.country), "name", "---")}</td>
-  <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${button.recommend(company, size='sm')}</td>
   <td>
     <a href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
       <div hx-get="${request.route_url('company_count_recommended', company_id=company.id, slug=company.slug)}"
@@ -38,10 +37,13 @@
       <span class="badge text-bg-secondary" role="button">${company.count_comments}</span>
     </a>
   </td>
+  <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
+  <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
-    ${button.recommend(company, size='sm')}
-    ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}
-    ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('company_del_row', company_id=company.id, slug=company.slug))}
+    <div class="hstack gap-2 mx-2">
+      ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}
+      ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('company_del_row', company_id=company.id, slug=company.slug))}
+    </div>
   </td>
 </tr>
 % endfor
