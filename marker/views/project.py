@@ -193,13 +193,13 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
 
         if deadline:
-            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d")
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
 
         if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now)
         elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now)
 
         if _sort == "watched":
             if _order == "asc":
@@ -416,7 +416,7 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
 
         if deadline:
-            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d")
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
 
         projects = self.request.dbsession.execute(stmt).scalars()
@@ -615,6 +615,7 @@ class ProjectView:
         countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
+            print(form.deadline.data)
             project = Project(
                 name=form.name.data,
                 street=form.street.data,

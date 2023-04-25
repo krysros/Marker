@@ -25,7 +25,7 @@ class Project(Base):
     longitude: Mapped[Optional[float]]
     link: Mapped[Optional[str]] = mapped_column(Unicode(2000))
     color: Mapped[Optional[str]] = mapped_column(Unicode(10))
-    deadline: Mapped[Optional[datetime.date]]
+    deadline: Mapped[Optional[datetime.datetime]]
     stage: Mapped[Optional[str]] = mapped_column(Unicode(100))
     delivery_method: Mapped[Optional[str]] = mapped_column(Unicode(100))
 
@@ -65,7 +65,7 @@ class Project(Base):
         country: str,
         link: str,
         color: str,
-        deadline: datetime.date,
+        deadline: datetime.datetime,
         stage: str,
         delivery_method: str,
     ) -> None:

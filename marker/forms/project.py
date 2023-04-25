@@ -1,6 +1,7 @@
 from sqlalchemy import select
-from wtforms import DateField, Form, SelectField, StringField, SubmitField
+from wtforms import DateTimeLocalField, Form, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
+from wtforms.widgets import DateTimeLocalInput
 
 from ..models import Project
 from .filters import dash_filter, remove_multiple_spaces, strip_filter
@@ -48,7 +49,12 @@ class ProjectForm(Form):
         filters=[strip_filter],
     )
     color = SelectField(_("Color"), choices=COLORS, default="")
-    deadline = DateField(_("Deadline"), validators=[Optional()])
+    deadline = DateTimeLocalField(
+        _("Deadline"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
     stage = SelectField(_("Stage"), choices=STAGES)
     delivery_method = SelectField(
         _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
@@ -90,7 +96,9 @@ class ProjectSearchForm(Form):
     subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
     country = SelectField(_("Country"), choices=select_countries())
     link = StringField(_("Link"), filters=[strip_filter])
-    deadline = DateField(_("Deadline"), validators=[Optional()])
+    deadline = DateTimeLocalField(
+        _("Deadline"), validators=[Optional()], widget=DateTimeLocalInput()
+    )
     stage = SelectField(_("Stage"), choices=STAGES)
     delivery_method = SelectField(
         _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS

@@ -411,9 +411,9 @@ class UserView:
                 stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
 
         if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now)
         elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -772,9 +772,9 @@ class UserView:
         )
 
         if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now)
         elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -1301,9 +1301,9 @@ class UserView:
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
         if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now)
         elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -1385,9 +1385,9 @@ class UserView:
         )
 
         if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now.date())
+            stmt = stmt.filter(Project.deadline > now)
         elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now.date())
+            stmt = stmt.filter(Project.deadline < now)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
