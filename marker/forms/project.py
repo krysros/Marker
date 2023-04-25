@@ -51,7 +51,7 @@ class ProjectForm(Form):
     color = SelectField(_("Color"), choices=COLORS, default="")
     deadline = DateTimeLocalField(
         _("Deadline"),
-        format="%Y-%m-%dT%H:%M",
+        format="%Y-%m-%dT%H:%M",  # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
         validators=[Optional()],
         widget=DateTimeLocalInput(),
     )
