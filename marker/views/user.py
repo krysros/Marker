@@ -54,7 +54,9 @@ class UserView:
                 "title": _("Companies"),
                 "icon": "buildings",
                 "url": self.request.route_url("user_companies", username=user.name),
-                "count": self.request.route_url("user_count_companies", username=user.name),
+                "count": self.request.route_url(
+                    "user_count_companies", username=user.name
+                ),
                 "event": "userEvent",
                 "init-val": user.count_companies,
             },
@@ -62,7 +64,9 @@ class UserView:
                 "title": _("Projects"),
                 "icon": "briefcase",
                 "url": self.request.route_url("user_projects", username=user.name),
-                "count": self.request.route_url("user_count_projects", username=user.name),
+                "count": self.request.route_url(
+                    "user_count_projects", username=user.name
+                ),
                 "event": "userEvent",
                 "init-val": user.count_projects,
             },
@@ -78,7 +82,9 @@ class UserView:
                 "title": _("Contacts"),
                 "icon": "people",
                 "url": self.request.route_url("user_contacts", username=user.name),
-                "count": self.request.route_url("user_count_contacts", username=user.name),
+                "count": self.request.route_url(
+                    "user_count_contacts", username=user.name
+                ),
                 "event": "userEvent",
                 "init-val": user.count_contacts,
             },
@@ -86,7 +92,9 @@ class UserView:
                 "title": _("Comments"),
                 "icon": "chat-left-text",
                 "url": self.request.route_url("user_comments", username=user.name),
-                "count": self.request.route_url("user_count_comments", username=user.name),
+                "count": self.request.route_url(
+                    "user_count_comments", username=user.name
+                ),
                 "event": "userEvent",
                 "init-val": user.count_comments,
             },
