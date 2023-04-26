@@ -587,6 +587,31 @@ def includeme(config):
         "/user/{username}/clear_watched",
         factory=user_factory,
     )
+    config.add_route(
+        "user_count_companies",
+        r"/user/{username}/count_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_count_projects",
+        r"/user/{username}/count_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_count_tags",
+        r"/user/{username}/count_tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_count_contacts",
+        r"/user/{username}/count_contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_count_comments",
+        r"/user/{username}/count_comments",
+        factory=user_factory,
+    )
 
     config.add_route(
         "unlink_company_project",

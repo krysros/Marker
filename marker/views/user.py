@@ -54,35 +54,40 @@ class UserView:
                 "title": _("Companies"),
                 "icon": "buildings",
                 "url": self.request.route_url("user_companies", username=user.name),
-                "count": None,
+                "count": self.request.route_url("user_count_companies", username=user.name),
+                "event": "userEvent",
                 "init-val": user.count_companies,
             },
             {
                 "title": _("Projects"),
                 "icon": "briefcase",
                 "url": self.request.route_url("user_projects", username=user.name),
-                "count": None,
+                "count": self.request.route_url("user_count_projects", username=user.name),
+                "event": "userEvent",
                 "init-val": user.count_projects,
             },
             {
                 "title": _("Tags"),
                 "icon": "tags",
                 "url": self.request.route_url("user_tags", username=user.name),
-                "count": None,
+                "count": self.request.route_url("user_count_tags", username=user.name),
+                "event": "userEvent",
                 "init-val": user.count_tags,
             },
             {
                 "title": _("Contacts"),
                 "icon": "people",
                 "url": self.request.route_url("user_contacts", username=user.name),
-                "count": None,
+                "count": self.request.route_url("user_count_contacts", username=user.name),
+                "event": "userEvent",
                 "init-val": user.count_contacts,
             },
             {
                 "title": _("Comments"),
                 "icon": "chat-left-text",
                 "url": self.request.route_url("user_comments", username=user.name),
-                "count": None,
+                "count": self.request.route_url("user_count_comments", username=user.name),
+                "event": "userEvent",
                 "init-val": user.count_comments,
             },
         ]
@@ -1429,3 +1434,48 @@ class UserView:
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
+
+    @view_config(
+        route_name="user_count_companies",
+        renderer="json",
+        permission="view",
+    )
+    def count_companies(self):
+        user = self.request.context.user
+        return user.count_companies
+
+    @view_config(
+        route_name="user_count_projects",
+        renderer="json",
+        permission="view",
+    )
+    def count_projects(self):
+        user = self.request.context.user
+        return user.count_projects
+
+    @view_config(
+        route_name="user_count_tags",
+        renderer="json",
+        permission="view",
+    )
+    def count_tags(self):
+        user = self.request.context.user
+        return user.count_tags
+
+    @view_config(
+        route_name="user_count_contacts",
+        renderer="json",
+        permission="view",
+    )
+    def count_contacts(self):
+        user = self.request.context.user
+        return user.count_contacts
+
+    @view_config(
+        route_name="user_count_comments",
+        renderer="json",
+        permission="view",
+    )
+    def count_comments(self):
+        user = self.request.context.user
+        return user.count_comments
