@@ -28,7 +28,6 @@ def includeme(config):
     config.add_route("company_add", "/company/add", factory=default_factory)
     config.add_route("company_search", "/company/search", factory=default_factory)
     config.add_route("company_select", "/company/select", factory=default_factory)
-    config.add_route("company_count", "/company/count", factory=default_factory)
     config.add_route(
         "company_view",
         r"/company/{company_id:\d+}/{slug}",
@@ -162,7 +161,6 @@ def includeme(config):
     config.add_route("project_add", "/project/add", factory=default_factory)
     config.add_route("project_search", "/project/search", factory=default_factory)
     config.add_route("project_select", "/project/select", factory=default_factory)
-    config.add_route("project_count", "/project/count", factory=default_factory)
     config.add_route(
         "project_view",
         r"/project/{project_id:\d+}/{slug}",

@@ -284,16 +284,6 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="project_count",
-        renderer="json",
-        permission="view",
-    )
-    def count(self):
-        return self.request.dbsession.execute(
-            select(func.count()).select_from(select(Project))
-        ).scalar()
-
-    @view_config(
         route_name="project_comments",
         renderer="project_comments.mako",
         permission="view",
@@ -348,6 +338,42 @@ class ProjectView:
         stage = self.request.params.get("stage", None)
         delivery_method = self.request.params.get("delivery_method", None)
 
+        stmt = select(Project)
+
+        if name:
+            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+
+        if link:
+            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision == subdivision)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
+        if deadline:
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
+            stmt = stmt.filter(Project.deadline <= deadline_dt)
+
         search_query = {
             "name": name,
             "street": street,
@@ -362,8 +388,12 @@ class ProjectView:
             "delivery_method": delivery_method,
         }
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         url = self.request.route_url("project_json", _query=search_query)
-        return {"url": url, "search_query": search_query}
+        return {"url": url, "search_query": search_query, "counter": counter}
 
     @view_config(
         route_name="project_json",

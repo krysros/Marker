@@ -7,7 +7,7 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> ${_("Projects")}
-  <span class="badge bg-secondary"><div hx-get="${request.route_url('project_count')}" hx-trigger="projectEvent from:body">${counter}</div></span>
+  <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.a_button(icon='map', color='secondary', url=request.route_url('project_map', _query=search_query))}
     ${button.a_button(icon='search', color='primary', url=request.route_url('project_search'))}

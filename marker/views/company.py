@@ -269,16 +269,6 @@ class CompanyView:
         }
 
     @view_config(
-        route_name="company_count",
-        renderer="json",
-        permission="view",
-    )
-    def count(self):
-        return self.request.dbsession.execute(
-            select(func.count()).select_from(select(Company))
-        ).scalar()
-
-    @view_config(
         route_name="company_view",
         renderer="company_view.mako",
         permission="view",
@@ -335,6 +325,44 @@ class CompanyView:
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
 
+        stmt = select(Company)
+
+        if name:
+            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+
+        if link:
+            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision == subdivision)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
         search_query = {
             "name": name,
             "street": street,
@@ -350,8 +378,12 @@ class CompanyView:
             "color": color,
         }
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
         url = self.request.route_url("company_json", _query=search_query)
-        return {"url": url, "search_query": search_query}
+        return {"url": url, "search_query": search_query, "counter": counter}
 
     @view_config(
         route_name="company_json",
