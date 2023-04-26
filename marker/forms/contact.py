@@ -7,7 +7,7 @@ from .ts import TranslationString as _
 
 class ContactForm(Form):
     name = StringField(
-        _("First name and last name"),
+        _("Fullname"),
         validators=[
             InputRequired(),
             Length(min=5, max=100),
@@ -39,7 +39,7 @@ class ContactForm(Form):
 
 
 class ContactSearchForm(Form):
-    name = StringField(_("First name and last name"), filters=[strip_filter])
+    name = StringField(_("Fullname"), filters=[strip_filter])
     role = StringField(_("Role"), filters=[strip_filter])
     phone = StringField(_("Phone"), filters=[strip_filter])
     email = StringField(_("Email"), filters=[strip_filter])

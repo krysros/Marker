@@ -8,7 +8,7 @@ from .ts import TranslationString as _
 
 class Account(Form):
     fullname = StringField(
-        _("First name and last name"),
+        _("Fullname"),
         validators=[
             InputRequired(),
             Length(min=5, max=50),

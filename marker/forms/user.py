@@ -26,7 +26,7 @@ class UserForm(Form):
         filters=[strip_filter],
     )
     fullname = StringField(
-        _("First name and last name"),
+        _("Fullname"),
         validators=[
             InputRequired(),
             Length(min=3, max=50),
@@ -63,7 +63,7 @@ class UserForm(Form):
 
 class UserSearchForm(Form):
     name = StringField(_("Name"), filters=[strip_filter])
-    fullname = StringField(_("First name and last name"), filters=[strip_filter])
+    fullname = StringField(_("Fullname"), filters=[strip_filter])
     email = StringField(_("Email"), filters=[strip_filter])
     role = SelectField(_("Role"), choices=USER_ROLES)
     submit = SubmitField(_("Search"))
