@@ -34,7 +34,7 @@ class TagView:
                 "count": None,
             },
             {
-                "title": _("Table of companies"),
+                "title": _("Companies"),
                 "icon": "table",
                 "url": self.request.route_url(
                     "tag_companies", tag_id=tag.id, slug=tag.slug
@@ -46,38 +46,10 @@ class TagView:
                 "init-val": tag.count_companies,
             },
             {
-                "title": _("Map of companies"),
-                "icon": "map",
-                "url": self.request.route_url(
-                    "tag_map_companies",
-                    tag_id=tag.id,
-                    slug=tag.slug,
-                ),
-                "count": self.request.route_url(
-                    "tag_count_companies", tag_id=tag.id, slug=tag.slug
-                ),
-                "event": "tagEvent",
-                "init-val": tag.count_companies,
-            },
-            {
-                "title": _("Table of projects"),
+                "title": _("Projects"),
                 "icon": "table",
                 "url": self.request.route_url(
                     "tag_projects", tag_id=tag.id, slug=tag.slug
-                ),
-                "count": self.request.route_url(
-                    "tag_count_projects", tag_id=tag.id, slug=tag.slug
-                ),
-                "event": "tagEvent",
-                "init-val": tag.count_projects,
-            },
-            {
-                "title": _("Map of projects"),
-                "icon": "map",
-                "url": self.request.route_url(
-                    "tag_map_projects",
-                    tag_id=tag.id,
-                    slug=tag.slug,
                 ),
                 "count": self.request.route_url(
                     "tag_count_projects", tag_id=tag.id, slug=tag.slug

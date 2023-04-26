@@ -1,8 +1,9 @@
-<%def name="pills(pills)">
+<%def name="pills(pills, active_url=None)">
+  <% active_url = active_url or request.url %>
   <ul class="nav nav-pills">
   % for pill in pills:
     <li class="nav-item">
-    % if request.url == pill["url"]:
+    % if pill["url"] == active_url:
       <a class="nav-link active" aria-current="page" href="${pill['url']}">
     % else:
       <a class="nav-link" href="${pill['url']}">  
