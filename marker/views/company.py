@@ -112,7 +112,7 @@ class CompanyView:
             },
             {
                 "title": _("Similar"),
-                "icon": None,
+                "icon": "intersect",
                 "url": self.request.route_url(
                     "company_similar", company_id=company.id, slug=company.slug
                 ),

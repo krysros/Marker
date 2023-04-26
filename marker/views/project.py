@@ -114,7 +114,7 @@ class ProjectView:
             },
             {
                 "title": _("Similar"),
-                "icon": None,
+                "icon": "intersect",
                 "url": self.request.route_url(
                     "project_similar", project_id=project.id, slug=project.slug
                 ),
