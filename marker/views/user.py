@@ -58,7 +58,7 @@ class UserView:
                     "user_count_companies", username=user.name
                 ),
                 "event": "userEvent",
-                "init-val": user.count_companies,
+                "init_value": user.count_companies,
             },
             {
                 "title": _("Projects"),
@@ -68,7 +68,7 @@ class UserView:
                     "user_count_projects", username=user.name
                 ),
                 "event": "userEvent",
-                "init-val": user.count_projects,
+                "init_value": user.count_projects,
             },
             {
                 "title": _("Tags"),
@@ -76,7 +76,7 @@ class UserView:
                 "url": self.request.route_url("user_tags", username=user.name),
                 "count": self.request.route_url("user_count_tags", username=user.name),
                 "event": "userEvent",
-                "init-val": user.count_tags,
+                "init_value": user.count_tags,
             },
             {
                 "title": _("Contacts"),
@@ -86,7 +86,7 @@ class UserView:
                     "user_count_contacts", username=user.name
                 ),
                 "event": "userEvent",
-                "init-val": user.count_contacts,
+                "init_value": user.count_contacts,
             },
             {
                 "title": _("Comments"),
@@ -96,7 +96,7 @@ class UserView:
                     "user_count_comments", username=user.name
                 ),
                 "event": "userEvent",
-                "init-val": user.count_comments,
+                "init_value": user.count_comments,
             },
         ]
 

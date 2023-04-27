@@ -60,7 +60,7 @@ class ProjectView:
                     "project_count_companies", project_id=project.id, slug=project.slug
                 ),
                 "event": "assocEvent",
-                "init-val": project.count_companies,
+                "init_value": project.count_companies,
             },
             {
                 "title": _("Tags"),
@@ -72,7 +72,7 @@ class ProjectView:
                     "project_count_tags", project_id=project.id, slug=project.slug
                 ),
                 "event": "tagEvent",
-                "init-val": project.count_tags,
+                "init_value": project.count_tags,
             },
             {
                 "title": _("Contacts"),
@@ -84,7 +84,7 @@ class ProjectView:
                     "project_count_contacts", project_id=project.id, slug=project.slug
                 ),
                 "event": "contactEvent",
-                "init-val": project.count_contacts,
+                "init_value": project.count_contacts,
             },
             {
                 "title": _("Comments"),
@@ -96,7 +96,7 @@ class ProjectView:
                     "project_count_comments", project_id=project.id, slug=project.slug
                 ),
                 "event": "commentEvent",
-                "init-val": project.count_comments,
+                "init_value": project.count_comments,
             },
             {
                 "title": _("Watched"),
@@ -110,7 +110,7 @@ class ProjectView:
                     slug=project.slug,
                 ),
                 "event": "watchEvent",
-                "init-val": project.count_watched,
+                "init_value": project.count_watched,
             },
             {
                 "title": _("Similar"),
@@ -122,7 +122,7 @@ class ProjectView:
                     "project_count_similar", project_id=project.id, slug=project.slug
                 ),
                 "event": "tagEvent",
-                "init-val": project.count_similar,
+                "init_value": project.count_similar,
             },
         ]
 

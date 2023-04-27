@@ -43,7 +43,7 @@ class TagView:
                     "tag_count_companies", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
-                "init-val": tag.count_companies,
+                "init_value": tag.count_companies,
             },
             {
                 "title": _("Projects"),
@@ -55,7 +55,7 @@ class TagView:
                     "tag_count_projects", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
-                "init-val": tag.count_projects,
+                "init_value": tag.count_projects,
             },
         ]
 
