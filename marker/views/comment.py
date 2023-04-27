@@ -4,11 +4,11 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..dropdown import Dd, Dropdown
+from ..utils.dropdown import Dd, Dropdown
 from ..forms import CommentSearchForm
 from ..forms.select import COMMENTS_FILTER, ORDER_CRITERIA
 from ..models import Comment
-from ..paginator import get_paginator
+from ..utils.paginator import get_paginator
 
 log = logging.getLogger(__name__)
 

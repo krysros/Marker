@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
-from ..dropdown import Dd, Dropdown
+from ..utils.dropdown import Dd, Dropdown
 from ..forms import CompanyForm, CompanySearchForm
 from ..forms.select import (
     COLORS,
@@ -17,7 +17,7 @@ from ..forms.select import (
     USER_ROLES,
     select_countries,
 )
-from ..geo import location
+from ..utils.geo import location
 from ..models import (
     Comment,
     CompaniesProjects,
@@ -28,7 +28,7 @@ from ..models import (
     User,
     recommended,
 )
-from ..paginator import get_paginator
+from ..utils.paginator import get_paginator
 
 log = logging.getLogger(__name__)
 

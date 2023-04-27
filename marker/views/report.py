@@ -17,7 +17,7 @@ from ..models import (
     recommended,
     watched,
 )
-from ..paginator import get_paginator
+from ..utils.paginator import get_paginator
 
 
 class ReportView:
