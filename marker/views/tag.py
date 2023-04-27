@@ -4,8 +4,6 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..utils.dropdown import Dd, Dropdown
-from ..utils.export import response_xlsx
 from ..forms import TagForm, TagSearchForm
 from ..forms.select import (
     COLORS,
@@ -15,6 +13,8 @@ from ..forms.select import (
     SORT_CRITERIA_PROJECTS,
 )
 from ..models import Company, Project, Tag, recommended, watched
+from ..utils.dropdown import Dd, Dropdown
+from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 
 log = logging.getLogger(__name__)
