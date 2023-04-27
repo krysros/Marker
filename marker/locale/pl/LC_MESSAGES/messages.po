@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: marker 2.0a6\n"
+"Project-Id-Version: marker 2.0a7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-27 10:19+0200\n"
-"PO-Revision-Date: 2023-04-27 10:20+0200\n"
+"POT-Creation-Date: 2023-04-27 12:23+0200\n"
+"PO-Revision-Date: 2023-04-27 12:25+0200\n"
 "Last-Translator: \n"
 "Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
@@ -625,8 +625,8 @@ msgid "Up"
 msgstr "W górę"
 
 #: marker/templates/home.mako:6
-msgid "Information about companies and projects"
-msgstr "Informacje o firmach i projektach"
+msgid "CRM for General Contractors"
+msgstr "CRM dla Generalnych Wykonawców"
 
 #: marker/templates/home.mako:8
 msgid ""
@@ -1081,3 +1081,6 @@ msgstr "Użytkownik %s wyczyścił obserwowane projekty"
 
 #~ msgid "First name and last name"
 #~ msgstr "Imię i nazwisko"
+
+#~ msgid "Information about companies and projects"
+#~ msgstr "Informacje o firmach i projektach"
