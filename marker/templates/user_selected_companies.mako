@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> ${_("Companies")}
+  <i class="bi bi-buildings"></i> ${_("Selected companies")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.button(icon='square', color='warning', url=request.route_url('user_clear_selected_companies', username=user.name))}

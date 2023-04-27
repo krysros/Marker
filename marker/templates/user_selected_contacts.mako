@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> ${_("Contacts")}
+  <i class="bi bi-people"></i> ${_("Selected contacts")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.button(icon='square', color='warning', url=request.route_url('user_clear_selected_contacts', username=user.name))}

@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> ${_("Tags")}
+  <i class="bi bi-tags"></i> ${_("Selected tags")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.button(icon='square', color='warning', url=request.route_url('user_clear_selected_tags', username=user.name))}

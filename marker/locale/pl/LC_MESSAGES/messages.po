@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0a7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-27 12:23+0200\n"
-"PO-Revision-Date: 2023-04-27 12:25+0200\n"
+"POT-Creation-Date: 2023-04-27 18:08+0200\n"
+"PO-Revision-Date: 2023-04-27 18:09+0200\n"
 "Last-Translator: \n"
 "Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
@@ -19,18 +19,6 @@ msgstr ""
 "|| n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.12.1\n"
 "X-Generator: Poedit 3.2.2\n"
-
-#: marker/dropdown.py:27
-msgid "Filter"
-msgstr "Filtruj"
-
-#: marker/dropdown.py:29
-msgid "Sort"
-msgstr "Sortuj"
-
-#: marker/dropdown.py:31
-msgid "Order"
-msgstr "Kolejność"
 
 #: marker/forms/account.py:11 marker/forms/contact.py:10
 #: marker/forms/contact.py:42 marker/forms/user.py:29 marker/forms/user.py:66
@@ -399,8 +387,7 @@ msgstr "Buduj"
 #: marker/forms/select.py:127 marker/templates/company_all.mako:9
 #: marker/templates/company_map.mako:5 marker/templates/home.mako:16
 #: marker/templates/navbar.mako:11 marker/templates/navbar.mako:46
-#: marker/templates/tag_table.mako:7
-#: marker/templates/user_selected_companies.mako:5 marker/views/project.py:54
+#: marker/templates/tag_table.mako:7 marker/views/project.py:54
 #: marker/views/tag.py:37 marker/views/user.py:54
 msgid "Companies"
 msgstr "Firmy"
@@ -408,8 +395,7 @@ msgstr "Firmy"
 #: marker/forms/select.py:128 marker/templates/home.mako:27
 #: marker/templates/navbar.mako:14 marker/templates/navbar.mako:51
 #: marker/templates/project_all.mako:9 marker/templates/project_map.mako:5
-#: marker/templates/tag_table.mako:8
-#: marker/templates/user_selected_projects.mako:5 marker/views/company.py:52
+#: marker/templates/tag_table.mako:8 marker/views/company.py:52
 #: marker/views/tag.py:49 marker/views/user.py:64
 msgid "Projects"
 msgstr "Projekty"
@@ -607,8 +593,8 @@ msgstr "Data modyfikacji"
 
 #: marker/templates/contact_all.mako:5 marker/templates/home.mako:51
 #: marker/templates/navbar.mako:20 marker/templates/navbar.mako:61
-#: marker/templates/user_selected_contacts.mako:5 marker/views/company.py:76
-#: marker/views/project.py:78 marker/views/user.py:82
+#: marker/views/company.py:76 marker/views/project.py:78
+#: marker/views/user.py:82
 msgid "Contacts"
 msgstr "Kontakty"
 
@@ -651,8 +637,8 @@ msgstr "Aktualnie realizowane lub zakończone projekty."
 
 #: marker/templates/home.mako:38 marker/templates/navbar.mako:17
 #: marker/templates/navbar.mako:56 marker/templates/tag_all.mako:5
-#: marker/templates/user_selected_tags.mako:5 marker/views/company.py:64
-#: marker/views/project.py:66 marker/views/user.py:74
+#: marker/views/company.py:64 marker/views/project.py:66
+#: marker/views/user.py:74
 msgid "Tags"
 msgstr "Tagi"
 
@@ -718,9 +704,37 @@ msgstr "Opis"
 msgid "Number"
 msgstr "Liczba"
 
+#: marker/templates/user_selected_companies.mako:5
+msgid "Selected companies"
+msgstr "Wybrane firmy"
+
+#: marker/templates/user_selected_contacts.mako:5
+msgid "Selected contacts"
+msgstr "Wybrane kontakty"
+
+#: marker/templates/user_selected_projects.mako:5
+msgid "Selected projects"
+msgstr "Wybrane projekty"
+
+#: marker/templates/user_selected_tags.mako:5
+msgid "Selected tags"
+msgstr "Wybrane tagi"
+
 #: marker/templates/user_view.mako:14 marker/views/user.py:48
 msgid "User"
 msgstr "Użytkownik"
+
+#: marker/utils/dropdown.py:27
+msgid "Filter"
+msgstr "Filtruj"
+
+#: marker/utils/dropdown.py:29
+msgid "Sort"
+msgstr "Sortuj"
+
+#: marker/utils/dropdown.py:31
+msgid "Order"
+msgstr "Kolejność"
 
 #: marker/views/account.py:23 marker/views/account.py:38
 #: marker/views/company.py:805 marker/views/contact.py:133
