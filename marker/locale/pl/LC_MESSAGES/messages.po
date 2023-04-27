@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0a7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-27 18:08+0200\n"
-"PO-Revision-Date: 2023-04-27 18:09+0200\n"
+"POT-Creation-Date: 2023-04-27 18:26+0200\n"
+"PO-Revision-Date: 2023-04-27 18:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
@@ -628,8 +628,8 @@ msgstr ""
 "przedsiębiorcze i w jakich branżach jest największa konkurencja."
 
 #: marker/templates/home.mako:18
-msgid "Recently added companies."
-msgstr "Ostatnio dodane firmy."
+msgid "Companies sorted according to the selected criterion."
+msgstr "Firmy posortowane wg wybranego kryterium."
 
 #: marker/templates/home.mako:29
 msgid "Currently implemented or completed projects."
@@ -647,7 +647,7 @@ msgid "Business profiles of companies and types of projects."
 msgstr "Profile działalności firm i rodzaje projektów."
 
 #: marker/templates/home.mako:53
-msgid "Contacts assigned to the company and projects."
+msgid "Contacts assigned to companies and projects."
 msgstr "Kontakty przypisane do firm i projektów."
 
 #: marker/templates/home.mako:63
@@ -1098,3 +1098,6 @@ msgstr "Użytkownik %s wyczyścił obserwowane projekty"
 
 #~ msgid "Information about companies and projects"
 #~ msgstr "Informacje o firmach i projektach"
+
+#~ msgid "Recently added companies."
+#~ msgstr "Ostatnio dodane firmy."

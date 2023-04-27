@@ -15,7 +15,7 @@
     <div class="col">
       <h2><i class="bi bi-buildings"></i> ${_("Companies")}</h2>
       <p>
-        ${_("Recently added companies.")}
+        ${_("Companies sorted according to the selected criterion.")}
       </p>
       <p>
         ${button.a_button(icon='folder', color='secondary', url=request.route_url('company_all'))}
@@ -50,7 +50,7 @@
     <div class="col">
       <h2><i class="bi bi-people"></i> ${_("Contacts")}</h2>
       <p>
-        ${_("Contacts assigned to the company and projects.")}
+        ${_("Contacts assigned to companies and projects.")}
       </p>
       <p>
         ${button.a_button(icon='folder', color='secondary', url=request.route_url('contact_all'))}
