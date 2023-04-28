@@ -8,11 +8,12 @@ Change directory into your newly created project if not already there. Your curr
 
     cd marker
 
+
+*If you are using Windows, go to the Windows section.*
+
 Create a Python virtual environment, if not already created.
 
     python3 -m venv env
-
-*If you are using Windows, go to the Windows section.*
 
 Upgrade packaging tools, if necessary.
 
@@ -44,6 +45,10 @@ Run your project.
 
 Windows
 -------
+
+Create a Python virtual environment, if not already created.
+
+    python -m venv env
 
 Upgrade packaging tools, if necessary.
 
