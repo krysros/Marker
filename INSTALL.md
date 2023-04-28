@@ -8,7 +8,6 @@ Change directory into your newly created project if not already there. Your curr
 
     cd marker
 
-
 *If you are using Windows, go to the Windows section.*
 
 Create a Python virtual environment, if not already created.
