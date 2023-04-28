@@ -15,7 +15,7 @@
     <div class="col">
       <h2><i class="bi bi-buildings"></i> ${_("Companies")}</h2>
       <p>
-        ${_("Companies sorted according to the selected criterion.")}
+        ${_("Companies, corporations, organizations.")}
       </p>
       <p>
         ${button.a_button(icon='folder', color='secondary', url=request.route_url('company_all'))}
