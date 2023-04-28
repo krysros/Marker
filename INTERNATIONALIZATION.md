@@ -6,7 +6,7 @@ Currently available languages:
 - [x] English (en)
 - [x] Polish (pl)
 
-Run these commands in project's directory:
+Run these commands in project's directory (replace `pl` with your locale):
 
     python setup.py extract_messages -o marker/locale/messages.pot
 
