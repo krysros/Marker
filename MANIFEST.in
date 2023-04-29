@@ -3,4 +3,3 @@ recursive-include marker *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *
 recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
-recursive-exclude *.docx
