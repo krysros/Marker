@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-28 07:55+0200\n"
-"PO-Revision-Date: 2023-04-28 07:56+0200\n"
+"POT-Creation-Date: 2023-04-29 13:23+0200\n"
+"PO-Revision-Date: 2023-04-29 13:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: pl <LL@li.org>\n"
 "Language: pl\n"
@@ -491,6 +491,10 @@ msgstr "Najbardziej aktywni dostawcy"
 #: marker/forms/select.py:164
 msgid "Projects with the greatest interest"
 msgstr "Projekty o największym zainteresowaniu"
+
+#: marker/templates/301.mako:2
+msgid "Moved Permanently"
+msgstr "Trwale przeniesiony"
 
 #: marker/templates/400.mako:2
 msgid "Bad Request"
