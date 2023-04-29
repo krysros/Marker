@@ -610,6 +610,26 @@ def includeme(config):
         r"/user/{username}/count_comments",
         factory=user_factory,
     )
+    config.add_route(
+        "user_map_companies",
+        r"/user/{username}/map_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_projects",
+        r"/user/{username}/map_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_companies",
+        r"/user/{username}/json_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_projects",
+        r"/user/{username}/json_projects",
+        factory=user_factory,
+    )
 
     config.add_route(
         "unlink_company_project",

@@ -1487,3 +1487,77 @@ class UserView:
     def count_comments(self):
         user = self.request.context.user
         return user.count_comments
+
+    @view_config(
+        route_name="user_map_companies",
+        renderer="user_map_companies.mako",
+        permission="view",
+    )
+    def map_companies(self):
+        user = self.request.context.user
+        url = self.request.route_url("user_json_companies", username=user.name)
+        return {"user": user, "url": url, "user_pills": self.pills(user)}
+
+    @view_config(
+        route_name="user_map_projects",
+        renderer="user_map_projects.mako",
+        permission="view",
+    )
+    def map_projects(self):
+        user = self.request.context.user
+        url = self.request.route_url("user_json_projects", username=user.name)
+        return {"user": user, "url": url, "user_pills": self.pills(user)}
+
+    @view_config(
+        route_name="user_json_companies",
+        renderer="json",
+        permission="view",
+    )
+    def json_companies(self):
+        user = self.request.context.user
+        stmt = select(Company).filter(Company.created_by == user)
+        companies = self.request.dbsession.execute(stmt).scalars()
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "city": company.city,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "color": company.color,
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+            }
+            for company in companies
+        ]
+        return res
+
+    @view_config(
+        route_name="user_json_projects",
+        renderer="json",
+        permission="view",
+    )
+    def json_projects(self):
+        user = self.request.context.user
+        stmt = select(Project).filter(Project.created_by == user)
+        projects = self.request.dbsession.execute(stmt).scalars()
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "city": project.city,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "color": project.color,
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+            }
+            for project in projects
+        ]
+        return res
