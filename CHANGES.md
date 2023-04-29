@@ -1,4 +1,4 @@
 2.0b1
 -----
 
-- Start beta
+- Added maps in user profile
