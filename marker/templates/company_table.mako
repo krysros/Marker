@@ -5,8 +5,6 @@
         <th>#</th>
         <th>${_("Company")}</th>
         <th>${_("City")}</th>
-        <th>${_("Subdivision")}</th>
-        <th>${_("Country")}</th>
         <th>${_("Recommended")}</th>
         <th>${_("Comments")}</th>
         <th>${_("Action")}</th>

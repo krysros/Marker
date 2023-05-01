@@ -5,11 +5,8 @@
         <th>#</th>
         <th>${_("Project")}</th>
         <th>${_("City")}</th>
-        <th>${_("Subdivision")}</th>
-        <th>${_("Country")}</th>
         <th>${_("Watched")}</th>
         <th>${_("Comments")}</th>
-        <th>${_("Deadline")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>

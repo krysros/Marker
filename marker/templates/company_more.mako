@@ -20,9 +20,11 @@
     <small class="text-body-secondary">${_("Created at")}: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
     <small class="text-body-secondary">${_("Updated at")}: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>
-  <td>${company.city or "---"}</td>
-  <td>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</td>
-  <td>${getattr(pycountry.countries.get(alpha_2=company.country), "name", "---")}</td>
+  <td>
+    ${company.city or "---"}<br>
+    <small class="text-body-secondary">${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</small><br>
+    <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=company.country), "name", "---")}</small>
+  </td>
   <td>
     <a href="${request.route_url('company_recommended', company_id=company.id, slug=company.slug)}">
       <div hx-get="${request.route_url('company_count_recommended', company_id=company.id, slug=company.slug)}"
