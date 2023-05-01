@@ -16,7 +16,9 @@
 % endif
   <td>${checkbox.checkbox(project, selected=request.identity.selected_projects, url=request.route_url('project_check', project_id=project.id, slug=project.slug))}</td>
   <td>
-    <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a>
+    <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a><br>
+    <small class="text-body-secondary">${_("Created at")}: ${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
+    <small class="text-body-secondary">${_("Updated at")}: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>
   <td>${project.city or "---"}</td>
   <td>${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</td>
@@ -37,8 +39,6 @@
     </a>
   </td>
   <td>${project.deadline or "---"}</td>
-  <td>${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.watch(project, size='sm')}

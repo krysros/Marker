@@ -5,21 +5,15 @@
 % if contact:
 <tr>
   <td>${checkbox.checkbox(contact, selected=request.identity.selected_contacts, url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
-  <td><a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a></td>
+  <td>
+    <a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a><br>
+    <small class="text-body-secondary">${_("Created at")}: ${contact.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
+    <small class="text-body-secondary">${_("Updated at")}: ${contact.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
+  </td>
   <td>${contact.role or "---"}</td>
   <td>${contact.phone or "---"}</td>
   % if contact.email:
   <td><a href="mailto:${contact.email}">${contact.email}</a></td>
-  % else:
-  <td>---</td>
-  % endif
-  % if contact.created_at:
-  <td>${contact.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  % else:
-  <td>---</td>
-  % endif
-  % if contact.updated_at:
-  <td>${contact.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   % else:
   <td>---</td>
   % endif

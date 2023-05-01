@@ -6,8 +6,6 @@
         <th>${_("Fullname")}</th>
         <th>${_("Email")}</th>
         <th>${_("Role")}</th>
-        <th>${_("Created at")}</th>
-        <th>${_("Updated at")}</th>
       </tr>
     </thead>
     <tbody>

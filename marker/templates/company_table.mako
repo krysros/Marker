@@ -9,8 +9,6 @@
         <th>${_("Country")}</th>
         <th>${_("Recommended")}</th>
         <th>${_("Comments")}</th>
-        <th>${_("Created at")}</th>
-        <th>${_("Updated at")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>

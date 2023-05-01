@@ -16,7 +16,9 @@
 % endif
   <td>${checkbox.checkbox(company, selected=request.identity.selected_companies, url=request.route_url('company_check', company_id=company.id, slug=company.slug))}</td>
   <td>
-    <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a>
+    <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a><br>
+    <small class="text-body-secondary">${_("Created at")}: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
+    <small class="text-body-secondary">${_("Updated at")}: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>
   <td>${company.city or "---"}</td>
   <td>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</td>
@@ -36,8 +38,6 @@
       <span class="badge text-bg-secondary" role="button">${company.count_comments}</span>
     </a>
   </td>
-  <td>${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
-  <td>${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</td>
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.recommend(company, size='sm')}

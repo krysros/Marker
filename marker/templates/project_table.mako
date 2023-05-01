@@ -10,8 +10,6 @@
         <th>${_("Watched")}</th>
         <th>${_("Comments")}</th>
         <th>${_("Deadline")}</th>
-        <th>${_("Created at")}</th>
-        <th>${_("Updated at")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>
