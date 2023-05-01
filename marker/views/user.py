@@ -114,19 +114,24 @@ class UserView:
         roles = dict(USER_ROLES)
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
         stmt = select(User)
 
         if username:
             stmt = stmt.filter(User.name.ilike("%" + username + "%"))
+            search_query["username"] = username
 
         if fullname:
             stmt = stmt.filter(User.fullname.ilike("%" + fullname + "%"))
+            search_query["fullname"] = fullname
 
         if email:
             stmt = stmt.filter(User.email.ilike("%" + email + "%"))
+            search_query["email"] = email
 
         if role:
             stmt = stmt.filter(User.role.ilike("%" + role + "%"))
+            search_query["role"] = role
 
         if _filter:
             stmt = stmt.filter(User.role == _filter)
@@ -145,12 +150,6 @@ class UserView:
             .scalars()
             .all()
         )
-        search_query = {
-            "name": username,
-            "fullname": fullname,
-            "email": email,
-            "role": role,
-        }
 
         next_page = self.request.route_url(
             "user_more",
@@ -594,16 +593,16 @@ class UserView:
     def search(self):
         _ = self.request.translate
         form = UserSearchForm(self.request.POST)
+        search_query = {}
+        for fieldname, value in form.data.items():
+            if value and fieldname != "submit":
+                search_query[fieldname] = value
+
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "user_all",
-                    _query={
-                        "username": form.name.data,
-                        "fullname": form.fullname.data,
-                        "email": form.email.data,
-                        "role": form.role.data,
-                    },
+                    _query=search_query,
                 )
             )
         return {"heading": _("Find a user"), "form": form}

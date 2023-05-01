@@ -73,10 +73,12 @@ class TagView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
         stmt = select(Tag)
 
         if name:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
+            search_query["name"] = name
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
@@ -92,8 +94,6 @@ class TagView:
             .scalars()
             .all()
         )
-
-        search_query = {"name": name}
 
         next_page = self.request.route_url(
             "tag_more",

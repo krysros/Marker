@@ -37,19 +37,24 @@ class ContactView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
         stmt = select(Contact)
 
         if name:
             stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            search_query["name"] = name
 
         if role:
             stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            search_query["role"] = role
 
         if phone:
             stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            search_query["phone"] = phone
 
         if email:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            search_query["email"] = email
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -65,12 +70,6 @@ class ContactView:
             .scalars()
             .all()
         )
-        search_query = {
-            "name": name,
-            "role": role,
-            "phone": phone,
-            "email": email,
-        }
 
         next_page = self.request.route_url(
             "contact_more",
@@ -175,16 +174,16 @@ class ContactView:
     def search(self):
         _ = self.request.translate
         form = ContactSearchForm(self.request.POST)
+        search_query = {}
+        for fieldname, value in form.data.items():
+            if value and fieldname != "submit":
+                search_query[fieldname] = value
+
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "contact_all",
-                    _query={
-                        "name": form.name.data,
-                        "role": form.role.data,
-                        "phone": form.phone.data,
-                        "email": form.email.data,
-                    },
+                    _query=search_query,
                 )
             )
         return {"heading": _("Find a contact"), "form": form}

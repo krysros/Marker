@@ -35,11 +35,13 @@ class CommentView:
         _order = self.request.params.get("order", "desc")
         comments_filter = dict(COMMENTS_FILTER)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
 
         stmt = select(Comment)
 
         if comment:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
+            search_query["comment"] = comment
 
         if _filter == "companies":
             stmt = stmt.filter(Comment.company)
@@ -54,8 +56,6 @@ class CommentView:
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
-
-        search_query = {"comment": comment}
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))

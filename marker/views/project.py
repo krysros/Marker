@@ -160,41 +160,53 @@ class ProjectView:
         colors = dict(COLORS)
         stages = dict(STAGES)
         projects_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        search_query = {}
         stmt = select(Project)
 
         if name:
             stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            search_query["name"] = name
 
         if street:
             stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            search_query["street"] = street
 
         if postcode:
             stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            search_query["postcode"] = postcode
 
         if city:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            search_query["city"] = city
 
         if link:
             stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+            search_query["link"] = link
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision == subdivision)
+            search_query["subdivision"] = subdivision
 
         if country:
             stmt = stmt.filter(Project.country == country)
+            search_query["country"] = country
 
         if color:
             stmt = stmt.filter(Project.color == color)
+            search_query["color"] = color
 
         if stage:
             stmt = stmt.filter(Project.stage == stage)
+            search_query["stage"] = stage
 
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
+            search_query["delivery_method"] = delivery_method
 
         if deadline:
             deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
+            search_query["deadline"] = deadline
 
         if _filter == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
@@ -229,20 +241,6 @@ class ProjectView:
             .scalars()
             .all()
         )
-
-        search_query = {
-            "name": name,
-            "street": street,
-            "postcode": postcode,
-            "city": city,
-            "subdivision": subdivision,
-            "country": country,
-            "link": link,
-            "color": color,
-            "deadline": deadline,
-            "stage": stage,
-            "delivery_method": delivery_method,
-        }
 
         next_page = self.request.route_url(
             "project_more",
@@ -763,23 +761,16 @@ class ProjectView:
     def search(self):
         _ = self.request.translate
         form = ProjectSearchForm(self.request.POST)
+        search_query = {}
+        for fieldname, value in form.data.items():
+            if value and fieldname != "submit":
+                search_query[fieldname] = value
+
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "project_all",
-                    _query={
-                        "name": form.name.data,
-                        "street": form.street.data,
-                        "postcode": form.postcode.data,
-                        "city": form.city.data,
-                        "subdivision": form.subdivision.data,
-                        "country": form.country.data,
-                        "link": form.link.data,
-                        "color": form.color.data,
-                        "deadline": form.deadline.data,
-                        "stage": form.stage.data,
-                        "delivery_method": form.delivery_method.data,
-                    },
+                    _query=search_query,
                 )
             )
         return {"heading": _("Find a project"), "form": form}

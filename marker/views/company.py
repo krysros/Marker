@@ -154,43 +154,56 @@ class CompanyView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
         stmt = select(Company)
 
         if name:
             stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            search_query["name"] = name
 
         if street:
             stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            search_query["street"] = street
 
         if postcode:
             stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            search_query["postcode"] = postcode
 
         if city:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            search_query["city"] = city
 
         if link:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+            search_query["link"] = link
 
         if NIP:
             stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
+            search_query["NIP"] = NIP
 
         if REGON:
             stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
+            search_query["REGON"] = REGON
 
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
+            search_query["KRS"] = KRS
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision == subdivision)
+            search_query["subdivision"] = subdivision
 
         if country:
             stmt = stmt.filter(Company.country == country)
+            search_query["country"] = country
 
         if court:
             stmt = stmt.filter(Company.court == court)
+            search_query["court"] = court
 
         if color:
             stmt = stmt.filter(Company.color == color)
+            search_query["color"] = color
 
         if _sort == "recommended":
             if _order == "asc":
@@ -220,21 +233,6 @@ class CompanyView:
             .scalars()
             .all()
         )
-
-        search_query = {
-            "name": name,
-            "street": street,
-            "postcode": postcode,
-            "city": city,
-            "subdivision": subdivision,
-            "country": country,
-            "link": link,
-            "NIP": NIP,
-            "REGON": REGON,
-            "KRS": KRS,
-            "court": court,
-            "color": color,
-        }
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
@@ -900,24 +898,16 @@ class CompanyView:
     def search(self):
         _ = self.request.translate
         form = CompanySearchForm(self.request.POST)
+        search_query = {}
+        for fieldname, value in form.data.items():
+            if value and fieldname != "submit":
+                search_query[fieldname] = value
+
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "company_all",
-                    _query={
-                        "name": form.name.data,
-                        "street": form.street.data,
-                        "postcode": form.postcode.data,
-                        "city": form.city.data,
-                        "subdivision": form.subdivision.data,
-                        "country": form.country.data,
-                        "link": form.link.data,
-                        "NIP": form.NIP.data,
-                        "REGON": form.REGON.data,
-                        "KRS": form.KRS.data,
-                        "court": form.court.data,
-                        "color": form.color.data,
-                    },
+                    _query=search_query,
                 )
             )
         return {"heading": _("Find a company"), "form": form}
