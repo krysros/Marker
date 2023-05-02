@@ -14,9 +14,9 @@
     <a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name}</a><br>
     ${contact.role or "---"}<br>
     % if contact.company:
-    <a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a>
+    <i class="bi bi-buildings"></i> <a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a>
     % elif contact.project:
-    <a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a>
+    <i class="bi bi-briefcase"></i> <a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a>
     % else:
     ---
     % endif
