@@ -4,6 +4,7 @@
       <tr>
         <th>#</th>
         <th>${_("Fullname")}</th>
+        <th></th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
         <th>${_("Action")}</th>

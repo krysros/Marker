@@ -5,7 +5,6 @@
         <th>${_("Name")}</th>
         <th>${_("Fullname")}</th>
         <th>${_("Email")}</th>
-        <th>${_("Role")}</th>
       </tr>
     </thead>
     <tbody>
