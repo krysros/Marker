@@ -38,7 +38,7 @@ class ContactView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = ContactFilterForm()
+        filter_form = ContactFilterForm(self.request.GET)
         stmt = select(Contact)
 
         if name:

@@ -262,9 +262,6 @@ class TagView:
                     getattr(Company, _sort).desc(), Company.id
                 )
 
-        # if _filter:
-        #     stmt = stmt.filter(Company.color == _filter)
-
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -422,9 +419,6 @@ class TagView:
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
                     getattr(Project, _sort).desc(), Project.id
                 )
-
-        # if _filter:
-        #     stmt = stmt.filter(Project.color == _filter)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))

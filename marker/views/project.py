@@ -35,6 +35,14 @@ from ..utils.paginator import get_paginator
 log = logging.getLogger(__name__)
 
 
+class ProjectFilter:
+    def __init__(self, status, color, country, subdivision):
+        self.status = status
+        self.color = color
+        self.country = country
+        self.subdivision = subdivision
+
+
 class ProjectView:
     def __init__(self, request):
         self.request = request
@@ -156,12 +164,11 @@ class ProjectView:
         now = datetime.datetime.now()
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        # countries = dict(select_countries())
-        # colors = dict(COLORS)
-        # stages = dict(STAGES)
-        # projects_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         search_query = {}
-        filter_form = ProjectFilterForm()
+
+        filter_obj = ProjectFilter(status, color, country, subdivision)
+        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
+
         stmt = select(Project)
 
         if name:
@@ -265,11 +272,6 @@ class ProjectView:
 
         return {
             "search_query": search_query,
-            # "countries": countries,
-            # "stages": stages,
-            # "status": status,
-            # "project_delivery_methods": projects_delivery_methods,
-            # "colors": colors,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -578,7 +580,9 @@ class ProjectView:
         now = datetime.datetime.now()
         colors = dict(COLORS)
         search_query = {}
-        filter_form = ProjectFilterForm()
+
+        filter_obj = ProjectFilter(status, color, country, subdivision)
+        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
 
         stmt = (
             select(Project)

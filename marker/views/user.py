@@ -33,6 +33,8 @@ from ..models import (
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
+from ..views.company import CompanyFilter
+from ..views.project import ProjectFilter
 
 log = logging.getLogger(__name__)
 
@@ -115,7 +117,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = UserFilterForm()
+        filter_form = UserFilterForm(self.request.GET)
         stmt = select(User)
 
         if username:
@@ -383,10 +385,10 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        now = datetime.datetime.now()
-        status = dict(STATUS)
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        search_query = {}
+
         stmt = select(Project).filter(Project.created_by == user)
 
         if _sort == "watched":
@@ -408,18 +410,11 @@ class UserView:
             elif _order == "desc":
                 stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
 
-        if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now)
-        elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now)
-
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
-
-        search_query = {}
 
         next_page = self.request.route_url(
             "user_more_projects",
@@ -1139,7 +1134,10 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
-        filter_form = CompanyFilterForm()
+
+        filter_obj = CompanyFilter(color, country, subdivision)
+        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+
         search_query = {}
 
         stmt = (
@@ -1304,19 +1302,22 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "asc")
-        status = dict(STATUS)
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         now = datetime.datetime.now()
         search_query = {}
-        filter_form = ProjectFilterForm()
+
+        filter_obj = ProjectFilter(status, color, country, subdivision)
+        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
+            search_query["status"] = status
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
+            search_query["status"] = status
 
         if color:
             stmt = stmt.filter(Project.color == color)

@@ -33,6 +33,13 @@ from ..utils.paginator import get_paginator
 log = logging.getLogger(__name__)
 
 
+class CompanyFilter:
+    def __init__(self, color, country, subdivision):
+        self.color = color
+        self.country = country
+        self.subdivision = subdivision
+
+
 class CompanyView:
     def __init__(self, request):
         self.request = request
@@ -151,11 +158,13 @@ class CompanyView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        # colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = CompanyFilterForm()
+
+        filter_obj = CompanyFilter(color, country, subdivision)
+        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+
         stmt = select(Company)
 
         if name:
@@ -671,7 +680,9 @@ class CompanyView:
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
         search_query = {}
-        filter_form = CompanyFilterForm()
+
+        filter_obj = CompanyFilter(color, country, subdivision)
+        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
 
         stmt = (
             select(Company)

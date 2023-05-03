@@ -114,3 +114,20 @@ class ProjectFilterForm(Form):
     country = SelectField(_("Country"), choices=select_countries())
     subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
     submit = SubmitField(_("Filter"))
+
+    def __init__(self, *args, request, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+
+        try:
+            self.edited_item = args[1]
+        except IndexError:
+            self.edited_item = None
+
+        try:
+            country = self.edited_item.country
+        except AttributeError:
+            country = None
+
+        self.subdivision.choices = select_subdivisions(country)
+        self.subdivision.default = self.request.GET.getall('subdivision')

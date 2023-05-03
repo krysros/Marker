@@ -33,10 +33,9 @@ class CommentView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        # comments_filter = dict(COMMENTS_FILTER)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = CommentFilterForm()
+        filter_form = CommentFilterForm(self.request.GET)
         stmt = select(Comment)
 
         if comment:
