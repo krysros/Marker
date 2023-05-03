@@ -113,12 +113,8 @@ class TagView:
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
-        # Recreate the search form to display the search criteria
-        form = TagSearchForm(**search_query)
-
         return {
             "search_query": search_query,
-            "form": form,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -238,6 +234,7 @@ class TagView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
         stmt = select(Company)
 
         if _sort == "recommended":
@@ -265,10 +262,8 @@ class TagView:
                     getattr(Company, _sort).desc(), Company.id
                 )
 
-        if _filter:
-            stmt = stmt.filter(Company.color == _filter)
-
-        search_query = {}
+        # if _filter:
+        #     stmt = stmt.filter(Company.color == _filter)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -288,9 +283,6 @@ class TagView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -301,7 +293,6 @@ class TagView:
         return {
             "search_query": search_query,
             "tag": tag,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
@@ -404,6 +395,7 @@ class TagView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
         stmt = select(Project)
 
         if _sort == "watched":
@@ -431,10 +423,8 @@ class TagView:
                     getattr(Project, _sort).desc(), Project.id
                 )
 
-        if _filter:
-            stmt = stmt.filter(Project.color == _filter)
-
-        search_query = {}
+        # if _filter:
+        #     stmt = stmt.filter(Project.color == _filter)
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -454,9 +444,6 @@ class TagView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -467,7 +454,6 @@ class TagView:
         return {
             "search_query": search_query,
             "tag": tag,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,

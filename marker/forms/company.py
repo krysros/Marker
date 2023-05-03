@@ -1,7 +1,7 @@
 from operator import mul
 
 from sqlalchemy import select
-from wtforms import Form, SelectField, StringField, SubmitField
+from wtforms import Form, SelectField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
@@ -183,3 +183,10 @@ class CompanySearchForm(Form):
     court = SelectField(_("Court"), choices=COURTS)
     color = SelectField(_("Color"), choices=COLORS)
     submit = SubmitField(_("Search"))
+
+
+class CompanyFilterForm(Form):
+    color = SelectField(_("Color"), choices=COLORS)
+    country = SelectField(_("Country"), choices=select_countries())
+    subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    submit = SubmitField(_("Filter"))

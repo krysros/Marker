@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import UserForm, UserSearchForm
+from ..forms import UserForm, UserSearchForm, UserFilterForm, CompanyFilterForm, ProjectFilterForm
 from ..forms.select import (
     COLORS,
     ORDER_CRITERIA,
@@ -115,6 +115,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
+        filter_form = UserFilterForm()
         stmt = select(User)
 
         if username:
@@ -132,9 +133,6 @@ class UserView:
         if role:
             stmt = stmt.filter(User.role.ilike("%" + role + "%"))
             search_query["role"] = role
-
-        if _filter:
-            stmt = stmt.filter(User.role == _filter)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(User, _sort).asc())
@@ -162,9 +160,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, roles, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -172,19 +167,15 @@ class UserView:
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
-        # Recreate the search form to display the search criteria
-        form = UserSearchForm(**search_query)
-
         return {
             "search_query": search_query,
-            "form": form,
             "roles": roles,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "filter_form": filter_form,
         }
 
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")
@@ -314,6 +305,7 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
+        search_query = {}
         stmt = select(Company).filter(Company.created_by == user)
 
         if _sort == "recommended":
@@ -344,8 +336,6 @@ class UserView:
             .all()
         )
 
-        search_query = {}
-
         next_page = self.request.route_url(
             "user_more_companies",
             username=user.name,
@@ -358,9 +348,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -371,7 +358,6 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "colors": colors,
@@ -447,9 +433,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, status, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -460,7 +443,6 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -664,9 +646,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -677,7 +656,6 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -817,9 +795,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, status, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -830,7 +805,6 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -1156,19 +1130,33 @@ class UserView:
     def recommended(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
+        filter_form = CompanyFilterForm()
+        search_query = {}
 
         stmt = (
             select(Company).join(recommended).filter(user.id == recommended.c.user_id)
         )
 
-        if _filter:
-            stmt = stmt.filter(Company.color == _filter)
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            search_query["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            search_query["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            search_query["subdivision"] = subdivision
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
@@ -1185,8 +1173,6 @@ class UserView:
             select(func.count()).select_from(stmt)
         ).scalar()
 
-        search_query = {}
-
         next_page = self.request.route_url(
             "user_more_recommended",
             username=user.name,
@@ -1199,9 +1185,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -1212,13 +1195,13 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
             "counter": counter,
+            "filter_form": filter_form,
         }
 
     @view_config(
@@ -1228,6 +1211,9 @@ class UserView:
     def export_recommended(self):
         _ = self.request.translate
         user = self.request.context.user
+        color = self.request.params.get("color", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
         sort = self.request.params.get("sort", "name")
         order = self.request.params.get("order", "asc")
 
@@ -1247,6 +1233,15 @@ class UserView:
             .join(recommended)
             .filter(user.id == recommended.c.user_id)
         )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
 
         if order == "asc":
             stmt = stmt.order_by(getattr(Company, sort).asc())
@@ -1302,6 +1297,10 @@ class UserView:
     def watched(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        status = self.request.params.get("status", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "asc")
@@ -1309,13 +1308,27 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         now = datetime.datetime.now()
+        search_query = {}
+        filter_form = ProjectFilterForm()
 
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
-        if _filter == "in_progress":
+        if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
-        elif _filter == "completed":
+        elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            search_query["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            search_query["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            search_query["subdivision"] = subdivision
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -1332,8 +1345,6 @@ class UserView:
             select(func.count()).select_from(stmt)
         ).scalar()
 
-        search_query = {}
-
         next_page = self.request.route_url(
             "user_more_watched",
             username=user.name,
@@ -1346,9 +1357,6 @@ class UserView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, status, Dd.FILTER, search_query, _filter, _sort, _order
-        )
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -1359,12 +1367,12 @@ class UserView:
         return {
             "search_query": search_query,
             "user": user,
-            "dd_filter": dd_filter,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "filter_form": filter_form,
         }
 
     @view_config(
@@ -1374,6 +1382,10 @@ class UserView:
     def export_watched(self):
         _ = self.request.translate
         user = self.request.context.user
+        status = self.request.params.get("status", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "asc")
@@ -1396,10 +1408,19 @@ class UserView:
             .filter(user.id == watched.c.user_id)
         )
 
-        if _filter == "in_progress":
+        if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
-        elif _filter == "completed":
+        elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())

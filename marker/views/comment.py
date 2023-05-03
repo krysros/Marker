@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import CommentSearchForm
+from ..forms import CommentSearchForm, CommentFilterForm
 from ..forms.select import COMMENTS_FILTER, ORDER_CRITERIA
 from ..models import Comment
 from ..utils.dropdown import Dd, Dropdown
@@ -33,10 +33,10 @@ class CommentView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        comments_filter = dict(COMMENTS_FILTER)
+        # comments_filter = dict(COMMENTS_FILTER)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-
+        filter_form = CommentFilterForm()
         stmt = select(Comment)
 
         if comment:
@@ -73,30 +73,17 @@ class CommentView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request,
-            comments_filter,
-            Dd.FILTER,
-            search_query,
-            _filter,
-            _sort,
-            _order,
-        )
         dd_order = Dropdown(
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
-        # Recreate the search form to display the search criteria
-        form = CommentSearchForm(**search_query)
-
         return {
             "search_query": search_query,
-            "form": form,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "dd_filter": dd_filter,
             "dd_order": dd_order,
+            "filter_form": filter_form,
         }
 
     @view_config(

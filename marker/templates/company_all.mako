@@ -18,22 +18,39 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
+  <div class="dropdown">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+      <i class="bi bi-filter"></i> ${_("Filter")}
+    </button>
+    <form class="dropdown-menu p-4">
+      <div class="mb-3">
+        ${filter_form.color.label}
+        ${filter_form.color(class_="form-control")}
+      </div>
+      <div class="mb-3">
+        ${filter_form.country.label}
+        ${filter_form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
+      </div>
+      <div class="mb-3">
+        ${filter_form.subdivision.label}
+        ${filter_form.subdivision(class_="form-control")}
+      </div>
+      ${filter_form.submit(class_="btn btn-primary")}
+    </form>
+  </div>
   <div>${button.dropdown(dd_sort)}</div>
   <div>${button.dropdown(dd_order)}</div>
 </div>
 
-% if any(x for x in form.data.values() if x):
+% if any(x for x in search_query.values() if x):
 <div class="alert alert-info" role="alert">
   <strong>${_("Search criteria")}: </strong>
-  % for k, v in form.data.items():
-    % if v:
-      % if k == "color":
-        ${form[k].label.text}: <strong>${colors.get(v)}</strong>;
-      % elif k == "subdivision":
-        ${form[k].label.text}: <strong>${getattr(pycountry.subdivisions.get(code=v), "name", "---")}</strong>;
-      % else:
-        ${form[k].label.text}: <strong>${v}</strong>;
-      % endif
+  % for k, v in search_query.items():
+    ${k}:
+    % if isinstance(v, list):
+      <strong>${", ".join(v)}</strong>;
+    % else:
+      <strong>${v}</strong>;
     % endif
   % endfor
 </div>

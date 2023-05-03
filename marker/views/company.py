@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
-from ..forms import CompanyForm, CompanySearchForm
+from ..forms import CompanyForm, CompanySearchForm, CompanyFilterForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -140,7 +140,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.get("subdivision", None)
+        subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -151,10 +151,11 @@ class CompanyView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        colors = dict(COLORS)
+        # colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
+        filter_form = CompanyFilterForm()
         stmt = select(Company)
 
         if name:
@@ -190,7 +191,7 @@ class CompanyView:
             search_query["KRS"] = KRS
 
         if subdivision:
-            stmt = stmt.filter(Company.subdivision == subdivision)
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
             search_query["subdivision"] = subdivision
 
         if country:
@@ -252,18 +253,15 @@ class CompanyView:
             },
         )
 
-        # Recreate the search form to display the search criteria
-        form = CompanySearchForm(**search_query)
-
         return {
             "search_query": search_query,
-            "form": form,
             "next_page": next_page,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
-            "colors": colors,
+            # "colors": colors,
             "counter": counter,
+            "filter_form": filter_form,
         }
 
     @view_config(
@@ -665,10 +663,15 @@ class CompanyView:
     def similar(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
+        search_query = {}
+        filter_form = CompanyFilterForm()
 
         stmt = (
             select(Company)
@@ -683,15 +686,22 @@ class CompanyView:
             .order_by(func.count(Tag.companies.any(Company.id == company.id)).desc())
         )
 
-        if _filter:
-            stmt = stmt.filter(Company.color == _filter)
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            search_query["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            search_query["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            search_query["subdivision"] = subdivision
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Company, _sort).desc())
-
-        search_query = {}
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -713,19 +723,15 @@ class CompanyView:
             },
         )
 
-        dd_filter = Dropdown(
-            self.request, colors, Dd.FILTER, search_query, _filter, _sort, _order
-        )
-
         return {
             "search_query": search_query,
             "company": company,
-            "dd_filter": dd_filter,
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
             "title": company.name,
             "company_pills": self.pills(company),
+            "filter_form": filter_form,
         }
 
     @view_config(

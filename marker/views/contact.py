@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import ContactForm, ContactSearchForm
+from ..forms import ContactForm, ContactSearchForm, ContactFilterForm
 from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA
 from ..models import Contact
 from ..utils.dropdown import Dd, Dropdown
@@ -38,6 +38,7 @@ class ContactView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
+        filter_form = ContactFilterForm()
         stmt = select(Contact)
 
         if name:
@@ -55,6 +56,11 @@ class ContactView:
         if email:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
             search_query["email"] = email
+
+        if _filter == "companies":
+            stmt = stmt.filter(Contact.company)
+        elif _filter == "projects":
+            stmt = stmt.filter(Contact.project)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -89,17 +95,14 @@ class ContactView:
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
 
-        # Recreate the search form to display the search criteria
-        form = ContactSearchForm(**search_query)
-
         return {
             "search_query": search_query,
-            "form": form,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "filter_form": filter_form,
         }
 
     @view_config(

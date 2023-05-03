@@ -67,3 +67,8 @@ class UserSearchForm(Form):
     email = StringField(_("Email"), filters=[strip_filter])
     role = SelectField(_("Role"), choices=USER_ROLES)
     submit = SubmitField(_("Search"))
+
+
+class UserFilterForm(Form):
+    role = SelectField(_("Role"), choices=USER_ROLES)
+    submit = SubmitField(_("Filter"))

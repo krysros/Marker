@@ -16,12 +16,15 @@
   <div>${button.dropdown(dd_order)}</div>
 </div>
 
-% if any(x for x in form.data.values() if x):
+% if any(x for x in search_query.values() if x):
 <div class="alert alert-info" role="alert">
   <strong>${_("Search criteria")}: </strong>
-  % for k, v in form.data.items():
-    % if v:
-      ${form[k].label.text}: <strong>${v}</strong>; 
+  % for k, v in search_query.items():
+    ${k}:
+    % if isinstance(v, list):
+      <strong>${", ".join(v)}</strong>;
+    % else:
+      <strong>${v}</strong>;
     % endif
   % endfor
 </div>

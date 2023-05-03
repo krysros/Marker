@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from wtforms import DateTimeLocalField, Form, SelectField, StringField, SubmitField
+from wtforms import DateTimeLocalField, Form, SelectField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
 from wtforms.widgets import DateTimeLocalInput
 
@@ -9,6 +9,7 @@ from .select import (
     COLORS,
     PROJECT_DELIVERY_METHODS,
     STAGES,
+    STATUS,
     select_countries,
     select_subdivisions,
 )
@@ -105,3 +106,11 @@ class ProjectSearchForm(Form):
     )
     color = SelectField(_("Color"), choices=COLORS)
     submit = SubmitField(_("Search"))
+
+
+class ProjectFilterForm(Form):
+    status = SelectField(_("Status"), choices=STATUS)
+    color = SelectField(_("Color"), choices=COLORS)
+    country = SelectField(_("Country"), choices=select_countries())
+    subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    submit = SubmitField(_("Filter"))

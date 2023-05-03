@@ -3,14 +3,13 @@
 <%namespace name="pills" file="pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
-  <div class="me-auto">${pills.pills(user_pills)}</div>
+  <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_projects', username=user.name))}</div>
   <div>${button.a_button(icon='map', color='secondary', url=request.route_url('user_map_projects', username=user.name))}</div>
 </div>
 
 <p class="lead">${user.fullname}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown(dd_filter)}</div>
   <div>${button.dropdown(dd_sort)}</div>
   <div>${button.dropdown(dd_order)}</div>
 </div>
