@@ -1,4 +1,4 @@
-from wtforms import Form, SubmitField, SelectField, TextAreaField
+from wtforms import Form, SubmitField, HiddenField, SelectField, TextAreaField
 
 from .filters import strip_filter
 from .select import COMMENTS_FILTER
@@ -16,5 +16,6 @@ class CommentSearchForm(Form):
 
 
 class CommentFilterForm(Form):
+    comment = HiddenField(_("Comment"), filters=[strip_filter])
     filter = SelectField(_("Filter"), choices=COMMENTS_FILTER)
     submit = SubmitField(_("Search"))

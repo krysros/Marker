@@ -13,6 +13,11 @@ from ..utils.paginator import get_paginator
 log = logging.getLogger(__name__)
 
 
+class CommentFilter:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+
 class CommentView:
     def __init__(self, request):
         self.request = request
@@ -35,7 +40,6 @@ class CommentView:
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = CommentFilterForm(self.request.GET)
         stmt = select(Comment)
 
         if comment:
@@ -44,8 +48,10 @@ class CommentView:
 
         if _filter == "companies":
             stmt = stmt.filter(Comment.company)
+            search_query["filter"] = _filter
         elif _filter == "projects":
             stmt = stmt.filter(Comment.project)
+            search_query["filter"] = _filter
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -72,6 +78,9 @@ class CommentView:
             },
         )
 
+        filter_obj = CommentFilter(**search_query)
+        filter_form = CommentFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_order = Dropdown(
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
         )
@@ -82,7 +91,7 @@ class CommentView:
             "next_page": next_page,
             "counter": counter,
             "dd_order": dd_order,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(

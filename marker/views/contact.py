@@ -14,6 +14,11 @@ from ..utils.paginator import get_paginator
 log = logging.getLogger(__name__)
 
 
+class ContactFilter:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+
 class ContactView:
     def __init__(self, request):
         self.request = request
@@ -38,7 +43,6 @@ class ContactView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = ContactFilterForm(self.request.GET)
         stmt = select(Contact)
 
         if name:
@@ -59,8 +63,10 @@ class ContactView:
 
         if _filter == "companies":
             stmt = stmt.filter(Contact.company)
+            search_query["filter"] = _filter
         elif _filter == "projects":
             stmt = stmt.filter(Contact.project)
+            search_query["filter"] = _filter
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -88,6 +94,9 @@ class ContactView:
             },
         )
 
+        filter_obj = ContactFilter(**search_query)
+        filter_form = ContactFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -102,7 +111,7 @@ class ContactView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(

@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from wtforms import DateTimeLocalField, Form, SelectField, SelectMultipleField, StringField, SubmitField
+from wtforms import DateTimeLocalField, Form, HiddenField, SelectField, SelectMultipleField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
 from wtforms.widgets import DateTimeLocalInput
 
@@ -109,11 +109,23 @@ class ProjectSearchForm(Form):
 
 
 class ProjectFilterForm(Form):
+    name = HiddenField(_("Name"), filters=[strip_filter])
+    street = HiddenField(_("Street"), filters=[strip_filter])
+    postcode = HiddenField(_("Post code"), filters=[strip_filter])
+    city = HiddenField(_("City"), filters=[strip_filter])
+    subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    country = SelectField(_("Country"), choices=select_countries())
+    link = HiddenField(_("Link"), filters=[strip_filter])
+    deadline = HiddenField(_("Deadline"))
+    stage = HiddenField(_("Stage"))
+    delivery_method = HiddenField(_("Project delivery method"))
     status = SelectField(_("Status"), choices=STATUS)
     color = SelectField(_("Color"), choices=COLORS)
-    country = SelectField(_("Country"), choices=select_countries())
-    subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
     submit = SubmitField(_("Filter"))
+    # color = SelectField(_("Color"), choices=COLORS)
+    # country = SelectField(_("Country"), choices=select_countries())
+    # subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    # submit = SubmitField(_("Filter"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

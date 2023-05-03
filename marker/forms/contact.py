@@ -1,4 +1,4 @@
-from wtforms import EmailField, Form, StringField, SelectField, SubmitField
+from wtforms import EmailField, Form, HiddenField, StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Length
 
 from .filters import strip_filter
@@ -48,5 +48,9 @@ class ContactSearchForm(Form):
 
 
 class ContactFilterForm(Form):
+    name = HiddenField(_("Fullname"), filters=[strip_filter])
+    role = HiddenField(_("Role"), filters=[strip_filter])
+    phone = HiddenField(_("Phone"), filters=[strip_filter])
+    email = HiddenField(_("Email"), filters=[strip_filter])
     filter = SelectField(_("Filter"), choices=CONTACTS_FILTER)
     submit = SubmitField(_("Search"))

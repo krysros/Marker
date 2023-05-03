@@ -1135,9 +1135,6 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
 
-        filter_obj = CompanyFilter(color, country, subdivision)
-        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
-
         search_query = {}
 
         stmt = (
@@ -1183,6 +1180,9 @@ class UserView:
             },
         )
 
+        filter_obj = CompanyFilter(**search_query)
+        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -1199,7 +1199,7 @@ class UserView:
             "next_page": next_page,
             "colors": colors,
             "counter": counter,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(
@@ -1307,9 +1307,6 @@ class UserView:
         now = datetime.datetime.now()
         search_query = {}
 
-        filter_obj = ProjectFilter(status, color, country, subdivision)
-        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
-
         stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
 
         if status == "in_progress":
@@ -1358,6 +1355,9 @@ class UserView:
             },
         )
 
+        filter_obj = ProjectFilter(**search_query)
+        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -1373,7 +1373,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(

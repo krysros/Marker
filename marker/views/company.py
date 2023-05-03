@@ -34,10 +34,8 @@ log = logging.getLogger(__name__)
 
 
 class CompanyFilter:
-    def __init__(self, color, country, subdivision):
-        self.color = color
-        self.country = country
-        self.subdivision = subdivision
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
 
 
 class CompanyView:
@@ -162,9 +160,6 @@ class CompanyView:
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
 
-        filter_obj = CompanyFilter(color, country, subdivision)
-        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
-
         stmt = select(Company)
 
         if name:
@@ -244,6 +239,9 @@ class CompanyView:
             .all()
         )
 
+        filter_obj = CompanyFilter(**search_query)
+        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -268,9 +266,8 @@ class CompanyView:
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
-            # "colors": colors,
             "counter": counter,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(
@@ -681,9 +678,6 @@ class CompanyView:
         colors = dict(COLORS)
         search_query = {}
 
-        filter_obj = CompanyFilter(color, country, subdivision)
-        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
-
         stmt = (
             select(Company)
             .join(Tag, Company.tags)
@@ -734,6 +728,9 @@ class CompanyView:
             },
         )
 
+        filter_obj = CompanyFilter(**search_query)
+        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+
         return {
             "search_query": search_query,
             "company": company,
@@ -742,7 +739,7 @@ class CompanyView:
             "colors": colors,
             "title": company.name,
             "company_pills": self.pills(company),
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(

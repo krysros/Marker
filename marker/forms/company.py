@@ -1,7 +1,7 @@
 from operator import mul
 
 from sqlalchemy import select
-from wtforms import Form, SelectField, SelectMultipleField, StringField, SubmitField
+from wtforms import Form, SelectField, SelectMultipleField, HiddenField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
@@ -186,10 +186,23 @@ class CompanySearchForm(Form):
 
 
 class CompanyFilterForm(Form):
-    color = SelectField(_("Color"), choices=COLORS)
-    country = SelectField(_("Country"), choices=select_countries())
+    name = HiddenField(_("Name"), filters=[strip_filter])
+    street = HiddenField(_("Street"), filters=[strip_filter])
+    postcode = HiddenField(_("Post code"), filters=[strip_filter])
+    city = HiddenField(_("City"), filters=[strip_filter])
     subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    country = SelectField(_("Country"), choices=select_countries())
+    link = HiddenField(_("Link"), filters=[strip_filter])
+    NIP = HiddenField(_("NIP"), filters=[strip_filter])
+    REGON = HiddenField(_("REGON"), filters=[strip_filter])
+    KRS = HiddenField(_("KRS"), filters=[strip_filter])
+    court = HiddenField(_("Court"))
+    color = SelectField(_("Color"), choices=COLORS)
     submit = SubmitField(_("Filter"))
+    # color = SelectField(_("Color"), choices=COLORS)
+    # country = SelectField(_("Country"), choices=select_countries())
+    # subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    # submit = SubmitField(_("Filter"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

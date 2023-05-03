@@ -17,18 +17,18 @@
     </button>
     <form class="dropdown-menu p-4">
       <div class="mb-3">
-        ${filter_form.color.label}
-        ${filter_form.color(class_="form-control")}
+        ${form.country.label}
+        ${form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
       </div>
       <div class="mb-3">
-        ${filter_form.country.label}
-        ${filter_form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
+        ${form.subdivision.label}
+        ${form.subdivision(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${filter_form.subdivision.label}
-        ${filter_form.subdivision(class_="form-control")}
+        ${form.color.label}
+        ${form.color(class_="form-control")}
       </div>
-      ${filter_form.submit(class_="btn btn-primary")}
+      ${form.submit(class_="btn btn-primary")}
     </form>
   </div>
   <div>${button.dropdown(dd_sort)}</div>

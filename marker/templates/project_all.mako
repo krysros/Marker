@@ -23,23 +23,31 @@
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
     <form class="dropdown-menu p-4">
+      ${form.name(class_="form-control")}
+      ${form.street(class_="form-control")}
+      ${form.postcode(class_="form-control")}
+      ${form.city(class_="form-control")}
       <div class="mb-3">
-        ${filter_form.status.label}
-        ${filter_form.status(class_="form-control")}
+        ${form.country.label}
+        ${form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
       </div>
       <div class="mb-3">
-        ${filter_form.color.label}
-        ${filter_form.color(class_="form-control")}
+        ${form.subdivision.label}
+        ${form.subdivision(class_="form-control")}
+      </div>
+      ${form.link(class_="form-control")}
+      ${form.deadline(class_="form-control")}
+      ${form.stage(class_="form-control")}
+      ${form.delivery_method(class_="form-control")}
+      <div class="mb-3">
+        ${form.color.label}
+        ${form.color(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${filter_form.country.label}
-        ${filter_form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
+        ${form.status.label}
+        ${form.status(class_="form-control")}
       </div>
-      <div class="mb-3">
-        ${filter_form.subdivision.label}
-        ${filter_form.subdivision(class_="form-control")}
-      </div>
-      ${filter_form.submit(class_="btn btn-primary")}
+      ${form.submit(class_="btn btn-primary")}
     </form>
   </div>
   <div>${button.dropdown(dd_sort)}</div>

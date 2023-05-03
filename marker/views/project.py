@@ -36,11 +36,8 @@ log = logging.getLogger(__name__)
 
 
 class ProjectFilter:
-    def __init__(self, status, color, country, subdivision):
-        self.status = status
-        self.color = color
-        self.country = country
-        self.subdivision = subdivision
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
 
 
 class ProjectView:
@@ -166,9 +163,6 @@ class ProjectView:
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         search_query = {}
 
-        filter_obj = ProjectFilter(status, color, country, subdivision)
-        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
-
         stmt = select(Project)
 
         if name:
@@ -263,6 +257,9 @@ class ProjectView:
             },
         )
 
+        filter_obj = ProjectFilter(**search_query)
+        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -277,7 +274,7 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(
@@ -581,9 +578,6 @@ class ProjectView:
         colors = dict(COLORS)
         search_query = {}
 
-        filter_obj = ProjectFilter(status, color, country, subdivision)
-        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
-
         stmt = (
             select(Project)
             .join(Tag, Project.tags)
@@ -599,8 +593,10 @@ class ProjectView:
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
+            search_query["status"] = status
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
+            search_query["status"] = status
 
         if color:
             stmt = stmt.filter(Project.color == color)
@@ -639,6 +635,9 @@ class ProjectView:
             },
         )
 
+        filter_obj = ProjectFilter(**search_query)
+        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
+
         return {
             "search_query": search_query,
             "project": project,
@@ -647,7 +646,7 @@ class ProjectView:
             "colors": colors,
             "title": project.name,
             "project_pills": self.pills(project),
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(

@@ -17,11 +17,12 @@
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
     <form class="dropdown-menu p-4">
+      ${form.comment(class_="form-control")}
       <div class="mb-3">
-        ${filter_form.filter.label}
-        ${filter_form.filter(class_="form-control")}
+        ${form.filter.label}
+        ${form.filter(class_="form-control")}
       </div>
-      ${filter_form.submit(class_="btn btn-primary")}
+      ${form.submit(class_="btn btn-primary")}
     </form>
   </div>
   <div>${button.dropdown(dd_order)}</div>
