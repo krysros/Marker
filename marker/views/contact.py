@@ -38,31 +38,31 @@ class ContactView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
-        search_query = {}
+        q = {}
         stmt = select(Contact)
 
         if name:
             stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
-            search_query["name"] = name
+            q["name"] = name
 
         if role:
             stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
-            search_query["role"] = role
+            q["role"] = role
 
         if phone:
             stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
-            search_query["phone"] = phone
+            q["phone"] = phone
 
         if email:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
-            search_query["email"] = email
+            q["email"] = email
 
         if _filter == "companies":
             stmt = stmt.filter(Contact.company)
-            search_query["filter"] = _filter
+            q["filter"] = _filter
         elif _filter == "projects":
             stmt = stmt.filter(Contact.project)
-            search_query["filter"] = _filter
+            q["filter"] = _filter
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -82,7 +82,7 @@ class ContactView:
         next_page = self.request.route_url(
             "contact_more",
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -90,18 +90,18 @@ class ContactView:
             },
         )
 
-        obj = Filter(**search_query)
+        obj = Filter(**q)
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -182,16 +182,16 @@ class ContactView:
     def search(self):
         _ = self.request.translate
         form = ContactSearchForm(self.request.POST)
-        search_query = {}
+        q = {}
         for fieldname, value in form.data.items():
             if value:
-                search_query[fieldname] = value
+                q[fieldname] = value
 
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "contact_all",
-                    _query=search_query,
+                    _query=q,
                 )
             )
         return {"heading": _("Find a contact"), "form": form}

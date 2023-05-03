@@ -156,61 +156,61 @@ class ProjectView:
         now = datetime.datetime.now()
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
-        search_query = {}
+        q = {}
 
         stmt = select(Project)
 
         if name:
             stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
-            search_query["name"] = name
+            q["name"] = name
 
         if street:
             stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
-            search_query["street"] = street
+            q["street"] = street
 
         if postcode:
             stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
-            search_query["postcode"] = postcode
+            q["postcode"] = postcode
 
         if city:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
-            search_query["city"] = city
+            q["city"] = city
 
         if link:
             stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
-            search_query["link"] = link
+            q["link"] = link
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
-            search_query["subdivision"] = subdivision
+            q["subdivision"] = subdivision
 
         if country:
             stmt = stmt.filter(Project.country == country)
-            search_query["country"] = country
+            q["country"] = country
 
         if color:
             stmt = stmt.filter(Project.color == color)
-            search_query["color"] = color
+            q["color"] = color
 
         if stage:
             stmt = stmt.filter(Project.stage == stage)
-            search_query["stage"] = stage
+            q["stage"] = stage
 
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
-            search_query["delivery_method"] = delivery_method
+            q["delivery_method"] = delivery_method
 
         if deadline:
             deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
-            search_query["deadline"] = deadline
+            q["deadline"] = deadline
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
-            search_query["status"] = status
+            q["status"] = status
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
-            search_query["status"] = status
+            q["status"] = status
 
         if _sort == "watched":
             if _order == "asc":
@@ -244,7 +244,7 @@ class ProjectView:
         next_page = self.request.route_url(
             "project_more",
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -252,18 +252,18 @@ class ProjectView:
             },
         )
 
-        obj = Filter(**search_query)
+        obj = Filter(**q)
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -363,7 +363,7 @@ class ProjectView:
             deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
 
-        search_query = {
+        q = {
             "name": name,
             "street": street,
             "postcode": postcode,
@@ -381,8 +381,8 @@ class ProjectView:
             select(func.count()).select_from(stmt)
         ).scalar()
 
-        url = self.request.route_url("project_json", _query=search_query)
-        return {"url": url, "search_query": search_query, "counter": counter}
+        url = self.request.route_url("project_json", _query=q)
+        return {"url": url, "q": q, "counter": counter}
 
     @view_config(
         route_name="project_json",
@@ -571,7 +571,7 @@ class ProjectView:
         _order = self.request.params.get("order", None)
         now = datetime.datetime.now()
         colors = dict(COLORS)
-        search_query = {}
+        q = {}
 
         stmt = (
             select(Project)
@@ -588,22 +588,22 @@ class ProjectView:
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
-            search_query["status"] = status
+            q["status"] = status
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
-            search_query["status"] = status
+            q["status"] = status
 
         if color:
             stmt = stmt.filter(Project.color == color)
-            search_query["color"] = color
+            q["color"] = color
 
         if country:
             stmt = stmt.filter(Project.country == country)
-            search_query["country"] = country
+            q["country"] = country
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
-            search_query["subdivision"] = subdivision
+            q["subdivision"] = subdivision
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -622,7 +622,7 @@ class ProjectView:
             slug=project.slug,
             colors=colors,
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -630,11 +630,11 @@ class ProjectView:
             },
         )
 
-        obj = Filter(**search_query)
+        obj = Filter(**q)
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
         return {
-            "search_query": search_query,
+            "q": q,
             "project": project,
             "paginator": paginator,
             "next_page": next_page,
@@ -770,16 +770,16 @@ class ProjectView:
     def search(self):
         _ = self.request.translate
         form = ProjectSearchForm(self.request.POST)
-        search_query = {}
+        q = {}
         for fieldname, value in form.data.items():
             if value:
-                search_query[fieldname] = value
+                q[fieldname] = value
 
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "project_all",
-                    _query=search_query,
+                    _query=q,
                 )
             )
         return {"heading": _("Find a project"), "form": form}

@@ -85,11 +85,11 @@
     <ul class="dropdown-menu">
       % for k, v in dd.items.items():
         % if dd.typ.name == "FILTER":
-          <% query = {**dd.search_query, 'filter': k, 'sort': dd._sort, 'order': dd._order} %>
+          <% query = {**dd.q, 'filter': k, 'sort': dd._sort, 'order': dd._order} %>
         % elif dd.typ.name == "SORT":
-          <% query = {**dd.search_query, 'filter': dd._filter, 'sort': k, 'order': dd._order} %>
+          <% query = {**dd.q, 'filter': dd._filter, 'sort': k, 'order': dd._order} %>
         % elif dd.typ.name == "ORDER":
-          <% query = {**dd.search_query, 'filter': dd._filter, 'sort': dd._sort, 'order': k} %>
+          <% query = {**dd.q, 'filter': dd._filter, 'sort': dd._sort, 'order': k} %>
         % endif
       <li>
         <a class="dropdown-item" role="button" href="${request.current_route_url(_query=query)}">

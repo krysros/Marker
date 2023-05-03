@@ -73,12 +73,12 @@ class TagView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
-        search_query = {}
+        q = {}
         stmt = select(Tag)
 
         if name:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
-            search_query["name"] = name
+            q["name"] = name
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
@@ -98,7 +98,7 @@ class TagView:
         next_page = self.request.route_url(
             "tag_more",
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -107,14 +107,14 @@ class TagView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
             "paginator": paginator,
@@ -234,7 +234,7 @@ class TagView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
-        search_query = {}
+        q = {}
         stmt = select(Company)
 
         if _sort == "recommended":
@@ -272,7 +272,7 @@ class TagView:
             tag_id=tag.id,
             slug=tag.slug,
             _query={
-                **search_query,
+                **q,
                 "page": page + 1,
                 "filter": _filter,
                 "sort": _sort,
@@ -281,14 +281,14 @@ class TagView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "tag": tag,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
@@ -392,7 +392,7 @@ class TagView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
-        search_query = {}
+        q = {}
         stmt = select(Project)
 
         if _sort == "watched":
@@ -430,7 +430,7 @@ class TagView:
             tag_id=tag.id,
             slug=tag.slug,
             _query={
-                **search_query,
+                **q,
                 "page": page + 1,
                 "filter": _filter,
                 "sort": _sort,
@@ -439,14 +439,14 @@ class TagView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "tag": tag,
             "dd_sort": dd_sort,
             "dd_order": dd_order,

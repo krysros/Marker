@@ -9,7 +9,7 @@
   <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.a_button(icon='map', color='secondary', url=request.route_url('project_map', _query=search_query))}
+    ${button.a_button(icon='map', color='secondary', url=request.route_url('project_map', _query=q))}
     ${button.a_button(icon='search', color='primary', url=request.route_url('project_search'))}
     ${button.a_button(icon='plus-lg', color='success', url=request.route_url('project_add'))}
   </div>
@@ -54,10 +54,10 @@
   <div>${button.dropdown(dd_order)}</div>
 </div>
 
-% if any(x for x in search_query.values() if x):
+% if any(x for x in q.values() if x):
 <div class="alert alert-info" role="alert">
   <strong>${_("Search criteria")}: </strong>
-  % for k, v in search_query.items():
+  % for k, v in q.items():
     ${k}:
     % if isinstance(v, list):
       <strong>${", ".join(v)}</strong>;

@@ -16,10 +16,10 @@
   <div>${button.dropdown(dd_order)}</div>
 </div>
 
-% if any(x for x in search_query.values() if x):
+% if any(x for x in q.values() if x):
 <div class="alert alert-info" role="alert">
   <strong>${_("Search criteria")}: </strong>
-  % for k, v in search_query.items():
+  % for k, v in q.items():
     ${k}:
     % if isinstance(v, list):
       <strong>${", ".join(v)}</strong>;

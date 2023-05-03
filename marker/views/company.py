@@ -154,57 +154,57 @@ class CompanyView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
-        search_query = {}
+        q = {}
 
         stmt = select(Company)
 
         if name:
             stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
-            search_query["name"] = name
+            q["name"] = name
 
         if street:
             stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
-            search_query["street"] = street
+            q["street"] = street
 
         if postcode:
             stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
-            search_query["postcode"] = postcode
+            q["postcode"] = postcode
 
         if city:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
-            search_query["city"] = city
+            q["city"] = city
 
         if link:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
-            search_query["link"] = link
+            q["link"] = link
 
         if NIP:
             stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
-            search_query["NIP"] = NIP
+            q["NIP"] = NIP
 
         if REGON:
             stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
-            search_query["REGON"] = REGON
+            q["REGON"] = REGON
 
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
-            search_query["KRS"] = KRS
+            q["KRS"] = KRS
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
-            search_query["subdivision"] = subdivision
+            q["subdivision"] = subdivision
 
         if country:
             stmt = stmt.filter(Company.country == country)
-            search_query["country"] = country
+            q["country"] = country
 
         if court:
             stmt = stmt.filter(Company.court == court)
-            search_query["court"] = court
+            q["court"] = court
 
         if color:
             stmt = stmt.filter(Company.color == color)
-            search_query["color"] = color
+            q["color"] = color
 
         if _sort == "recommended":
             if _order == "asc":
@@ -235,20 +235,20 @@ class CompanyView:
             .all()
         )
 
-        obj = Filter(**search_query)
+        obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         next_page = self.request.route_url(
             "company_more",
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -257,7 +257,7 @@ class CompanyView:
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "next_page": next_page,
             "dd_sort": dd_sort,
             "dd_order": dd_order,
@@ -361,7 +361,7 @@ class CompanyView:
         if color:
             stmt = stmt.filter(Company.color == color)
 
-        search_query = {
+        q = {
             "name": name,
             "street": street,
             "postcode": postcode,
@@ -380,8 +380,8 @@ class CompanyView:
             select(func.count()).select_from(stmt)
         ).scalar()
 
-        url = self.request.route_url("company_json", _query=search_query)
-        return {"url": url, "search_query": search_query, "counter": counter}
+        url = self.request.route_url("company_json", _query=q)
+        return {"url": url, "q": q, "counter": counter}
 
     @view_config(
         route_name="company_json",
@@ -672,7 +672,7 @@ class CompanyView:
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
-        search_query = {}
+        q = {}
 
         stmt = (
             select(Company)
@@ -689,15 +689,15 @@ class CompanyView:
 
         if color:
             stmt = stmt.filter(Company.color == color)
-            search_query["color"] = color
+            q["color"] = color
 
         if country:
             stmt = stmt.filter(Company.country == country)
-            search_query["country"] = country
+            q["country"] = country
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
-            search_query["subdivision"] = subdivision
+            q["subdivision"] = subdivision
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
@@ -716,7 +716,7 @@ class CompanyView:
             slug=company.slug,
             colors=colors,
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -724,11 +724,11 @@ class CompanyView:
             },
         )
 
-        obj = Filter(**search_query)
+        obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         return {
-            "search_query": search_query,
+            "q": q,
             "company": company,
             "paginator": paginator,
             "next_page": next_page,
@@ -908,16 +908,16 @@ class CompanyView:
     def search(self):
         _ = self.request.translate
         form = CompanySearchForm(self.request.POST)
-        search_query = {}
+        q = {}
         for fieldname, value in form.data.items():
             if value:
-                search_query[fieldname] = value
+                q[fieldname] = value
 
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
                 location=self.request.route_url(
                     "company_all",
-                    _query=search_query,
+                    _query=q,
                 )
             )
         return {"heading": _("Find a company"), "form": form}

@@ -35,19 +35,19 @@ class CommentView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
-        search_query = {}
+        q = {}
         stmt = select(Comment)
 
         if comment:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
-            search_query["comment"] = comment
+            q["comment"] = comment
 
         if _filter == "companies":
             stmt = stmt.filter(Comment.company)
-            search_query["filter"] = _filter
+            q["filter"] = _filter
         elif _filter == "projects":
             stmt = stmt.filter(Comment.project)
-            search_query["filter"] = _filter
+            q["filter"] = _filter
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -66,7 +66,7 @@ class CommentView:
         next_page = self.request.route_url(
             "comment_more",
             _query={
-                **search_query,
+                **q,
                 "filter": _filter,
                 "sort": _sort,
                 "order": _order,
@@ -74,15 +74,15 @@ class CommentView:
             },
         )
 
-        obj = Filter(**search_query)
+        obj = Filter(**q)
         form = CommentFilterForm(self.request.GET, obj, request=self.request)
 
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
         )
 
         return {
-            "search_query": search_query,
+            "q": q,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
