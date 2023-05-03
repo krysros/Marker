@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
-from ..forms import CompanyForm, CompanySearchForm, CompanyFilterForm
+from ..forms import CompanyFilterForm, CompanyForm, CompanySearchForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -29,13 +29,9 @@ from ..models import (
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
+from . import Filter
 
 log = logging.getLogger(__name__)
-
-
-class CompanyFilter:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
 
 
 class CompanyView:
@@ -239,8 +235,10 @@ class CompanyView:
             .all()
         )
 
-        filter_obj = CompanyFilter(**search_query)
-        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+        filter_obj = Filter(**search_query)
+        filter_form = CompanyFilterForm(
+            self.request.GET, filter_obj, request=self.request
+        )
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
@@ -728,8 +726,10 @@ class CompanyView:
             },
         )
 
-        filter_obj = CompanyFilter(**search_query)
-        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+        filter_obj = Filter(**search_query)
+        filter_form = CompanyFilterForm(
+            self.request.GET, filter_obj, request=self.request
+        )
 
         return {
             "search_query": search_query,
@@ -914,7 +914,7 @@ class CompanyView:
         form = CompanySearchForm(self.request.POST)
         search_query = {}
         for fieldname, value in form.data.items():
-            if value and fieldname != "submit":
+            if value:
                 search_query[fieldname] = value
 
         if self.request.method == "POST" and form.validate():

@@ -18,11 +18,14 @@
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
     <form class="dropdown-menu p-4">
+      ${form.name(class_="form-control")}
+      ${form.fullname(class_="form-control")}
+      ${form.email(class_="form-control")}
       <div class="mb-3">
-        ${filter_form.role.label}
-        ${filter_form.role(class_="form-control")}
+        ${form.role.label}
+        ${form.role(class_="form-control")}
       </div>
-      ${filter_form.submit(class_="btn btn-primary")}
+      ${form.submit(class_="btn btn-primary")}
     </form>
   </div>
   <div>${button.dropdown(dd_sort)}</div>

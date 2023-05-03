@@ -2,6 +2,7 @@ from sqlalchemy import select
 from wtforms import (
     EmailField,
     Form,
+    HiddenField,
     PasswordField,
     SelectField,
     StringField,
@@ -70,5 +71,8 @@ class UserSearchForm(Form):
 
 
 class UserFilterForm(Form):
+    name = HiddenField(_("Name"), filters=[strip_filter])
+    fullname = HiddenField(_("Fullname"), filters=[strip_filter])
+    email = HiddenField(_("Email"), filters=[strip_filter])
     role = SelectField(_("Role"), choices=USER_ROLES)
     submit = SubmitField(_("Filter"))

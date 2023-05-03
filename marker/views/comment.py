@@ -4,18 +4,14 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import CommentSearchForm, CommentFilterForm
-from ..forms.select import COMMENTS_FILTER, ORDER_CRITERIA
+from ..forms import CommentFilterForm, CommentSearchForm
+from ..forms.select import ORDER_CRITERIA
 from ..models import Comment
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.paginator import get_paginator
+from . import Filter
 
 log = logging.getLogger(__name__)
-
-
-class CommentFilter:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
 
 
 class CommentView:
@@ -78,8 +74,10 @@ class CommentView:
             },
         )
 
-        filter_obj = CommentFilter(**search_query)
-        filter_form = CommentFilterForm(self.request.GET, filter_obj, request=self.request)
+        filter_obj = Filter(**search_query)
+        filter_form = CommentFilterForm(
+            self.request.GET, filter_obj, request=self.request
+        )
 
         dd_order = Dropdown(
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order

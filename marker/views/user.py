@@ -5,7 +5,13 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import UserForm, UserSearchForm, UserFilterForm, CompanyFilterForm, ProjectFilterForm
+from ..forms import (
+    CompanyFilterForm,
+    ProjectFilterForm,
+    UserFilterForm,
+    UserForm,
+    UserSearchForm,
+)
 from ..forms.select import (
     COLORS,
     ORDER_CRITERIA,
@@ -13,7 +19,6 @@ from ..forms.select import (
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_EXT,
     SORT_CRITERIA_PROJECTS,
-    STATUS,
     USER_ROLES,
 )
 from ..models import (
@@ -33,8 +38,7 @@ from ..models import (
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
-from ..views.company import CompanyFilter
-from ..views.project import ProjectFilter
+from . import Filter
 
 log = logging.getLogger(__name__)
 
@@ -106,7 +110,7 @@ class UserView:
     @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
     def all(self):
         page = int(self.request.params.get("page", 1))
-        username = self.request.params.get("username", None)
+        name = self.request.params.get("name", None)
         fullname = self.request.params.get("fullname", None)
         email = self.request.params.get("email", None)
         role = self.request.params.get("role", None)
@@ -117,12 +121,11 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         search_query = {}
-        filter_form = UserFilterForm(self.request.GET)
         stmt = select(User)
 
-        if username:
-            stmt = stmt.filter(User.name.ilike("%" + username + "%"))
-            search_query["username"] = username
+        if name:
+            stmt = stmt.filter(User.name.ilike("%" + name + "%"))
+            search_query["name"] = name
 
         if fullname:
             stmt = stmt.filter(User.fullname.ilike("%" + fullname + "%"))
@@ -162,6 +165,9 @@ class UserView:
             },
         )
 
+        filter_obj = Filter(**search_query)
+        filter_form = UserFilterForm(self.request.GET, filter_obj, request=self.request)
+
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
         )
@@ -177,7 +183,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "filter_form": filter_form,
+            "form": filter_form,
         }
 
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")
@@ -243,6 +249,8 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
+
         stmt = select(Tag).filter(Tag.created_by == user)
 
         if _order == "asc":
@@ -255,8 +263,6 @@ class UserView:
             .scalars()
             .all()
         )
-
-        search_query = {}
 
         next_page = self.request.route_url(
             "user_more_tags",
@@ -464,6 +470,8 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        search_query = {}
+
         stmt = select(Contact).filter(Contact.created_by == user)
 
         if _order == "asc":
@@ -476,8 +484,6 @@ class UserView:
             .scalars()
             .all()
         )
-
-        search_query = {}
 
         next_page = self.request.route_url(
             "user_more_contacts",
@@ -572,7 +578,7 @@ class UserView:
         form = UserSearchForm(self.request.POST)
         search_query = {}
         for fieldname, value in form.data.items():
-            if value and fieldname != "submit":
+            if value:
                 search_query[fieldname] = value
 
         if self.request.method == "POST" and form.validate():
@@ -603,6 +609,8 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
+        search_query = {}
+
         stmt = (
             select(Company)
             .join(selected_companies)
@@ -620,8 +628,6 @@ class UserView:
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
-
-        search_query = {}
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -745,11 +751,13 @@ class UserView:
         _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
-        status = dict(STATUS)
+        # status = dict(STATUS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         now = datetime.datetime.now()
+        search_query = {}
+
         stmt = (
             select(Project)
             .join(selected_projects)
@@ -769,8 +777,6 @@ class UserView:
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
-
-        search_query = {}
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -1180,8 +1186,10 @@ class UserView:
             },
         )
 
-        filter_obj = CompanyFilter(**search_query)
-        filter_form = CompanyFilterForm(self.request.GET, filter_obj, request=self.request)
+        filter_obj = Filter(**search_query)
+        filter_form = CompanyFilterForm(
+            self.request.GET, filter_obj, request=self.request
+        )
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
@@ -1355,8 +1363,10 @@ class UserView:
             },
         )
 
-        filter_obj = ProjectFilter(**search_query)
-        filter_form = ProjectFilterForm(self.request.GET, filter_obj, request=self.request)
+        filter_obj = Filter(**search_query)
+        filter_form = ProjectFilterForm(
+            self.request.GET, filter_obj, request=self.request
+        )
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order

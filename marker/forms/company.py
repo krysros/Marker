@@ -1,7 +1,14 @@
 from operator import mul
 
 from sqlalchemy import select
-from wtforms import Form, SelectField, SelectMultipleField, HiddenField, StringField, SubmitField
+from wtforms import (
+    Form,
+    HiddenField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    SubmitField,
+)
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
@@ -190,7 +197,9 @@ class CompanyFilterForm(Form):
     street = HiddenField(_("Street"), filters=[strip_filter])
     postcode = HiddenField(_("Post code"), filters=[strip_filter])
     city = HiddenField(_("City"), filters=[strip_filter])
-    subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    subdivision = SelectMultipleField(
+        _("Subdivision"), choices=select_subdivisions(), validate_choice=False
+    )
     country = SelectField(_("Country"), choices=select_countries())
     link = HiddenField(_("Link"), filters=[strip_filter])
     NIP = HiddenField(_("NIP"), filters=[strip_filter])
@@ -219,4 +228,4 @@ class CompanyFilterForm(Form):
             country = None
 
         self.subdivision.choices = select_subdivisions(country)
-        self.subdivision.default = self.request.GET.getall('subdivision')
+        self.subdivision.default = self.request.GET.getall("subdivision")

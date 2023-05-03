@@ -4,19 +4,15 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import ContactForm, ContactSearchForm, ContactFilterForm
+from ..forms import ContactFilterForm, ContactForm, ContactSearchForm
 from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA
 from ..models import Contact
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_vcard
 from ..utils.paginator import get_paginator
+from . import Filter
 
 log = logging.getLogger(__name__)
-
-
-class ContactFilter:
-    def __init__(self, **entries):
-        self.__dict__.update(entries)
 
 
 class ContactView:
@@ -94,8 +90,10 @@ class ContactView:
             },
         )
 
-        filter_obj = ContactFilter(**search_query)
-        filter_form = ContactFilterForm(self.request.GET, filter_obj, request=self.request)
+        filter_obj = Filter(**search_query)
+        filter_form = ContactFilterForm(
+            self.request.GET, filter_obj, request=self.request
+        )
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
@@ -188,7 +186,7 @@ class ContactView:
         form = ContactSearchForm(self.request.POST)
         search_query = {}
         for fieldname, value in form.data.items():
-            if value and fieldname != "submit":
+            if value:
                 search_query[fieldname] = value
 
         if self.request.method == "POST" and form.validate():
