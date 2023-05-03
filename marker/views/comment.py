@@ -74,10 +74,8 @@ class CommentView:
             },
         )
 
-        filter_obj = Filter(**search_query)
-        filter_form = CommentFilterForm(
-            self.request.GET, filter_obj, request=self.request
-        )
+        obj = Filter(**search_query)
+        form = CommentFilterForm(self.request.GET, obj, request=self.request)
 
         dd_order = Dropdown(
             self.request, order_criteria, Dd.ORDER, search_query, _filter, _sort, _order
@@ -89,7 +87,7 @@ class CommentView:
             "next_page": next_page,
             "counter": counter,
             "dd_order": dd_order,
-            "form": filter_form,
+            "form": form,
         }
 
     @view_config(

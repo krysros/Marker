@@ -235,10 +235,8 @@ class CompanyView:
             .all()
         )
 
-        filter_obj = Filter(**search_query)
-        filter_form = CompanyFilterForm(
-            self.request.GET, filter_obj, request=self.request
-        )
+        obj = Filter(**search_query)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
@@ -265,7 +263,7 @@ class CompanyView:
             "dd_order": dd_order,
             "paginator": paginator,
             "counter": counter,
-            "form": filter_form,
+            "form": form,
         }
 
     @view_config(
@@ -726,10 +724,8 @@ class CompanyView:
             },
         )
 
-        filter_obj = Filter(**search_query)
-        filter_form = CompanyFilterForm(
-            self.request.GET, filter_obj, request=self.request
-        )
+        obj = Filter(**search_query)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         return {
             "search_query": search_query,
@@ -739,7 +735,7 @@ class CompanyView:
             "colors": colors,
             "title": company.name,
             "company_pills": self.pills(company),
-            "form": filter_form,
+            "form": form,
         }
 
     @view_config(

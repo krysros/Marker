@@ -252,10 +252,8 @@ class ProjectView:
             },
         )
 
-        filter_obj = Filter(**search_query)
-        filter_form = ProjectFilterForm(
-            self.request.GET, filter_obj, request=self.request
-        )
+        obj = Filter(**search_query)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
             self.request, sort_criteria, Dd.SORT, search_query, _filter, _sort, _order
@@ -271,7 +269,7 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "form": filter_form,
+            "form": form,
         }
 
     @view_config(
@@ -632,10 +630,8 @@ class ProjectView:
             },
         )
 
-        filter_obj = Filter(**search_query)
-        filter_form = ProjectFilterForm(
-            self.request.GET, filter_obj, request=self.request
-        )
+        obj = Filter(**search_query)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
         return {
             "search_query": search_query,
@@ -645,7 +641,7 @@ class ProjectView:
             "colors": colors,
             "title": project.name,
             "project_pills": self.pills(project),
-            "form": filter_form,
+            "form": form,
         }
 
     @view_config(
