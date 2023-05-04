@@ -132,10 +132,6 @@ class ProjectFilterForm(Form):
     status = SelectField(_("Status"), choices=STATUS)
     color = SelectField(_("Color"), choices=COLORS)
     submit = SubmitField(_("Filter"))
-    # color = SelectField(_("Color"), choices=COLORS)
-    # country = SelectField(_("Country"), choices=select_countries())
-    # subdivision = SelectMultipleField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
-    # submit = SubmitField(_("Filter"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
