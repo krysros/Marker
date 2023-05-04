@@ -34,6 +34,7 @@
       <div class="mb-3">
         ${form.subdivision.label}
         ${form.subdivision(class_="form-control")}
+        <small class="text-body-secondary">Ctrl + Click</small>
       </div>
       ${form.link(class_="form-control")}
       ${form.NIP(class_="form-control")}
