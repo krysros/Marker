@@ -22,7 +22,7 @@
             <textarea class="form-control" id="comment" name="comment"></textarea>
           </div>
           <div class="mb-3">
-            <p><small class="text-muted">${_("You can use Markdown for this field.")}</small></p>
+            <p><small class="text-body-secondary">${_("You can use Markdown for this field.")}</small></p>
           </div>
         </div>
         <div class="modal-footer">
