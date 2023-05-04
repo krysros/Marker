@@ -20,9 +20,7 @@
           <div class="mb-3">
             <label for="comment" class="form-label">${_("Comment")}</label>
             <textarea class="form-control" id="comment" name="comment"></textarea>
-          </div>
-          <div class="mb-3">
-            <p><small class="text-body-secondary">${_("You can use Markdown for this field.")}</small></p>
+            <small class="text-body-secondary">${_("You can use Markdown for this field.")}</small>
           </div>
         </div>
         <div class="modal-footer">
