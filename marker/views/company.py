@@ -149,7 +149,6 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
@@ -239,17 +238,16 @@ class CompanyView:
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         next_page = self.request.route_url(
             "company_more",
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -668,7 +666,6 @@ class CompanyView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         colors = dict(COLORS)
@@ -717,7 +714,6 @@ class CompanyView:
             colors=colors,
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,

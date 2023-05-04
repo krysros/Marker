@@ -150,7 +150,6 @@ class ProjectView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -245,7 +244,6 @@ class ProjectView:
             "project_more",
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -256,10 +254,10 @@ class ProjectView:
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -566,7 +564,6 @@ class ProjectView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", None)
         _order = self.request.params.get("order", None)
         now = datetime.datetime.now()
@@ -623,7 +620,6 @@ class ProjectView:
             colors=colors,
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,

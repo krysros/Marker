@@ -33,7 +33,7 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        _filter = self.request.params.get("filter", None)
+        typ = self.request.params.get("typ", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -57,12 +57,12 @@ class ContactView:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
             q["email"] = email
 
-        if _filter == "companies":
+        if typ == "companies":
             stmt = stmt.filter(Contact.company)
-            q["filter"] = _filter
-        elif _filter == "projects":
+            q["typ"] = typ
+        elif typ == "projects":
             stmt = stmt.filter(Contact.project)
-            q["filter"] = _filter
+            q["typ"] = typ
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -83,7 +83,6 @@ class ContactView:
             "contact_more",
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -94,10 +93,10 @@ class ContactView:
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {

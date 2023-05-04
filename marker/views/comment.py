@@ -31,7 +31,7 @@ class CommentView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
-        _filter = self.request.params.get("filter", None)
+        typ = self.request.params.get("typ", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
@@ -42,12 +42,12 @@ class CommentView:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
             q["comment"] = comment
 
-        if _filter == "companies":
+        if typ == "companies":
             stmt = stmt.filter(Comment.company)
-            q["filter"] = _filter
-        elif _filter == "projects":
+            q["typ"] = typ
+        elif typ == "projects":
             stmt = stmt.filter(Comment.project)
-            q["filter"] = _filter
+            q["typ"] = typ
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -67,7 +67,6 @@ class CommentView:
             "comment_more",
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -78,7 +77,7 @@ class CommentView:
         form = CommentFilterForm(self.request.GET, obj, request=self.request)
 
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {

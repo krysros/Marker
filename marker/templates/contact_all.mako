@@ -22,8 +22,8 @@
       ${form.phone(class_="form-control")}
       ${form.email(class_="form-control")}
       <div class="mb-3">
-        ${form.filter.label}
-        ${form.filter(class_="form-control")}
+        ${form.typ.label}
+        ${form.typ(class_="form-control")}
       </div>
       ${form.submit(class_="btn btn-primary")}
     </form>

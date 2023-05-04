@@ -122,14 +122,7 @@ PROJECT_DELIVERY_METHODS = [
 ]
 
 
-CONTACTS_FILTER = [
-    ("", "---"),
-    ("companies", _("Companies")),
-    ("projects", _("Projects")),
-]
-
-
-COMMENTS_FILTER = [
+TYP_FILTER = [
     ("", "---"),
     ("companies", _("Companies")),
     ("projects", _("Projects")),

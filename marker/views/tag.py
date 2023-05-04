@@ -68,7 +68,6 @@ class TagView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -99,7 +98,6 @@ class TagView:
             "tag_more",
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -107,10 +105,10 @@ class TagView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -228,7 +226,6 @@ class TagView:
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
@@ -274,17 +271,16 @@ class TagView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -303,7 +299,6 @@ class TagView:
     def export_companies(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         stmt = select(
@@ -344,9 +339,6 @@ class TagView:
                     getattr(Company, _sort).desc(), Company.id
                 )
 
-        if _filter:
-            stmt = stmt.filter(Company.color == _filter)
-
         companies = self.request.dbsession.execute(stmt).all()
         header_row = [
             _("Name"),
@@ -386,7 +378,6 @@ class TagView:
     def projects(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         colors = dict(COLORS)
@@ -432,17 +423,16 @@ class TagView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -461,7 +451,6 @@ class TagView:
     def export_projects(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         stmt = select(
@@ -501,9 +490,6 @@ class TagView:
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
                     getattr(Project, _sort).desc(), Project.id
                 )
-
-        if _filter:
-            stmt = stmt.filter(Project.color == _filter)
 
         projects = self.request.dbsession.execute(stmt).all()
         header_row = [

@@ -114,7 +114,6 @@ class UserView:
         fullname = self.request.params.get("fullname", None)
         email = self.request.params.get("email", None)
         role = self.request.params.get("role", None)
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         roles = dict(USER_ROLES)
@@ -158,7 +157,6 @@ class UserView:
             "user_more",
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -169,10 +167,10 @@ class UserView:
         form = UserFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -244,7 +242,6 @@ class UserView:
     def tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -269,7 +266,6 @@ class UserView:
             username=user.name,
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -277,10 +273,10 @@ class UserView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -307,7 +303,6 @@ class UserView:
     def companies(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
@@ -335,9 +330,6 @@ class UserView:
             elif _order == "desc":
                 stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
 
-        if _filter:
-            stmt = stmt.filter(Company.color == _filter)
-
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -350,17 +342,16 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -388,7 +379,6 @@ class UserView:
     def projects(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
@@ -427,7 +417,6 @@ class UserView:
             username=user.name,
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -435,10 +424,10 @@ class UserView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -465,7 +454,6 @@ class UserView:
     def contacts(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -490,7 +478,6 @@ class UserView:
             username=user.name,
             _query={
                 **q,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
                 "page": page + 1,
@@ -498,10 +485,10 @@ class UserView:
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -603,7 +590,6 @@ class UserView:
     def selected_companies(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -616,9 +602,6 @@ class UserView:
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
         )
-
-        if _filter:
-            stmt = stmt.filter(Company.color == _filter)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
@@ -641,17 +624,16 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -748,7 +730,6 @@ class UserView:
     def selected_projects(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         # status = dict(STATUS)
@@ -763,11 +744,6 @@ class UserView:
             .join(selected_projects)
             .filter(user.id == selected_projects.c.user_id)
         )
-
-        if _filter == "in_progress":
-            stmt = stmt.filter(Project.deadline > now)
-        elif _filter == "completed":
-            stmt = stmt.filter(Project.deadline < now)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -790,17 +766,16 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -897,7 +872,6 @@ class UserView:
     def selected_tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -929,17 +903,16 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -1013,7 +986,6 @@ class UserView:
     def selected_contacts(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -1047,17 +1019,16 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
         )
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -1134,7 +1105,6 @@ class UserView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -1180,7 +1150,6 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
@@ -1190,10 +1159,10 @@ class UserView:
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -1305,7 +1274,6 @@ class UserView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -1355,7 +1323,6 @@ class UserView:
             _query={
                 **q,
                 "page": page + 1,
-                "filter": _filter,
                 "sort": _sort,
                 "order": _order,
             },
@@ -1365,10 +1332,10 @@ class UserView:
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
         dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _filter, _sort, _order
+            self.request, sort_criteria, Dd.SORT, q, _sort, _order
         )
         dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _filter, _sort, _order
+            self.request, order_criteria, Dd.ORDER, q, _sort, _order
         )
 
         return {
@@ -1393,7 +1360,6 @@ class UserView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _filter = self.request.params.get("filter", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "asc")
         now = datetime.datetime.now()
