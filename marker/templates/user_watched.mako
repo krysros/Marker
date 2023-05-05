@@ -40,18 +40,6 @@
   <div>${button.a_button(icon='download', color='primary', url=request.route_url('user_export_watched', username=user.name, _query={**q, 'sort': dd_sort._sort, 'order': dd_order._order}))}</div>
 </div>
 
-% if any(x for x in q.values() if x):
-<div class="alert alert-info" role="alert">
-  <strong>${_("Search criteria")}: </strong>
-  % for k, v in q.items():
-    ${k}:
-    % if isinstance(v, list):
-      <strong>${", ".join(v)}</strong>;
-    % else:
-      <strong>${v}</strong>;
-    % endif
-  % endfor
-</div>
-% endif
+<%include file="search_criteria.mako"/>
 
 <%include file="project_table.mako"/>
