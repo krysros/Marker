@@ -16,7 +16,6 @@ class Account(Form):
         filters=[strip_filter],
     )
     email = EmailField(_("Email"), filters=[strip_filter])
-    submit = SubmitField(_("Save"))
 
 
 class ChangePassword(Form):
@@ -33,7 +32,6 @@ class ChangePassword(Form):
             EqualTo("password"),
         ],
     )
-    submit = SubmitField(_("Save"))
 
     def validate_password(form, field):
         results = zxcvbn(field.data)

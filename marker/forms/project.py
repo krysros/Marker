@@ -68,7 +68,6 @@ class ProjectForm(Form):
     delivery_method = SelectField(
         _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
     )
-    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -113,7 +112,6 @@ class ProjectSearchForm(Form):
         _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
     )
     color = SelectField(_("Color"), choices=COLORS)
-    submit = SubmitField(_("Search"))
 
 
 class ProjectFilterForm(Form):
@@ -131,7 +129,6 @@ class ProjectFilterForm(Form):
     delivery_method = HiddenField(_("Project delivery method"))
     status = SelectField(_("Status"), choices=STATUS)
     color = SelectField(_("Color"), choices=COLORS)
-    submit = SubmitField(_("Filter"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

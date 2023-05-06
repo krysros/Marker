@@ -6,4 +6,3 @@ from .ts import TranslationString as _
 class LoginForm(Form):
     username = StringField(_("User name"))
     password = PasswordField(_("Password"))
-    submit = SubmitField(_("Log in"))

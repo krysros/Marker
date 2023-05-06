@@ -36,7 +36,6 @@ class ContactForm(Form):
         ],
         filters=[strip_filter],
     )
-    submit = SubmitField(_("Save"))
 
 
 class ContactSearchForm(Form):
@@ -44,7 +43,6 @@ class ContactSearchForm(Form):
     role = StringField(_("Role"), filters=[strip_filter])
     phone = StringField(_("Phone"), filters=[strip_filter])
     email = StringField(_("Email"), filters=[strip_filter])
-    submit = SubmitField(_("Search"))
 
 
 class ContactFilterForm(Form):
@@ -53,4 +51,3 @@ class ContactFilterForm(Form):
     phone = HiddenField(_("Phone"), filters=[strip_filter])
     email = HiddenField(_("Email"), filters=[strip_filter])
     typ = SelectField(_("Type"), choices=TYP_FILTER)
-    submit = SubmitField(_("Filter"))

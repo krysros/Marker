@@ -7,7 +7,7 @@
   <div class="alert alert-info" role="alert">
     <strong>${_("Search criteria")}: </strong>
     % for k, v in form.data.items():
-      % if k != "submit" and v:
+      % if v:
         ${form[k].label.text}:
         % if k == "color":
           <strong>${colors.get(v)}</strong>;

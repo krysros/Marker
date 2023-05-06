@@ -7,4 +7,3 @@ from .ts import TranslationString as _
 
 class ReportForm(Form):
     report = SelectField(_("Report"), choices=REPORTS)
-    submit = SubmitField(_("Show"))

@@ -16,7 +16,6 @@ class TagForm(Form):
         ],
         filters=[strip_filter],
     )
-    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,4 +39,3 @@ class TagForm(Form):
 
 class TagSearchForm(Form):
     name = StringField(_("Name"), filters=[strip_filter])
-    submit = SubmitField(_("Search"))

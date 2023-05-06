@@ -43,7 +43,6 @@ class UserForm(Form):
             Length(min=5),
         ],
     )
-    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -67,7 +66,6 @@ class UserSearchForm(Form):
     fullname = StringField(_("Fullname"), filters=[strip_filter])
     email = StringField(_("Email"), filters=[strip_filter])
     role = SelectField(_("Role"), choices=USER_ROLES)
-    submit = SubmitField(_("Search"))
 
 
 class UserFilterForm(Form):
@@ -75,4 +73,3 @@ class UserFilterForm(Form):
     fullname = HiddenField(_("Fullname"), filters=[strip_filter])
     email = HiddenField(_("Email"), filters=[strip_filter])
     role = SelectField(_("Role"), choices=USER_ROLES)
-    submit = SubmitField(_("Filter"))

@@ -11,7 +11,7 @@
         ${form.comment(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.submit(class_="btn btn-primary")}
+        <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
       </div>
     </form>
   </div>

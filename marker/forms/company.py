@@ -109,7 +109,6 @@ class CompanyForm(Form):
     )
     court = SelectField(_("Court"), choices=COURTS)
     color = SelectField(_("Color"), choices=COLORS, default="")
-    submit = SubmitField(_("Save"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -189,7 +188,6 @@ class CompanySearchForm(Form):
     KRS = StringField(_("KRS"), filters=[strip_filter])
     court = SelectField(_("Court"), choices=COURTS)
     color = SelectField(_("Color"), choices=COLORS)
-    submit = SubmitField(_("Search"))
 
 
 class CompanyFilterForm(Form):
@@ -207,7 +205,6 @@ class CompanyFilterForm(Form):
     KRS = HiddenField(_("KRS"), filters=[strip_filter])
     court = HiddenField(_("Court"))
     color = SelectField(_("Color"), choices=COLORS)
-    submit = SubmitField(_("Filter"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

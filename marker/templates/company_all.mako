@@ -45,7 +45,7 @@
         ${form.color.label}
         ${form.color(class_="form-control")}
       </div>
-      ${form.submit(class_="btn btn-primary")}
+      <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>
   </div>
   <div>${button.dropdown(dd_sort)}</div>
