@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactSearchForm
-from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA
+from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA, TYP_FILTER
 from ..models import Contact
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_vcard
@@ -38,6 +38,7 @@ class ContactView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        types = dict(TYP_FILTER)
         q = {}
         stmt = select(Contact)
 
@@ -92,12 +93,8 @@ class ContactView:
         obj = Filter(**q)
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -106,6 +103,7 @@ class ContactView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "types": types,
             "form": form,
         }
 

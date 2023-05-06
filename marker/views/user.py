@@ -166,12 +166,8 @@ class UserView:
         obj = Filter(**q)
         form = UserFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -272,12 +268,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -347,12 +339,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -423,12 +411,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -484,12 +468,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -629,12 +609,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -771,12 +747,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -908,12 +880,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -1024,12 +992,8 @@ class UserView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -1127,7 +1091,7 @@ class UserView:
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
-            q["subdivision"] = subdivision
+            q["subdivision"] = list(subdivision)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
@@ -1158,12 +1122,8 @@ class UserView:
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -1300,7 +1260,7 @@ class UserView:
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
-            q["subdivision"] = subdivision
+            q["subdivision"] = list(subdivision)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -1331,12 +1291,8 @@ class UserView:
         obj = Filter(**q)
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,

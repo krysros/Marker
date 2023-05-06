@@ -14,6 +14,7 @@ from ..forms.select import (
     PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA_PROJECTS,
     STAGES,
+    STATUS,
     USER_ROLES,
     select_countries,
 )
@@ -155,6 +156,8 @@ class ProjectView:
         now = datetime.datetime.now()
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        colors = dict(COLORS)
+        statuses = dict(STATUS)
         q = {}
 
         stmt = select(Project)
@@ -181,7 +184,7 @@ class ProjectView:
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
-            q["subdivision"] = subdivision
+            q["subdivision"] = list(subdivision)
 
         if country:
             stmt = stmt.filter(Project.country == country)
@@ -253,12 +256,8 @@ class ProjectView:
         obj = Filter(**q)
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -267,6 +266,8 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "colors": colors,
+            "statuses": statuses,
             "form": form,
         }
 
@@ -568,6 +569,7 @@ class ProjectView:
         _order = self.request.params.get("order", None)
         now = datetime.datetime.now()
         colors = dict(COLORS)
+        statuses = dict(STATUS)
         q = {}
 
         stmt = (
@@ -600,7 +602,7 @@ class ProjectView:
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
-            q["subdivision"] = subdivision
+            q["subdivision"] = list(subdivision)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -635,6 +637,7 @@ class ProjectView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "statuses": statuses,
             "title": project.name,
             "project_pills": self.pills(project),
             "form": form,

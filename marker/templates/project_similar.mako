@@ -35,4 +35,6 @@
   </div>
 </div>
 
+<%include file="search_criteria.mako"/>
+
 <%include file="project_table.mako"/>

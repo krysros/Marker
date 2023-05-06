@@ -153,6 +153,7 @@ class CompanyView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
         q = {}
 
         stmt = select(Company)
@@ -191,7 +192,7 @@ class CompanyView:
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
-            q["subdivision"] = subdivision
+            q["subdivision"] = list(subdivision)
 
         if country:
             stmt = stmt.filter(Company.country == country)
@@ -237,12 +238,8 @@ class CompanyView:
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         next_page = self.request.route_url(
             "company_more",
@@ -261,6 +258,7 @@ class CompanyView:
             "dd_order": dd_order,
             "paginator": paginator,
             "counter": counter,
+            "colors": colors,
             "form": form,
         }
 
@@ -694,7 +692,7 @@ class CompanyView:
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
-            q["subdivision"] = subdivision
+            q["subdivision"] = list(subdivision)
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())

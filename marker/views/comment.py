@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import CommentFilterForm, CommentSearchForm
-from ..forms.select import ORDER_CRITERIA
+from ..forms.select import ORDER_CRITERIA, TYP_FILTER
 from ..models import Comment
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.paginator import get_paginator
@@ -35,6 +35,7 @@ class CommentView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
+        types = dict(TYP_FILTER)
         q = {}
         stmt = select(Comment)
 
@@ -76,9 +77,7 @@ class CommentView:
         obj = Filter(**q)
         form = CommentFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -86,6 +85,7 @@ class CommentView:
             "next_page": next_page,
             "counter": counter,
             "dd_order": dd_order,
+            "types": types,
             "form": form,
         }
 

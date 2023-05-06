@@ -104,12 +104,8 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -276,12 +272,8 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
@@ -428,12 +420,8 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(
-            self.request, sort_criteria, Dd.SORT, q, _sort, _order
-        )
-        dd_order = Dropdown(
-            self.request, order_criteria, Dd.ORDER, q, _sort, _order
-        )
+        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
+        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
 
         return {
             "q": q,
