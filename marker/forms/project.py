@@ -105,7 +105,10 @@ class ProjectSearchForm(Form):
     country = SelectField(_("Country"), choices=select_countries())
     link = StringField(_("Link"), filters=[strip_filter])
     deadline = DateTimeLocalField(
-        _("Deadline"), validators=[Optional()], widget=DateTimeLocalInput()
+        _("Deadline"),
+        format="%Y-%m-%dT%H:%M",  # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
+        validators=[Optional()],
+        widget=DateTimeLocalInput()
     )
     stage = SelectField(_("Stage"), choices=STAGES)
     delivery_method = SelectField(
