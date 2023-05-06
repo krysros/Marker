@@ -2,7 +2,7 @@ from wtforms import EmailField, Form, HiddenField, SelectField, StringField, Sub
 from wtforms.validators import InputRequired, Length
 
 from .filters import strip_filter
-from .select import TYP_FILTER
+from .select import PARENTS
 from .ts import TranslationString as _
 
 
@@ -50,4 +50,4 @@ class ContactFilterForm(Form):
     role = HiddenField(_("Role"), filters=[strip_filter])
     phone = HiddenField(_("Phone"), filters=[strip_filter])
     email = HiddenField(_("Email"), filters=[strip_filter])
-    typ = SelectField(_("Type"), choices=TYP_FILTER)
+    parent = SelectField(_("Parent"), choices=PARENTS)

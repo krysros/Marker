@@ -13,8 +13,8 @@
           <strong>${colors.get(v)}</strong>;
         % elif k == "status":
           <strong>${statuses.get(v)}</strong>;
-        % elif k == "typ":
-          <strong>${types.get(v)}</strong>;
+        % elif k == "parent":
+          <strong>${parents.get(v)}</strong>;
         % elif k == "role":
           <strong>${roles.get(v)}</strong>;
         % elif k == "country":

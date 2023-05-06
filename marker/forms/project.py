@@ -108,7 +108,7 @@ class ProjectSearchForm(Form):
         _("Deadline"),
         format="%Y-%m-%dT%H:%M",  # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
         validators=[Optional()],
-        widget=DateTimeLocalInput()
+        widget=DateTimeLocalInput(),
     )
     stage = SelectField(_("Stage"), choices=STAGES)
     delivery_method = SelectField(

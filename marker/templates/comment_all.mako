@@ -19,8 +19,8 @@
     <form class="dropdown-menu p-4">
       ${form.comment(class_="form-control")}
       <div class="mb-3">
-        ${form.typ.label}
-        ${form.typ(class_="form-control")}
+        ${form.parent.label}
+        ${form.parent(class_="form-control")}
       </div>
       <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>

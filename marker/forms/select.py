@@ -122,7 +122,7 @@ PROJECT_DELIVERY_METHODS = [
 ]
 
 
-TYP_FILTER = [
+PARENTS = [
     ("", "---"),
     ("companies", _("Companies")),
     ("projects", _("Projects")),

@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactSearchForm
-from ..forms.select import ORDER_CRITERIA, SORT_CRITERIA, TYP_FILTER
+from ..forms.select import ORDER_CRITERIA, PARENTS, SORT_CRITERIA
 from ..models import Contact
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_vcard
@@ -33,12 +33,12 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        typ = self.request.params.get("typ", None)
+        parent = self.request.params.get("parent", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
-        types = dict(TYP_FILTER)
+        parents = dict(PARENTS)
         q = {}
         stmt = select(Contact)
 
@@ -58,12 +58,12 @@ class ContactView:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
             q["email"] = email
 
-        if typ == "companies":
+        if parent == "companies":
             stmt = stmt.filter(Contact.company)
-            q["typ"] = typ
-        elif typ == "projects":
+            q["parent"] = parent
+        elif parent == "projects":
             stmt = stmt.filter(Contact.project)
-            q["typ"] = typ
+            q["parent"] = parent
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -103,7 +103,7 @@ class ContactView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "types": types,
+            "parents": parents,
             "form": form,
         }
 

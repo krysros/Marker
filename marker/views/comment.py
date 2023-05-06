@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import CommentFilterForm, CommentSearchForm
-from ..forms.select import ORDER_CRITERIA, TYP_FILTER
+from ..forms.select import ORDER_CRITERIA, PARENTS
 from ..models import Comment
 from ..utils.dropdown import Dd, Dropdown
 from ..utils.paginator import get_paginator
@@ -31,11 +31,11 @@ class CommentView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
-        typ = self.request.params.get("typ", None)
+        parent = self.request.params.get("parent", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
-        types = dict(TYP_FILTER)
+        parents = dict(PARENTS)
         q = {}
         stmt = select(Comment)
 
@@ -43,12 +43,12 @@ class CommentView:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
             q["comment"] = comment
 
-        if typ == "companies":
+        if parent == "companies":
             stmt = stmt.filter(Comment.company)
-            q["typ"] = typ
-        elif typ == "projects":
+            q["parent"] = parent
+        elif parent == "projects":
             stmt = stmt.filter(Comment.project)
-            q["typ"] = typ
+            q["parent"] = parent
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -85,7 +85,7 @@ class CommentView:
             "next_page": next_page,
             "counter": counter,
             "dd_order": dd_order,
-            "types": types,
+            "parents": parents,
             "form": form,
         }
 
