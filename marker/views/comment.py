@@ -32,8 +32,8 @@ class CommentView:
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
         parent = self.request.params.get("parent", None)
-        _sort = self.request.params.get("sort", "created_at")
-        _order = self.request.params.get("order", "desc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         order_criteria = dict(ORDER_CRITERIA)
         parents = dict(PARENTS)
         q = {}
@@ -55,6 +55,12 @@ class CommentView:
 
         if _order:
             q["order"] = _order
+
+        if not _sort:
+            _sort = "created_at"
+
+        if not _order:
+            _order = "desc"
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())

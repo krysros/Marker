@@ -149,8 +149,8 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
-        _sort = self.request.params.get("sort", "created_at")
-        _order = self.request.params.get("order", "desc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
@@ -211,6 +211,12 @@ class CompanyView:
 
         if _order:
             q["order"] = _order
+
+        if not _sort:
+            _sort = "created_at"
+
+        if not _order:
+            _order = "desc"
 
         if _sort == "recommended":
             if _order == "asc":
@@ -322,8 +328,8 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
-        _sort = self.request.params.get("sort", "created_at")
-        _order = self.request.params.get("order", "desc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         q = {}
 
         stmt = select(Company)
@@ -381,6 +387,12 @@ class CompanyView:
 
         if _order:
             q["order"] = _order
+
+        if not _sort:
+            _sort = "created_at"
+
+        if not _order:
+            _order = "desc"
 
         if _sort == "recommended":
             if _order == "asc":

@@ -68,8 +68,8 @@ class TagView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
-        _sort = self.request.params.get("sort", "created_at")
-        _order = self.request.params.get("order", "desc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
@@ -85,6 +85,12 @@ class TagView:
 
         if _order:
             q["order"] = _order
+
+        if not _sort:
+            _sort = "created_at"
+
+        if not _order:
+            _order = "desc"
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
@@ -227,8 +233,8 @@ class TagView:
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        _sort = self.request.params.get("sort", "name")
-        _order = self.request.params.get("order", "asc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
@@ -239,6 +245,12 @@ class TagView:
 
         if _order:
             q["order"] = _order
+
+        if not _sort:
+            _sort = "name"
+
+        if not _order:
+            _order = "asc"
 
         stmt = select(Company)
 
@@ -301,8 +313,8 @@ class TagView:
     def export_companies(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        _sort = self.request.params.get("sort", "name")
-        _order = self.request.params.get("order", "asc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         stmt = select(
             Company.name,
             Company.street,
@@ -315,6 +327,12 @@ class TagView:
             Company.REGON,
             Company.KRS,
         )
+
+        if not _sort:
+            _sort = "name"
+
+        if not _order:
+            _order = "asc"
 
         if _sort == "recommended":
             if _order == "asc":
@@ -380,8 +398,8 @@ class TagView:
     def projects(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        _sort = self.request.params.get("sort", "name")
-        _order = self.request.params.get("order", "asc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
@@ -392,6 +410,12 @@ class TagView:
 
         if _order:
             q["order"] = _order
+
+        if not _sort:
+            _sort = "name"
+
+        if not _order:
+            _order = "asc"
 
         stmt = select(Project)
 
@@ -454,8 +478,8 @@ class TagView:
     def export_projects(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        _sort = self.request.params.get("sort", "name")
-        _order = self.request.params.get("order", "asc")
+        _sort = self.request.params.get("sort", None)
+        _order = self.request.params.get("order", None)
         stmt = select(
             Project.name,
             Project.street,
@@ -468,6 +492,12 @@ class TagView:
             Project.stage,
             Project.delivery_method,
         )
+
+        if not _sort:
+            _sort = "name"
+
+        if not _order:
+            _order = "asc"
 
         if _sort == "watched":
             if _order == "asc":
