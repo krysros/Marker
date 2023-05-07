@@ -50,8 +50,11 @@ class CommentView:
             stmt = stmt.filter(Comment.project)
             q["parent"] = parent
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())

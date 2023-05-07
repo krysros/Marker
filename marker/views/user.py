@@ -139,8 +139,11 @@ class UserView:
             stmt = stmt.filter(User.role.ilike("%" + role + "%"))
             q["role"] = role
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(User, _sort).asc())
@@ -246,8 +249,11 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = select(Tag).filter(Tag.created_by == user)
 
@@ -305,8 +311,11 @@ class UserView:
         colors = dict(COLORS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = select(Company).filter(Company.created_by == user)
 
@@ -378,8 +387,11 @@ class UserView:
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = select(Project).filter(Project.created_by == user)
 
@@ -450,8 +462,11 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = select(Contact).filter(Contact.created_by == user)
 
@@ -584,8 +599,11 @@ class UserView:
         colors = dict(COLORS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = (
             select(Company)
@@ -721,8 +739,11 @@ class UserView:
         colors = dict(COLORS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = (
             select(Project)
@@ -857,8 +878,11 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = (
             select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
@@ -968,8 +992,11 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = (
             select(Contact)
@@ -1101,8 +1128,11 @@ class UserView:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
@@ -1276,8 +1306,11 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Project, _sort).desc())
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))

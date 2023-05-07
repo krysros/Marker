@@ -65,8 +65,11 @@ class ContactView:
             stmt = stmt.filter(Contact.project)
             q["parent"] = parent
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())

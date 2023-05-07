@@ -80,8 +80,11 @@ class TagView:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
             q["name"] = name
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
@@ -231,8 +234,11 @@ class TagView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = select(Company)
 
@@ -381,8 +387,11 @@ class TagView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         stmt = select(Project)
 

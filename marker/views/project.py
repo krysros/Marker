@@ -216,8 +216,11 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _sort == "watched":
             if _order == "asc":
@@ -390,8 +393,11 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _sort == "watched":
             if _order == "asc":
@@ -652,8 +658,11 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())

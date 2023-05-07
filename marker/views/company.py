@@ -206,8 +206,11 @@ class CompanyView:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _sort == "recommended":
             if _order == "asc":
@@ -373,8 +376,11 @@ class CompanyView:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _sort == "recommended":
             if _order == "asc":
@@ -717,8 +723,11 @@ class CompanyView:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
 
-        q["sort"] = _sort
-        q["order"] = _order
+        if _sort:
+            q["sort"] = _sort
+
+        if _order:
+            q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
