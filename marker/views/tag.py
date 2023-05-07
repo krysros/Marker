@@ -73,11 +73,15 @@ class TagView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
+
         stmt = select(Tag)
 
         if name:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
             q["name"] = name
+
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
@@ -98,8 +102,6 @@ class TagView:
             "tag_more",
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )
@@ -228,6 +230,10 @@ class TagView:
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
+
+        q["sort"] = _sort
+        q["order"] = _order
+
         stmt = select(Company)
 
         if _sort == "recommended":
@@ -267,8 +273,6 @@ class TagView:
             _query={
                 **q,
                 "page": page + 1,
-                "sort": _sort,
-                "order": _order,
             },
         )
 
@@ -376,6 +380,10 @@ class TagView:
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
+
+        q["sort"] = _sort
+        q["order"] = _order
+
         stmt = select(Project)
 
         if _sort == "watched":
@@ -415,8 +423,6 @@ class TagView:
             _query={
                 **q,
                 "page": page + 1,
-                "sort": _sort,
-                "order": _order,
             },
         )
 

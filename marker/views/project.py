@@ -216,6 +216,9 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         if _sort == "watched":
             if _order == "asc":
                 stmt = (
@@ -249,8 +252,6 @@ class ProjectView:
             "project_more",
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )
@@ -322,63 +323,94 @@ class ProjectView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.get("subdivision", None)
+        subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        status = self.request.params.get("status", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
+        q = {}
 
         stmt = select(Project)
 
         if name:
             stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            q["name"] = name
 
         if street:
             stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            q["street"] = street
 
         if postcode:
             stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            q["postcode"] = postcode
 
         if city:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            q["city"] = city
 
         if link:
             stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+            q["link"] = link
 
         if subdivision:
-            stmt = stmt.filter(Project.subdivision == subdivision)
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
 
         if country:
             stmt = stmt.filter(Project.country == country)
+            q["country"] = country
 
         if color:
             stmt = stmt.filter(Project.color == color)
+            q["color"] = color
 
         if stage:
             stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
 
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
 
         if deadline:
             deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
+            q["deadline"] = deadline
 
-        q = {
-            "name": name,
-            "street": street,
-            "postcode": postcode,
-            "city": city,
-            "subdivision": subdivision,
-            "country": country,
-            "link": link,
-            "color": color,
-            "deadline": deadline,
-            "stage": stage,
-            "delivery_method": delivery_method,
-        }
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if _sort == "watched":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(watched)
+                    .group_by(Project)
+                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                )
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -620,6 +652,9 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
         elif _order == "desc":
@@ -638,8 +673,6 @@ class ProjectView:
             colors=colors,
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )

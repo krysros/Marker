@@ -206,6 +206,9 @@ class CompanyView:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         if _sort == "recommended":
             if _order == "asc":
                 stmt = (
@@ -245,8 +248,6 @@ class CompanyView:
             "company_more",
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )
@@ -310,7 +311,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.get("subdivision", None)
+        subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
         NIP = self.request.params.get("NIP", None)
@@ -318,59 +319,81 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        q = {}
 
         stmt = select(Company)
 
         if name:
             stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            q["name"] = name
 
         if street:
             stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            q["street"] = street
 
         if postcode:
             stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            q["postcode"] = postcode
 
         if city:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            q["city"] = city
 
         if link:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+            q["link"] = link
 
         if NIP:
             stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
+            q["NIP"] = NIP
 
         if REGON:
             stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
+            q["REGON"] = REGON
 
         if KRS:
             stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
+            q["KRS"] = KRS
 
         if subdivision:
-            stmt = stmt.filter(Company.subdivision == subdivision)
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
 
         if country:
             stmt = stmt.filter(Company.country == country)
+            q["country"] = country
 
         if court:
             stmt = stmt.filter(Company.court == court)
+            q["court"] = court
 
         if color:
             stmt = stmt.filter(Company.color == color)
+            q["color"] = color
 
-        q = {
-            "name": name,
-            "street": street,
-            "postcode": postcode,
-            "city": city,
-            "subdivision": subdivision,
-            "country": country,
-            "link": link,
-            "NIP": NIP,
-            "REGON": REGON,
-            "KRS": KRS,
-            "court": court,
-            "color": color,
-        }
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if _sort == "recommended":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(recommended)
+                    .group_by(Company)
+                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(recommended)
+                    .group_by(Company)
+                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                )
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(getattr(Company, _sort).asc(), Company.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -694,6 +717,9 @@ class CompanyView:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
         elif _order == "desc":
@@ -712,8 +738,6 @@ class CompanyView:
             colors=colors,
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )

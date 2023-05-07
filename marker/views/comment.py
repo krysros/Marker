@@ -50,6 +50,9 @@ class CommentView:
             stmt = stmt.filter(Comment.project)
             q["parent"] = parent
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
         elif _order == "desc":
@@ -68,8 +71,6 @@ class CommentView:
             "comment_more",
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )

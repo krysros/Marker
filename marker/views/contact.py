@@ -65,6 +65,9 @@ class ContactView:
             stmt = stmt.filter(Contact.project)
             q["parent"] = parent
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
         elif _order == "desc":
@@ -84,8 +87,6 @@ class ContactView:
             "contact_more",
             _query={
                 **q,
-                "sort": _sort,
-                "order": _order,
                 "page": page + 1,
             },
         )
