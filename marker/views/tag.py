@@ -269,6 +269,21 @@ class TagView:
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.filter(Company.tags.any(name=tag.name))
+                    .join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).asc())
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.filter(Company.tags.any(name=tag.name))
+                    .join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).desc())
+                )
         else:
             if _order == "asc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
@@ -433,6 +448,21 @@ class TagView:
                     .join(watched)
                     .group_by(Project)
                     .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.filter(Project.tags.any(name=tag.name))
+                    .join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).asc())
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.filter(Project.tags.any(name=tag.name))
+                    .join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).desc())
                 )
         else:
             if _order == "asc":

@@ -231,6 +231,19 @@ class CompanyView:
                     .group_by(Company)
                     .order_by(func.count(recommended.c.company_id).desc(), Company.id)
                 )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).asc())
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).desc())
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(getattr(Company, _sort).asc(), Company.id)

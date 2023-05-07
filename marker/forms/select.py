@@ -48,6 +48,7 @@ SORT_CRITERIA_COMPANIES = [
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
     ("recommended", _("Recommended")),
+    ("comments", _("Comments")),
 ]
 
 
@@ -59,6 +60,7 @@ SORT_CRITERIA_PROJECTS = [
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
     ("watched", _("Watched")),
+    ("comments", _("Comments")),
 ]
 
 

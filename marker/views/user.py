@@ -1408,7 +1408,6 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Project, _sort).desc())
 
-
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()

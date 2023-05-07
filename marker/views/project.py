@@ -241,6 +241,19 @@ class ProjectView:
                     .group_by(Project)
                     .order_by(func.count(watched.c.project_id).desc(), Project.id)
                 )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).asc())
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).desc())
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
