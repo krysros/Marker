@@ -23,6 +23,10 @@
           % for i in v:
             <strong>${getattr(pycountry.subdivisions.get(code=i), "name", "---")}</strong>;
           % endfor
+        % elif k == "stage":
+          <strong>${stages.get(v)}</strong>;
+        % elif k == "delivery_method":
+          <strong>${project_delivery_methods.get(v)}</strong>;
         % else:
           <strong>${v}</strong>;
         % endif

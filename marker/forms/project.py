@@ -128,8 +128,10 @@ class ProjectFilterForm(Form):
     country = SelectField(_("Country"), choices=select_countries())
     link = HiddenField(_("Link"), filters=[strip_filter])
     deadline = HiddenField(_("Deadline"))
-    stage = HiddenField(_("Stage"))
-    delivery_method = HiddenField(_("Project delivery method"))
+    stage = SelectField(_("Stage"), choices=STAGES)
+    delivery_method = SelectField(
+        _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
+    )
     status = SelectField(_("Status"), choices=STATUS)
     color = SelectField(_("Color"), choices=COLORS)
 

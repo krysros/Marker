@@ -158,6 +158,8 @@ class ProjectView:
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         colors = dict(COLORS)
         statuses = dict(STATUS)
+        stages = dict(STAGES)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         q = {}
 
         stmt = select(Project)
@@ -268,6 +270,8 @@ class ProjectView:
             "counter": counter,
             "colors": colors,
             "statuses": statuses,
+            "stages": stages,
+            "project_delivery_methods": project_delivery_methods,
             "form": form,
         }
 
@@ -561,7 +565,9 @@ class ProjectView:
     def similar(self):
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
+        stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
@@ -570,6 +576,8 @@ class ProjectView:
         now = datetime.datetime.now()
         colors = dict(COLORS)
         statuses = dict(STATUS)
+        stages = dict(STAGES)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         q = {}
 
         stmt = (
@@ -603,6 +611,14 @@ class ProjectView:
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
@@ -638,6 +654,8 @@ class ProjectView:
             "next_page": next_page,
             "colors": colors,
             "statuses": statuses,
+            "stages": stages,
+            "project_delivery_methods": project_delivery_methods,
             "title": project.name,
             "project_pills": self.pills(project),
             "form": form,
