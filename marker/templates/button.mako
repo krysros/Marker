@@ -76,34 +76,6 @@
 </button>
 </%def>
 
-<%def name="dropdown(dd)">
-<div class="btn-group">
-  <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-      ${dd.icon | n} ${dd.title}
-    </a>
-    <ul class="dropdown-menu">
-      % for k, v in dd.items.items():
-        % if dd.typ.name == "SORT":
-          <% query = {**dd.q, 'sort': k, 'order': dd._order} %>
-        % elif dd.typ.name == "ORDER":
-          <% query = {**dd.q, 'sort': dd._sort, 'order': k} %>
-        % endif
-      <li>
-        <a class="dropdown-item" role="button" href="${request.current_route_url(_query=query)}">
-          % if k == dd.current_item:
-            <strong>${v}</strong>
-          % else:
-            ${v}
-          % endif
-        </a>
-      </li>
-      % endfor
-    </ul>
-  </div>
-</div>
-</%def>
-
 <%def name="dropdown_sort(items)">
 <div class="btn-group">
   <div class="dropdown">
