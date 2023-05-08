@@ -17,7 +17,9 @@
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
     <form class="dropdown-menu p-4">
-      ${form.comment(class_="form-control")}
+      % if form.comment.data:
+        ${form.comment(class_="form-control")}
+      % endif
       <div class="mb-3">
         ${form.parent.label}
         ${form.parent(class_="form-control")}
@@ -25,7 +27,7 @@
       <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>
   </div>
-  <div>${button.dropdown(dd_order)}</div>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
 </div>
 
 <%include file="search_criteria.mako"/>

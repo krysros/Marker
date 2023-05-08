@@ -28,7 +28,6 @@ from ..models import (
     User,
     watched,
 )
-from ..utils.dropdown import Dd, Dropdown
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from . import Filter
@@ -151,8 +150,8 @@ class ProjectView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
@@ -216,17 +215,8 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _sort == "watched":
             if _order == "asc":
@@ -281,13 +271,10 @@ class ProjectView:
         obj = Filter(**q)
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         return {
             "q": q,
-            "dd_sort": dd_sort,
-            "dd_order": dd_order,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
@@ -353,8 +340,8 @@ class ProjectView:
         stage = self.request.params.get("stage", None)
         delivery_method = self.request.params.get("delivery_method", None)
         status = self.request.params.get("status", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         q = {}
 
@@ -412,17 +399,8 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _sort == "watched":
             if _order == "asc":
@@ -634,8 +612,8 @@ class ProjectView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         colors = dict(COLORS)
         statuses = dict(STATUS)
@@ -683,11 +661,8 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())

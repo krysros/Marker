@@ -103,3 +103,59 @@
   </div>
 </div>
 </%def>
+
+<%def name="dropdown_sort(items)">
+<div class="btn-group">
+  <div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      % if q["order"] == "asc":
+        <i class="bi bi-sort-alpha-down"></i>
+      % else:
+        <i class="bi bi-sort-alpha-down-alt"></i>
+      % endif
+      ${_("Sort")}
+    </a>
+    <ul class="dropdown-menu">
+      % for k, v in items.items():
+      <li>
+        <a class="dropdown-item" role="button" href="${request.current_route_url(_query={**q, 'sort': k})}">
+          % if k == q["sort"]:
+            <strong>${v}</strong>
+          % else:
+            ${v}
+          % endif
+        </a>
+      </li>
+      % endfor
+    </ul>
+  </div>
+</div>
+</%def>
+
+<%def name="dropdown_order(items)">
+<div class="btn-group">
+  <div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      % if q["order"] == "asc":
+        <i class="bi bi-caret-up-fill"></i>
+      % else:
+        <i class="bi bi-caret-down-fill"></i>
+      % endif
+      ${_("Order")}
+    </a>
+    <ul class="dropdown-menu">
+      % for k, v in items.items():
+      <li>
+        <a class="dropdown-item" role="button" href="${request.current_route_url(_query={**q, 'order': k})}">
+          % if k == q["order"]:
+            <strong>${v}</strong>
+          % else:
+            ${v}
+          % endif
+        </a>
+      </li>
+      % endfor
+    </ul>
+  </div>
+</div>
+</%def>

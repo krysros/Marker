@@ -26,7 +26,6 @@ from ..models import (
     User,
     recommended,
 )
-from ..utils.dropdown import Dd, Dropdown
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from . import Filter
@@ -149,8 +148,8 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
@@ -206,17 +205,8 @@ class CompanyView:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _sort == "recommended":
             if _order == "asc":
@@ -263,9 +253,6 @@ class CompanyView:
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         next_page = self.request.route_url(
             "company_more",
             _query={
@@ -277,8 +264,8 @@ class CompanyView:
         return {
             "q": q,
             "next_page": next_page,
-            "dd_sort": dd_sort,
-            "dd_order": dd_order,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "counter": counter,
             "colors": colors,
@@ -341,8 +328,8 @@ class CompanyView:
         KRS = self.request.params.get("KRS", None)
         court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         q = {}
 
         stmt = select(Company)
@@ -395,17 +382,8 @@ class CompanyView:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _sort == "recommended":
             if _order == "asc":
@@ -718,8 +696,8 @@ class CompanyView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         q = {}
 
@@ -748,11 +726,8 @@ class CompanyView:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())

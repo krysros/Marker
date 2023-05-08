@@ -7,7 +7,6 @@ from sqlalchemy import func, select
 from ..forms import CommentFilterForm, CommentSearchForm
 from ..forms.select import ORDER_CRITERIA, PARENTS
 from ..models import Comment
-from ..utils.dropdown import Dd, Dropdown
 from ..utils.paginator import get_paginator
 from . import Filter
 
@@ -32,8 +31,8 @@ class CommentView:
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
         parent = self.request.params.get("parent", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
         parents = dict(PARENTS)
         q = {}
@@ -50,17 +49,8 @@ class CommentView:
             stmt = stmt.filter(Comment.project)
             q["parent"] = parent
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -87,14 +77,12 @@ class CommentView:
         obj = Filter(**q)
         form = CommentFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         return {
             "q": q,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "dd_order": dd_order,
+            "order_criteria": order_criteria,
             "parents": parents,
             "form": form,
         }

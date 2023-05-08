@@ -9,8 +9,8 @@
 <p class="lead">${user.fullname}</p>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown(dd_sort)}</div>
-  <div>${button.dropdown(dd_order)}</div>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
 </div>
 
 <%include file="contact_table.mako"/>

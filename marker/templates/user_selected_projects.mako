@@ -11,9 +11,9 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
-  <div>${button.dropdown(dd_sort)}</div>
-  <div class="me-auto">${button.dropdown(dd_order)}</div>
-  <div>${button.a_button(icon='download', color='primary', url=request.route_url('user_export_selected_projects', username=user.name, _query={'sort': dd_sort._sort, 'order': dd_order._order}))}</div>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
+  <div>${button.a_button(icon='download', color='primary', url=request.route_url('user_export_selected_projects', username=user.name, _query=q))}</div>
 </div>
 
 <%include file="project_table.mako"/>

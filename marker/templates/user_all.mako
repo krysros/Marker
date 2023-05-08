@@ -18,9 +18,15 @@
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
     <form class="dropdown-menu p-4">
-      ${form.name(class_="form-control")}
-      ${form.fullname(class_="form-control")}
-      ${form.email(class_="form-control")}
+      % if form.name.data:
+        ${form.name(class_="form-control")}
+      % endif
+      % if form.fullname.data:
+        ${form.fullname(class_="form-control")}
+      % endif
+      % if form.email.data:
+        ${form.email(class_="form-control")}
+      % endif
       <div class="mb-3">
         ${form.role.label}
         ${form.role(class_="form-control")}
@@ -28,8 +34,8 @@
       <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>
   </div>
-  <div>${button.dropdown(dd_sort)}</div>
-  <div>${button.dropdown(dd_order)}</div>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
 </div>
 
 <%include file="search_criteria.mako"/>

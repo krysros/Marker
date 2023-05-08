@@ -13,7 +13,6 @@ from ..forms.select import (
     SORT_CRITERIA_PROJECTS,
 )
 from ..models import Company, Project, Tag, recommended, watched
-from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 
@@ -68,8 +67,8 @@ class TagView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
@@ -80,17 +79,9 @@ class TagView:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
             q["name"] = name
 
-        if _sort:
-            q["sort"] = _sort
 
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
@@ -115,13 +106,10 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         return {
             "q": q,
-            "dd_sort": dd_sort,
-            "dd_order": dd_order,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
@@ -233,18 +221,15 @@ class TagView:
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
+        q["sort"] = _sort
+        q["order"] = _order
 
         if not _sort:
             _sort = "name"
@@ -309,14 +294,11 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         return {
             "q": q,
             "tag": tag,
-            "dd_sort": dd_sort,
-            "dd_order": dd_order,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "colors": colors,
             "paginator": paginator,
             "next_page": next_page,
@@ -328,8 +310,8 @@ class TagView:
     def export_companies(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         stmt = select(
             Company.name,
             Company.street,
@@ -342,12 +324,6 @@ class TagView:
             Company.REGON,
             Company.KRS,
         )
-
-        if not _sort:
-            _sort = "name"
-
-        if not _order:
-            _order = "asc"
 
         if _sort == "recommended":
             if _order == "asc":
@@ -413,24 +389,15 @@ class TagView:
     def projects(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "name"
-
-        if not _order:
-            _order = "asc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         stmt = select(Project)
 
@@ -489,14 +456,11 @@ class TagView:
             },
         )
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         return {
             "q": q,
             "tag": tag,
-            "dd_sort": dd_sort,
-            "dd_order": dd_order,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "colors": colors,
             "paginator": paginator,
             "next_page": next_page,
@@ -508,8 +472,8 @@ class TagView:
     def export_projects(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         stmt = select(
             Project.name,
             Project.street,
@@ -522,12 +486,6 @@ class TagView:
             Project.stage,
             Project.delivery_method,
         )
-
-        if not _sort:
-            _sort = "name"
-
-        if not _order:
-            _order = "asc"
 
         if _sort == "watched":
             if _order == "asc":

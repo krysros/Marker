@@ -23,11 +23,19 @@
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
     <form class="dropdown-menu p-4">
-      ${form.name(class_="form-control")}
-      ${form.street(class_="form-control")}
-      ${form.postcode(class_="form-control")}
-      ${form.city(class_="form-control")}
-      <div class="mb-3">
+      % if form.name.data:
+        ${form.name(class_="form-control")}
+      % endif
+      % if form.street.data:
+        ${form.street(class_="form-control")}
+      % endif
+      % if form.postcode.data:
+        ${form.postcode(class_="form-control")}
+      % endif
+      % if form.city.data:
+        ${form.city(class_="form-control")}
+      % endif
+        <div class="mb-3">
         ${form.country.label}
         ${form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
       </div>
@@ -36,8 +44,12 @@
         ${form.subdivision(class_="form-control")}
         <small class="text-body-secondary">Ctrl + Click</small>
       </div>
-      ${form.link(class_="form-control")}
-      ${form.deadline(class_="form-control")}
+      % if form.link.data:
+        ${form.link(class_="form-control")}
+      % endif
+      % if form.deadline.data:
+        ${form.deadline(class_="form-control")}
+      % endif
       <div class="mb-3">
         ${form.stage.label}
         ${form.stage(class_="form-control")}
@@ -57,8 +69,8 @@
       <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>
   </div>
-  <div>${button.dropdown(dd_sort)}</div>
-  <div>${button.dropdown(dd_order)}</div>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
 </div>
 
 <%include file="search_criteria.mako"/>

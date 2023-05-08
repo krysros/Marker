@@ -7,7 +7,6 @@ from sqlalchemy import func, select
 from ..forms import ContactFilterForm, ContactForm, ContactSearchForm
 from ..forms.select import ORDER_CRITERIA, PARENTS, SORT_CRITERIA
 from ..models import Contact
-from ..utils.dropdown import Dd, Dropdown
 from ..utils.export import response_vcard
 from ..utils.paginator import get_paginator
 from . import Filter
@@ -34,8 +33,8 @@ class ContactView:
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
         parent = self.request.params.get("parent", None)
-        _sort = self.request.params.get("sort", None)
-        _order = self.request.params.get("order", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         parents = dict(PARENTS)
@@ -65,17 +64,8 @@ class ContactView:
             stmt = stmt.filter(Contact.project)
             q["parent"] = parent
 
-        if _sort:
-            q["sort"] = _sort
-
-        if _order:
-            q["order"] = _order
-
-        if not _sort:
-            _sort = "created_at"
-
-        if not _order:
-            _order = "desc"
+        q["sort"] = _sort
+        q["order"] = _order
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -103,13 +93,10 @@ class ContactView:
         obj = Filter(**q)
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
-        dd_sort = Dropdown(self.request, sort_criteria, Dd.SORT, q, _sort, _order)
-        dd_order = Dropdown(self.request, order_criteria, Dd.ORDER, q, _sort, _order)
-
         return {
             "q": q,
-            "dd_sort": dd_sort,
-            "dd_order": dd_order,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,

@@ -31,9 +31,9 @@
       <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>
   </div>
-  <div>${button.dropdown(dd_sort)}</div>
-  <div class="me-auto">${button.dropdown(dd_order)}</div>
-  <div>${button.a_button(icon='download', color='primary', url=request.route_url('user_export_recommended', username=user.name, _query={**q, 'sort': dd_sort._sort, 'order': dd_order._order}))}</div>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
+  <div>${button.a_button(icon='download', color='primary', url=request.route_url('user_export_recommended', username=user.name, _query=q))}</div>
 </div>
 
 <%include file="search_criteria.mako"/>

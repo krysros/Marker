@@ -7,7 +7,6 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     StringField,
-    SubmitField,
 )
 from wtforms.validators import InputRequired, Length, ValidationError
 
