@@ -27,7 +27,7 @@
       <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
     </form>
   </div>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
 </div>
 
 <%include file="search_criteria.mako"/>
