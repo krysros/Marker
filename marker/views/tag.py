@@ -79,7 +79,6 @@ class TagView:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
             q["name"] = name
 
-
         q["sort"] = _sort
         q["order"] = _order
 
