@@ -11,6 +11,7 @@ from ..forms import (
     UserFilterForm,
     UserForm,
     UserSearchForm,
+    ContactFilterForm,
 )
 from ..forms.select import (
     COLORS,
@@ -562,6 +563,9 @@ class UserView:
     def selected_companies(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -569,19 +573,34 @@ class UserView:
         colors = dict(COLORS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
-
         stmt = (
             select(Company)
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
         )
 
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Company, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Company, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -611,6 +630,7 @@ class UserView:
             "next_page": next_page,
             "colors": colors,
             "counter": counter,
+            "form": form,
         }
 
     @view_config(
@@ -696,15 +716,19 @@ class UserView:
     def selected_projects(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         q = {}
-
-        q["sort"] = _sort
-        q["order"] = _order
 
         stmt = (
             select(Project)
@@ -712,10 +736,40 @@ class UserView:
             .filter(user.id == selected_projects.c.user_id)
         )
 
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Project, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Project, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -735,6 +789,10 @@ class UserView:
                 "page": page + 1,
             },
         )
+
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
         return {
             "q": q,
             "user": user,
@@ -744,6 +802,7 @@ class UserView:
             "next_page": next_page,
             "colors": colors,
             "counter": counter,
+            "form": form,
         }
 
     @view_config(
@@ -937,6 +996,11 @@ class UserView:
     def selected_contacts(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        parent = self.request.params.get("parent", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -952,10 +1016,39 @@ class UserView:
             .filter(user.id == selected_contacts.c.user_id)
         )
 
+        if name:
+            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            q["name"] = name
+
+        if role:
+            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            q["role"] = role
+
+        if phone:
+            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            q["phone"] = phone
+
+        if email:
+            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            q["email"] = email
+
+        if parent == "companies":
+            stmt = stmt.filter(Contact.company)
+            q["parent"] = parent
+        elif parent == "projects":
+            stmt = stmt.filter(Contact.project)
+            q["parent"] = parent
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Contact, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        obj = Filter(**q)
+        form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -984,6 +1077,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "form": form,
         }
 
     @view_config(

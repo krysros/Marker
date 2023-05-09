@@ -1,10 +1,11 @@
+import datetime
 import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import TagForm, TagSearchForm
+from ..forms import TagForm, TagSearchForm, CompanyFilterForm, ProjectFilterForm
 from ..forms.select import (
     COLORS,
     ORDER_CRITERIA,
@@ -15,6 +16,7 @@ from ..forms.select import (
 from ..models import Company, Project, Tag, recommended, watched
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
+from . import Filter
 
 log = logging.getLogger(__name__)
 
@@ -220,6 +222,9 @@ class TagView:
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
@@ -227,16 +232,19 @@ class TagView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
-
-        if not _sort:
-            _sort = "name"
-
-        if not _order:
-            _order = "asc"
-
         stmt = select(Company)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
 
         if _sort == "recommended":
             if _order == "asc":
@@ -278,6 +286,12 @@ class TagView:
                     getattr(Company, _sort).desc(), Company.id
                 )
 
+        q["sort"] = _sort
+        q["order"] = _order
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -303,6 +317,7 @@ class TagView:
             "next_page": next_page,
             "title": tag.name,
             "tag_pills": self.pills(tag),
+            "form": form,
         }
 
     @view_config(route_name="tag_export_companies", permission="view")
@@ -388,17 +403,48 @@ class TagView:
     def projects(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
-
         stmt = select(Project)
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
 
         if _sort == "watched":
             if _order == "asc":
@@ -440,6 +486,9 @@ class TagView:
                     getattr(Project, _sort).desc(), Project.id
                 )
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -455,6 +504,9 @@ class TagView:
             },
         )
 
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
         return {
             "q": q,
             "tag": tag,
@@ -465,6 +517,7 @@ class TagView:
             "next_page": next_page,
             "title": tag.name,
             "tag_pills": self.pills(tag),
+            "form": form,
         }
 
     @view_config(route_name="tag_export_projects", permission="view")
