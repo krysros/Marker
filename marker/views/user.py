@@ -19,6 +19,7 @@ from ..forms.select import (
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_EXT,
     SORT_CRITERIA_PROJECTS,
+    PROJECT_DELIVERY_METHODS,
     USER_ROLES,
 )
 from ..models import (
@@ -1215,6 +1216,7 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
         order_criteria = dict(ORDER_CRITERIA)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         now = datetime.datetime.now()
         q = {}
 
@@ -1277,6 +1279,7 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "project_delivery_methods": project_delivery_methods,
             "form": form,
         }
 
