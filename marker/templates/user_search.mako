@@ -23,7 +23,7 @@
         ${form.role(class_="form-control")}
       </div>
       <div class="mb-3">
-        <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
+        <button type="submit" class="btn btn-primary">${_("Submit")}</button>
       </div>
     </form>
   </div>

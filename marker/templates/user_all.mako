@@ -31,7 +31,7 @@
         ${form.role.label}
         ${form.role(class_="form-control")}
       </div>
-      <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Submit')}">
+      <button type="submit" class="btn btn-primary">${_("Submit")}</button>
     </form>
   </div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
