@@ -12,6 +12,7 @@ from ..forms import (
     UserForm,
     UserSearchForm,
     ContactFilterForm,
+    CommentFilterForm,
 )
 from ..forms.select import (
     COLORS,
@@ -22,6 +23,9 @@ from ..forms.select import (
     SORT_CRITERIA_PROJECTS,
     PROJECT_DELIVERY_METHODS,
     USER_ROLES,
+    PARENTS,
+    STATUS,
+    STAGES,
 )
 from ..models import (
     Comment,
@@ -200,13 +204,32 @@ class UserView:
         permission="view",
     )
     def comments(self):
-        page = int(self.request.params.get("page", 1))
         user = self.request.context.user
-        stmt = (
-            select(Comment)
-            .filter(Comment.created_by == user)
-            .order_by(Comment.created_at.desc())
-        )
+        page = int(self.request.params.get("page", 1))
+        parent = self.request.params.get("parent", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        order_criteria = dict(ORDER_CRITERIA)
+        parents = dict(PARENTS)
+        q = {}
+
+        stmt = select(Comment).filter(Comment.created_by == user)
+
+        if parent == "companies":
+            stmt = stmt.filter(Comment.company)
+            q["parent"] = parent
+        elif parent == "projects":
+            stmt = stmt.filter(Comment.project)
+            q["parent"] = parent
+
+        if _order == "asc":
+            stmt = stmt.order_by(Comment.created_at.asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(Comment.created_at.desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -215,14 +238,22 @@ class UserView:
         next_page = self.request.route_url(
             "user_more_comments",
             username=user.name,
-            _query={"page": page + 1},
+            _query={**q, "page": page + 1},
         )
+
+        obj = Filter(**q)
+        form = CommentFilterForm(self.request.GET, obj, request=self.request)
+
         return {
+            "q": q,
             "user": user,
             "paginator": paginator,
+            "order_criteria": order_criteria,
+            "parents": parents,
             "next_page": next_page,
             "title": user.fullname,
             "user_pills": self.pills(user),
+            "form": form,
         }
 
     @view_config(
@@ -293,6 +324,18 @@ class UserView:
     def companies(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
+        color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
@@ -300,10 +343,55 @@ class UserView:
         colors = dict(COLORS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
-
         stmt = select(Company).filter(Company.created_by == user)
+
+        if name:
+            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            q["name"] = name
+
+        if street:
+            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            q["street"] = street
+
+        if postcode:
+            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            q["postcode"] = postcode
+
+        if city:
+            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            q["city"] = city
+
+        if link:
+            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+            q["link"] = link
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
+            q["NIP"] = NIP
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
+            q["REGON"] = REGON
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
+            q["KRS"] = KRS
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+            q["court"] = court
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
 
         if _sort == "recommended":
             if _order == "asc":
@@ -324,6 +412,9 @@ class UserView:
             elif _order == "desc":
                 stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -339,6 +430,9 @@ class UserView:
             },
         )
 
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
         return {
             "q": q,
             "user": user,
@@ -349,6 +443,7 @@ class UserView:
             "next_page": next_page,
             "title": user.fullname,
             "user_pills": self.pills(user),
+            "form": form,
         }
 
     @view_config(
@@ -364,16 +459,82 @@ class UserView:
     def projects(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        link = self.request.params.get("link", None)
+        color = self.request.params.get("color", None)
+        deadline = self.request.params.get("deadline", None)
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        colors = dict(COLORS)
+        statuses = dict(STATUS)
+        stages = dict(STAGES)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        now = datetime.datetime.now()
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
-
         stmt = select(Project).filter(Project.created_by == user)
+
+        if name:
+            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            q["name"] = name
+
+        if street:
+            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            q["street"] = street
+
+        if postcode:
+            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            q["postcode"] = postcode
+
+        if city:
+            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            q["city"] = city
+
+        if link:
+            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+            q["link"] = link
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        if deadline:
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
+            stmt = stmt.filter(Project.deadline <= deadline_dt)
+            q["deadline"] = deadline
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
 
         if _sort == "watched":
             if _order == "asc":
@@ -394,6 +555,9 @@ class UserView:
             elif _order == "desc":
                 stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
 
+        q["sort"] = _sort
+        q["order"] = _order
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -409,15 +573,23 @@ class UserView:
             },
         )
 
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
         return {
             "q": q,
             "user": user,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
+            "colors": colors,
+            "statuses": statuses,
+            "stages": stages,
+            "project_delivery_methods": project_delivery_methods,
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
             "user_pills": self.pills(user),
+            "form": form,
         }
 
     @view_config(
@@ -433,21 +605,50 @@ class UserView:
     def contacts(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        parent = self.request.params.get("parent", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
+        parents = dict(PARENTS)
         q = {}
 
-        q["sort"] = _sort
-        q["order"] = _order
-
         stmt = select(Contact).filter(Contact.created_by == user)
+
+        if name:
+            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            q["name"] = name
+
+        if role:
+            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            q["role"] = role
+
+        if phone:
+            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            q["phone"] = phone
+
+        if email:
+            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            q["email"] = email
+
+        if parent == "companies":
+            stmt = stmt.filter(Contact.company)
+            q["parent"] = parent
+        elif parent == "projects":
+            stmt = stmt.filter(Contact.project)
+            q["parent"] = parent
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Contact, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -458,21 +659,23 @@ class UserView:
         next_page = self.request.route_url(
             "user_more_contacts",
             username=user.name,
-            _query={
-                **q,
-                "page": page + 1,
-            },
+            _query={**q, "page": page + 1},
         )
+
+        obj = Filter(**q)
+        form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
         return {
             "q": q,
             "user": user,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
+            "parents": parents,
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
             "user_pills": self.pills(user),
+            "form": form,
         }
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
