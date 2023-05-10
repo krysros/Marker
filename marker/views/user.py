@@ -51,6 +51,11 @@ log = logging.getLogger(__name__)
 class UserView:
     def __init__(self, request):
         self.request = request
+        self.count_companies = 0
+        self.count_projects = 0
+        self.count_tags = 0
+        self.count_contacts = 0
+        self.count_comments = 0
 
     def pills(self, user):
         _ = self.request.translate
@@ -69,7 +74,7 @@ class UserView:
                     "user_count_companies", username=user.name
                 ),
                 "event": "userEvent",
-                "init_value": user.count_companies,
+                "init_value": self.count_companies,
             },
             {
                 "title": _("Projects"),
@@ -79,7 +84,7 @@ class UserView:
                     "user_count_projects", username=user.name
                 ),
                 "event": "userEvent",
-                "init_value": user.count_projects,
+                "init_value": self.count_projects,
             },
             {
                 "title": _("Tags"),
@@ -87,7 +92,7 @@ class UserView:
                 "url": self.request.route_url("user_tags", username=user.name),
                 "count": self.request.route_url("user_count_tags", username=user.name),
                 "event": "userEvent",
-                "init_value": user.count_tags,
+                "init_value": self.count_tags,
             },
             {
                 "title": _("Contacts"),
@@ -97,7 +102,7 @@ class UserView:
                     "user_count_contacts", username=user.name
                 ),
                 "event": "userEvent",
-                "init_value": user.count_contacts,
+                "init_value": self.count_contacts,
             },
             {
                 "title": _("Comments"),
@@ -107,7 +112,7 @@ class UserView:
                     "user_count_comments", username=user.name
                 ),
                 "event": "userEvent",
-                "init_value": user.count_comments,
+                "init_value": self.count_comments,
             },
         ]
 
@@ -187,6 +192,11 @@ class UserView:
     @view_config(route_name="user_view", renderer="user_view.mako", permission="view")
     def view(self):
         user = self.request.context.user
+        self.count_companies = user.count_companies
+        self.count_projects = user.count_projects
+        self.count_tags = user.count_tags
+        self.count_contacts = user.count_contacts
+        self.count_comments = user.count_comments
         return {
             "user": user,
             "title": user.fullname,
@@ -229,6 +239,16 @@ class UserView:
 
         q["sort"] = _sort
         q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = user.count_companies
+        self.count_projects = user.count_projects
+        self.count_tags = user.count_tags
+        self.count_contacts = user.count_contacts
+        self.count_comments = counter
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -284,6 +304,16 @@ class UserView:
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Tag, _sort).desc())
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = user.count_companies
+        self.count_projects = user.count_projects
+        self.count_tags = counter
+        self.count_contacts = user.count_contacts
+        self.count_comments = user.count_comments
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -414,6 +444,16 @@ class UserView:
 
         q["sort"] = _sort
         q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = counter
+        self.count_projects = user.count_projects
+        self.count_tags = user.count_tags
+        self.count_contacts = user.count_contacts
+        self.count_comments = user.count_comments
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -558,6 +598,16 @@ class UserView:
         q["sort"] = _sort
         q["order"] = _order
 
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = user.count_companies
+        self.count_projects = counter
+        self.count_tags = user.count_tags
+        self.count_contacts = user.count_contacts
+        self.count_comments = user.count_comments
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -649,6 +699,16 @@ class UserView:
 
         q["sort"] = _sort
         q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = user.count_companies
+        self.count_projects = user.count_projects
+        self.count_tags = user.count_tags
+        self.count_contacts = counter
+        self.count_comments = user.count_comments
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))

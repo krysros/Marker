@@ -24,6 +24,8 @@ log = logging.getLogger(__name__)
 class TagView:
     def __init__(self, request):
         self.request = request
+        self.count_companies = 0
+        self.count_projects = 0
 
     def pills(self, tag):
         _ = self.request.translate
@@ -44,7 +46,7 @@ class TagView:
                     "tag_count_companies", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
-                "init_value": tag.count_companies,
+                "init_value": self.count_companies,
             },
             {
                 "title": _("Projects"),
@@ -56,7 +58,7 @@ class TagView:
                     "tag_count_projects", tag_id=tag.id, slug=tag.slug
                 ),
                 "event": "tagEvent",
-                "init_value": tag.count_projects,
+                "init_value": self.count_projects,
             },
         ]
 
@@ -133,6 +135,8 @@ class TagView:
     )
     def view(self):
         tag = self.request.context.tag
+        self.count_companies = tag.count_companies
+        self.count_projects = tag.count_projects
         return {"tag": tag, "title": tag.name, "tag_pills": self.pills(tag)}
 
     @view_config(
@@ -288,6 +292,13 @@ class TagView:
 
         q["sort"] = _sort
         q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = counter
+        self.count_projects = tag.count_projects
 
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
@@ -488,6 +499,13 @@ class TagView:
 
         q["sort"] = _sort
         q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = tag.count_companies
+        self.count_projects = counter
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
