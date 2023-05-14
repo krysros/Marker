@@ -1553,6 +1553,51 @@ class UserView:
         return response
 
     @view_config(
+        route_name="user_json_recommended",
+        renderer="json",
+        permission="view",
+    )
+    def json_recommended(self):
+        user = self.request.context.user
+        stmt = (
+            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+        )
+        companies = self.request.dbsession.execute(stmt).scalars()
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "city": company.city,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "color": company.color,
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+            }
+            for company in companies
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_recommended",
+        renderer="user_map_recommended.mako",
+        permission="view",
+    )
+    def map_recommended(self):
+        user = self.request.context.user
+        stmt = (
+            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+        )
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+        url = self.request.route_url("user_json_recommended", username=user.name)
+        return {"user": user, "url": url, "counter": counter}
+
+    @view_config(
         route_name="user_watched",
         renderer="user_watched.mako",
         permission="view",
@@ -1726,6 +1771,47 @@ class UserView:
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
+
+    @view_config(
+        route_name="user_json_watched",
+        renderer="json",
+        permission="view",
+    )
+    def json_watched(self):
+        user = self.request.context.user
+        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        projects = self.request.dbsession.execute(stmt).scalars()
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "city": project.city,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "color": project.color,
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+            }
+            for project in projects
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_watched",
+        renderer="user_map_watched.mako",
+        permission="view",
+    )
+    def map_watched(self):
+        user = self.request.context.user
+        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+        url = self.request.route_url("user_json_watched", username=user.name)
+        return {"user": user, "url": url, "counter": counter}
 
     @view_config(
         route_name="user_count_companies",

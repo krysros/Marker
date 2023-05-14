@@ -560,6 +560,12 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_json_recommended", "/user/{username}/json_recommended", factory=user_factory
+    )
+    config.add_route(
+        "user_map_recommended", "/user/{username}/map_recommended", factory=user_factory
+    )
+    config.add_route(
         "user_export_recommended",
         "/user/{username}/export_recommended",
         factory=user_factory,
@@ -574,6 +580,12 @@ def includeme(config):
         "user_more_watched",
         "/user/{username}/more_watched",
         factory=user_factory,
+    )
+    config.add_route(
+        "user_json_watched", "/user/{username}/json_watched", factory=user_factory
+    )
+    config.add_route(
+        "user_map_watched", "/user/{username}/map_watched", factory=user_factory
     )
     config.add_route(
         "user_export_watched",

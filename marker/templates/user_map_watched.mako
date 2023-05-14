@@ -5,19 +5,13 @@
   <i class="bi bi-eye"></i> ${_("Watched")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.a_button(icon='map', color='secondary', url=request.route_url('user_map_watched', username=user.name))}
+    ${button.a_button(icon='table', color='secondary', url=request.route_url('user_watched', username=user.name))}
     ${button.button(icon='eye', color='warning', url=request.route_url('user_clear_watched', username=user.name))}
     ${button.a_button(icon='download', color='primary', url=request.route_url('user_export_watched', username=user.name, _query=q))}
   </div>
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4">
-  <%include file="project_filter.mako"/>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
-</div>
+<div id="map"></div>
 
-<%include file="search_criteria.mako"/>
-
-<%include file="project_table.mako"/>
+<%include file="markers.mako"/>

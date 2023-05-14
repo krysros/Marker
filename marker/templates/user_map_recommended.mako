@@ -5,19 +5,13 @@
   <i class="bi bi-hand-thumbs-up"></i> ${_("Recommended")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.a_button(icon='map', color='secondary', url=request.route_url('user_map_recommended', username=user.name))}
+    ${button.a_button(icon='table', color='secondary', url=request.route_url('user_recommended', username=user.name))}
     ${button.button(icon='hand-thumbs-up', color='warning', url=request.route_url('user_clear_recommended', username=user.name))}
     ${button.a_button(icon='download', color='primary', url=request.route_url('user_export_recommended', username=user.name, _query=q))}
   </div>
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4">
-  <%include file="company_filter.mako"/>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
-</div>
+<div id="map"></div>
 
-<%include file="search_criteria.mako"/>
-
-<%include file="company_table.mako"/>
+<%include file="markers.mako"/>
