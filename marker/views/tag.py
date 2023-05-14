@@ -146,8 +146,34 @@ class TagView:
     )
     def map_companies(self):
         tag = self.request.context.tag
-        url = self.request.route_url("tag_json_companies", tag_id=tag.id, slug=tag.slug)
-        return {"tag": tag, "url": url, "tag_pills": self.pills(tag)}
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        q = {}
+
+        stmt = select(Company).filter(Company.tags.any(name=tag.name))
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = counter
+        self.count_projects = tag.count_projects
+
+        url = self.request.route_url("tag_json_companies", tag_id=tag.id, slug=tag.slug, _query=q)
+        return {"tag": tag, "url": url, "q": q, "tag_pills": self.pills(tag)}
 
     @view_config(
         route_name="tag_map_projects",
@@ -156,8 +182,53 @@ class TagView:
     )
     def map_projects(self):
         tag = self.request.context.tag
-        url = self.request.route_url("tag_json_projects", tag_id=tag.id, slug=tag.slug)
-        return {"tag": tag, "url": url, "tag_pills": self.pills(tag)}
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        now = datetime.datetime.now()
+        q = {}
+
+        stmt = select(Project).filter(Project.tags.any(name=tag.name))
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        self.count_companies = tag.count_companies
+        self.count_projects = counter
+
+        url = self.request.route_url("tag_json_projects", tag_id=tag.id, slug=tag.slug, _query=q)
+        return {"tag": tag, "url": url, "q": q, "tag_pills": self.pills(tag)}
 
     @view_config(
         route_name="tag_json_companies",
@@ -166,7 +237,21 @@ class TagView:
     )
     def json_companies(self):
         tag = self.request.context.tag
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+
         stmt = select(Company).filter(Company.tags.any(name=tag.name))
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
         companies = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
@@ -193,7 +278,37 @@ class TagView:
     )
     def json_projects(self):
         tag = self.request.context.tag
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        now = datetime.datetime.now()
+
         stmt = select(Project).filter(Project.tags.any(name=tag.name))
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
         projects = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
