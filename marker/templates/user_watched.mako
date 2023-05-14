@@ -6,6 +6,7 @@
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.button(icon='eye', color='warning', url=request.route_url('user_clear_watched', username=user.name))}
+    ${button.a_button(icon='download', color='primary', url=request.route_url('user_export_watched', username=user.name, _query=q))}
   </div>
 </h2>
 <hr>
@@ -14,7 +15,6 @@
   <%include file="project_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
-  <div>${button.a_button(icon='download', color='primary', url=request.route_url('user_export_watched', username=user.name, _query=q))}</div>
 </div>
 
 <%include file="search_criteria.mako"/>
