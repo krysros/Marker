@@ -897,6 +897,97 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_json_selected_companies",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_companies(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        stmt = (
+            select(Company)
+            .join(selected_companies)
+            .filter(user.id == selected_companies.c.user_id)
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
+        companies = self.request.dbsession.execute(stmt).scalars()
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "city": company.city,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "color": company.color,
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+            }
+            for company in companies
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_selected_companies",
+        renderer="user_map_selected_companies.mako",
+        permission="view",
+    )
+    def map_selected_companies(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        q = {}
+
+        stmt = (
+            select(Company)
+            .join(selected_companies)
+            .filter(user.id == selected_companies.c.user_id)
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if _order == "asc":
+            stmt = stmt.order_by(getattr(Company, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(getattr(Company, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        url = self.request.route_url("user_json_selected_companies", username=user.name, _query=q)
+        return {"user": user, "url": url, "q": q, "counter": counter}
+
+    @view_config(
         route_name="user_export_selected_companies",
         permission="view",
     )
@@ -1067,6 +1158,134 @@ class UserView:
             "counter": counter,
             "form": form,
         }
+
+    @view_config(
+        route_name="user_json_selected_projects",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_projects(self):
+        user = self.request.context.user
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        now = datetime.datetime.now()
+
+        stmt = (
+            select(Project)
+            .join(selected_projects)
+            .filter(user.id == selected_projects.c.user_id)
+        )
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
+        projects = self.request.dbsession.execute(stmt).scalars()
+
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "city": project.city,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "color": project.color,
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+            }
+            for project in projects
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_selected_projects",
+        renderer="user_map_selected_projects.mako",
+        permission="view",
+    )
+    def map_selected_projects(self):
+        user = self.request.context.user
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = self.request.params.getall("subdivision")
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
+        q = {}
+
+        stmt = (
+            select(Project)
+            .join(selected_projects)
+            .filter(user.id == selected_projects.c.user_id)
+        )
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        if _order == "asc":
+            stmt = stmt.order_by(getattr(Project, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(getattr(Project, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt)
+        ).scalar()
+
+        url = self.request.route_url("user_json_selected_projects", username=user.name, _query=q)
+        return {"user": user, "url": url, "q": q, "counter": counter}
 
     @view_config(
         route_name="user_export_selected_projects",

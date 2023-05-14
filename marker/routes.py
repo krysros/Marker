@@ -482,6 +482,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_json_selected_companies",
+        "/user/{username}/json_selected_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_selected_companies",
+        "/user/{username}/map_selected_companies",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_export_selected_companies",
         "/user/{username}/export_selected_companies",
         factory=user_factory,
@@ -499,6 +509,16 @@ def includeme(config):
     config.add_route(
         "user_more_selected_projects",
         "/user/{username}/more_selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_selected_projects",
+        "/user/{username}/json_selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_selected_projects",
+        "/user/{username}/map_selected_projects",
         factory=user_factory,
     )
     config.add_route(
