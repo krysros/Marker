@@ -6,26 +6,26 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import (
+    CommentFilterForm,
     CompanyFilterForm,
+    ContactFilterForm,
     ProjectFilterForm,
     UserFilterForm,
     UserForm,
     UserSearchForm,
-    ContactFilterForm,
-    CommentFilterForm,
 )
 from ..forms.select import (
     COLORS,
     ORDER_CRITERIA,
+    PARENTS,
+    PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_EXT,
     SORT_CRITERIA_PROJECTS,
-    PROJECT_DELIVERY_METHODS,
-    USER_ROLES,
-    PARENTS,
-    STATUS,
     STAGES,
+    STATUS,
+    USER_ROLES,
 )
 from ..models import (
     Comment,
@@ -984,7 +984,9 @@ class UserView:
             select(func.count()).select_from(stmt)
         ).scalar()
 
-        url = self.request.route_url("user_json_selected_companies", username=user.name, _query=q)
+        url = self.request.route_url(
+            "user_json_selected_companies", username=user.name, _query=q
+        )
         return {"user": user, "url": url, "q": q, "counter": counter}
 
     @view_config(
@@ -1284,7 +1286,9 @@ class UserView:
             select(func.count()).select_from(stmt)
         ).scalar()
 
-        url = self.request.route_url("user_json_selected_projects", username=user.name, _query=q)
+        url = self.request.route_url(
+            "user_json_selected_projects", username=user.name, _query=q
+        )
         return {"user": user, "url": url, "q": q, "counter": counter}
 
     @view_config(

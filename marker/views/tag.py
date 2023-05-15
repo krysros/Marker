@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
-from ..forms import TagForm, TagSearchForm, CompanyFilterForm, ProjectFilterForm
+from ..forms import CompanyFilterForm, ProjectFilterForm, TagForm, TagSearchForm
 from ..forms.select import (
     COLORS,
     ORDER_CRITERIA,
@@ -172,7 +172,9 @@ class TagView:
         self.count_companies = counter
         self.count_projects = tag.count_projects
 
-        url = self.request.route_url("tag_json_companies", tag_id=tag.id, slug=tag.slug, _query=q)
+        url = self.request.route_url(
+            "tag_json_companies", tag_id=tag.id, slug=tag.slug, _query=q
+        )
         return {"tag": tag, "url": url, "q": q, "tag_pills": self.pills(tag)}
 
     @view_config(
@@ -227,7 +229,9 @@ class TagView:
         self.count_companies = tag.count_companies
         self.count_projects = counter
 
-        url = self.request.route_url("tag_json_projects", tag_id=tag.id, slug=tag.slug, _query=q)
+        url = self.request.route_url(
+            "tag_json_projects", tag_id=tag.id, slug=tag.slug, _query=q
+        )
         return {"tag": tag, "url": url, "q": q, "tag_pills": self.pills(tag)}
 
     @view_config(

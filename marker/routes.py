@@ -580,7 +580,9 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
-        "user_json_recommended", "/user/{username}/json_recommended", factory=user_factory
+        "user_json_recommended",
+        "/user/{username}/json_recommended",
+        factory=user_factory,
     )
     config.add_route(
         "user_map_recommended", "/user/{username}/map_recommended", factory=user_factory
