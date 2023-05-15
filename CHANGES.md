@@ -1,3 +1,9 @@
+2.0b3
+-----
+
+- More filters and maps
+- Bug fixes
+
 2.0b2
 -----
 

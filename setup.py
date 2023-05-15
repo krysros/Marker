@@ -40,7 +40,7 @@ tests_require = [
 
 setup(
     name="marker",
-    version="2.0b2",
+    version="2.0b3",
     description="marker",
     long_description=README + "\n\n" + CHANGES,
     classifiers=[
