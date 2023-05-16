@@ -19,33 +19,40 @@
 <div class="card mt-4 mb-4">
   <div class="card-header"><i class="bi bi-person"></i> ${_("Contact")}</div>
   <div class="card-body">
-    <dl>
-      <dt>${_("Fullname")}</dt>
-      <dd>${contact.name}</dd>
+    <div class="row">
+      <div class="col">
+        <dl>
+          <dt>${_("Fullname")}</dt>
+          <dd>${contact.name}</dd>
 
-      % if contact.company:
-      <dt>${_("Company")}</dt>
-      <dd><a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a></dd>
-      % endif
+          % if contact.company:
+          <dt>${_("Company")}</dt>
+          <dd><a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a></dd>
+          % endif
 
-      % if contact.project:
-      <dt>${_("Project")}</dt>
-      <dd><a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a></dd>
-      % endif
+          % if contact.project:
+          <dt>${_("Project")}</dt>
+          <dd><a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a></dd>
+          % endif
 
-      <dt>${_("Role")}</dt>
-      <dd>${contact.role or "---"}</dd>
+          <dt>${_("Role")}</dt>
+          <dd>${contact.role or "---"}</dd>
 
-      <dt>${_("Phone")}</dt>
-      <dd>${contact.phone or "---"}</dd>
+          <dt>${_("Phone")}</dt>
+          <dd>${contact.phone or "---"}</dd>
 
-      <dt>${_("Email")}</dt>
-      % if contact.email:
-      <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
-      % else:
-      <dd>---</dd>
-      % endif
-    </dl>
+          <dt>${_("Email")}</dt>
+          % if contact.email:
+          <dd><a href="mailto:${contact.email}">${contact.email}</a></dd>
+          % else:
+          <dd>---</dd>
+          % endif
+        </dl>
+      </div>
+      <div class="col">
+        <div id="container"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -69,3 +76,10 @@
     </p>
   </div>
 </div>
+
+
+<script>
+  var qrcode = new QRCode({ content: "${vcard}", join: true });
+  var svg = qrcode.svg();
+  document.getElementById("container").innerHTML = svg;
+</script>

@@ -1,6 +1,7 @@
 import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.renderers import render
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
@@ -119,7 +120,9 @@ class ContactView:
     )
     def view(self):
         contact = self.request.context.contact
-        return {"contact": contact, "title": contact.name}
+        vcard = render("marker:templates/vcard.mako", {"contact": contact}, request=self.request)
+        vcard = vcard.replace("\n", r"\n")
+        return {"contact": contact, "title": contact.name, "vcard": vcard}
 
     @view_config(
         route_name="contact_edit", renderer="contact_form.mako", permission="edit"
