@@ -121,7 +121,7 @@ class ContactView:
     def view(self):
         contact = self.request.context.contact
         vcard = render("marker:templates/vcard.mako", {"contact": contact}, request=self.request)
-        vcard = vcard.strip().replace("\r", r"\r").replace("\n", r"\n")
+        vcard = vcard.replace("\r", r"\r").replace("\n", r"\n")
         return {"contact": contact, "title": contact.name, "vcard": vcard}
 
     @view_config(

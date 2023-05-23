@@ -1,7 +1,7 @@
 <%!
     def vescape(text):
-        return text.replace('"', '').replace("'", "").replace('\\', '\\\\').replace(';', '_').replace(':', '_').replace('&', '_')
-%>
+        return text.replace('"', '').replace("'", "").replace(';', '_').replace(':', '_')
+%>\
 BEGIN:VCARD
 VERSION:4.0
 FN:${contact.name | vescape}
