@@ -1,14 +1,13 @@
 import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
-from pyramid.renderers import render
 from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactSearchForm
 from ..forms.select import ORDER_CRITERIA, PARENTS, SORT_CRITERIA
 from ..models import Contact
-from ..utils.export import response_vcard
+from ..utils.export import response_vcard, vcard_template
 from ..utils.paginator import get_paginator
 from . import Filter
 
@@ -120,7 +119,8 @@ class ContactView:
     )
     def view(self):
         contact = self.request.context.contact
-        vcard = render("marker:templates/vcard.mako", {"contact": contact}, request=self.request)
+        template = vcard_template()
+        vcard = template.render(contact=contact)
         vcard = vcard.replace("\r", r"\r").replace("\n", r"\n")
         return {"contact": contact, "title": contact.name, "vcard": vcard}
 

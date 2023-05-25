@@ -40,11 +40,16 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     return response
 
 
-def response_vcard(contact):
-    response = Response()
+def vcard_template():
     a = AssetResolver("marker")
     resolver = a.resolve("templates/vcard.mako")
     template = Template(filename=resolver.abspath())
+    return template
+
+
+def response_vcard(contact):
+    response = Response()
+    template = vcard_template()
     response.text = template.render(contact=contact)
     response.charset = "utf-8"
     response.content_type = "text/vcard"
