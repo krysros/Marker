@@ -18,10 +18,6 @@ Upgrade packaging tools, if necessary.
 
     env/bin/pip install --upgrade pip setuptools
 
-Install the wheel package.
-
-    env/bin/pip install wheel
-
 Install the project in editable mode with its testing requirements.
 
     env/bin/pip install -e ".[testing]"
@@ -52,10 +48,6 @@ Create a Python virtual environment, if not already created.
 Upgrade packaging tools, if necessary.
 
     .\env\Scripts\pip.exe install --upgrade pip setuptools
-
-Install the wheel package.
-
-    .\env\Scripts\pip.exe install wheel
 
 Install the project in editable mode with its testing requirements.
 
