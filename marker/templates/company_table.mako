@@ -5,7 +5,7 @@
         <th>#</th>
         <th>${_("Company")}</th>
         <th>${_("City")}</th>
-        <th>${_("Recommended")}</th>
+        <th>${_("Stars")}</th>
         <th>${_("Comments")}</th>
         <th>${_("Action")}</th>
       </tr>

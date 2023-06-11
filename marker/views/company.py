@@ -17,14 +17,14 @@ from ..forms.select import (
     select_countries,
 )
 from ..models import (
+    Activity,
     Comment,
-    CompaniesProjects,
     Company,
     Contact,
     Project,
     Tag,
     User,
-    recommended,
+    companies_stars,
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
@@ -97,18 +97,18 @@ class CompanyView:
                 "init_value": company.count_comments,
             },
             {
-                "title": _("Recommended"),
-                "icon": "hand-thumbs-up",
+                "title": _("Stars"),
+                "icon": "star",
                 "url": self.request.route_url(
-                    "company_recommended", company_id=company.id, slug=company.slug
+                    "company_stars", company_id=company.id, slug=company.slug
                 ),
                 "count": self.request.route_url(
-                    "company_count_recommended",
+                    "company_count_stars",
                     company_id=company.id,
                     slug=company.slug,
                 ),
-                "event": "recommendEvent",
-                "init_value": company.count_recommended,
+                "event": "starCompanyEvent",
+                "init_value": company.count_stars,
             },
             {
                 "title": _("Similar"),
@@ -208,18 +208,22 @@ class CompanyView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _sort == "recommended":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
-                    stmt.join(recommended)
+                    stmt.join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
                 )
             elif _order == "desc":
                 stmt = (
-                    stmt.join(recommended)
+                    stmt.join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
                 )
         elif _sort == "comments":
             if _order == "asc":
@@ -385,18 +389,22 @@ class CompanyView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _sort == "recommended":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
-                    stmt.join(recommended)
+                    stmt.join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
                 )
             elif _order == "desc":
                 stmt = (
-                    stmt.join(recommended)
+                    stmt.join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
                 )
         else:
             if _order == "asc":
@@ -525,13 +533,13 @@ class CompanyView:
         return company.count_comments
 
     @view_config(
-        route_name="company_count_recommended",
+        route_name="company_count_stars",
         renderer="json",
         permission="view",
     )
-    def count_recommended(self):
+    def count_stars(self):
         company = self.request.context.company
-        return company.count_recommended
+        return company.count_stars
 
     @view_config(
         route_name="company_count_similar",
@@ -543,23 +551,23 @@ class CompanyView:
         return company.count_similar
 
     @view_config(
-        route_name="company_recommended",
-        renderer="company_recommended.mako",
+        route_name="company_stars",
+        renderer="company_stars.mako",
         permission="view",
     )
     @view_config(
-        route_name="company_more_recommended",
+        route_name="company_more_stars",
         renderer="user_more.mako",
         permission="view",
     )
-    def recommended(self):
+    def companies_stars(self):
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         user_roles = dict(USER_ROLES)
         stmt = (
             select(User)
-            .join(recommended)
-            .filter(company.id == recommended.c.company_id)
+            .join(companies_stars)
+            .filter(company.id == companies_stars.c.company_id)
         )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -567,7 +575,7 @@ class CompanyView:
             .all()
         )
         next_page = self.request.route_url(
-            "company_more_recommended",
+            "company_more_stars",
             company_id=company.id,
             slug=company.slug,
             _query={"page": page + 1},
@@ -885,16 +893,16 @@ class CompanyView:
     )
     def recommend(self):
         company = self.request.context.company
-        recommended = self.request.identity.recommended
+        companies_stars = self.request.identity.companies_stars
 
-        if company in recommended:
-            recommended.remove(company)
-            self.request.response.headers = {"HX-Trigger": "recommendEvent"}
-            return '<i class="bi bi-hand-thumbs-up"></i>'
+        if company in companies_stars:
+            companies_stars.remove(company)
+            self.request.response.headers = {"HX-Trigger": "starCompanyEvent"}
+            return '<i class="bi bi-star"></i>'
         else:
-            recommended.append(company)
-            self.request.response.headers = {"HX-Trigger": "recommendEvent"}
-            return '<i class="bi bi-hand-thumbs-up-fill"></i>'
+            companies_stars.append(company)
+            self.request.response.headers = {"HX-Trigger": "starCompanyEvent"}
+            return '<i class="bi bi-star-fill"></i>'
 
     @view_config(
         route_name="company_check",
@@ -1004,13 +1012,13 @@ class CompanyView:
 
             if project:
                 exist = self.request.dbsession.execute(
-                    select(CompaniesProjects).filter_by(
+                    select(Activity).filter_by(
                         company_id=company.id, project_id=project.id
                     )
                 ).scalar_one_or_none()
 
                 if not exist:
-                    a = CompaniesProjects(stage=stage, role=role)
+                    a = Activity(stage=stage, role=role)
                     a.project = project
                     company.projects.append(a)
                     log.info(
@@ -1050,9 +1058,7 @@ class CompanyView:
             raise HTTPNotFound
 
         assoc = self.request.dbsession.execute(
-            select(CompaniesProjects).filter_by(
-                company_id=company.id, project_id=project.id
-            )
+            select(Activity).filter_by(company_id=company.id, project_id=project.id)
         ).scalar()
 
         self.request.dbsession.delete(assoc)

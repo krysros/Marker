@@ -12,7 +12,7 @@
   <td>${company_roles.get(assoc.role)}</td>
   <td>
     <div class="hstack gap-2 mx-2">
-      ${button.watch(assoc.project, size='sm')}
+      ${button.project_star(assoc.project, size='sm')}
       ${button.del_row(icon='dash-lg', color='warning', size='sm', url=request.route_url('unlink_company_project', company_id=assoc.company.id, project_id=assoc.project.id))}
     </div>
   </td>

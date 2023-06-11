@@ -61,15 +61,15 @@
                 <i class="bi bi-people"></i> ${_("Contacts")}
               </a>
             </li>
-            <li><hr class="dropdown-divider"></li>
+            <li><h6 class="dropdown-header">${_("Stars")}</h6></li>
             <li>
-              <a class="dropdown-item" role="button" href="${request.route_url('user_recommended', username=request.identity.name)}">
-                <i class="bi bi-hand-thumbs-up"></i> ${_("Recommended")}
+              <a class="dropdown-item" role="button" href="${request.route_url('user_companies_stars', username=request.identity.name)}">
+                <i class="bi bi-buildings"></i> ${_("Companies")}
               </a>
             </li>
             <li>
-              <a class="dropdown-item" role="button" href="${request.route_url('user_watched', username=request.identity.name)}">
-                <i class="bi bi-eye"></i> ${_("Watched")}
+              <a class="dropdown-item" role="button" href="${request.route_url('user_projects_stars', username=request.identity.name)}">
+                <i class="bi bi-briefcase"></i> ${_("Projects")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>

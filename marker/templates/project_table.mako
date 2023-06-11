@@ -5,7 +5,7 @@
         <th>#</th>
         <th>${_("Project")}</th>
         <th>${_("City")}</th>
-        <th>${_("Watched")}</th>
+        <th>${_("Stars")}</th>
         <th>${_("Comments")}</th>
         <th>${_("Action")}</th>
       </tr>

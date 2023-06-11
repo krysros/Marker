@@ -74,13 +74,13 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_recommended",
-        r"/company/{company_id:\d+}/{slug}/recommended",
+        "company_stars",
+        r"/company/{company_id:\d+}/{slug}/stars",
         factory=company_factory,
     )
     config.add_route(
-        "company_more_recommended",
-        r"/company/{company_id:\d+}/{slug}/more_recommended",
+        "company_more_stars",
+        r"/company/{company_id:\d+}/{slug}/more_stars",
         factory=company_factory,
     )
     config.add_route(
@@ -114,8 +114,8 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_count_recommended",
-        r"/company/{company_id:\d+}/{slug}/count_recommended",
+        "company_count_stars",
+        r"/company/{company_id:\d+}/{slug}/count_stars",
         factory=company_factory,
     )
     config.add_route(
@@ -207,13 +207,13 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "project_watched",
-        r"/project/{project_id:\d+}/{slug}/watched",
+        "project_stars",
+        r"/project/{project_id:\d+}/{slug}/stars",
         factory=project_factory,
     )
     config.add_route(
-        "project_more_watched",
-        r"/project/{project_id:\d+}/{slug}/more_watched",
+        "project_more_stars",
+        r"/project/{project_id:\d+}/{slug}/more_stars",
         factory=project_factory,
     )
     config.add_route(
@@ -247,8 +247,8 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "project_count_watched",
-        r"/project/{project_id:\d+}/{slug}/count_watched",
+        "project_count_stars",
+        r"/project/{project_id:\d+}/{slug}/count_stars",
         factory=project_factory,
     )
     config.add_route(
@@ -262,8 +262,8 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
-        "project_watch",
-        r"/project/{project_id:\d+}/{slug}/watch",
+        "project_star",
+        r"/project/{project_id:\d+}/{slug}/star",
         factory=project_factory,
     )
     config.add_route(
@@ -572,51 +572,59 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
-        "user_recommended", "/user/{username}/recommended", factory=user_factory
+        "user_companies_stars", "/user/{username}/companies_stars", factory=user_factory
     )
     config.add_route(
-        "user_more_recommended",
-        "/user/{username}/more_recommended",
+        "user_more_companies_stars",
+        "/user/{username}/more_companies_stars",
         factory=user_factory,
     )
     config.add_route(
-        "user_json_recommended",
-        "/user/{username}/json_recommended",
+        "user_json_companies_stars",
+        "/user/{username}/json_companies_stars",
         factory=user_factory,
     )
     config.add_route(
-        "user_map_recommended", "/user/{username}/map_recommended", factory=user_factory
-    )
-    config.add_route(
-        "user_export_recommended",
-        "/user/{username}/export_recommended",
+        "user_map_companies_stars",
+        "/user/{username}/map_companies_stars",
         factory=user_factory,
     )
     config.add_route(
-        "user_clear_recommended",
-        "/user/{username}/clear_recommended",
-        factory=user_factory,
-    )
-    config.add_route("user_watched", "/user/{username}/watched", factory=user_factory)
-    config.add_route(
-        "user_more_watched",
-        "/user/{username}/more_watched",
+        "user_export_companies_stars",
+        "/user/{username}/export_companies_stars",
         factory=user_factory,
     )
     config.add_route(
-        "user_json_watched", "/user/{username}/json_watched", factory=user_factory
-    )
-    config.add_route(
-        "user_map_watched", "/user/{username}/map_watched", factory=user_factory
-    )
-    config.add_route(
-        "user_export_watched",
-        "/user/{username}/export_watched",
+        "user_clear_companies_stars",
+        "/user/{username}/clear_companies_stars",
         factory=user_factory,
     )
     config.add_route(
-        "user_clear_watched",
-        "/user/{username}/clear_watched",
+        "user_projects_stars", "/user/{username}/projects_stars", factory=user_factory
+    )
+    config.add_route(
+        "user_more_projects_stars",
+        "/user/{username}/more_projects_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_projects_stars",
+        "/user/{username}/json_projects_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_projects_stars",
+        "/user/{username}/map_projects_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_export_projects_stars",
+        "/user/{username}/export_projects_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_clear_projects_stars",
+        "/user/{username}/clear_projects_stars",
         factory=user_factory,
     )
     config.add_route(

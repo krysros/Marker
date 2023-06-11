@@ -34,12 +34,12 @@ from ..models import (
     Project,
     Tag,
     User,
-    recommended,
+    companies_stars,
+    projects_stars,
     selected_companies,
     selected_contacts,
     selected_projects,
     selected_tags,
-    watched,
 )
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
@@ -423,18 +423,22 @@ class UserView:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
 
-        if _sort == "recommended":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
-                    stmt.join(recommended)
+                    stmt.join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
                 )
             elif _order == "desc":
                 stmt = (
-                    stmt.join(recommended)
+                    stmt.join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
                 )
         else:
             if _order == "asc":
@@ -576,18 +580,20 @@ class UserView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
-        if _sort == "watched":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
-                    stmt.join(watched)
+                    stmt.join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
-                    stmt.join(watched)
+                    stmt.join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
                 )
         else:
             if _order == "asc":
@@ -1615,16 +1621,16 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_recommended",
-        renderer="user_recommended.mako",
+        route_name="user_companies_stars",
+        renderer="user_companies_stars.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_more_recommended",
+        route_name="user_more_companies_stars",
         renderer="company_more.mako",
         permission="view",
     )
-    def recommended(self):
+    def companies_stars(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
@@ -1638,7 +1644,9 @@ class UserView:
         q = {}
 
         stmt = (
-            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+            select(Company)
+            .join(companies_stars)
+            .filter(user.id == companies_stars.c.user_id)
         )
 
         if color:
@@ -1672,7 +1680,7 @@ class UserView:
         ).scalar()
 
         next_page = self.request.route_url(
-            "user_more_recommended",
+            "user_more_companies_stars",
             username=user.name,
             _query={
                 **q,
@@ -1696,10 +1704,10 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_export_recommended",
+        route_name="user_export_companies_stars",
         permission="view",
     )
-    def export_recommended(self):
+    def export_companies_stars(self):
         _ = self.request.translate
         user = self.request.context.user
         color = self.request.params.get("color", None)
@@ -1721,8 +1729,8 @@ class UserView:
                 Company.REGON,
                 Company.KRS,
             )
-            .join(recommended)
-            .filter(user.id == recommended.c.user_id)
+            .join(companies_stars)
+            .filter(user.id == companies_stars.c.user_id)
         )
 
         if color:
@@ -1754,36 +1762,40 @@ class UserView:
         ]
         response = response_xlsx(companies, header_row)
         log.info(
-            _("The user %s exported the data of recommended companies")
+            _("The user %s exported the data of companies with a star")
             % self.request.identity.name
         )
         return response
 
     @view_config(
-        route_name="user_clear_recommended",
+        route_name="user_clear_companies_stars",
         request_method="POST",
         permission="view",
     )
-    def clear_recommended(self):
+    def clear_companies_stars(self):
         _ = self.request.translate
         user = self.request.context.user
-        user.recommended = []
-        log.info(_("The user %s cleared recommendations") % self.request.identity.name)
-        next_url = self.request.route_url("user_recommended", username=user.name)
+        user.companies_stars = []
+        log.info(
+            _("The user %s cleared companies with a star") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_companies_stars", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
 
     @view_config(
-        route_name="user_json_recommended",
+        route_name="user_json_companies_stars",
         renderer="json",
         permission="view",
     )
-    def json_recommended(self):
+    def json_companies_stars(self):
         user = self.request.context.user
         stmt = (
-            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+            select(Company)
+            .join(companies_stars)
+            .filter(user.id == companies_stars.c.user_id)
         )
         companies = self.request.dbsession.execute(stmt).scalars()
         res = [
@@ -1805,32 +1817,34 @@ class UserView:
         return res
 
     @view_config(
-        route_name="user_map_recommended",
-        renderer="user_map_recommended.mako",
+        route_name="user_map_companies_stars",
+        renderer="user_map_companies_stars.mako",
         permission="view",
     )
-    def map_recommended(self):
+    def map_companies_stars(self):
         user = self.request.context.user
         stmt = (
-            select(Company).join(recommended).filter(user.id == recommended.c.user_id)
+            select(Company)
+            .join(companies_stars)
+            .filter(user.id == companies_stars.c.user_id)
         )
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
-        url = self.request.route_url("user_json_recommended", username=user.name)
+        url = self.request.route_url("user_json_companies_stars", username=user.name)
         return {"user": user, "url": url, "counter": counter}
 
     @view_config(
-        route_name="user_watched",
-        renderer="user_watched.mako",
+        route_name="user_projects_stars",
+        renderer="user_projects_stars.mako",
         permission="view",
     )
     @view_config(
-        route_name="user_more_watched",
+        route_name="user_more_projects_stars",
         renderer="project_more.mako",
         permission="view",
     )
-    def watched(self):
+    def projects_stars(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         status = self.request.params.get("status", None)
@@ -1845,7 +1859,11 @@ class UserView:
         now = datetime.datetime.now()
         q = {}
 
-        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        stmt = (
+            select(Project)
+            .join(projects_stars)
+            .filter(user.id == projects_stars.c.user_id)
+        )
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
@@ -1885,7 +1903,7 @@ class UserView:
         ).scalar()
 
         next_page = self.request.route_url(
-            "user_more_watched",
+            "user_more_projects_stars",
             username=user.name,
             _query={
                 **q,
@@ -1909,10 +1927,10 @@ class UserView:
         }
 
     @view_config(
-        route_name="user_export_watched",
+        route_name="user_export_projects_stars",
         permission="view",
     )
-    def export_watched(self):
+    def export_projects_stars(self):
         _ = self.request.translate
         user = self.request.context.user
         status = self.request.params.get("status", None)
@@ -1936,8 +1954,8 @@ class UserView:
                 Project.stage,
                 Project.delivery_method,
             )
-            .join(watched)
-            .filter(user.id == watched.c.user_id)
+            .join(projects_stars)
+            .filter(user.id == projects_stars.c.user_id)
         )
 
         if status == "in_progress":
@@ -1974,35 +1992,41 @@ class UserView:
         ]
         response = response_xlsx(projects, header_row)
         log.info(
-            _("The user %s exported the data of the observed projects")
+            _("The user %s exported the data of projects with a star")
             % self.request.identity.name
         )
         return response
 
     @view_config(
-        route_name="user_clear_watched",
+        route_name="user_clear_projects_stars",
         request_method="POST",
         permission="view",
     )
-    def clear_watched(self):
+    def clear_projects_stars(self):
         _ = self.request.translate
         user = self.request.context.user
-        user.watched = []
-        log.info(_("The user %s cleared watched projects") % self.request.identity.name)
-        next_url = self.request.route_url("user_watched", username=user.name)
+        user.projects_stars = []
+        log.info(
+            _("The user %s cleared projects with a star") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_projects_stars", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
         return response
 
     @view_config(
-        route_name="user_json_watched",
+        route_name="user_json_projects_stars",
         renderer="json",
         permission="view",
     )
-    def json_watched(self):
+    def json_projects_stars(self):
         user = self.request.context.user
-        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        stmt = (
+            select(Project)
+            .join(projects_stars)
+            .filter(user.id == projects_stars.c.user_id)
+        )
         projects = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
@@ -2023,17 +2047,21 @@ class UserView:
         return res
 
     @view_config(
-        route_name="user_map_watched",
-        renderer="user_map_watched.mako",
+        route_name="user_map_projects_stars",
+        renderer="user_map_projects_stars.mako",
         permission="view",
     )
-    def map_watched(self):
+    def map_projects_stars(self):
         user = self.request.context.user
-        stmt = select(Project).join(watched).filter(user.id == watched.c.user_id)
+        stmt = (
+            select(Project)
+            .join(projects_stars)
+            .filter(user.id == projects_stars.c.user_id)
+        )
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
-        url = self.request.route_url("user_json_watched", username=user.name)
+        url = self.request.route_url("user_json_projects_stars", username=user.name)
         return {"user": user, "url": url, "counter": counter}
 
     @view_config(

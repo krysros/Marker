@@ -13,7 +13,7 @@ from ..forms.select import (
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
 )
-from ..models import Company, Project, Tag, recommended, watched
+from ..models import Company, Project, Tag, companies_stars, projects_stars
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter
@@ -369,20 +369,24 @@ class TagView:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
 
-        if _sort == "recommended":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
-                    .join(recommended)
+                    .join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
-                    .join(recommended)
+                    .join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
                 )
         elif _sort == "comments":
             if _order == "asc":
@@ -469,20 +473,24 @@ class TagView:
             Company.KRS,
         )
 
-        if _sort == "recommended":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
-                    .join(recommended)
+                    .join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).asc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
-                    .join(recommended)
+                    .join(companies_stars)
                     .group_by(Company)
-                    .order_by(func.count(recommended.c.company_id).desc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
                 )
         else:
             if _order == "asc":
@@ -576,20 +584,22 @@ class TagView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
 
-        if _sort == "watched":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
-                    .join(watched)
+                    .join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
-                    .join(watched)
+                    .join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
                 )
         elif _sort == "comments":
             if _order == "asc":
@@ -676,20 +686,22 @@ class TagView:
             Project.delivery_method,
         )
 
-        if _sort == "watched":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
-                    .join(watched)
+                    .join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
-                    .join(watched)
+                    .join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
                 )
         else:
             if _order == "asc":

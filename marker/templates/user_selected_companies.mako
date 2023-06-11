@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-buildings"></i> ${_("Selected companies")}
+  <i class="bi bi-check-square"></i> ${_("Companies")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.a_button(icon='map', color='secondary', url=request.route_url('user_map_selected_companies', username=user.name, _query=q))}

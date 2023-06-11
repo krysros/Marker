@@ -5,7 +5,7 @@ from slugify import slugify
 from sqlalchemy import ForeignKey, Unicode, and_, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
-from .association import CompaniesProjects, companies_tags, recommended
+from .association import Activity, companies_stars, companies_tags
 from .comment import Comment
 from .contact import Contact
 from .meta import Base
@@ -46,7 +46,7 @@ class Company(Base):
     tags: Mapped[list["Tag"]] = relationship(
         secondary=companies_tags, back_populates="companies"
     )
-    projects: Mapped[list["CompaniesProjects"]] = relationship(
+    projects: Mapped[list["Activity"]] = relationship(
         back_populates="company", cascade="all, delete-orphan"
     )
     contacts: Mapped[list["Contact"]] = relationship(
@@ -91,8 +91,8 @@ class Company(Base):
     @property
     def count_projects(self) -> int:
         return object_session(self).scalar(
-            select(func.count(CompaniesProjects.company_id)).where(
-                CompaniesProjects.company_id == self.id
+            select(func.count(Activity.company_id)).where(
+                Activity.company_id == self.id
             )
         )
 
@@ -121,10 +121,10 @@ class Company(Base):
         )
 
     @property
-    def count_recommended(self) -> int:
+    def count_stars(self) -> int:
         return object_session(self).scalar(
-            select(func.count(recommended.c.company_id)).where(
-                recommended.c.company_id == self.id
+            select(func.count(companies_stars.c.company_id)).where(
+                companies_stars.c.company_id == self.id
             )
         )
 

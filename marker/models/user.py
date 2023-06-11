@@ -5,12 +5,12 @@ from sqlalchemy import Unicode, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import (
-    recommended,
+    companies_stars,
+    projects_stars,
     selected_companies,
     selected_contacts,
     selected_projects,
     selected_tags,
-    watched,
 )
 from .comment import Comment
 from .company import Company
@@ -52,14 +52,14 @@ class User(Base):
         except argon2.exceptions.VerifyMismatchError as error:
             return False
 
-    recommended: Mapped[list["Company"]] = relationship(
-        secondary=recommended,
+    companies_stars: Mapped[list["Company"]] = relationship(
+        secondary=companies_stars,
         cascade="delete",
         single_parent=True,
     )
 
-    watched: Mapped[list["Project"]] = relationship(
-        secondary=watched,
+    projects_stars: Mapped[list["Project"]] = relationship(
+        secondary=projects_stars,
         cascade="delete",
         single_parent=True,
     )

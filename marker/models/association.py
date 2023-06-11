@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .meta import Base
 
 
-class CompaniesProjects(Base):
-    __tablename__ = "companies_projects"
+class Activity(Base):
+    __tablename__ = "activity"
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
         primary_key=True,
@@ -64,8 +64,8 @@ projects_tags = Table(
 )
 
 
-recommended = Table(
-    "recommended",
+companies_stars = Table(
+    "companies_stars",
     Base.metadata,
     Column(
         "company_id",
@@ -79,8 +79,8 @@ recommended = Table(
     ),
 )
 
-watched = Table(
-    "watched",
+projects_stars = Table(
+    "projects_stars",
     Base.metadata,
     Column(
         "project_id",

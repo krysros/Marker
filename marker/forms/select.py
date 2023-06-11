@@ -47,7 +47,7 @@ SORT_CRITERIA_COMPANIES = [
     ("country", _("Country")),
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
-    ("recommended", _("Recommended")),
+    ("stars", _("Stars")),
     ("comments", _("Comments")),
 ]
 
@@ -59,7 +59,7 @@ SORT_CRITERIA_PROJECTS = [
     ("country", _("Country")),
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
-    ("watched", _("Watched")),
+    ("stars", _("Stars")),
     ("comments", _("Comments")),
 ]
 
@@ -143,8 +143,8 @@ REPORTS = [
     ("users-companies", _("User activity (added companies)")),
     ("users-projects", _("User activity (added projects)")),
     ("companies-projects", _("Investors (number of projects)")),
-    ("recommended-companies", _("Recommended companies")),
-    ("watched-projects", _("Watched projects")),
+    ("companies-stars", _("Recommended companies")),
+    ("projects-stars", _("Watched projects")),
     (
         "companies-announcement",
         _("Companies that announced the largest number of investments"),

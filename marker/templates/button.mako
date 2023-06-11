@@ -55,22 +55,22 @@
 <%def name="recommend(company, size=None)">
 <button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('company_recommend', company_id=company.id, slug=company.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommend-${company.id}" hx-swap="innerHTML">
   <div id="recommend-${company.id}">
-  % if company in request.identity.recommended:
-    <i class="bi bi-hand-thumbs-up-fill"></i>
+  % if company in request.identity.companies_stars:
+    <i class="bi bi-star-fill"></i>
   % else:
-    <i class="bi bi-hand-thumbs-up"></i>
+    <i class="bi bi-star"></i>
   % endif
   </div>
 </button>
 </%def>
 
-<%def name="watch(project, size=None)">
-<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('project_watch', project_id=project.id, slug=project.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#watch-${project.id}" hx-swap="innerHTML">
-  <div id="watch-${project.id}">
-  % if project in request.identity.watched:
-    <i class="bi bi-eye-fill"></i>
+<%def name="project_star(project, size=None)">
+<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('project_star', project_id=project.id, slug=project.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#project_star-${project.id}" hx-swap="innerHTML">
+  <div id="project_star-${project.id}">
+  % if project in request.identity.projects_stars:
+    <i class="bi bi-star-fill"></i>
   % else:
-    <i class="bi bi-eye"></i>
+    <i class="bi bi-star"></i>
   % endif
   </div>
 </button>

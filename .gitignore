@@ -1,6 +1,6 @@
 # SQLite
 marker.sqlite
-testing_marker.sqlite
+testing.sqlite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

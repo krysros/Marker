@@ -27,12 +27,12 @@
     <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=project.country), "name", "---")}</small>
   </td>
   <td>
-    <a href="${request.route_url('project_watched', project_id=project.id, slug=project.slug)}">
-      <div hx-get="${request.route_url('project_count_watched', project_id=project.id, slug=project.slug)}"
-           hx-trigger="watchEvent from:body"
-           hx-target="#watched-${project.id}"
+    <a href="${request.route_url('project_stars', project_id=project.id, slug=project.slug)}">
+      <div hx-get="${request.route_url('project_count_stars', project_id=project.id, slug=project.slug)}"
+           hx-trigger="starProjectEvent from:body"
+           hx-target="#projects-stars-${project.id}"
            hx-swap="innerHTML">
-        <span id="watched-${project.id}" class="badge text-bg-secondary" role="button">${project.count_watched}</swap>
+        <span id="projects-stars-${project.id}" class="badge text-bg-secondary" role="button">${project.count_stars}</swap>
       </div>
     </a>
   </td>
@@ -43,7 +43,7 @@
   </td>
   <td>
     <div class="hstack gap-2 mx-2">
-      ${button.watch(project, size='sm')}
+      ${button.project_star(project, size='sm')}
       ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}
       ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('project_del_row', project_id=project.id, slug=project.slug))}
     </div>

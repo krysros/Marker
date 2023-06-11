@@ -19,14 +19,14 @@ from ..forms.select import (
     select_countries,
 )
 from ..models import (
+    Activity,
     Comment,
-    CompaniesProjects,
     Company,
     Contact,
     Project,
     Tag,
     User,
-    watched,
+    projects_stars,
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
@@ -99,18 +99,18 @@ class ProjectView:
                 "init_value": project.count_comments,
             },
             {
-                "title": _("Watched"),
-                "icon": "eye",
+                "title": _("Stars"),
+                "icon": "star",
                 "url": self.request.route_url(
-                    "project_watched", project_id=project.id, slug=project.slug
+                    "project_stars", project_id=project.id, slug=project.slug
                 ),
                 "count": self.request.route_url(
-                    "project_count_watched",
+                    "project_count_stars",
                     project_id=project.id,
                     slug=project.slug,
                 ),
-                "event": "watchEvent",
-                "init_value": project.count_watched,
+                "event": "starProjectEvent",
+                "init_value": project.count_stars,
             },
             {
                 "title": _("Similar"),
@@ -218,18 +218,20 @@ class ProjectView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _sort == "watched":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
-                    stmt.join(watched)
+                    stmt.join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
-                    stmt.join(watched)
+                    stmt.join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
                 )
         elif _sort == "comments":
             if _order == "asc":
@@ -402,18 +404,20 @@ class ProjectView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _sort == "watched":
+        if _sort == "stars":
             if _order == "asc":
                 stmt = (
-                    stmt.join(watched)
+                    stmt.join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).asc(), Project.id)
+                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
-                    stmt.join(watched)
+                    stmt.join(projects_stars)
                     .group_by(Project)
-                    .order_by(func.count(watched.c.project_id).desc(), Project.id)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
                 )
         else:
             if _order == "asc":
@@ -539,13 +543,13 @@ class ProjectView:
         return project.count_comments
 
     @view_config(
-        route_name="project_count_watched",
+        route_name="project_count_stars",
         renderer="json",
         permission="view",
     )
-    def count_watched(self):
+    def count_stars(self):
         project = self.request.context.project
-        return project.count_watched
+        return project.count_stars
 
     @view_config(
         route_name="project_count_similar",
@@ -844,44 +848,48 @@ class ProjectView:
         return {"heading": _("Find a project"), "form": form}
 
     @view_config(
-        route_name="project_watch",
+        route_name="project_star",
         request_method="POST",
         renderer="string",
         permission="view",
     )
-    def watch(self):
+    def project_star(self):
         project = self.request.context.project
-        if project in self.request.identity.watched:
-            self.request.identity.watched.remove(project)
-            self.request.response.headers = {"HX-Trigger": "watchEvent"}
-            return '<i class="bi bi-eye"></i>'
+        if project in self.request.identity.projects_stars:
+            self.request.identity.projects_stars.remove(project)
+            self.request.response.headers = {"HX-Trigger": "starProjectEvent"}
+            return '<i class="bi bi-star"></i>'
         else:
-            self.request.identity.watched.append(project)
-            self.request.response.headers = {"HX-Trigger": "watchEvent"}
-            return '<i class="bi bi-eye-fill"></i>'
+            self.request.identity.projects_stars.append(project)
+            self.request.response.headers = {"HX-Trigger": "starProjectEvent"}
+            return '<i class="bi bi-star-fill"></i>'
 
     @view_config(
-        route_name="project_watched",
-        renderer="project_watched.mako",
+        route_name="project_stars",
+        renderer="project_stars.mako",
         permission="view",
     )
     @view_config(
-        route_name="project_more_watched",
+        route_name="project_more_stars",
         renderer="user_more.mako",
         permission="view",
     )
-    def watched(self):
+    def projects_stars(self):
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
         user_roles = dict(USER_ROLES)
-        stmt = select(User).join(watched).filter(project.id == watched.c.project_id)
+        stmt = (
+            select(User)
+            .join(projects_stars)
+            .filter(project.id == projects_stars.c.project_id)
+        )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
             .all()
         )
         next_page = self.request.route_url(
-            "project_more_watched",
+            "project_more_stars",
             project_id=project.id,
             slug=project.slug,
             _query={"page": page + 1},
@@ -917,13 +925,13 @@ class ProjectView:
 
             if company:
                 exist = self.request.dbsession.execute(
-                    select(CompaniesProjects).filter_by(
+                    select(Activity).filter_by(
                         company_id=company.id, project_id=project.id
                     )
                 ).scalar_one_or_none()
 
                 if not exist:
-                    a = CompaniesProjects(stage=stage, role=role)
+                    a = Activity(stage=stage, role=role)
                     a.company = company
                     project.companies.append(a)
                     log.info(

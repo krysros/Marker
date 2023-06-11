@@ -6,16 +6,16 @@ from sqlalchemy.sql.expression import desc
 from ..forms import ReportForm
 from ..forms.select import REPORTS
 from ..models import (
+    Activity,
     Comment,
-    CompaniesProjects,
     Company,
     Project,
     Tag,
     User,
+    companies_stars,
     companies_tags,
+    projects_stars,
     projects_tags,
-    recommended,
-    watched,
 )
 from ..utils.paginator import get_paginator
 
@@ -151,46 +151,44 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company_id).label(
-                            "companies-projects"
-                        ),
+                        func.count(Activity.company_id).label("companies-projects"),
                     )
-                    .join(CompaniesProjects)
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("companies-projects"))
                 )
-            case "recommended-companies":
+            case "companies-stars":
                 stmt = (
                     select(
                         Company.name,
-                        func.count(recommended.c.company_id).label(
-                            "recommended-companies"
+                        func.count(companies_stars.c.company_id).label(
+                            "companies-stars"
                         ),
                     )
-                    .join(recommended)
+                    .join(companies_stars)
                     .group_by(Company)
-                    .order_by(desc("recommended-companies"))
+                    .order_by(desc("companies-stars"))
                 )
-            case "watched-projects":
+            case "projects-stars":
                 stmt = (
                     select(
                         Project.name,
-                        func.count(watched.c.project_id).label("watched-projects"),
+                        func.count(projects_stars.c.project_id).label(
+                            "projects-stars"
+                        ),
                     )
-                    .join(watched)
+                    .join(projects_stars)
                     .group_by(Project)
-                    .order_by(desc("watched-projects"))
+                    .order_by(desc("projects-stars"))
                 )
             case "companies-announcement":
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label(
-                            "companies-announcement"
-                        ),
+                        func.count(Activity.company).label("companies-announcement"),
                     )
-                    .filter(CompaniesProjects.stage == "announcement")
-                    .join(CompaniesProjects)
+                    .filter(Activity.stage == "announcement")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("companies-announcement"))
                 )
@@ -198,12 +196,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label(
-                            "companies-tenders"
-                        ),
+                        func.count(Activity.company).label("companies-tenders"),
                     )
-                    .filter(CompaniesProjects.stage == "tender")
-                    .join(CompaniesProjects)
+                    .filter(Activity.stage == "tender")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("companies-tenders"))
                 )
@@ -211,12 +207,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label(
-                            "companies-constructions"
-                        ),
+                        func.count(Activity.company).label("companies-constructions"),
                     )
-                    .filter(CompaniesProjects.stage == "construction")
-                    .join(CompaniesProjects)
+                    .filter(Activity.stage == "construction")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("companies-constructions"))
                 )
@@ -224,10 +218,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("designers"),
+                        func.count(Activity.company).label("designers"),
                     )
-                    .filter(CompaniesProjects.role == "designer")
-                    .join(CompaniesProjects)
+                    .filter(Activity.role == "designer")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("designers"))
                 )
@@ -235,10 +229,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("purchasers"),
+                        func.count(Activity.company).label("purchasers"),
                     )
-                    .filter(CompaniesProjects.role == "purchaser")
-                    .join(CompaniesProjects)
+                    .filter(Activity.role == "purchaser")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("purchasers"))
                 )
@@ -246,10 +240,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("investors"),
+                        func.count(Activity.company).label("investors"),
                     )
-                    .filter(CompaniesProjects.role == "investor")
-                    .join(CompaniesProjects)
+                    .filter(Activity.role == "investor")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("investors"))
                 )
@@ -257,12 +251,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label(
-                            "general-contractors"
-                        ),
+                        func.count(Activity.company).label("general-contractors"),
                     )
-                    .filter(CompaniesProjects.role == "general_contractor")
-                    .join(CompaniesProjects)
+                    .filter(Activity.role == "general_contractor")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("general-contractors"))
                 )
@@ -270,10 +262,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("subcontractors"),
+                        func.count(Activity.company).label("subcontractors"),
                     )
-                    .filter(CompaniesProjects.role == "subcontractor")
-                    .join(CompaniesProjects)
+                    .filter(Activity.role == "subcontractor")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("subcontractors"))
                 )
@@ -281,10 +273,10 @@ class ReportView:
                 stmt = (
                     select(
                         Company.name,
-                        func.count(CompaniesProjects.company).label("suppliers"),
+                        func.count(Activity.company).label("suppliers"),
                     )
-                    .filter(CompaniesProjects.role == "supplier")
-                    .join(CompaniesProjects)
+                    .filter(Activity.role == "supplier")
+                    .join(Activity)
                     .group_by(Company)
                     .order_by(desc("suppliers"))
                 )
@@ -292,11 +284,9 @@ class ReportView:
                 stmt = (
                     select(
                         Project.name,
-                        func.count(CompaniesProjects.project).label(
-                            "projects-companies"
-                        ),
+                        func.count(Activity.project).label("projects-companies"),
                     )
-                    .join(CompaniesProjects)
+                    .join(Activity)
                     .group_by(Project)
                     .order_by(desc("projects-companies"))
                 )
