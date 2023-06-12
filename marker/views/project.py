@@ -853,7 +853,7 @@ class ProjectView:
         renderer="string",
         permission="view",
     )
-    def project_star(self):
+    def star(self):
         project = self.request.context.project
         if project in self.request.identity.projects_stars:
             self.request.identity.projects_stars.remove(project)

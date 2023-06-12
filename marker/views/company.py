@@ -886,12 +886,12 @@ class CompanyView:
         return ""
 
     @view_config(
-        route_name="company_recommend",
+        route_name="company_star",
         request_method="POST",
         renderer="string",
         permission="view",
     )
-    def recommend(self):
+    def star(self):
         company = self.request.context.company
         companies_stars = self.request.identity.companies_stars
 

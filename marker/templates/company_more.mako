@@ -42,7 +42,7 @@
   </td>
   <td>
     <div class="hstack gap-2 mx-2">
-      ${button.recommend(company, size='sm')}
+      ${button.company_star(company, size='sm')}
       ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}
       ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('company_del_row', company_id=company.id, slug=company.slug))}
     </div>

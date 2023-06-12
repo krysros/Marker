@@ -124,8 +124,8 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
-        "company_recommend",
-        r"/company/{company_id:\d+}/{slug}/recommend",
+        "company_star",
+        r"/company/{company_id:\d+}/{slug}/star",
         factory=company_factory,
     )
     config.add_route(

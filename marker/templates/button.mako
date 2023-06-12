@@ -52,9 +52,9 @@
   % endif
 </%def>
 
-<%def name="recommend(company, size=None)">
-<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('company_recommend', company_id=company.id, slug=company.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#recommend-${company.id}" hx-swap="innerHTML">
-  <div id="recommend-${company.id}">
+<%def name="company_star(company, size=None)">
+<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('company_star', company_id=company.id, slug=company.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#company-star-${company.id}" hx-swap="innerHTML">
+  <div id="company-star-${company.id}">
   % if company in request.identity.companies_stars:
     <i class="bi bi-star-fill"></i>
   % else:
@@ -65,8 +65,8 @@
 </%def>
 
 <%def name="project_star(project, size=None)">
-<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('project_star', project_id=project.id, slug=project.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#project_star-${project.id}" hx-swap="innerHTML">
-  <div id="project_star-${project.id}">
+<button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('project_star', project_id=project.id, slug=project.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#project-star-${project.id}" hx-swap="innerHTML">
+  <div id="project-star-${project.id}">
   % if project in request.identity.projects_stars:
     <i class="bi bi-star-fill"></i>
   % else:

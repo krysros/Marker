@@ -8,7 +8,7 @@
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(company_pills)}</div>
-  <div>${button.recommend(company)}</div>
+  <div>${button.company_star(company)}</div>
   <div>${button.a_button(icon='pencil-square', color='warning', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}</div>
   <div>${button.button(icon='trash', color='danger', url=request.route_url('company_delete', company_id=company.id, slug=company.slug))}</div>
 </div>
