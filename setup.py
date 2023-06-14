@@ -12,7 +12,7 @@ requires = [
     "plaster_pastedeploy",
     "pyramid",
     "pyramid_mako",
-    # "pyramid_debugtoolbar",
+    "pyramid_debugtoolbar",
     "pyramid_retry",
     "pyramid_tm",
     "SQLAlchemy >= 2.0",
