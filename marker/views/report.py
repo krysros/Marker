@@ -173,9 +173,7 @@ class ReportView:
                 stmt = (
                     select(
                         Project.name,
-                        func.count(projects_stars.c.project_id).label(
-                            "projects-stars"
-                        ),
+                        func.count(projects_stars.c.project_id).label("projects-stars"),
                     )
                     .join(projects_stars)
                     .group_by(Project)

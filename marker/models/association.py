@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import Column, ForeignKey, Integer, Table, Unicode
+from sqlalchemy import Column, ForeignKey, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .meta import Base
@@ -11,13 +11,15 @@ class Activity(Base):
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
         primary_key=True,
+        index=True,
     )
     project_id: Mapped[int] = mapped_column(
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
         primary_key=True,
+        index=True,
     )
-    stage: Mapped[Optional[str]] = mapped_column(Unicode(100))
-    role: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    stage: Mapped[Optional[str]]
+    role: Mapped[Optional[str]]
     company: Mapped["Company"] = relationship(back_populates="projects")
     project: Mapped["Project"] = relationship(back_populates="companies")
 
@@ -28,8 +30,9 @@ class Themes(Base):
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
         primary_key=True,
+        index=True,
     )
-    theme: Mapped[str] = mapped_column(Unicode(10))
+    theme: Mapped[str]
 
 
 companies_tags = Table(
@@ -39,11 +42,13 @@ companies_tags = Table(
         "company_id",
         Integer,
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "tag_id",
         Integer,
         ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -55,11 +60,13 @@ projects_tags = Table(
         "project_id",
         Integer,
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "tag_id",
         Integer,
         ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -71,11 +78,13 @@ companies_stars = Table(
         "company_id",
         Integer,
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -86,11 +95,13 @@ projects_stars = Table(
         "project_id",
         Integer,
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -101,11 +112,13 @@ selected_companies = Table(
         "company_id",
         Integer,
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -116,11 +129,13 @@ selected_projects = Table(
         "project_id",
         Integer,
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -131,11 +146,13 @@ selected_tags = Table(
         "tag_id",
         Integer,
         ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -146,10 +163,12 @@ selected_contacts = Table(
         "contact_id",
         Integer,
         ForeignKey("contacts.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )

@@ -13,22 +13,28 @@ class Comment(Base):
     comment: Mapped[str]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 
-    creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    creator_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
     editor_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL")
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
     )
 
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped[Optional["User"]] = relationship(foreign_keys=[editor_id])
 
-    company_id: Mapped[Optional[int]] = mapped_column(ForeignKey("companies.id"))
+    company_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("companies.id"), index=True
+    )
     company: Mapped["Company"] = relationship(back_populates="comments")
 
-    project_id: Mapped[Optional[int]] = mapped_column(ForeignKey("projects.id"))
+    project_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("projects.id"), index=True
+    )
     project: Mapped["Project"] = relationship(back_populates="comments")
 
     def __init__(self, comment: str) -> None:

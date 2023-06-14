@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from slugify import slugify
-from sqlalchemy import ForeignKey, Unicode, func, select
+from sqlalchemy import ForeignKey, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import companies_tags, projects_tags
@@ -12,16 +12,18 @@ from .meta import Base
 class Tag(Base):
     __tablename__ = "tags"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(Unicode(50))
+    name: Mapped[str]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 
-    creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    creator_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
     editor_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL")
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
     )
 
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])

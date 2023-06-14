@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from slugify import slugify
-from sqlalchemy import ForeignKey, Unicode, and_, func, select
+from sqlalchemy import ForeignKey, and_, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import Activity, projects_stars, projects_tags
@@ -15,28 +15,30 @@ from .tag import Tag
 class Project(Base):
     __tablename__ = "projects"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(Unicode(200))
-    street: Mapped[Optional[str]] = mapped_column(Unicode(100))
-    postcode: Mapped[Optional[str]] = mapped_column(Unicode(10))
-    city: Mapped[Optional[str]] = mapped_column(Unicode(100))
-    subdivision: Mapped[Optional[str]] = mapped_column(Unicode(10))
-    country: Mapped[Optional[str]] = mapped_column(Unicode(2))
+    name: Mapped[str]
+    street: Mapped[Optional[str]]
+    postcode: Mapped[Optional[str]]
+    city: Mapped[Optional[str]]
+    subdivision: Mapped[Optional[str]]
+    country: Mapped[Optional[str]]
     latitude: Mapped[Optional[float]]
     longitude: Mapped[Optional[float]]
-    link: Mapped[Optional[str]] = mapped_column(Unicode(2000))
-    color: Mapped[Optional[str]] = mapped_column(Unicode(10))
+    link: Mapped[Optional[str]]
+    color: Mapped[Optional[str]]
     deadline: Mapped[Optional[datetime.datetime]]
-    stage: Mapped[Optional[str]] = mapped_column(Unicode(100))
-    delivery_method: Mapped[Optional[str]] = mapped_column(Unicode(100))
+    stage: Mapped[Optional[str]]
+    delivery_method: Mapped[Optional[str]]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
 
-    creator_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    creator_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
     editor_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL")
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
     )
 
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
