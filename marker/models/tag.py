@@ -20,10 +20,10 @@ class Tag(Base):
     )
 
     creator_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), index=True
+        ForeignKey("users.id", ondelete="SET NULL")
     )
     editor_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("users.id", ondelete="SET NULL"), index=True
+        ForeignKey("users.id", ondelete="SET NULL")
     )
 
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
