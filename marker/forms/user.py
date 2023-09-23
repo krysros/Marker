@@ -6,7 +6,6 @@ from wtforms import (
     PasswordField,
     SelectField,
     StringField,
-    SubmitField,
 )
 from wtforms.validators import InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
