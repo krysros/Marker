@@ -770,8 +770,7 @@ class UserView:
         form = UserForm(
             self.request.POST,
             user,
-            dbsession=self.request.dbsession,
-            username=user.name,
+            request=self.request,
         )
         if self.request.method == "POST" and form.validate():
             form.populate_obj(user)

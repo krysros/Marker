@@ -47,7 +47,15 @@ class UserForm(Form):
         super().__init__(*args, **kwargs)
         self.request = request
 
+        try:
+            self.edited_item = args[1]
+        except IndexError:
+            self.edited_item = None
+
     def validate_name(self, field):
+        if self.edited_item:
+            if self.edited_item.name == field.data:
+                return
         exists = self.request.dbsession.execute(
             select(User).filter_by(name=field.data)
         ).scalar_one_or_none()
