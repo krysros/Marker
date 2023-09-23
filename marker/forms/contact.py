@@ -1,7 +1,7 @@
 from wtforms import EmailField, Form, HiddenField, SelectField, StringField, SubmitField
 from wtforms.validators import InputRequired, Length
 
-from .filters import strip_filter
+from .filters import strip_filter, title
 from .select import PARENTS
 from .ts import TranslationString as _
 
@@ -13,7 +13,7 @@ class ContactForm(Form):
             InputRequired(),
             Length(min=5, max=100),
         ],
-        filters=[strip_filter],
+        filters=[strip_filter, title],
     )
     role = StringField(
         _("Role"),

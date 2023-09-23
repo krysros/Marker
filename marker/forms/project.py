@@ -12,7 +12,7 @@ from wtforms.validators import InputRequired, Length, Optional, ValidationError
 from wtforms.widgets import DateTimeLocalInput
 
 from ..models import Project
-from .filters import dash_filter, remove_multiple_spaces, strip_filter
+from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
 from .select import (
     COLORS,
     PROJECT_DELIVERY_METHODS,
@@ -46,7 +46,7 @@ class ProjectForm(Form):
     city = StringField(
         _("City"),
         validators=[Length(max=100)],
-        filters=[strip_filter],
+        filters=[strip_filter, title],
     )
     subdivision = SelectField(
         _("Subdivision"), choices=select_subdivisions(), validate_choice=False

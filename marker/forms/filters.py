@@ -32,3 +32,8 @@ def remove_mailto(v):
         return v[7:]
     else:
         return v
+
+
+def title(v):
+    """Return a titlecased version of the string."""
+    return v.title()

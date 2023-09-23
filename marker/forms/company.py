@@ -10,6 +10,7 @@ from .filters import (
     remove_dashes_and_spaces,
     remove_multiple_spaces,
     strip_filter,
+    title,
 )
 from .select import COLORS, COURTS, select_countries, select_subdivisions
 from .ts import TranslationString as _
@@ -59,7 +60,7 @@ class CompanyForm(Form):
     city = StringField(
         _("City"),
         validators=[Length(max=100)],
-        filters=[strip_filter],
+        filters=[strip_filter, title],
     )
     subdivision = SelectField(
         _("Subdivision"), choices=select_subdivisions(), validate_choice=False
