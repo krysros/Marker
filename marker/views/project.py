@@ -732,9 +732,9 @@ class ProjectView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                subdivision=getattr(
-                    pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
-                ),
+                # state=getattr(
+                #     pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
+                # ),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )
