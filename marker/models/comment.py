@@ -27,14 +27,10 @@ class Comment(Base):
     created_by: Mapped["User"] = relationship(foreign_keys=[creator_id])
     updated_by: Mapped[Optional["User"]] = relationship(foreign_keys=[editor_id])
 
-    company_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("companies.id")
-    )
+    company_id: Mapped[Optional[int]] = mapped_column(ForeignKey("companies.id"))
     company: Mapped["Company"] = relationship(back_populates="comments")
 
-    project_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("projects.id")
-    )
+    project_id: Mapped[Optional[int]] = mapped_column(ForeignKey("projects.id"))
     project: Mapped["Project"] = relationship(back_populates="comments")
 
     def __init__(self, comment: str) -> None:
