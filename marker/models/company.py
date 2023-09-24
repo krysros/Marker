@@ -24,10 +24,6 @@ class Company(Base):
     latitude: Mapped[Optional[float]]
     longitude: Mapped[Optional[float]]
     link: Mapped[Optional[str]]
-    NIP: Mapped[Optional[str]]
-    REGON: Mapped[Optional[str]]
-    KRS: Mapped[Optional[str]]
-    court: Mapped[Optional[str]]
     color: Mapped[Optional[str]]
 
     identification_number: Mapped["IdentificationNumber"] = relationship(back_populates="company")
@@ -69,10 +65,6 @@ class Company(Base):
         subdivision: str,
         country: str,
         link: str,
-        NIP: str,
-        REGON: str,
-        KRS: str,
-        court: str,
         color: str,
     ) -> None:
         self.name = name
@@ -82,10 +74,6 @@ class Company(Base):
         self.subdivision = subdivision
         self.country = country
         self.link = link
-        self.NIP = NIP
-        self.REGON = REGON
-        self.KRS = KRS
-        self.court = court
         self.color = color
 
     @property

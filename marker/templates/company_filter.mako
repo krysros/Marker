@@ -27,18 +27,6 @@
     % if form.link.data:
       ${form.link(class_="form-control")}
     % endif
-    % if form.NIP.data:
-      ${form.NIP(class_="form-control")}
-    % endif
-    % if form.REGON.data:
-      ${form.REGON(class_="form-control")}
-    % endif
-    % if form.KRS.data:
-      ${form.KRS(class_="form-control")}
-    % endif
-    % if form.court.data:
-      ${form.court(class_="form-control")}
-    % endif
     <div class="mb-3">
       ${form.color.label}
       ${form.color(class_="form-control")}

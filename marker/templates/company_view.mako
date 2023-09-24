@@ -50,14 +50,6 @@
           <dd>---</dd>
           % endif
           </dd>
-          <dt>${_("NIP")}</dt>
-          <dd>${company.NIP or "---"}</dd>
-          <dt>${_("REGON")}</dt>
-          <dd>${company.REGON or "---"}</dd>
-          <dt>${_("KRS")}</dt>
-          <dd>${company.KRS or "---"}</dd>
-          <dt>${_("Court")}</dt>
-          <dd>${courts.get(company.court) or "---"}</dd>
         </dl>
       </div>
     </div>

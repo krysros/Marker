@@ -468,9 +468,6 @@ class TagView:
             Company.subdivision,
             Company.country,
             Company.link,
-            Company.NIP,
-            Company.REGON,
-            Company.KRS,
         )
 
         if _sort == "stars":
@@ -511,9 +508,6 @@ class TagView:
             _("Subdivision"),
             _("Country"),
             _("Link"),
-            _("NIP"),
-            _("REGON"),
-            _("KRS"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(_("The user %s exported company data") % self.request.identity.name)

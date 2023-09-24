@@ -35,22 +35,6 @@
         ${form.link(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.NIP.label}
-        ${form.NIP(class_="form-control")}
-      </div>
-      <div class="mb-3">
-        ${form.REGON.label}
-        ${form.REGON(class_="form-control")}
-      </div>
-      <div class="mb-3">
-        ${form.KRS.label}
-        ${form.KRS(class_="form-control")}
-      </div>
-      <div class="mb-3">
-        ${form.court.label}
-        ${form.court(class_="form-control")}
-      </div>
-      <div class="mb-3">
         ${form.color.label}
         ${form.color(class_="form-control")}
       </div>

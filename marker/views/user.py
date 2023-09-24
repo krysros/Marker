@@ -361,10 +361,6 @@ class UserView:
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
-        NIP = self.request.params.get("NIP", None)
-        REGON = self.request.params.get("REGON", None)
-        KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -395,18 +391,6 @@ class UserView:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
             q["link"] = link
 
-        if NIP:
-            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
-            q["NIP"] = NIP
-
-        if REGON:
-            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
-            q["REGON"] = REGON
-
-        if KRS:
-            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
-            q["KRS"] = KRS
-
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
@@ -414,10 +398,6 @@ class UserView:
         if country:
             stmt = stmt.filter(Company.country == country)
             q["country"] = country
-
-        if court:
-            stmt = stmt.filter(Company.court == court)
-            q["court"] = court
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -1013,9 +993,6 @@ class UserView:
                 Company.subdivision,
                 Company.country,
                 Company.link,
-                Company.NIP,
-                Company.REGON,
-                Company.KRS,
             )
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
@@ -1035,9 +1012,6 @@ class UserView:
             _("Subdivision"),
             _("Country"),
             _("Link"),
-            _("NIP"),
-            _("REGON"),
-            _("KRS"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(
@@ -1724,9 +1698,6 @@ class UserView:
                 Company.subdivision,
                 Company.country,
                 Company.link,
-                Company.NIP,
-                Company.REGON,
-                Company.KRS,
             )
             .join(companies_stars)
             .filter(user.id == companies_stars.c.user_id)
@@ -1755,9 +1726,6 @@ class UserView:
             _("Subdivision"),
             _("Country"),
             _("Link"),
-            _("NIP"),
-            _("REGON"),
-            _("KRS"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(

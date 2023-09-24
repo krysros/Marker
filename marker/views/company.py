@@ -143,10 +143,6 @@ class CompanyView:
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
-        NIP = self.request.params.get("NIP", None)
-        REGON = self.request.params.get("REGON", None)
-        KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -177,18 +173,6 @@ class CompanyView:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
             q["link"] = link
 
-        if NIP:
-            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
-            q["NIP"] = NIP
-
-        if REGON:
-            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
-            q["REGON"] = REGON
-
-        if KRS:
-            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
-            q["KRS"] = KRS
-
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
@@ -196,10 +180,6 @@ class CompanyView:
         if country:
             stmt = stmt.filter(Company.country == country)
             q["country"] = country
-
-        if court:
-            stmt = stmt.filter(Company.court == court)
-            q["court"] = court
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -327,10 +307,6 @@ class CompanyView:
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
-        NIP = self.request.params.get("NIP", None)
-        REGON = self.request.params.get("REGON", None)
-        KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -357,18 +333,6 @@ class CompanyView:
         if link:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
             q["link"] = link
-
-        if NIP:
-            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
-            q["NIP"] = NIP
-
-        if REGON:
-            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
-            q["REGON"] = REGON
-
-        if KRS:
-            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
-            q["KRS"] = KRS
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
@@ -432,10 +396,6 @@ class CompanyView:
         subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
         link = self.request.params.get("link", None)
-        NIP = self.request.params.get("NIP", None)
-        REGON = self.request.params.get("REGON", None)
-        KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
         color = self.request.params.get("color", None)
 
         stmt = select(Company)
@@ -455,23 +415,11 @@ class CompanyView:
         if link:
             stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
 
-        if NIP:
-            stmt = stmt.filter(Company.NIP.ilike("%" + NIP + "%"))
-
-        if REGON:
-            stmt = stmt.filter(Company.REGON.ilike("%" + REGON + "%"))
-
-        if KRS:
-            stmt = stmt.filter(Company.KRS.ilike("%" + KRS + "%"))
-
         if subdivision:
             stmt = stmt.filter(Company.subdivision == subdivision)
 
         if country:
             stmt = stmt.filter(Company.country == country)
-
-        if court:
-            stmt = stmt.filter(Company.court == court)
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -789,10 +737,6 @@ class CompanyView:
                 subdivision=form.subdivision.data,
                 country=form.country.data,
                 link=form.link.data,
-                NIP=form.NIP.data,
-                REGON=form.REGON.data,
-                KRS=form.KRS.data,
-                court=form.court.data,
                 color=form.color.data,
             )
             loc = location(
