@@ -17,6 +17,7 @@ from .association import selected_tags  # flake8: noqa
 from .comment import Comment  # flake8: noqa
 from .company import Company  # flake8: noqa
 from .contact import Contact  # flake8: noqa
+from .identification_number import IdentificationNumber  # flake8: noqa
 from .project import Project  # flake8: noqa
 from .tag import Tag  # flake8: noqa
 from .user import User  # flake8: noqa

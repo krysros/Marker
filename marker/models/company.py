@@ -30,6 +30,8 @@ class Company(Base):
     court: Mapped[Optional[str]]
     color: Mapped[Optional[str]]
 
+    identification_number: Mapped["IdentificationNumber"] = relationship(back_populates="company")
+
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
