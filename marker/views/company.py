@@ -342,10 +342,6 @@ class CompanyView:
             stmt = stmt.filter(Company.country == country)
             q["country"] = country
 
-        if court:
-            stmt = stmt.filter(Company.court == court)
-            q["court"] = court
-
         if color:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
