@@ -49,6 +49,7 @@
           % else:
           <dd>---</dd>
           % endif
+          % if company.identification_number:
           <dt>${_("NIP")}</dt>
           <dd>${company.identification_number.NIP or "---"}</dd>
           <dt>${_("REGON")}</dt>
@@ -57,7 +58,7 @@
           <dd>${company.identification_number.KRS or "---"}</dd>
           <dt>${_("Court")}</dt>
           <dd>${courts.get(company.identification_number.court) or "---"}</dd>
-          </dd>
+          % endif
         </dl>
       </div>
     </div>
