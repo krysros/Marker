@@ -5,12 +5,7 @@ from wtforms import Form, HiddenField, SelectField, SelectMultipleField, StringF
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
-from .filters import (
-    dash_filter,
-    remove_multiple_spaces,
-    strip_filter,
-    title,
-)
+from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
 from .select import COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
