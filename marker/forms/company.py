@@ -43,8 +43,8 @@ class CompanyForm(Form):
         _("Subdivision"), choices=select_subdivisions(), validate_choice=False
     )
     country = SelectField(_("Country"), choices=select_countries())
-    link = StringField(
-        _("Link"),
+    website = StringField(
+        _("Website"),
         validators=[Length(max=100)],
         filters=[strip_filter],
     )
@@ -84,7 +84,7 @@ class CompanySearchForm(Form):
     city = StringField(_("City"), filters=[strip_filter])
     subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
     country = SelectField(_("Country"), choices=select_countries())
-    link = StringField(_("Link"), filters=[strip_filter])
+    website = StringField(_("Website"), filters=[strip_filter])
     color = SelectField(_("Color"), choices=COLORS)
 
 
@@ -97,7 +97,7 @@ class CompanyFilterForm(Form):
         _("Subdivision"), choices=select_subdivisions(), validate_choice=False
     )
     country = SelectField(_("Country"), choices=select_countries())
-    link = HiddenField(_("Link"), filters=[strip_filter])
+    website = HiddenField(_("Website"), filters=[strip_filter])
     color = SelectField(_("Color"), choices=COLORS)
 
     def __init__(self, *args, request, **kwargs):

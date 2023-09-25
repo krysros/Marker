@@ -31,8 +31,8 @@
         ${form.subdivision(class_="form-control")}
       </div>
       <div class="mb-3">
-        ${form.link.label}
-        ${form.link(class_="form-control")}
+        ${form.website.label}
+        ${form.website(class_="form-control")}
       </div>
       <div class="mb-3">
         ${form.deadline.label}

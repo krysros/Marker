@@ -41,9 +41,9 @@
       </div>
       <div class="col">
         <dl>
-          <dt>${_("Link")}</dt>
-          % if project.link:
-          <dd><a href="${project.link}" target="_blank">${project.link}</a></dd>
+          <dt>${_("Website")}</dt>
+          % if project.website:
+          <dd><a href="${project.website}" target="_blank">${project.website}</a></dd>
           % else:
           <dd>---</dd>
           % endif

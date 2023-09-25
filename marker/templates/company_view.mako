@@ -43,9 +43,9 @@
       </div>
       <div class="col">
         <dl>
-          <dt>${_("Link")}</dt>
-          % if company.link:
-          <dd><a href="${company.link}" target="_blank">${company.link}</a></dd>
+          <dt>${_("Website")}</dt>
+          % if company.website:
+          <dd><a href="${company.website}" target="_blank">${company.website}</a></dd>
           % else:
           <dd>---</dd>
           % endif
@@ -56,7 +56,7 @@
           <dt>${_("KRS")}</dt>
           <dd>${company.identification_number.KRS or "---"}</dd>
           <dt>${_("Court")}</dt>
-          <dd>${courts.get(company.identification_number.sad) or "---"}</dd>
+          <dd>${courts.get(company.identification_number.court) or "---"}</dd>
           </dd>
         </dl>
       </div>

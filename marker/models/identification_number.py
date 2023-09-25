@@ -13,7 +13,7 @@ class IdentificationNumber(Base):
     NIP: Mapped[Optional[str]]
     REGON: Mapped[Optional[str]]
     KRS: Mapped[Optional[str]]
-    sad: Mapped[Optional[str]]
+    court: Mapped[Optional[str]]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
@@ -33,8 +33,8 @@ class IdentificationNumber(Base):
     company_id: Mapped[Optional[int]] = mapped_column(ForeignKey("companies.id"))
     company: Mapped["Company"] = relationship(back_populates="identification_number")
 
-    def __init__(self, NIP: str, REGON: str, KRS: str, sad: str) -> None:
+    def __init__(self, NIP: str, REGON: str, KRS: str, court: str) -> None:
         self.NIP = NIP
         self.REGON = REGON
         self.KRS = KRS
-        self.sad = sad
+        self.court = court

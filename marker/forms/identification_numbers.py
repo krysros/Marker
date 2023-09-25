@@ -66,7 +66,7 @@ class IdentificationNumberForm(Form):
             remove_dashes_and_spaces,
         ],
     )
-    sad = SelectField(_("Court"), choices=COURTS)
+    court = SelectField(_("Court"), choices=COURTS)
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -120,14 +120,14 @@ class IdentificationNumberSearchForm(Form):
     NIP = StringField(_("NIP"), filters=[strip_filter])
     REGON = StringField(_("REGON"), filters=[strip_filter])
     KRS = StringField(_("KRS"), filters=[strip_filter])
-    sad = SelectField(_("Court"), choices=COURTS)
+    court = SelectField(_("Court"), choices=COURTS)
 
 
 class IdentificationNumberFilterForm(Form):
     NIP = HiddenField(_("NIP"), filters=[strip_filter])
     REGON = HiddenField(_("REGON"), filters=[strip_filter])
     KRS = HiddenField(_("KRS"), filters=[strip_filter])
-    sad = HiddenField(_("Court"))
+    court = HiddenField(_("Court"))
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

@@ -142,7 +142,7 @@ class CompanyView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -169,9 +169,9 @@ class CompanyView:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
             q["city"] = city
 
-        if link:
-            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
-            q["link"] = link
+        if website:
+            stmt = stmt.filter(Company.webiste.ilike("%" + website + "%"))
+            q["website"] = website
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
@@ -306,7 +306,7 @@ class CompanyView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -330,9 +330,9 @@ class CompanyView:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
             q["city"] = city
 
-        if link:
-            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
-            q["link"] = link
+        if website:
+            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            q["website"] = website
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
@@ -391,7 +391,7 @@ class CompanyView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
 
         stmt = select(Company)
@@ -408,8 +408,8 @@ class CompanyView:
         if city:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
 
-        if link:
-            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
+        if website:
+            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision == subdivision)
@@ -732,7 +732,7 @@ class CompanyView:
                 city=form.city.data,
                 subdivision=form.subdivision.data,
                 country=form.country.data,
-                link=form.link.data,
+                website=form.website.data,
                 color=form.color.data,
             )
             loc = location(

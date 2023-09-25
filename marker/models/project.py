@@ -23,7 +23,7 @@ class Project(Base):
     country: Mapped[Optional[str]]
     latitude: Mapped[Optional[float]]
     longitude: Mapped[Optional[float]]
-    link: Mapped[Optional[str]]
+    website: Mapped[Optional[str]]
     color: Mapped[Optional[str]]
     deadline: Mapped[Optional[datetime.datetime]]
     stage: Mapped[Optional[str]]
@@ -65,7 +65,7 @@ class Project(Base):
         city: str,
         subdivision: str,
         country: str,
-        link: str,
+        website: str,
         color: str,
         deadline: datetime.datetime,
         stage: str,
@@ -77,7 +77,7 @@ class Project(Base):
         self.city = city
         self.subdivision = subdivision
         self.country = country
-        self.link = link
+        self.website = website
         self.color = color
         self.deadline = deadline
         self.stage = stage

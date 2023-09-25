@@ -23,7 +23,7 @@ class Company(Base):
     country: Mapped[Optional[str]]
     latitude: Mapped[Optional[float]]
     longitude: Mapped[Optional[float]]
-    link: Mapped[Optional[str]]
+    website: Mapped[Optional[str]]
     color: Mapped[Optional[str]]
 
     identification_number: Mapped["IdentificationNumber"] = relationship(back_populates="company")
@@ -64,7 +64,7 @@ class Company(Base):
         city: str,
         subdivision: str,
         country: str,
-        link: str,
+        website: str,
         color: str,
     ) -> None:
         self.name = name
@@ -73,7 +73,7 @@ class Company(Base):
         self.city = city
         self.subdivision = subdivision
         self.country = country
-        self.link = link
+        self.website = website
         self.color = color
 
     @property

@@ -360,7 +360,7 @@ class UserView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -387,9 +387,9 @@ class UserView:
             stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
             q["city"] = city
 
-        if link:
-            stmt = stmt.filter(Company.link.ilike("%" + link + "%"))
-            q["link"] = link
+        if website:
+            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            q["website"] = website
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
@@ -489,7 +489,7 @@ class UserView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
@@ -524,9 +524,9 @@ class UserView:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
             q["city"] = city
 
-        if link:
-            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
-            q["link"] = link
+        if website:
+            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            q["website"] = website
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
@@ -992,7 +992,7 @@ class UserView:
                 Company.city,
                 Company.subdivision,
                 Company.country,
-                Company.link,
+                Company.website,
             )
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
@@ -1011,7 +1011,7 @@ class UserView:
             _("City"),
             _("Subdivision"),
             _("Country"),
-            _("Link"),
+            _("Website"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(
@@ -1288,7 +1288,7 @@ class UserView:
                 Project.city,
                 Project.subdivision,
                 Project.country,
-                Project.link,
+                Project.website,
                 Project.deadline,
                 Project.stage,
                 Project.delivery_method,
@@ -1310,7 +1310,7 @@ class UserView:
             _("City"),
             _("Subdivision"),
             _("Country"),
-            _("Link"),
+            _("Website"),
             _("Deadline"),
             _("Stage"),
             _("Project delivery method"),
@@ -1697,7 +1697,7 @@ class UserView:
                 Company.city,
                 Company.subdivision,
                 Company.country,
-                Company.link,
+                Company.website,
             )
             .join(companies_stars)
             .filter(user.id == companies_stars.c.user_id)
@@ -1725,7 +1725,7 @@ class UserView:
             _("City"),
             _("Subdivision"),
             _("Country"),
-            _("Link"),
+            _("Website"),
         ]
         response = response_xlsx(companies, header_row)
         log.info(
@@ -1916,7 +1916,7 @@ class UserView:
                 Project.city,
                 Project.subdivision,
                 Project.country,
-                Project.link,
+                Project.website,
                 Project.deadline,
                 Project.stage,
                 Project.delivery_method,
@@ -1952,7 +1952,7 @@ class UserView:
             _("City"),
             _("Subdivision"),
             _("Country"),
-            _("Link"),
+            _("Website"),
             _("Deadline"),
             _("Stage"),
             _("Project delivery method"),

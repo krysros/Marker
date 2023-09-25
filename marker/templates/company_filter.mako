@@ -24,8 +24,8 @@
       ${form.subdivision(class_="form-control")}
       <small class="text-body-secondary">Ctrl + Click</small>
     </div>
-    % if form.link.data:
-      ${form.link(class_="form-control")}
+    % if form.website.data:
+      ${form.website(class_="form-control")}
     % endif
     <div class="mb-3">
       ${form.color.label}

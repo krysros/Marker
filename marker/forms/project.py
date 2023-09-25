@@ -52,8 +52,8 @@ class ProjectForm(Form):
         _("Subdivision"), choices=select_subdivisions(), validate_choice=False
     )
     country = SelectField(_("Country"), choices=select_countries())
-    link = StringField(
-        _("Link"),
+    website = StringField(
+        _("Website"),
         validators=[Length(max=2000)],
         filters=[strip_filter],
     )
@@ -103,7 +103,7 @@ class ProjectSearchForm(Form):
     city = StringField(_("City"), filters=[strip_filter])
     subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
     country = SelectField(_("Country"), choices=select_countries())
-    link = StringField(_("Link"), filters=[strip_filter])
+    website = StringField(_("Website"), filters=[strip_filter])
     deadline = DateTimeLocalField(
         _("Deadline"),
         format="%Y-%m-%dT%H:%M",  # https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local
@@ -126,7 +126,7 @@ class ProjectFilterForm(Form):
         _("Subdivision"), choices=select_subdivisions(), validate_choice=False
     )
     country = SelectField(_("Country"), choices=select_countries())
-    link = HiddenField(_("Link"), filters=[strip_filter])
+    website = HiddenField(_("Website"), filters=[strip_filter])
     deadline = HiddenField(_("Deadline"))
     stage = SelectField(_("Stage"), choices=STAGES)
     delivery_method = SelectField(

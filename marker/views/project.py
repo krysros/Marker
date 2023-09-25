@@ -144,7 +144,7 @@ class ProjectView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
@@ -179,9 +179,9 @@ class ProjectView:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
             q["city"] = city
 
-        if link:
-            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
-            q["link"] = link
+        if website:
+            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            q["website"] = website
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
@@ -336,7 +336,7 @@ class ProjectView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
@@ -365,9 +365,9 @@ class ProjectView:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
             q["city"] = city
 
-        if link:
-            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
-            q["link"] = link
+        if website:
+            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            q["website"] = website
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
@@ -444,7 +444,7 @@ class ProjectView:
         city = self.request.params.get("city", None)
         subdivision = self.request.params.get("subdivision", None)
         country = self.request.params.get("country", None)
-        link = self.request.params.get("link", None)
+        website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
         stage = self.request.params.get("stage", None)
@@ -464,8 +464,8 @@ class ProjectView:
         if city:
             stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
 
-        if link:
-            stmt = stmt.filter(Project.link.ilike("%" + link + "%"))
+        if website:
+            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision == subdivision)
@@ -723,7 +723,7 @@ class ProjectView:
                 city=form.city.data,
                 subdivision=form.subdivision.data,
                 country=form.country.data,
-                link=form.link.data,
+                website=form.website.data,
                 color=form.color.data,
                 deadline=form.deadline.data,
                 stage=form.stage.data,
