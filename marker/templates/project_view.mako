@@ -36,17 +36,17 @@
           <dt>${_("Subdivision")}</dt>
           <dd>${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</dd>
           <dt>${_("Country")}</dt>
-          <dd>${countries.get(project.country) or "---"}</dd>      
-        </dl>
-      </div>
-      <div class="col">
-        <dl>
+          <dd>${countries.get(project.country) or "---"}</dd>
           <dt>${_("Website")}</dt>
           % if project.website:
           <dd><a href="${project.website}" target="_blank">${project.website}</a></dd>
           % else:
           <dd>---</dd>
-          % endif
+          % endif  
+        </dl>
+      </div>
+      <div class="col">
+        <dl>
           <dt>${_("Deadline")}</dt>
           <dd>${project.deadline or "---"}</dd>
           <dt>${_("Stage")}</dt>

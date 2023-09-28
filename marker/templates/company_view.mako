@@ -39,17 +39,17 @@
           <dd>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</dd>
           <dt>${_("Country")}</dt>
           <dd>${countries.get(company.country) or "---"}</dd>
-        </dl>
-      </div>
-      <div class="col">
-        <dl>
           <dt>${_("Website")}</dt>
           % if company.website:
           <dd><a href="${company.website}" target="_blank">${company.website}</a></dd>
           % else:
           <dd>---</dd>
           % endif
-          % if company.identification_number:
+        </dl>
+      </div>
+      % if company.identification_number:
+      <div class="col">
+        <dl>
           <dt>${_("NIP")}</dt>
           <dd>${company.identification_number.NIP or "---"}</dd>
           <dt>${_("REGON")}</dt>
@@ -58,9 +58,9 @@
           <dd>${company.identification_number.KRS or "---"}</dd>
           <dt>${_("Court")}</dt>
           <dd>${courts.get(company.identification_number.court) or "---"}</dd>
-          % endif
         </dl>
       </div>
+      % endif
     </div>
   </div>
 </div>
