@@ -4,6 +4,7 @@
 
 <%!
   import pycountry
+  from urllib.parse import urlparse
 %>
 
 <div class="hstack gap-2 mb-4">
@@ -26,7 +27,15 @@
       <div class="col">
         <dl>
           <dt>${_("Name")}</dt>
-          <dd>${project.name}</dd>
+          <dd>
+            ${project.name}
+            % if project.website:
+            <% o = urlparse(project.website) %>
+            <small>
+              <i class="bi bi-link-45deg"></i> <a href="${project.website}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${o.hostname}</a></p>
+            </small>
+            % endif
+          </dd>
           <dt>${_("Street")}</dt>
           <dd>${project.street or "---"}</dd>
           <dt>${_("Post code")}</dt>
@@ -36,13 +45,7 @@
           <dt>${_("Subdivision")}</dt>
           <dd>${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</dd>
           <dt>${_("Country")}</dt>
-          <dd>${countries.get(project.country) or "---"}</dd>
-          <dt>${_("Website")}</dt>
-          % if project.website:
-          <dd><a href="${project.website}" target="_blank">${project.website}</a></dd>
-          % else:
-          <dd>---</dd>
-          % endif  
+          <dd>${countries.get(project.country) or "---"}</dd> 
         </dl>
       </div>
       <div class="col">
