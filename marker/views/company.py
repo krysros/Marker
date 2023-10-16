@@ -170,7 +170,7 @@ class CompanyView:
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Company.webiste.ilike("%" + website + "%"))
+            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
             q["website"] = website
 
         if subdivision:
