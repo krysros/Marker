@@ -1,5 +1,5 @@
 from wtforms import Form
-from wtforms.fields import SelectField, SubmitField
+from wtforms.fields import SelectField
 
 from .select import REPORTS
 from .ts import TranslationString as _

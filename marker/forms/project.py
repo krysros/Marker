@@ -6,7 +6,6 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     StringField,
-    SubmitField,
 )
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
 from wtforms.widgets import DateTimeLocalInput

@@ -1,4 +1,4 @@
-from wtforms import Form, PasswordField, StringField, SubmitField
+from wtforms import Form, PasswordField, StringField
 
 from .ts import TranslationString as _
 

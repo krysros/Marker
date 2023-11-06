@@ -1,4 +1,4 @@
-from wtforms import EmailField, Form, HiddenField, SelectField, StringField, SubmitField
+from wtforms import EmailField, Form, HiddenField, SelectField, StringField
 from wtforms.validators import InputRequired, Length
 
 from .filters import strip_filter, title

@@ -1,4 +1,4 @@
-from wtforms import EmailField, Form, PasswordField, StringField, SubmitField
+from wtforms import EmailField, Form, PasswordField, StringField
 from wtforms.validators import EqualTo, InputRequired, Length, ValidationError
 from zxcvbn import zxcvbn
 

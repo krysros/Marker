@@ -1,4 +1,4 @@
-from wtforms import Form, HiddenField, SelectField, SubmitField, TextAreaField
+from wtforms import Form, HiddenField, SelectField, TextAreaField
 
 from .filters import strip_filter
 from .select import PARENTS

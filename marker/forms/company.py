@@ -1,5 +1,3 @@
-from operator import mul
-
 from sqlalchemy import select
 from wtforms import Form, HiddenField, SelectField, SelectMultipleField, StringField
 from wtforms.validators import InputRequired, Length, ValidationError

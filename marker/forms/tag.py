@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from wtforms import Form, StringField, SubmitField
+from wtforms import Form, StringField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Tag
