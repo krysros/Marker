@@ -2,6 +2,9 @@
 marker.sqlite
 testing.sqlite
 
+# SQLAlchemy Data Model Visualizer
+my_data_model_diagram
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
