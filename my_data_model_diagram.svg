@@ -928,13 +928,13 @@
 </g>
 <text text-anchor="middle" x="604.09" y="-1073.5" font-family="Roboto" font-size="10.00">updated_by</text>
 </g>
-<!-- Themes -->
+<!-- Theme -->
 <g id="node9" class="node">
-<title>Themes</title>
-<g id="a_node9"><a xlink:href="http://Themes_details.html" xlink:title="&lt;TABLE&gt;">
+<title>Theme</title>
+<g id="a_node9"><a xlink:href="http://Theme_details.html" xlink:title="&lt;TABLE&gt;">
 <polygon fill="#3f51b5" stroke="none" points="995.22,-1835.5 995.22,-1855.5 1118.22,-1855.5 1118.22,-1835.5 995.22,-1835.5"/>
 <polygon fill="none" stroke="black" points="995.22,-1835.5 995.22,-1855.5 1118.22,-1855.5 1118.22,-1835.5 995.22,-1835.5"/>
-<text text-anchor="start" x="1035.34" y="-1841.1" font-family="Roboto" font-size="12.00" fill="white">Themes</text>
+<text text-anchor="start" x="1038.34" y="-1841.1" font-family="Roboto" font-size="12.00" fill="white">Theme</text>
 <polygon fill="#bbdefb" stroke="none" points="995.22,-1815.5 995.22,-1835.5 1038.22,-1835.5 1038.22,-1815.5 995.22,-1815.5"/>
 <polygon fill="none" stroke="black" points="995.22,-1815.5 995.22,-1835.5 1038.22,-1835.5 1038.22,-1815.5 995.22,-1815.5"/>
 <text text-anchor="start" x="997.97" y="-1821.1" font-family="Roboto" font-size="12.00">user_id</text>
