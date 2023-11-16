@@ -1,16 +1,16 @@
 <%!
   from sqlalchemy import select
-  from marker.models import Themes
+  from marker.models import Theme
 %>
 
 <%
   theme = "light"
   if request.identity:
-    stmt = select(Themes.theme).filter(Themes.user_id == request.identity.id)
+    stmt = select(Theme.theme).filter(Theme.user_id == request.identity.id)
     theme = request.dbsession.execute(stmt).scalar_one_or_none()
     if not theme:
       theme = "light"
-      t = Themes(user_id=request.identity.id, theme=theme)
+      t = Theme(user_id=request.identity.id, theme=theme)
       request.dbsession.add(t)
 %>
 

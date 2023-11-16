@@ -22,7 +22,7 @@ class Activity(Base):
     project: Mapped["Project"] = relationship(back_populates="companies")
 
 
-class Themes(Base):
+class Theme(Base):
     __tablename__ = "themes"
     user_id: Mapped[int] = mapped_column(
         Integer,
