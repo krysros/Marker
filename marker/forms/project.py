@@ -100,7 +100,7 @@ class ProjectSearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions())
+    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
     country = SelectField(_("Country"), choices=select_countries())
     website = StringField(_("Website"), filters=[strip_filter])
     deadline = DateTimeLocalField(
