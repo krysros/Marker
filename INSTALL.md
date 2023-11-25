@@ -14,7 +14,7 @@ Create and activate a Python virtual environment, if not already created.
 
 Upgrade packaging tools, if necessary.
 
-    pip install --upgrade pip setuptools
+    python -m pip install --upgrade pip setuptools wheel
 
 Install the project in editable mode with its testing requirements.
 
