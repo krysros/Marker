@@ -8,13 +8,7 @@ Change directory into your newly created project if not already there. Your curr
 
     cd marker
 
-Create and activate a Python virtual environment, if not already created.
-
-    See: https://docs.python.org/3/library/venv.html
-
-Upgrade packaging tools, if necessary.
-
-    python -m pip install --upgrade pip setuptools wheel
+Create and activate a Python (or conda) virtual environment, if not already created.
 
 Install the project in editable mode with its testing requirements.
 
