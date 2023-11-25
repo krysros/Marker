@@ -8,66 +8,34 @@ Change directory into your newly created project if not already there. Your curr
 
     cd marker
 
-*If you are using Windows, go to the Windows section.*
+Create and activate a Python virtual environment, if not already created.
 
-Create a Python virtual environment, if not already created.
-
-    python3 -m venv env
+    See: https://docs.python.org/3/library/venv.html
 
 Upgrade packaging tools, if necessary.
 
-    env/bin/pip install --upgrade pip setuptools
+    pip install --upgrade pip setuptools
 
 Install the project in editable mode with its testing requirements.
 
-    env/bin/pip install -e ".[testing]"
+    pip install -e ".[testing]"
 
 Initialize and upgrade the database using Alembic.
 
-    env/bin/alembic -c development.ini upgrade head
+    alembic -c development.ini upgrade head
 
 Load default data into the database using a script.
 
-    env/bin/initialize_marker_db development.ini
+    initialize_marker_db development.ini
 
 Run your project's tests.
 
-    env/bin/pytest
+    pytest
 
 Run your project.
 
-    env/bin/pserve development.ini
+    pserve development.ini
 
-Windows
--------
-
-Create a Python virtual environment, if not already created.
-
-    python -m venv env
-
-Upgrade packaging tools, if necessary.
-
-    .\env\Scripts\pip.exe install --upgrade pip setuptools
-
-Install the project in editable mode with its testing requirements.
-
-    .\env\Scripts\pip.exe install -e ".[testing]"
-
-Initialize and upgrade the database using Alembic.
-
-    .\env\Scripts\alembic.exe -c development.ini upgrade head
-
-Load default data into the database using a script.
-
-    .\env\Scripts\initialize_marker_db.exe development.ini
-
-Run your project's tests.
-
-    .\env\Scripts\pytest.exe
-
-Run your project.
-
-    .\env\Scripts\pserve.exe development.ini
 
 Log in
 ------
