@@ -34,6 +34,6 @@ Run your project.
 Log in
 ------
 
-Log in as admin using default password: admin
+Log in as "admin" using default password: admin
 
 Set up an admin account and create user accounts.
