@@ -691,5 +691,5 @@ def includeme(config):
     config.add_route(
         "identification_number_modal",
         r"/identification_number_modal",
-        factory=company_factory,
+        factory=default_factory,
     )

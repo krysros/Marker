@@ -66,7 +66,7 @@
         <div>
           % if request.identity.role == 'editor' or 'admin':
           <button
-            hx-get="/modal"
+            hx-get="${request.route_url('identification_number_modal')}"
             hx-target="#modals-here"
             data-bs-toggle="modal"
             data-bs-target="#modals-here"
