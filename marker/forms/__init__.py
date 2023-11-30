@@ -19,3 +19,4 @@ from .tag import TagSearchForm  # flake8: noqa
 from .user import UserFilterForm  # flake8: noqa
 from .user import UserForm  # flake8: noqa
 from .user import UserSearchForm  # flake8: noqa
+from .identification_numbers import IdentificationNumberForm  # flake8: noqa

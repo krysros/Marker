@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
-from ..forms import CompanyFilterForm, CompanyForm, CompanySearchForm
+from ..forms import CompanyFilterForm, CompanyForm, CompanySearchForm, IdentificationNumberForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -1010,3 +1010,13 @@ class CompanyView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
+
+    @view_config(
+        route_name="identification_number_modal",
+        renderer="identification_number_modal.mako",
+        permission="view",
+    )
+    def modal(self):
+        _ = self.request.translate
+        form = IdentificationNumberForm(self.request.POST, request=self.request)
+        return {"form": form}

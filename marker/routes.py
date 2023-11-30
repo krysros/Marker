@@ -688,3 +688,8 @@ def includeme(config):
         r"/unlink/tag/{tag_id:\d+}/project/{project_id:\d+}",
         factory=default_factory,
     )
+    config.add_route(
+        "identification_number_modal",
+        r"/identification_number_modal",
+        factory=company_factory,
+    )

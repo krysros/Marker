@@ -50,8 +50,8 @@
           <dd>${countries.get(company.country) or "---"}</dd>
         </dl>
       </div>
-      % if company.identification_number:
       <div class="col">
+        % if company.identification_number:
         <dl>
           <dt>${_("NIP")}</dt>
           <dd>${company.identification_number.NIP or "---"}</dd>
@@ -62,8 +62,32 @@
           <dt>${_("Court")}</dt>
           <dd>${courts.get(company.identification_number.court) or "---"}</dd>
         </dl>
+        % endif
+        <div>
+          % if request.identity.role == 'editor' or 'admin':
+          <button
+            hx-get="/modal"
+            hx-target="#modals-here"
+            data-bs-toggle="modal"
+            data-bs-target="#modals-here"
+            id="btn-add-identification-number"
+            type="button"
+            class="btn btn-success"><i class="bi bi-plus-lg"></i> ${_("Identification number")}
+          </button>
+          % else:
+          <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i> ${_("Identification number")}</button>
+          % endif
+        </div>
       </div>
-      % endif
+      <div id="modals-here"
+        class="modal modal-blur fade"
+        style="display: none"
+        aria-hidden="false"
+        tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+          <div class="modal-content"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
