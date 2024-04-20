@@ -36,6 +36,7 @@
   % if title:
     ${title}
   % endif
+  </button>
 </%def>
 
 <%def name="del_row(title=None, icon=None, color=None, size=None, url='#')">
@@ -50,6 +51,7 @@
   % if title:
     ${title}
   % endif
+  </button>
 </%def>
 
 <%def name="company_star(company, size=None)">
