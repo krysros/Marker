@@ -1,6 +1,5 @@
 # SQLite
-marker.sqlite
-testing.sqlite
+*.sqlite
 
 # SQLAlchemy Data Model Visualizer
 my_data_model_diagram
