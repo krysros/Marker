@@ -36,6 +36,7 @@ tests_require = [
     "pytest",
     "pytest-cov",
     "pylint",  # default linter used by Python ext for Visual Studio Code
+    "sqlalchemy-data-model-visualizer",
 ]
 
 setup(
