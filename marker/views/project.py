@@ -6,7 +6,12 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
-from ..forms import ProjectFilterForm, ProjectForm, ProjectSearchForm, CompanyActivityForm
+from ..forms import (
+    ProjectFilterForm,
+    ProjectForm,
+    ProjectSearchForm,
+    CompanyActivityForm,
+)
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -904,7 +909,9 @@ class ProjectView:
         }
 
     @view_config(
-        route_name="project_add_company", renderer="project_activity_form.mako", permission="edit"
+        route_name="project_add_company",
+        renderer="project_activity_form.mako",
+        permission="edit",
     )
     def add_company(self):
         _ = self.request.translate
@@ -941,7 +948,13 @@ class ProjectView:
                 "project_companies", project_id=project.id, slug=project.slug
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Add a company"), "form": form, "project": project, "companies": companies, "project_pills": self.pills(project)}
+        return {
+            "heading": _("Add a company"),
+            "form": form,
+            "project": project,
+            "companies": companies,
+            "project_pills": self.pills(project),
+        }
 
     @view_config(
         route_name="project_check",

@@ -80,7 +80,9 @@ class CompanySearchForm(Form):
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
-    subdivision = SelectField(_("Subdivision"), choices=select_subdivisions(), validate_choice=False)
+    subdivision = SelectField(
+        _("Subdivision"), choices=select_subdivisions(), validate_choice=False
+    )
     country = SelectField(_("Country"), choices=select_countries())
     website = StringField(_("Website"), filters=[strip_filter])
     color = SelectField(_("Color"), choices=COLORS)
@@ -120,7 +122,8 @@ class CompanyActivityForm(Form):
     name = StringField(_("Name"), validators=[InputRequired()])
     stage = SelectField(_("Stage"), choices=STAGES)
     role = SelectField(
-        _("Role"), choices=COMPANY_ROLES,
+        _("Role"),
+        choices=COMPANY_ROLES,
     )
 
     def __init__(self, *args, request, **kwargs):

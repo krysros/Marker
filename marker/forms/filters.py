@@ -12,7 +12,7 @@ def dash_filter(v):
         v.replace("\u2014", "-")
         .replace("\u2013", "-")
         .replace("\u2212", "-")
-        .replace("\u002D", "-")
+        .replace("\u002d", "-")
     )
 
 
