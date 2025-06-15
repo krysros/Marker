@@ -7,6 +7,11 @@ from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
 from .select import COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
+from .select import (
+    STAGES,
+    COMPANY_ROLES,
+)
+
 
 class CompanyForm(Form):
     name = StringField(
@@ -109,3 +114,30 @@ class CompanyFilterForm(Form):
 
         self.subdivision.choices = select_subdivisions(country)
         self.subdivision.default = self.request.GET.getall("subdivision")
+
+
+class CompanyActivityForm(Form):
+    name = StringField(_("Name"), validators=[InputRequired()])
+    stage = SelectField(_("Stage"), choices=STAGES)
+    role = SelectField(
+        _("Role"), choices=COMPANY_ROLES,
+    )
+
+    def __init__(self, *args, request, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+
+        try:
+            self.edited_item = args[1]
+        except IndexError:
+            self.edited_item = None
+
+    def validate_name(self, field):
+        if self.edited_item:
+            if self.edited_item.name == field.data:
+                return
+        exists = self.request.dbsession.execute(
+            select(Company).filter_by(name=field.data)
+        ).scalar_one_or_none()
+        if not exists:
+            raise ValidationError(_("There is no company with this name"))

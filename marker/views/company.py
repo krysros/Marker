@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
-from ..forms import CompanyFilterForm, CompanyForm, CompanySearchForm
+from ..forms import CompanyFilterForm, CompanyForm, CompanySearchForm, ProjectActivityForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -931,21 +931,19 @@ class CompanyView:
         return ""
 
     @view_config(
-        route_name="company_add_project",
-        renderer="project_row.mako",
-        request_method="POST",
-        permission="edit",
+        route_name="company_add_project", renderer="company_activity_form.mako", permission="edit"
     )
     def add_project(self):
         _ = self.request.translate
+        form = ProjectActivityForm(self.request.POST, request=self.request)
         company = self.request.context.company
-        name = self.request.POST.get("name")
-        stage = self.request.POST.get("stage")
-        role = self.request.POST.get("role")
-        stages = dict(STAGES)
-        company_roles = dict(COMPANY_ROLES)
-        a = None
-        if name:
+        projects = self.request.dbsession.execute(select(Project)).scalars()
+
+        if self.request.method == "POST" and form.validate():
+            name = self.request.POST.get("name")
+            stage = self.request.POST.get("stage")
+            role = self.request.POST.get("role")
+
             project = self.request.dbsession.execute(
                 select(Project).filter_by(name=name)
             ).scalar_one_or_none()
@@ -965,11 +963,12 @@ class CompanyView:
                         _("The user %s added the project to the company")
                         % self.request.identity.name
                     )
-                # If you want to use the id of a newly created object
-                # in the middle of a transaction, you must call dbsession.flush()
-                self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "assocEvent"}
-        return {"assoc": a, "stages": stages, "company_roles": company_roles}
+                    self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "company_projects", company_id=company.id, slug=company.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {"heading": _("Add a project"), "form": form, "company": company, "projects": projects, "company_pills": self.pills(company)}
 
     @view_config(
         route_name="unlink_company_project",
