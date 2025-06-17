@@ -917,7 +917,6 @@ class ProjectView:
         _ = self.request.translate
         form = CompanyActivityForm(self.request.POST, request=self.request)
         project = self.request.context.project
-        companies = self.request.dbsession.execute(select(Company)).scalars()
 
         if self.request.method == "POST" and form.validate():
             name = self.request.POST.get("name")
@@ -952,7 +951,6 @@ class ProjectView:
             "heading": _("Add a company"),
             "form": form,
             "project": project,
-            "companies": companies,
             "project_pills": self.pills(project),
         }
 
