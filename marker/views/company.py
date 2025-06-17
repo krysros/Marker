@@ -9,6 +9,7 @@ from ..forms import (
     CompanyFilterForm,
     CompanyForm,
     CompanySearchForm,
+    ContactForm,
     ProjectActivityForm,
     TagSearchForm,
 )
@@ -579,19 +580,20 @@ class CompanyView:
 
     @view_config(
         route_name="company_add_contact",
-        renderer="contact_row.mako",
-        request_method="POST",
+        renderer="company_add_contact.mako",
         permission="edit",
     )
     def add_contact(self):
         _ = self.request.translate
+        form = ContactForm(self.request.POST, request=self.request)
         company = self.request.context.company
-        contact = None
-        name = self.request.POST.get("name")
-        role = self.request.POST.get("role")
-        phone = self.request.POST.get("phone")
-        email = self.request.POST.get("email")
-        if name:
+
+        if self.request.method == "POST" and form.validate():
+            name = self.request.POST.get("name")
+            role = self.request.POST.get("role")
+            phone = self.request.POST.get("phone")
+            email = self.request.POST.get("email")
+
             contact = Contact(name, role, phone, email)
             contact.created_by = self.request.identity
             if contact not in company.contacts:
@@ -600,11 +602,17 @@ class CompanyView:
                     _("The user %s has added a contact to the company")
                     % self.request.identity.name
                 )
-            # If you want to use the id of a newly created object
-            # in the middle of a transaction, you must call dbsession.flush()
-            self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "contactEvent"}
-        return {"contact": contact}
+                self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "company_contacts", company_id=company.id, slug=company.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Add a contact"),
+            "form": form,
+            "company": company,
+            "company_pills": self.pills(company),
+        }
 
     @view_config(
         route_name="company_comments",
