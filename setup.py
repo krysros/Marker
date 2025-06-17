@@ -41,7 +41,7 @@ tests_require = [
 
 setup(
     name="marker",
-    version="2.0b3",
+    version="2.0b4",
     description="marker",
     long_description=README + "\n\n" + CHANGES,
     classifiers=[
@@ -52,7 +52,7 @@ setup(
     ],
     author="Krystian Rosiński",
     author_email="krystian.rosinski@gmail.com",
-    url="https://kros.xyz/",
+    url="https://github.com/krysros/marker",
     keywords="web wsgi bfg pylons pyramid",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
