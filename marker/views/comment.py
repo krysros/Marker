@@ -98,50 +98,6 @@ class CommentView:
         ).scalar()
 
     @view_config(
-        route_name="company_add_comment",
-        renderer="comment.mako",
-        request_method="POST",
-        permission="edit",
-    )
-    def company_add_comment(self):
-        _ = self.request.translate
-        company = self.request.context.company
-        comment = None
-        comment_text = self.request.POST.get("comment")
-        if comment_text:
-            comment = Comment(comment=comment_text)
-            comment.created_by = self.request.identity
-            company.comments.append(comment)
-            log.info(_("The user %s added a comment") % self.request.identity.name)
-            # If you want to use the id of a newly created object
-            # in the middle of a transaction, you must call dbsession.flush()
-            self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "commentEvent"}
-        return {"comment": comment}
-
-    @view_config(
-        route_name="project_add_comment",
-        renderer="comment.mako",
-        request_method="POST",
-        permission="edit",
-    )
-    def project_add_comment(self):
-        _ = self.request.translate
-        project = self.request.context.project
-        comment = None
-        comment_text = self.request.POST.get("comment")
-        if comment_text:
-            comment = Comment(comment=comment_text)
-            comment.created_by = self.request.identity
-            project.comments.append(comment)
-            log.info(_("The user %s added a comment") % self.request.identity.name)
-            # If you want to use the id of a newly created object
-            # in the middle of a transaction, you must call dbsession.flush()
-            self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "commentEvent"}
-        return {"comment": comment}
-
-    @view_config(
         route_name="comment_delete",
         request_method="POST",
         permission="edit",

@@ -12,6 +12,7 @@ from ..forms import (
     ProjectSearchForm,
     CompanyActivityForm,
     ContactForm,
+    CommentForm,
     TagSearchForm,
 )
 from ..forms.select import (
@@ -1056,6 +1057,33 @@ class ProjectView:
             return HTTPSeeOther(location=next_url)
         return {
             "heading": _("Add a contact"),
+            "form": form,
+            "project": project,
+            "project_pills": self.pills(project),
+        }
+
+    @view_config(
+        route_name="project_add_comment",
+        renderer="project_add_comment.mako",
+        permission="edit",
+    )
+    def project_add_comment(self):
+        _ = self.request.translate
+        project = self.request.context.project
+        form = CommentForm(self.request.POST, request=self.request)
+        if self.request.method == "POST" and form.validate():
+            comment_text = self.request.POST.get("comment")
+            comment = Comment(comment=comment_text)
+            comment.created_by = self.request.identity
+            project.comments.append(comment)
+            log.info(_("The user %s added a comment") % self.request.identity.name)
+            self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "project_comments", project_id=project.id, slug=project.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Add a comment"),
             "form": form,
             "project": project,
             "project_pills": self.pills(project),

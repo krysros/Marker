@@ -10,6 +10,7 @@ from ..forms import (
     CompanyForm,
     CompanySearchForm,
     ContactForm,
+    CommentForm,
     ProjectActivityForm,
     TagSearchForm,
 )
@@ -609,6 +610,33 @@ class CompanyView:
             return HTTPSeeOther(location=next_url)
         return {
             "heading": _("Add a contact"),
+            "form": form,
+            "company": company,
+            "company_pills": self.pills(company),
+        }
+
+    @view_config(
+        route_name="company_add_comment",
+        renderer="company_add_comment.mako",
+        permission="edit",
+    )
+    def company_add_comment(self):
+        _ = self.request.translate
+        company = self.request.context.company
+        form = CommentForm(self.request.POST, request=self.request)
+        if self.request.method == "POST" and form.validate():
+            comment_text = self.request.POST.get("comment")
+            comment = Comment(comment=comment_text)
+            comment.created_by = self.request.identity
+            company.comments.append(comment)
+            log.info(_("The user %s added a comment") % self.request.identity.name)
+            self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "company_comments", company_id=company.id, slug=company.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Add a comment"),
             "form": form,
             "company": company,
             "company_pills": self.pills(company),
