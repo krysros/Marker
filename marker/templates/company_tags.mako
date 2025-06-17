@@ -1,15 +1,12 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
-<%namespace name="modals" file="modals.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(company_pills)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
-    <button id="btn-add-tag" type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-add-tag">
-      <i class="bi bi-plus-lg"></i>
-    </button>
+    ${button.a_button(icon='plus-lg', color='success', url=request.route_url('company_add_tag', company_id=company.id, slug=company.slug))}
     % else:
     <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
     % endif
@@ -34,5 +31,3 @@
     </tbody>
   </table>
 </div>
-
-${modals.add_tag(company)}

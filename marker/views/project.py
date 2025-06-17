@@ -11,6 +11,7 @@ from ..forms import (
     ProjectForm,
     ProjectSearchForm,
     CompanyActivityForm,
+    TagSearchForm,
 )
 from ..forms.select import (
     COLORS,
@@ -987,34 +988,41 @@ class ProjectView:
 
     @view_config(
         route_name="project_add_tag",
-        renderer="tag_row_project.mako",
-        request_method="POST",
+        renderer="project_add_tag.mako",
         permission="edit",
     )
     def add_tag(self):
         _ = self.request.translate
+        form = TagSearchForm(self.request.POST, request=self.request)
         project = self.request.context.project
-        name = self.request.POST.get("name")
-        new_tag = None
-        if name:
+
+        if self.request.method == "POST" and form.validate():
+            name = self.request.POST.get("name")
+
             tag = self.request.dbsession.execute(
                 select(Tag).filter_by(name=name)
             ).scalar_one_or_none()
+
             if not tag:
                 tag = Tag(name)
                 tag.created_by = self.request.identity
             if tag not in project.tags:
                 project.tags.append(tag)
-                new_tag = tag
                 log.info(
                     _("The user %s has added a tag to the project")
                     % self.request.identity.name
                 )
-            # If you want to use the id of a newly created object
-            # in the middle of a transaction, you must call dbsession.flush()
-            self.request.dbsession.flush()
-        self.request.response.headers = {"HX-Trigger": "tagEvent"}
-        return {"project": project, "tag": new_tag}
+                self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "project_tags", project_id=project.id, slug=project.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Add a tag"),
+            "form": form,
+            "project": project,
+            "project_pills": self.pills(project),
+        }
 
     @view_config(
         route_name="project_add_contact",
