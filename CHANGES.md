@@ -1,3 +1,13 @@
+2.0b5
+-----
+
+- Add/edit an identification numbers
+
+2.0b4
+-----
+
+- Replace overcomplicated modals with simple forms
+
 2.0b3
 -----
 
