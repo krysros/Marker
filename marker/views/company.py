@@ -13,6 +13,7 @@ from ..forms import (
     CommentForm,
     ProjectActivityForm,
     TagSearchForm,
+    IdentificationNumberForm,
 )
 from ..forms.select import (
     COLORS,
@@ -32,6 +33,7 @@ from ..models import (
     Project,
     Tag,
     User,
+    IdentificationNumber,
     companies_stars,
 )
 from ..utils.geo import location
@@ -1064,3 +1066,37 @@ class CompanyView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
+
+    @view_config(
+        route_name="company_identification_number",
+        renderer="company_identification_number.mako",
+        permission="edit",
+    )
+    def identification_number(self):
+        _ = self.request.translate
+        company = self.request.context.company
+        identification_number = company.identification_number
+        form = IdentificationNumberForm(self.request.POST, identification_number, request=self.request)
+        if self.request.method == "POST" and form.validate():
+            if identification_number:
+                form.populate_obj(identification_number)
+            identification_number = IdentificationNumber(
+                NIP=form.NIP.data,
+                REGON=form.REGON.data,
+                KRS=form.KRS.data,
+                court=form.court.data,
+            )
+            identification_number.created_by = self.request.identity
+            company.identification_number = identification_number
+            self.request.session.flash(_("success:Added to the database"))
+            log.info(_("The user %s has added an identification number") % self.request.identity.name)
+            next_url = self.request.route_url(
+                "company_view", company_id=company.id, slug=company.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Identification numbers"),
+            "form": form,
+            "company": company,
+            "company_pills": self.pills(company),
+        }

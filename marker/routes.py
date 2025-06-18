@@ -153,6 +153,11 @@ def includeme(config):
         r"/company/{company_id:\d+}/{slug}/add_comment",
         factory=company_factory,
     )
+    config.add_route(
+        "company_identification_number",
+        r"/company/{company_id:\d+}/{slug}/identification_number",
+        factory=company_factory,
+    )
 
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
