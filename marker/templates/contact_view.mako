@@ -9,8 +9,8 @@
       </li>
     </ul>
   </div>
-  <div>${button.a_button(icon='person-vcard', color='primary', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}</div>
-  <div>${button.a_button(icon='pencil-square', color='warning', url=request.route_url('contact_edit', contact_id=contact.id, slug=contact.slug))}</div>
+  <div>${button.a(icon='person-vcard', color='primary', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}</div>
+  <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('contact_edit', contact_id=contact.id, slug=contact.slug))}</div>
   <div>${button.button(icon='trash', color='danger', url=request.route_url('contact_delete', contact_id=contact.id, slug=contact.slug))}</div>
 </div>
 

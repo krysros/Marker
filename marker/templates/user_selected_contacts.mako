@@ -6,7 +6,7 @@
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.button(icon='square', color='warning', url=request.route_url('user_clear_selected_contacts', username=user.name))}
-    ${button.a_button(icon='download', color='primary', url=request.route_url('user_export_selected_contacts', username=user.name, _query=q))}
+    ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_contacts', username=user.name, _query=q))}
   </div>
 </h2>
 <hr>

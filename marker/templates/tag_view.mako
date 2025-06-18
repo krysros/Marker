@@ -4,7 +4,7 @@
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(tag_pills)}</div>
-  <div>${button.a_button(icon='pencil-square', color='warning', url=request.route_url('tag_edit', tag_id=tag.id, slug=tag.slug))}</div>
+  <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('tag_edit', tag_id=tag.id, slug=tag.slug))}</div>
   <div>${button.button(icon='trash', color='danger', url=request.route_url('tag_delete', tag_id=tag.id, slug=tag.slug))}</div>
 </div>
 

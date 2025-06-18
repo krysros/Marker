@@ -1,4 +1,4 @@
-<%def name="a_button(title=None, icon=None, color=None, size=None, url='#')">
+<%def name="a(title=None, icon=None, color=None, size=None, url='#')">
   <a class="btn${' btn-' + color if color else ''}${' btn-' + size if size else ''}" role="button" href="${url}">
   % if icon:
     <i class="bi bi-${icon}"></i>

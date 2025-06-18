@@ -5,7 +5,7 @@
   <i class="bi bi-chat-left-text"></i> ${_("Comments")}
   <span class="badge bg-secondary"><div hx-get="${request.route_url('comment_count')}" hx-trigger="commentEvent from:body">${counter}</div></span>
   <div class="float-end">
-    ${button.a_button(icon='search', color='primary', url=request.route_url('comment_search'))}
+    ${button.a(icon='search', color='primary', url=request.route_url('comment_search'))}
   </div>
 </h2>
 

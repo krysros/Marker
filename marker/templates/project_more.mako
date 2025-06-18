@@ -44,7 +44,7 @@
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.project_star(project, size='sm')}
-      ${button.a_button(icon='pencil-square', color='warning', size='sm', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}
+      ${button.a(icon='pencil-square', color='warning', size='sm', url=request.route_url('project_edit', project_id=project.id, slug=project.slug))}
       ${button.del_row(icon='trash', color='danger', size='sm', url=request.route_url('project_del_row', project_id=project.id, slug=project.slug))}
     </div>
   </td>

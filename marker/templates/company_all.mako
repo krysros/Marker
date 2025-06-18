@@ -9,9 +9,9 @@
   <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
-    ${button.a_button(icon='map', color='secondary', url=request.route_url('company_map', _query=q))}
-    ${button.a_button(icon='search', color='primary', url=request.route_url('company_search'))}
-    ${button.a_button(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+    ${button.a(icon='map', color='secondary', url=request.route_url('company_map', _query=q))}
+    ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
+    ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
   </div>
 </h2>
 
