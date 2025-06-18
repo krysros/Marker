@@ -554,14 +554,11 @@ class CompanyView:
         company = self.request.context.company
 
         if self.request.method == "POST" and form.validate():
-            name = self.request.POST.get("name")
-
             tag = self.request.dbsession.execute(
-                select(Tag).filter_by(name=name)
+                select(Tag).filter_by(name=form.name.data)
             ).scalar_one_or_none()
-
             if not tag:
-                tag = Tag(name)
+                tag = Tag(form.name.data)
                 tag.created_by = self.request.identity
             if tag not in company.tags:
                 company.tags.append(tag)
@@ -592,12 +589,12 @@ class CompanyView:
         company = self.request.context.company
 
         if self.request.method == "POST" and form.validate():
-            name = self.request.POST.get("name")
-            role = self.request.POST.get("role")
-            phone = self.request.POST.get("phone")
-            email = self.request.POST.get("email")
-
-            contact = Contact(name, role, phone, email)
+            contact = Contact(
+                name=form.name.data,
+                role=form.role.data,
+                phone=form.phone.data,
+                email=form.email.data,
+            )
             contact.created_by = self.request.identity
             if contact not in company.contacts:
                 company.contacts.append(contact)
@@ -627,8 +624,7 @@ class CompanyView:
         company = self.request.context.company
         form = CommentForm(self.request.POST, request=self.request)
         if self.request.method == "POST" and form.validate():
-            comment_text = self.request.POST.get("comment")
-            comment = Comment(comment=comment_text)
+            comment = Comment(comment=form.comment.data)
             comment.created_by = self.request.identity
             company.comments.append(comment)
             log.info(_("The user %s added a comment") % self.request.identity.name)
@@ -992,12 +988,8 @@ class CompanyView:
         company = self.request.context.company
 
         if self.request.method == "POST" and form.validate():
-            name = self.request.POST.get("name")
-            stage = self.request.POST.get("stage")
-            role = self.request.POST.get("role")
-
             project = self.request.dbsession.execute(
-                select(Project).filter_by(name=name)
+                select(Project).filter_by(name=form.name.data)
             ).scalar_one_or_none()
 
             if project:
@@ -1008,7 +1000,7 @@ class CompanyView:
                 ).scalar_one_or_none()
 
                 if not exist:
-                    a = Activity(stage=stage, role=role)
+                    a = Activity(stage=form.stage.data, role=form.role.data)
                     a.project = project
                     company.projects.append(a)
                     log.info(
@@ -1076,7 +1068,9 @@ class CompanyView:
         _ = self.request.translate
         company = self.request.context.company
         identification_number = company.identification_number
-        form = IdentificationNumberForm(self.request.POST, identification_number, request=self.request)
+        form = IdentificationNumberForm(
+            self.request.POST, identification_number, request=self.request
+        )
         if self.request.method == "POST" and form.validate():
             if identification_number:
                 form.populate_obj(identification_number)
@@ -1089,7 +1083,10 @@ class CompanyView:
             identification_number.created_by = self.request.identity
             company.identification_number = identification_number
             self.request.session.flash(_("success:Added to the database"))
-            log.info(_("The user %s has added an identification number") % self.request.identity.name)
+            log.info(
+                _("The user %s has added an identification number")
+                % self.request.identity.name
+            )
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )

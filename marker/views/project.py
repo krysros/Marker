@@ -922,12 +922,8 @@ class ProjectView:
         project = self.request.context.project
 
         if self.request.method == "POST" and form.validate():
-            name = self.request.POST.get("name")
-            stage = self.request.POST.get("stage")
-            role = self.request.POST.get("role")
-
             company = self.request.dbsession.execute(
-                select(Company).filter_by(name=name)
+                select(Company).filter_by(name=form.name.data)
             ).scalar_one_or_none()
 
             if company:
@@ -938,7 +934,7 @@ class ProjectView:
                 ).scalar_one_or_none()
 
                 if not exist:
-                    a = Activity(stage=stage, role=role)
+                    a = Activity(stage=form.stage.data, role=form.role.data)
                     a.company = company
                     project.companies.append(a)
                     log.info(
@@ -999,14 +995,12 @@ class ProjectView:
         project = self.request.context.project
 
         if self.request.method == "POST" and form.validate():
-            name = self.request.POST.get("name")
-
             tag = self.request.dbsession.execute(
-                select(Tag).filter_by(name=name)
+                select(Tag).filter_by(name=form.name.data)
             ).scalar_one_or_none()
 
             if not tag:
-                tag = Tag(name)
+                tag = Tag(name=form.name.data)
                 tag.created_by = self.request.identity
             if tag not in project.tags:
                 project.tags.append(tag)
@@ -1037,12 +1031,12 @@ class ProjectView:
         project = self.request.context.project
 
         if self.request.method == "POST" and form.validate():
-            name = self.request.POST.get("name")
-            role = self.request.POST.get("role")
-            phone = self.request.POST.get("phone")
-            email = self.request.POST.get("email")
-
-            contact = Contact(name, role, phone, email)
+            contact = Contact(
+                name=form.name.data,
+                role=form.role.data,
+                phone=form.phone.data,
+                email=form.email.data,
+            )
             contact.created_by = self.request.identity
             if contact not in project.contacts:
                 project.contacts.append(contact)
@@ -1072,8 +1066,7 @@ class ProjectView:
         project = self.request.context.project
         form = CommentForm(self.request.POST, request=self.request)
         if self.request.method == "POST" and form.validate():
-            comment_text = self.request.POST.get("comment")
-            comment = Comment(comment=comment_text)
+            comment = Comment(comment=form.comment.data)
             comment.created_by = self.request.identity
             project.comments.append(comment)
             log.info(_("The user %s added a comment") % self.request.identity.name)
