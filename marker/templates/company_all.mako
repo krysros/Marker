@@ -1,10 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<%!
-  import pycountry
-%>
-
 <h2>
   <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary">${counter}</span>
