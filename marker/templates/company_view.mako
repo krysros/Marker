@@ -10,7 +10,6 @@
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(company_pills)}</div>
   <div>${button.company_star(company)}</div>
-  <div>${button.a(icon='123', color='info', url=request.route_url('company_identification_number', company_id=company.id, slug=company.slug))}</div>
   <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}</div>
   <div>${button.button(icon='trash', color='danger', url=request.route_url('company_delete', company_id=company.id, slug=company.slug))}</div>
 </div>
@@ -51,20 +50,18 @@
           <dd>${countries.get(company.country) or "---"}</dd>
         </dl>
       </div>
-      % if company.identification_number:
       <div class="col">
         <dl>
           <dt>${_("NIP")}</dt>
-          <dd>${company.identification_number.NIP or "---"}</dd>
+          <dd>${company.NIP or "---"}</dd>
           <dt>${_("REGON")}</dt>
-          <dd>${company.identification_number.REGON or "---"}</dd>
+          <dd>${company.REGON or "---"}</dd>
           <dt>${_("KRS")}</dt>
-          <dd>${company.identification_number.KRS or "---"}</dd>
+          <dd>${company.KRS or "---"}</dd>
           <dt>${_("Court")}</dt>
-          <dd>${courts.get(company.identification_number.court) or "---"}</dd>
+          <dd>${courts.get(company.court) or "---"}</dd>
         </dl>
       </div>
-      % endif
     </div>
   </div>
 </div>

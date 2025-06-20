@@ -6,14 +6,13 @@ from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
 from ..forms import (
+    CommentForm,
     CompanyFilterForm,
     CompanyForm,
     CompanySearchForm,
     ContactForm,
-    CommentForm,
     ProjectActivityForm,
     TagSearchForm,
-    IdentificationNumberForm,
 )
 from ..forms.select import (
     COLORS,
@@ -33,7 +32,6 @@ from ..models import (
     Project,
     Tag,
     User,
-    IdentificationNumber,
     companies_stars,
 )
 from ..utils.geo import location
@@ -154,6 +152,10 @@ class CompanyView:
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
@@ -194,6 +196,22 @@ class CompanyView:
         if color:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP == NIP)
+            q["NIP"] = NIP
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON == REGON)
+            q["REGON"] = REGON
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS == KRS)
+            q["KRS"] = KRS
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+            q["court"] = court
 
         q["sort"] = _sort
         q["order"] = _order
@@ -318,6 +336,10 @@ class CompanyView:
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         q = {}
@@ -355,6 +377,22 @@ class CompanyView:
         if color:
             stmt = stmt.filter(Company.color == color)
             q["color"] = color
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP == NIP)
+            q["NIP"] = NIP
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON == REGON)
+            q["REGON"] = REGON
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS == KRS)
+            q["KRS"] = KRS
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
+            q["court"] = court
 
         q["sort"] = _sort
         q["order"] = _order
@@ -403,6 +441,10 @@ class CompanyView:
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
+        NIP = self.request.params.get("NIP", None)
+        REGON = self.request.params.get("REGON", None)
+        KRS = self.request.params.get("KRS", None)
+        court = self.request.params.get("court", None)
 
         stmt = select(Company)
 
@@ -429,6 +471,18 @@ class CompanyView:
 
         if color:
             stmt = stmt.filter(Company.color == color)
+
+        if NIP:
+            stmt = stmt.filter(Company.NIP == NIP)
+
+        if REGON:
+            stmt = stmt.filter(Company.REGON == REGON)
+
+        if KRS:
+            stmt = stmt.filter(Company.KRS == KRS)
+
+        if court:
+            stmt = stmt.filter(Company.court == court)
 
         companies = self.request.dbsession.execute(stmt).scalars()
 
@@ -781,6 +835,10 @@ class CompanyView:
                 country=form.country.data,
                 website=form.website.data,
                 color=form.color.data,
+                NIP=form.NIP.data,
+                REGON=form.REGON.data,
+                KRS=form.KRS.data,
+                court=form.court.data,
             )
             loc = location(
                 street=form.street.data,
@@ -1058,42 +1116,3 @@ class CompanyView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
-
-    @view_config(
-        route_name="company_identification_number",
-        renderer="company_identification_number.mako",
-        permission="edit",
-    )
-    def identification_number(self):
-        _ = self.request.translate
-        company = self.request.context.company
-        identification_number = company.identification_number
-        form = IdentificationNumberForm(
-            self.request.POST, identification_number, request=self.request
-        )
-        if self.request.method == "POST" and form.validate():
-            if identification_number:
-                form.populate_obj(identification_number)
-            identification_number = IdentificationNumber(
-                NIP=form.NIP.data,
-                REGON=form.REGON.data,
-                KRS=form.KRS.data,
-                court=form.court.data,
-            )
-            identification_number.created_by = self.request.identity
-            company.identification_number = identification_number
-            self.request.session.flash(_("success:Added to the database"))
-            log.info(
-                _("The user %s has added an identification number")
-                % self.request.identity.name
-            )
-            next_url = self.request.route_url(
-                "company_view", company_id=company.id, slug=company.slug
-            )
-            return HTTPSeeOther(location=next_url)
-        return {
-            "heading": _("Identification numbers"),
-            "form": form,
-            "company": company,
-            "company_pills": self.pills(company),
-        }

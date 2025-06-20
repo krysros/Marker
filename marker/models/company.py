@@ -25,10 +25,10 @@ class Company(Base):
     longitude: Mapped[Optional[float]]
     website: Mapped[Optional[str]]
     color: Mapped[Optional[str]]
-
-    identification_number: Mapped["IdentificationNumber"] = relationship(
-        back_populates="company"
-    )
+    NIP: Mapped[Optional[str]]
+    REGON: Mapped[Optional[str]]
+    KRS: Mapped[Optional[str]]
+    court: Mapped[Optional[str]]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
@@ -68,6 +68,10 @@ class Company(Base):
         country: str,
         website: str,
         color: str,
+        NIP: str,
+        REGON: str,
+        KRS: str,
+        court: str,
     ) -> None:
         self.name = name
         self.street = street
@@ -77,6 +81,10 @@ class Company(Base):
         self.country = country
         self.website = website
         self.color = color
+        self.NIP = NIP
+        self.REGON = REGON
+        self.KRS = KRS
+        self.court = court
 
     @property
     def slug(self) -> str:

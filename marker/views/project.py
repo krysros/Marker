@@ -7,12 +7,12 @@ from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
 from ..forms import (
+    CommentForm,
+    CompanyActivityForm,
+    ContactForm,
     ProjectFilterForm,
     ProjectForm,
     ProjectSearchForm,
-    CompanyActivityForm,
-    ContactForm,
-    CommentForm,
     TagSearchForm,
 )
 from ..forms.select import (

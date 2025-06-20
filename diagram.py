@@ -1,6 +1,8 @@
 import inspect
-import marker.models
+
 from sqlalchemy_data_model_visualizer import generate_data_model_diagram
+
+import marker.models
 
 models = []
 

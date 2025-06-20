@@ -14,10 +14,10 @@ from ..models import Project
 from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
 from .select import (
     COLORS,
+    COMPANY_ROLES,
     PROJECT_DELIVERY_METHODS,
     STAGES,
     STATUS,
-    COMPANY_ROLES,
     select_countries,
     select_subdivisions,
 )
