@@ -1,3 +1,11 @@
+2.0b6
+-----
+
+- Improve export (subdivision and country columns)
+- Remove flash message after 3s
+- Reset migrations
+- Moved identification numbers to company
+
 2.0b5
 -----
 
