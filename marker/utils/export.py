@@ -1,11 +1,14 @@
 import io
 from urllib.parse import quote
 
+import pycountry
 import xlsxwriter
 from mako.template import Template
 from pyramid.path import AssetResolver
 from pyramid.response import Response
 from unidecode import unidecode
+
+from ..forms.ts import TranslationString as _
 
 
 def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
@@ -18,12 +21,28 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     worksheet = workbook.add_worksheet()
     cell_format = workbook.add_format({"bold": True})
 
+    index_of_subdivision = None
+    try:
+        index_of_subdivision = header_row.index(str(_("Subdivision")))
+    except ValueError:
+        pass
+
+    index_of_country = None
+    try:
+        index_of_country = header_row.index(str(_("Country")))
+    except ValueError:
+        pass
+
     # Write rows.
     for j, elem in enumerate(header_row):
         worksheet.write(0, j, elem, cell_format)
 
     for i, row in enumerate(rows, start=1):
         for j, elem in enumerate(row):
+            if j == index_of_subdivision:
+                elem = getattr(pycountry.subdivisions.get(code=elem), "name", "---")
+            elif j == index_of_country:
+                elem = getattr(pycountry.countries.get(alpha_2=elem), "name", "---")
             worksheet.write(i, j, elem)
 
     # Close the workbook before streaming the data.
