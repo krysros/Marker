@@ -3,7 +3,7 @@
 
 <div class="p-4 mb-4 border rounded-3">
   <div class="container">
-    <h1>${project} <small class="text-body-secondary">${_("CRM for General Contractors")}</small></h1>
+    <h1>${project} <small class="text-body-secondary">${_("App for General Contractors")}</small></h1>
     <p class="fs-4">
       ${_("Find recommended companies with a specific business profile and projects that meet the required criteria. Check which companies have implemented the largest number of projects, which subdivisions are the most entrepreneurial and in which industries there is the greatest competition.")}
     </p>
