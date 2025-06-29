@@ -1,6 +1,6 @@
 # Marker
 
-CRM for General Contractors.
+App for General Contractors.
 
 ## Usage example
 
