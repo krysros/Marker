@@ -2,7 +2,7 @@
   <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     <i class="bi bi-filter"></i> ${_("Filter")}
   </button>
-  <form class="dropdown-menu p-4">
+  <form class="dropdown-menu p-4" style="min-width: 200px;">
     % if form.name.data:
       ${form.name(class_="form-control")}
     % endif
