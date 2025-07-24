@@ -41,7 +41,7 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_xlsx
+from ..utils.export import response_xlsx, response_contacts_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter
 
@@ -1556,7 +1556,7 @@ class UserView:
         _order = self.request.params.get("order", "desc")
 
         stmt = (
-            select(Contact.name, Contact.role, Contact.phone, Contact.email)
+            select(Contact)
             .join(selected_contacts)
             .filter(user.id == selected_contacts.c.user_id)
         )
@@ -1566,9 +1566,8 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Contact, _sort).desc())
 
-        contacts = self.request.dbsession.execute(stmt).all()
-        header_row = [_("Fullname"), _("Role"), _("Phone"), _("Email")]
-        response = response_xlsx(contacts, header_row)
+        contacts = self.request.dbsession.execute(stmt).scalars()
+        response = response_contacts_xlsx(contacts)
         log.info(
             _("The user %s exported the data of selected contacts")
             % self.request.identity.name
