@@ -41,7 +41,7 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_xlsx, response_contacts_xlsx
+from ..utils.export import response_contacts_xlsx, response_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter
 

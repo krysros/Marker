@@ -69,7 +69,13 @@ def response_contacts_xlsx(rows, default_date_format="yyyy-mm-dd"):
     worksheet = workbook.add_worksheet()
     cell_format = workbook.add_format({"bold": True})
 
-    header_row = [_("Fullname"), _("Role"), _("Phone"), _("Email"), _("Company/Project")]
+    header_row = [
+        _("Fullname"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
+        _("Company/Project"),
+    ]
 
     # Write rows.
     for j, elem in enumerate(header_row):
