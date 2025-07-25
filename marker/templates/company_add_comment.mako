@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%include file="errors.mako"/>
 
 <%namespace name="pills" file="pills.mako"/>
 
@@ -16,7 +15,10 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.comment.label}
-        ${form.comment(class_="form-control")}
+        ${form.comment(class_="form-control" + (" is-invalid" if form.errors.get("comment") else ""))}
+        % for error in form.errors.get("comment", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
         <div id="select-list"></div>
       </div>
       <div class="mb-3">

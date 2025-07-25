@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%include file="errors.mako"/> 
 
 <h2>
   <i class="bi bi-bar-chart"></i> ${_("Reports")}
@@ -15,7 +14,10 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.report.label}
-        ${form.report(class_="form-control")}
+        ${form.report(class_="form-control" + (" is-invalid" if form.errors.get("report") else ""))}
+        % for error in form.errors.get("report", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         <input class="btn btn-primary" id="submit" name="submit" type="submit" value="${_('Show')}">

@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%include file="errors.mako"/>
 
 <div class="card mt-4 mb-4">
   <div class="card-header">
@@ -17,11 +16,17 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.password.label}
-        ${form.password(class_="form-control")}
+        ${form.password(class_="form-control" + (" is-invalid" if form.errors.get("password") else ""))}
+        % for error in form.errors.get("password", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.confirm.label}
-        ${form.confirm(class_="form-control")}
+        ${form.confirm(class_="form-control" + (" is-invalid" if form.errors.get("confirm") else ""))}
+        % for error in form.errors.get("confirm", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>

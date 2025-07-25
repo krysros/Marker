@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%include file="errors.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
 <div class="hstack gap-2 mb-4">
@@ -15,16 +14,25 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.name.label}
-        ${form.name(class_="form-control", list_="projects", autocomplete="off", maxlength="200", **{"hx-get": f"{request.route_url('project_select')}", "hx-target": "#select-list", "hx-swap": "innerHTML", "hx-trigger": "keyup changed delay:250ms"})}
+        ${form.name(class_="form-control" + (" is-invalid" if form.errors.get("name") else ""), list_="projects", autocomplete="off", maxlength="200", **{"hx-get": f"{request.route_url('project_select')}", "hx-target": "#select-list", "hx-swap": "innerHTML", "hx-trigger": "keyup changed delay:250ms"})}
+        % for error in form.errors.get("name", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
         <div id="select-list"></div>
       </div>
       <div class="mb-3">
         ${form.stage.label}
-        ${form.stage(class_="form-control")}
+        ${form.stage(class_="form-control" + (" is-invalid" if form.errors.get("stage") else ""))}
+        % for error in form.errors.get("stage", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.role.label}
-        ${form.role(class_="form-control")}
+        ${form.role(class_="form-control" + (" is-invalid" if form.errors.get("role") else ""))}
+        % for error in form.errors.get("role", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>

@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%include file="errors.mako"/>
 
 <%namespace name="pills" file="pills.mako"/>
 
@@ -16,19 +15,31 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.name.label}
-        ${form.name(class_="form-control")}
+        ${form.name(class_="form-control" + (" is-invalid" if form.errors.get("name") else ""))}
+        % for error in form.errors.get("name", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.role.label}
-        ${form.role(class_="form-control")}
+        ${form.role(class_="form-control" + (" is-invalid" if form.errors.get("role") else ""))}
+        % for error in form.errors.get("role", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.phone.label}
-        ${form.phone(class_="form-control")}
+        ${form.phone(class_="form-control" + (" is-invalid" if form.errors.get("phone") else ""))}
+        % for error in form.errors.get("phone", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.email.label}
-        ${form.email(class_="form-control")}
+        ${form.email(class_="form-control" + (" is-invalid" if form.errors.get("email") else ""))}
+        % for error in form.errors.get("email", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>

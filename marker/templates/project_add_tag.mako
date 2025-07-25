@@ -1,5 +1,4 @@
 <%inherit file="layout.mako"/>
-<%include file="errors.mako"/>
 
 <%namespace name="pills" file="pills.mako"/>
 
@@ -16,7 +15,11 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.name.label}
-        ${form.name(class_="form-control", list_="tags", autocomplete="off", maxlength="200", **{"hx-get": f"{request.route_url('tag_select')}", "hx-target": "#select-list", "hx-swap": "innerHTML", "hx-trigger": "keyup changed delay:250ms"})}
+        ${form.name(class_="form-control" + (" is-invalid" if form.errors.get("name") else ""), list_="tags", autocomplete="off", maxlength="200", **{"hx-get": f"{request.route_url('tag_select')}", "hx-target": "#select-list", "hx-swap": "innerHTML", "hx-trigger": "keyup changed delay:250ms"})}
+        <div id="select-list"></div>
+        % for error in form.errors.get("name", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
         <div id="select-list"></div>
       </div>
       <div class="mb-3">
