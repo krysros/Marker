@@ -13,7 +13,7 @@ from ..forms import (
     ProjectFilterForm,
     ProjectForm,
     ProjectSearchForm,
-    TagSearchForm,
+    TagLinkForm,
 )
 from ..forms.select import (
     COLORS,
@@ -991,7 +991,7 @@ class ProjectView:
     )
     def add_tag(self):
         _ = self.request.translate
-        form = TagSearchForm(self.request.POST, request=self.request)
+        form = TagLinkForm(self.request.POST, request=self.request)
         project = self.request.context.project
 
         if self.request.method == "POST" and form.validate():

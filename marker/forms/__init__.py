@@ -18,6 +18,7 @@ from .project import ProjectSearchForm  # flake8: noqa
 from .report import ReportForm  # flake8: noqa
 from .tag import TagForm  # flake8: noqa
 from .tag import TagSearchForm  # flake8: noqa
+from .tag import TagLinkForm  # flake8: noqa
 from .user import UserFilterForm  # flake8: noqa
 from .user import UserForm  # flake8: noqa
 from .user import UserSearchForm  # flake8: noqa

@@ -39,3 +39,14 @@ class TagForm(Form):
 
 class TagSearchForm(Form):
     name = StringField(_("Name"), filters=[strip_filter])
+
+
+class TagLinkForm(Form):
+    name = StringField(
+        _("Name"),
+        validators=[
+            InputRequired(),
+            Length(min=3, max=50),
+        ],
+        filters=[strip_filter],
+    )
