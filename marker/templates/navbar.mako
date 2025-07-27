@@ -1,5 +1,4 @@
-<%page args="theme"/>
-<nav class="navbar navbar-expand-md fixed-top bg-${theme}">
+<nav class="navbar navbar-expand-md fixed-top bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="${request.route_url('home')}">Marker</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,16 +73,6 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item" role="button" hx-get="${request.route_url('theme')}" hx-swap="none">
-              % if theme == "dark":
-                <i class="bi bi-sun"></i> ${_("Light")}
-              % else:
-                <i class="bi bi-moon"></i> ${_("Dark")}
-              % endif
-              </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
               <a class="dropdown-item" role="button" href="${request.route_url('account', username=request.identity.name)}">
                 ${_("Account")}
               </a>
@@ -98,6 +87,28 @@
           </ul>
         </li>
         % endif
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-circle-half"></i> ${_("Theme")}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="light">
+                <i class="bi bi-sun-fill me-2"></i> ${_("Light")}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="dark">
+                <i class="bi bi-moon-stars-fill me-2"></i> ${_("Dark")}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="auto">
+                <i class="bi bi-circle-half me-2"></i> ${_("Auto")}
+              </a>
+            </li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>

@@ -1,21 +1,5 @@
-<%!
-  from sqlalchemy import select
-  from marker.models import Theme
-%>
-
-<%
-  theme = "light"
-  if request.identity:
-    stmt = select(Theme.theme).filter(Theme.user_id == request.identity.id)
-    theme = request.dbsession.execute(stmt).scalar_one_or_none()
-    if not theme:
-      theme = "light"
-      t = Theme(user_id=request.identity.id, theme=theme)
-      request.dbsession.add(t)
-%>
-
 <!doctype html>
-<html lang="${request.locale_name}" data-bs-theme="${theme}">
+<html lang="${request.locale_name}" data-bs-theme="auto">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -55,11 +39,94 @@
   <body>
     <main role="main">
       <div class="container">
-        <%include file="navbar.mako" args="theme=theme"/>
+        <%include file="navbar.mako"/>
         <%include file="flash_messages.mako"/>
         ${self.body()}
         <%include file="footer.mako"/>
       </div>
     </main>
+    <script type="text/javascript">
+      /*!
+    * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+    * Copyright 2011-2025 The Bootstrap Authors
+    * Licensed under the Creative Commons Attribution 3.0 Unported License.
+    */
+    <%text>
+    (() => {
+      'use strict'
+
+      const getStoredTheme = () => localStorage.getItem('theme')
+      const setStoredTheme = theme => localStorage.setItem('theme', theme)
+
+      const getPreferredTheme = () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme) {
+          return storedTheme
+        }
+
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+
+      const setTheme = theme => {
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+        } else {
+          document.documentElement.setAttribute('data-bs-theme', theme)
+        }
+      }
+
+      setTheme(getPreferredTheme())
+
+      const showActiveTheme = (theme, focus = false) => {
+        const themeSwitcher = document.querySelector('#bd-theme')
+
+        if (!themeSwitcher) {
+          return
+        }
+
+        const themeSwitcherText = document.querySelector('#bd-theme-text')
+        const activeThemeIcon = document.querySelector('.theme-icon-active use')
+        const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+        const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
+
+        document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+          element.classList.remove('active')
+          element.setAttribute('aria-pressed', 'false')
+        })
+
+        btnToActive.classList.add('active')
+        btnToActive.setAttribute('aria-pressed', 'true')
+        activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+        const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+        themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+
+        if (focus) {
+          themeSwitcher.focus()
+        }
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        const storedTheme = getStoredTheme()
+        if (storedTheme !== 'light' && storedTheme !== 'dark') {
+          setTheme(getPreferredTheme())
+        }
+      })
+
+      window.addEventListener('DOMContentLoaded', () => {
+        showActiveTheme(getPreferredTheme())
+
+        document.querySelectorAll('[data-bs-theme-value]')
+          .forEach(toggle => {
+            toggle.addEventListener('click', () => {
+              const theme = toggle.getAttribute('data-bs-theme-value')
+              setStoredTheme(theme)
+              setTheme(theme)
+              showActiveTheme(theme, true)
+            })
+          })
+      })
+    })()
+    </%text>
+    </script>
   </body>
 </html>

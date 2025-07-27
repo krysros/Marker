@@ -22,16 +22,6 @@ class Activity(Base):
     project: Mapped["Project"] = relationship(back_populates="companies")
 
 
-class Theme(Base):
-    __tablename__ = "themes"
-    user_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
-        primary_key=True,
-    )
-    theme: Mapped[str]
-
-
 companies_tags = Table(
     "companies_tags",
     Base.metadata,

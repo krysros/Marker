@@ -15,7 +15,6 @@ def includeme(config):
     config.add_route("home", "/")
     config.add_route("login", "/login")
     config.add_route("logout", "/logout")
-    config.add_route("theme", "/theme", factory=default_factory)
     config.add_route("subdivision", "/subdivision", factory=default_factory)
 
     config.add_route("account", "/account", factory=account_factory)
