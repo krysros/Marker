@@ -89,7 +89,7 @@
         % endif
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-circle-half"></i> ${_("Theme")}
+            <i class="bi bi-circle-half"></i>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
             <li>
