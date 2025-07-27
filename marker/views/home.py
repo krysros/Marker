@@ -9,9 +9,10 @@ def home_view(request):
 @view_config(route_name="theme", request_method="POST", renderer="string")
 def theme_view(request):
     theme = request.matchdict["theme"]
-    if theme == "light":
-        return "<i class='bi bi-sun-fill'></i>"
-    elif theme == "dark":
-        return "<i class='bi bi-moon-stars-fill'></i>"
-    else:
-        return "<i class='bi bi-circle-half'></i>"
+    match theme:
+        case "light":
+            return "<i class='bi bi-sun-fill'></i>"
+        case "dark":
+            return "<i class='bi bi-moon-stars-fill'></i>"
+        case _:
+            return "<i class='bi bi-circle-half'></i>"
