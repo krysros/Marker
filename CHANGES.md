@@ -1,3 +1,10 @@
+2.0rc1
+------
+
+- Update migrations (remove `themes` table from database)
+- Improve themes
+- Validation errors below form fields instead of flash messages
+
 2.0b6
 -----
 
