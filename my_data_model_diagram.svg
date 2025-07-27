@@ -308,11 +308,11 @@
 <g id="edge10" class="edge">
 <title>Company&#45;&gt;Activity</title>
 <g id="a_edge10"><a xlink:title="Relation between Company and Activity">
-<path fill="none" stroke="#1e88e5" stroke-dasharray="5,2" d="M334.93,-1743.21C302.04,-1784.59 261.43,-1828.85 217.38,-1861.5 203.35,-1871.89 195.81,-1870.97 176.9,-1879.16"/>
-<polygon fill="#1e88e5" stroke="#1e88e5" points="175.54,-1875.93 167.99,-1883.36 178.53,-1882.26 175.54,-1875.93"/>
+<path fill="none" stroke="#1e88e5" stroke-dasharray="5,2" d="M335.05,-1739.08C301.68,-1780.82 260.71,-1826.39 217.38,-1861.5 204.88,-1871.62 190.75,-1880.98 176.46,-1889.37"/>
+<polygon fill="#1e88e5" stroke="#1e88e5" points="174.82,-1886.27 167.87,-1894.27 178.29,-1892.35 174.82,-1886.27"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="middle" x="248.13" y="-1852" font-family="Roboto" font-size="10.00">projects</text>
+<text xml:space="preserve" text-anchor="middle" x="247.73" y="-1852" font-family="Roboto" font-size="10.00">projects</text>
 </g>
 <!-- Comment -->
 <g id="node4" class="node">
@@ -841,28 +841,6 @@
 </a>
 </g>
 <text xml:space="preserve" text-anchor="middle" x="498.25" y="-1090.5" font-family="Roboto" font-size="10.00">updated_by</text>
-</g>
-<!-- Theme -->
-<g id="node8" class="node">
-<title>Theme</title>
-<g id="a_node8"><a xlink:href="http://Theme_details.html" xlink:title="&lt;TABLE&gt;">
-<polygon fill="#3f51b5" stroke="none" points="192.5,-1944.25 192.5,-1964.5 316.25,-1964.5 316.25,-1944.25 192.5,-1944.25"/>
-<polygon fill="none" stroke="black" points="192.5,-1944.25 192.5,-1964.5 316.25,-1964.5 316.25,-1944.25 192.5,-1944.25"/>
-<text xml:space="preserve" text-anchor="start" x="236" y="-1950.1" font-family="Roboto" font-size="12.00" fill="white">Theme</text>
-<polygon fill="#bbdefb" stroke="none" points="192.5,-1924 192.5,-1944.25 236,-1944.25 236,-1924 192.5,-1924"/>
-<polygon fill="none" stroke="black" points="192.5,-1924 192.5,-1944.25 236,-1944.25 236,-1924 192.5,-1924"/>
-<text xml:space="preserve" text-anchor="start" x="195.5" y="-1929.85" font-family="Roboto" font-size="12.00">user_id</text>
-<polygon fill="#bbdefb" stroke="none" points="236,-1924 236,-1944.25 316.25,-1944.25 316.25,-1924 236,-1924"/>
-<polygon fill="none" stroke="black" points="236,-1924 236,-1944.25 316.25,-1944.25 316.25,-1924 236,-1924"/>
-<text xml:space="preserve" text-anchor="start" x="239" y="-1929.85" font-family="Roboto" font-size="12.00">INTEGER (PK)</text>
-<polygon fill="#bbdefb" stroke="none" points="192.5,-1903.75 192.5,-1924 236,-1924 236,-1903.75 192.5,-1903.75"/>
-<polygon fill="none" stroke="black" points="192.5,-1903.75 192.5,-1924 236,-1924 236,-1903.75 192.5,-1903.75"/>
-<text xml:space="preserve" text-anchor="start" x="197.75" y="-1909.6" font-family="Roboto" font-size="12.00">theme</text>
-<polygon fill="#bbdefb" stroke="none" points="236,-1903.75 236,-1924 316.25,-1924 316.25,-1903.75 236,-1903.75"/>
-<polygon fill="none" stroke="black" points="236,-1903.75 236,-1924 316.25,-1924 316.25,-1903.75 236,-1903.75"/>
-<text xml:space="preserve" text-anchor="start" x="243.5" y="-1909.6" font-family="Roboto" font-size="12.00">VARCHAR ()</text>
-</a>
-</g>
 </g>
 </g>
 </svg>
