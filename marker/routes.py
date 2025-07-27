@@ -16,6 +16,7 @@ def includeme(config):
     config.add_route("login", "/login")
     config.add_route("logout", "/logout")
     config.add_route("subdivision", "/subdivision", factory=default_factory)
+    config.add_route("theme", "/theme/{theme}", factory=default_factory)
 
     config.add_route("account", "/account", factory=account_factory)
     config.add_route("password", "/password", factory=account_factory)

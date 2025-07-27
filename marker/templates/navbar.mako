@@ -89,21 +89,21 @@
         % endif
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-circle-half"></i>
+            <output id="theme-icon"><i class="bi bi-circle-half"></i></output>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="light">
+              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="light" hx-post="${request.route_url('theme', theme='light')}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-swap="innerHTML" hx-target="#theme-icon">
                 <i class="bi bi-sun-fill me-2"></i> ${_("Light")}
               </a>
             </li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="dark">
+              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="dark" hx-post="${request.route_url('theme', theme='dark')}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-swap="innerHTML" hx-target="#theme-icon">
                 <i class="bi bi-moon-stars-fill me-2"></i> ${_("Dark")}
               </a>
             </li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="auto">
+              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="auto" hx-post="${request.route_url('theme', theme='auto')}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-swap="innerHTML" hx-target="#theme-icon">
                 <i class="bi bi-circle-half me-2"></i> ${_("Auto")}
               </a>
             </li>
