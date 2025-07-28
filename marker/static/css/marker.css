@@ -1,0 +1,18 @@
+body {
+  padding-top: 5rem;
+}
+tr.htmx-swapping td {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+.card.htmx-swapping {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+.bi {
+  width: 1em;
+  height: 1em;
+  vertical-align: -.125em;
+  fill: currentcolor
+}
+#map { height: 400px; }

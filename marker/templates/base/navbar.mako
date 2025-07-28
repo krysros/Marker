@@ -88,24 +88,45 @@
         </li>
         % endif
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <output id="theme-icon"><i class="bi bi-circle-half"></i></output>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+          <button class="btn btn-link nav-link px-0 px-lg-2 py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (auto)">
+            <svg class="bi my-1 theme-icon-active" aria-hidden="true">
+              <use href="#circle-half"></use>
+            </svg>
+            <span class="d-lg-none ms-2" id="bd-theme-text">${_("Toggle theme")}</span> 
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="light" hx-post="${request.route_url('theme', theme='light')}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-swap="innerHTML" hx-target="#theme-icon">
-                <i class="bi bi-sun-fill me-2"></i> ${_("Light")}
-              </a>
+              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                <svg class="bi me-2 opacity-50" aria-hidden="true">
+                  <use href="#sun-fill"></use>
+                </svg>
+                ${_("Light")}
+                <svg class="bi ms-auto d-none" aria-hidden="true">
+                  <use href="#check2"></use>
+                </svg>
+              </button>
             </li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="dark" hx-post="${request.route_url('theme', theme='dark')}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-swap="innerHTML" hx-target="#theme-icon">
-                <i class="bi bi-moon-stars-fill me-2"></i> ${_("Dark")}
-              </a>
+              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                <svg class="bi me-2 opacity-50" aria-hidden="true">
+                  <use href="#moon-stars-fill"></use>
+                </svg>
+                ${_("Dark")}
+                <svg class="bi ms-auto d-none" aria-hidden="true">
+                  <use href="#check2"></use>
+                </svg>
+              </button>
             </li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="auto" hx-post="${request.route_url('theme', theme='auto')}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-swap="innerHTML" hx-target="#theme-icon">
-                <i class="bi bi-circle-half me-2"></i> ${_("Auto")}
-              </a>
+              <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+                <svg class="bi me-2 opacity-50" aria-hidden="true">
+                  <use href="#circle-half"></use>
+                </svg>
+                ${_("Auto")}
+                <svg class="bi ms-auto d-none" aria-hidden="true">
+                  <use href="#check2"></use>
+                </svg>
+              </button>
             </li>
           </ul>
         </li>
