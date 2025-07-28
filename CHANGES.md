@@ -1,3 +1,8 @@
+Unreleased
+----------
+
+- Group templates in folders
+
 2.0rc1
 ------
 
