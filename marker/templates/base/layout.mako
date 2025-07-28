@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js"></script>
     <script src="${request.static_url('marker:static/js/color-modes.js')}"></script>
-    <link rel="stylesheet" href="${request.static_url('marker:static/css/marker.css')}">
+    <link rel="stylesheet" href="${request.static_url('marker:static/css/style.css')}">
     % if title:
     <title>Marker - ${title}</title>
     % else:
