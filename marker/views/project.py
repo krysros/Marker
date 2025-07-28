@@ -14,6 +14,7 @@ from ..forms import (
     ProjectForm,
     ProjectSearchForm,
     TagLinkForm,
+    ActivityForm,
 )
 from ..forms.select import (
     COLORS,
@@ -1081,6 +1082,51 @@ class ProjectView:
             "project": project,
             "project_pills": self.pills(project),
         }
+
+    @view_config(
+        route_name="project_activity_edit",
+        renderer="activity_form.mako",
+        permission="edit",
+    )
+    def project_activity_edit(self):
+        _ = self.request.translate
+
+        company_id = int(self.request.matchdict["company_id"])
+        project_id = int(self.request.matchdict["project_id"])
+
+        company = self.request.dbsession.execute(
+            select(Company).filter_by(id=company_id)
+        ).scalar_one_or_none()
+
+        if not company:
+            raise HTTPNotFound
+
+        project = self.request.dbsession.execute(
+            select(Project).filter_by(id=project_id)
+        ).scalar_one_or_none()
+
+        if not project:
+            raise HTTPNotFound
+
+        assoc = self.request.dbsession.execute(
+            select(Activity).filter_by(company_id=company.id, project_id=project.id)
+        ).scalar()
+
+        form = ActivityForm(self.request.POST, assoc, request=self.request)
+
+        if self.request.method == "POST" and form.validate():
+            form.populate_obj(assoc)
+
+            self.request.session.flash(_("success:Changes have been saved"))
+            next_url = self.request.route_url(
+                "company_projects", company_id=company.id, slug=company.slug
+            )
+            log.info(
+                _("The user %s changed the activity details")
+                % self.request.identity.name
+            )
+            return HTTPSeeOther(location=next_url)
+        return {"heading": _("Edit activity details"), "form": form}
 
     @view_config(
         route_name="unlink_tag_project",

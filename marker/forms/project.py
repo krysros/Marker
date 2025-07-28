@@ -11,10 +11,10 @@ from wtforms.validators import InputRequired, Length, Optional, ValidationError
 from wtforms.widgets import DateTimeLocalInput
 
 from ..models import Project
+from .association import ActivityForm
 from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
 from .select import (
     COLORS,
-    COMPANY_ROLES,
     PROJECT_DELIVERY_METHODS,
     STAGES,
     STATUS,
@@ -155,13 +155,8 @@ class ProjectFilterForm(Form):
         self.subdivision.default = self.request.GET.getall("subdivision")
 
 
-class ProjectActivityForm(Form):
+class ProjectActivityForm(ActivityForm):
     name = StringField(_("Name"), validators=[InputRequired()])
-    stage = SelectField(_("Stage"), choices=STAGES)
-    role = SelectField(
-        _("Role"),
-        choices=COMPANY_ROLES,
-    )
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

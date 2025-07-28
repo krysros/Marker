@@ -673,17 +673,29 @@ def includeme(config):
     )
 
     config.add_route(
-        "unlink_company_project",
-        r"/unlink/company/{company_id:\d+}/project/{project_id:\d+}",
+        "company_activity_edit",
+        r"/company/{company_id:\d+}/project/{project_id:\d+}/edit",
+        factory=default_factory,
+    )
+
+    config.add_route(
+        "project_activity_edit",
+        r"/project/{project_id:\d+}/company/{company_id:\d+}/edit",
+        factory=default_factory,
+    )
+
+    config.add_route(
+        "activity_unlink",
+        r"/company/{company_id:\d+}/project/{project_id:\d+}/unlink",
         factory=default_factory,
     )
     config.add_route(
         "unlink_tag_company",
-        r"/unlink/tag/{tag_id:\d+}/company/{company_id:\d+}",
+        r"/tag/{tag_id:\d+}/company/{company_id:\d+}/unlink",
         factory=default_factory,
     )
     config.add_route(
         "unlink_tag_project",
-        r"/unlink/tag/{tag_id:\d+}/project/{project_id:\d+}",
+        r"/tag/{tag_id:\d+}/project/{project_id:\d+}/unlink",
         factory=default_factory,
     )

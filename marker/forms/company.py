@@ -5,6 +5,7 @@ from wtforms import Form, HiddenField, SelectField, SelectMultipleField, StringF
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
+from .association import ActivityForm
 from .filters import (
     dash_filter,
     remove_dashes_and_spaces,
@@ -12,14 +13,7 @@ from .filters import (
     strip_filter,
     title,
 )
-from .select import (
-    COLORS,
-    COMPANY_ROLES,
-    COURTS,
-    STAGES,
-    select_countries,
-    select_subdivisions,
-)
+from .select import COLORS, COURTS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
 
@@ -227,13 +221,8 @@ class CompanyFilterForm(Form):
         self.subdivision.default = self.request.GET.getall("subdivision")
 
 
-class CompanyActivityForm(Form):
+class CompanyActivityForm(ActivityForm):
     name = StringField(_("Name"), validators=[InputRequired()])
-    stage = SelectField(_("Stage"), choices=STAGES)
-    role = SelectField(
-        _("Role"),
-        choices=COMPANY_ROLES,
-    )
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

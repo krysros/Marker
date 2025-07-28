@@ -1,7 +1,8 @@
-Unreleased
-----------
+2.0rc2
+------
 
 - Group templates in folders
+- Allow edit activity details
 
 2.0rc1
 ------
