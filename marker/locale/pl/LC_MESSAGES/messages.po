@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-28 13:31+0200\n"
+"POT-Creation-Date: 2025-07-28 15:48+0200\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -338,11 +338,11 @@ msgstr "Ostrzeżenie"
 msgid "Info"
 msgstr "Informacja"
 
-#: marker/forms/select.py:89 marker/templates/base/navbar.mako:97
+#: marker/forms/select.py:89 marker/templates/base/navbar.mako:103
 msgid "Light"
 msgstr "Jasny"
 
-#: marker/forms/select.py:90 marker/templates/base/navbar.mako:102
+#: marker/forms/select.py:90 marker/templates/base/navbar.mako:114
 msgid "Dark"
 msgstr "Ciemny"
 
@@ -647,7 +647,11 @@ msgstr "Wybrane"
 msgid "Log out"
 msgstr "Wyloguj się"
 
-#: marker/templates/base/navbar.mako:107
+#: marker/templates/base/navbar.mako:95
+msgid "Toggle theme"
+msgstr "Przełącz motyw"
+
+#: marker/templates/base/navbar.mako:125
 msgid "Auto"
 msgstr "Auto"
 
