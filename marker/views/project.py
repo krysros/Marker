@@ -7,6 +7,7 @@ from pyramid.view import view_config
 from sqlalchemy import and_, func, select
 
 from ..forms import (
+    ActivityForm,
     CommentForm,
     CompanyActivityForm,
     ContactForm,
@@ -14,7 +15,6 @@ from ..forms import (
     ProjectForm,
     ProjectSearchForm,
     TagLinkForm,
-    ActivityForm,
 )
 from ..forms.select import (
     COLORS,
@@ -1126,7 +1126,12 @@ class ProjectView:
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Edit activity details"), "form": form, "company": company, "project": project}
+        return {
+            "heading": _("Edit activity details"),
+            "form": form,
+            "company": company,
+            "project": project,
+        }
 
     @view_config(
         route_name="unlink_tag_project",

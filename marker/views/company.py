@@ -1121,7 +1121,12 @@ class CompanyView:
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Edit activity details"), "form": form, "company": company, "project": project}
+        return {
+            "heading": _("Edit activity details"),
+            "form": form,
+            "company": company,
+            "project": project,
+        }
 
     @view_config(
         route_name="activity_unlink",
