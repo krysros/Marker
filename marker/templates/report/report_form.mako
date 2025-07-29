@@ -13,7 +13,7 @@
     <form action="${url}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
-        ${form.report.label}
+        ${form.report.label(class_="form-label")}
         ${form.report(class_="form-control" + (" is-invalid" if form.errors.get("report") else ""))}
         % for error in form.errors.get("report", []):
           <div class="invalid-feedback">${error}</div>

@@ -13,7 +13,7 @@
     <form action="${request.current_route_path()}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
-        ${form.name.label}
+        ${form.name.label(class_="form-label")}
         ${form.name(class_="form-control" + (" is-invalid" if form.errors.get("name") else ""), list_="projects", autocomplete="off", maxlength="200", **{"hx-get": f"{request.route_url('project_select')}", "hx-target": "#select-list", "hx-swap": "innerHTML", "hx-trigger": "keyup changed delay:250ms"})}
         % for error in form.errors.get("name", []):
           <div class="invalid-feedback">${error}</div>
@@ -21,14 +21,14 @@
         <div id="select-list"></div>
       </div>
       <div class="mb-3">
-        ${form.stage.label}
+        ${form.stage.label(class_="form-label")}
         ${form.stage(class_="form-control" + (" is-invalid" if form.errors.get("stage") else ""))}
         % for error in form.errors.get("stage", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
       <div class="mb-3">
-        ${form.role.label}
+        ${form.role.label(class_="form-label")}
         ${form.role(class_="form-control" + (" is-invalid" if form.errors.get("role") else ""))}
         % for error in form.errors.get("role", []):
           <div class="invalid-feedback">${error}</div>

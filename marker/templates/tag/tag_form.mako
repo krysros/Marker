@@ -6,7 +6,7 @@
     <form action="${request.current_route_path()}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
-        ${form.name.label}
+        ${form.name.label(class_="form-label")}
         ${form.name(class_="form-control" + (" is-invalid" if form.errors.get("name") else ""))}
         % for error in form.errors.get("name", []):
           <div class="invalid-feedback">${error}</div>

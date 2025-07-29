@@ -13,7 +13,7 @@
       ${form.email(class_="form-control")}
     % endif
     <div class="mb-3">
-      ${form.role.label}
+      ${form.role.label(class_="form-label")}
       ${form.role(class_="form-control")}
     </div>
     <button type="submit" class="btn btn-primary">${_("Submit")}</button>

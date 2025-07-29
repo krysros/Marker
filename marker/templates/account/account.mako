@@ -15,14 +15,14 @@
     <form action="${request.current_route_path()}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
-        ${form.fullname.label}
+        ${form.fullname.label(class_="form-label")}
         ${form.fullname(class_="form-control" + (" is-invalid" if form.errors.get("fullname") else ""))}
         % for error in form.errors.get("fullname", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
       <div class="mb-3">
-        ${form.email.label}
+        ${form.email.label(class_="form-label")}
         ${form.email(class_="form-control" + (" is-invalid" if form.errors.get("email") else ""))}
         % for error in form.errors.get("email", []):
           <div class="invalid-feedback">${error}</div>

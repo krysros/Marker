@@ -16,7 +16,7 @@
       ${form.email(class_="form-control")}
     % endif
     <div class="mb-3">
-      ${form.parent.label}
+      ${form.parent.label(class_="form-label")}
       ${form.parent(class_="form-control")}
     </div>
     <button type="submit" class="btn btn-primary">${_("Submit")}</button>
