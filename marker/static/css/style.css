@@ -12,7 +12,6 @@ tr.htmx-swapping td {
 .bi {
   width: 1em;
   height: 1em;
-  vertical-align: -.125em;
-  fill: currentcolor
+  fill: currentcolor;
 }
 #map { height: 400px; }
