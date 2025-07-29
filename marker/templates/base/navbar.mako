@@ -88,6 +88,29 @@
         </li>
         % endif
         <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="localeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-translate"></i> ${_("Language")}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="localeDropdown">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="${request.route_url('set_locale', locale='en')}">
+                <span class="me-2">🇬🇧</span> English
+                % if request.locale_name == "en":
+                  <i class="bi bi-check2 ms-auto"></i>
+                % endif
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="${request.route_url('set_locale', locale='pl')}">
+                <span class="me-2">🇵🇱</span> Polski
+                % if request.locale_name == "pl":
+                  <i class="bi bi-check2 ms-auto"></i>
+                % endif
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
           <button class="btn btn-link nav-link px-0 px-lg-2 py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (auto)">
             <svg class="bi my-1 theme-icon-active" aria-hidden="true">
               <use href="#circle-half"></use>
