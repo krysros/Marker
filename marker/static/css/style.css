@@ -1,17 +1,47 @@
 body {
   padding-top: 5rem;
 }
+
+/* htmx */
 tr.htmx-swapping td {
   opacity: 0;
   transition: opacity 1s ease-out;
 }
+
 .card.htmx-swapping {
   opacity: 0;
   transition: opacity 1s ease-out;
 }
+
+/* Navbar dropdowns
+ See https://github.com/twbs/examples/blob/main/color-modes/scss/styles.scss#L104 */
 .bi {
   width: 1em;
   height: 1em;
   fill: currentcolor;
 }
-#map { height: 400px; }
+
+.color-modes .dropdown-menu {
+  padding: .25rem
+}
+
+.color-modes .dropdown-menu li+li {
+  margin-top: .125rem
+}
+
+.color-modes .dropdown-item {
+  border-radius: .25rem
+}
+
+.color-modes .active {
+  font-weight: 600
+}
+
+.color-modes .active .bi {
+  display: block !important
+}
+
+/* Leaflet */
+#map {
+  height: 400px;
+}

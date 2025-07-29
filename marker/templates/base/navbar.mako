@@ -34,7 +34,7 @@
           <a class="nav-link" role="button" href="${request.application_url}/login">${_("Log in")}</a>
         </li>
         % else:
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown color-modes">
           <a class="nav-link dropdown-toggle" role="button" id="dropdown-account" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-gear"></i> ${request.identity.name}
           </a>
@@ -87,7 +87,7 @@
           </ul>
         </li>
         % endif
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown color-modes">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="localeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-translate me-2"></i> ${_("Language")}
           </a>
@@ -110,7 +110,7 @@
             </li>
           </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown color-modes">
           <button class="btn btn-link nav-link px-0 px-lg-2 py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (auto)">
             <svg class="bi my-1 theme-icon-active" aria-hidden="true">
               <use href="#circle-half"></use>
