@@ -107,7 +107,7 @@ def response_contacts_xlsx(rows, default_date_format="yyyy-mm-dd"):
 
 def vcard_template():
     a = AssetResolver("marker")
-    resolver = a.resolve("templates/vcard.mako")
+    resolver = a.resolve("templates/contact/vcard.mako")
     template = Template(filename=resolver.abspath())
     return template
 
