@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-28 20:39+0200\n"
+"POT-Creation-Date: 2025-07-29 12:23+0200\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -337,11 +337,11 @@ msgstr "Ostrzeżenie"
 msgid "Info"
 msgstr "Informacja"
 
-#: marker/forms/select.py:89 marker/templates/base/navbar.mako:103
+#: marker/forms/select.py:89 marker/templates/base/navbar.mako:126
 msgid "Light"
 msgstr "Jasny"
 
-#: marker/forms/select.py:90 marker/templates/base/navbar.mako:114
+#: marker/forms/select.py:90 marker/templates/base/navbar.mako:137
 msgid "Dark"
 msgstr "Ciemny"
 
@@ -604,7 +604,7 @@ msgstr "Konto"
 #: marker/templates/account/password.mako:32
 #: marker/templates/comment/comment_filter.mako:13
 #: marker/templates/comment/comment_form.mako:16
-#: marker/templates/common/activity_form.mako:23
+#: marker/templates/common/activity_form.mako:31
 #: marker/templates/company/company_activity_form.mako:38
 #: marker/templates/company/company_add_comment.mako:25
 #: marker/templates/company/company_add_contact.mako:45
@@ -647,11 +647,15 @@ msgstr "Wybrane"
 msgid "Log out"
 msgstr "Wyloguj się"
 
-#: marker/templates/base/navbar.mako:95
+#: marker/templates/base/navbar.mako:92
+msgid "Language"
+msgstr "Język"
+
+#: marker/templates/base/navbar.mako:118
 msgid "Toggle theme"
 msgstr "Przełącz motyw"
 
-#: marker/templates/base/navbar.mako:125
+#: marker/templates/base/navbar.mako:148
 msgid "Auto"
 msgstr "Auto"
 
@@ -673,6 +677,22 @@ msgstr "przez"
 #: marker/templates/user/user_filter.mako:3
 msgid "Filter"
 msgstr "Filtruj"
+
+#: marker/templates/common/activity_form.mako:9
+#: marker/templates/company/company_table.mako:6
+#: marker/templates/company/company_view.mako:25
+#: marker/templates/contact/contact_view.mako:29
+#: marker/templates/project/project_companies.mako:23
+#: marker/views/company.py:53
+msgid "Company"
+msgstr "Firma"
+
+#: marker/templates/common/activity_form.mako:13
+#: marker/templates/company/company_projects.mako:23
+#: marker/templates/contact/contact_view.mako:34
+#: marker/templates/project/project_table.mako:6 marker/views/project.py:55
+msgid "Project"
+msgstr "Projekt"
 
 #: marker/templates/common/button.mako:14
 #: marker/templates/common/button.mako:29
@@ -730,20 +750,6 @@ msgstr "Utworzono"
 #: marker/templates/user/user_view.mako:43
 msgid "Updated at"
 msgstr "Zmodyfikowano"
-
-#: marker/templates/company/company_projects.mako:23
-#: marker/templates/contact/contact_view.mako:34
-#: marker/templates/project/project_table.mako:6 marker/views/project.py:55
-msgid "Project"
-msgstr "Projekt"
-
-#: marker/templates/company/company_table.mako:6
-#: marker/templates/company/company_view.mako:25
-#: marker/templates/contact/contact_view.mako:29
-#: marker/templates/project/project_companies.mako:23
-#: marker/views/company.py:53
-msgid "Company"
-msgstr "Firma"
 
 #: marker/templates/company/company_tags.mako:23
 #: marker/templates/project/project_tags.mako:23
@@ -942,11 +948,11 @@ msgstr "Dodaj projekt"
 msgid "The user %s changed the activity details"
 msgstr "Użytkownik %s zmienił szczegóły aktywności"
 
-#: marker/views/company.py:1124 marker/views/project.py:1129
+#: marker/views/company.py:1125 marker/views/project.py:1130
 msgid "Edit activity details"
 msgstr "Edytuj szczegóły aktywności"
 
-#: marker/views/company.py:1158
+#: marker/views/company.py:1163
 #, python-format
 msgid "The user %s unlinked the company from the project"
 msgstr "Użytkownik %s odczepił firmę od projektu"
@@ -1007,7 +1013,7 @@ msgstr "Użytkownik %s dodał tag do projektu"
 msgid "The user %s has added a contact to the project"
 msgstr "Użytkownik %s dodał kontakt do projektu"
 
-#: marker/views/project.py:1158
+#: marker/views/project.py:1163
 #, python-format
 msgid "The user %s unlinked the tag from the project"
 msgstr "Użytkownik %s odpiął tag od projektu"

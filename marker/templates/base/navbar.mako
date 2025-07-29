@@ -89,7 +89,7 @@
         % endif
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="localeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-translate"></i> ${_("Language")}
+            <i class="bi bi-translate me-2"></i> ${_("Language")}
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="localeDropdown">
             <li>
