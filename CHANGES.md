@@ -1,3 +1,8 @@
+2.0
+---
+
+- Display name of company and project of edited activity details as disabled input
+
 2.0rc2
 ------
 
