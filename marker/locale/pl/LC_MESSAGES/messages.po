@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-29 12:23+0200\n"
+"POT-Creation-Date: 2025-07-30 09:55+0200\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -263,10 +263,6 @@ msgstr "Status"
 #: marker/forms/project.py:178
 msgid "There is no project with this name"
 msgstr ""
-
-#: marker/forms/report.py:9 marker/views/report.py:39
-msgid "Report"
-msgstr "Raport"
 
 #: marker/forms/select.py:28 marker/forms/select.py:38
 #: marker/forms/select.py:48 marker/forms/select.py:60
@@ -586,7 +582,7 @@ msgstr "Komentarze dotyczące firm i projektów."
 
 #: marker/templates/base/navbar.mako:25 marker/templates/home.mako:71
 #: marker/templates/report/report.mako:3
-#: marker/templates/report/report_form.mako:4
+#: marker/templates/report/report_view.mako:4
 msgid "Reports"
 msgstr "Raporty"
 
@@ -770,10 +766,6 @@ msgstr "Data modyfikacji"
 #: marker/templates/contact/contact_view.mako:20
 msgid "Contact"
 msgstr "Kontakt"
-
-#: marker/templates/report/report_form.mako:23
-msgid "Show"
-msgstr "Pokaż"
 
 #: marker/templates/report/report_table.mako:5
 msgid "Description"
@@ -1018,6 +1010,10 @@ msgstr "Użytkownik %s dodał kontakt do projektu"
 msgid "The user %s unlinked the tag from the project"
 msgstr "Użytkownik %s odpiął tag od projektu"
 
+#: marker/views/report.py:30
+msgid "Report"
+msgstr "Raport"
+
 #: marker/views/tag.py:513
 #, python-format
 msgid "The user %s exported company data"
@@ -1246,4 +1242,7 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
 #~ msgid "Identification numbers"
 #~ msgstr "Numery identyfikacyjne"
+
+#~ msgid "Show"
+#~ msgstr "Pokaż"
 
