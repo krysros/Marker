@@ -1,5 +1,5 @@
-2.1b1
------
+2.1
+---
 
 - Ability to change locale from the navigation bar
 
