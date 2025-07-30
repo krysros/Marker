@@ -9,6 +9,6 @@
 
 <ol class="list-group list-group-numbered">
   % for rel, report in reports:
-  <li class="list-group-item"><a href="${request.route_url('report_view', rel=rel)}">${report}</a></li>
+  <a class="list-group-item list-group-item-action" href="${request.route_url('report_view', rel=rel)}">${report}</a>
   % endfor
 </ol>
