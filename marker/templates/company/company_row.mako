@@ -14,7 +14,7 @@
     <div class="hstack gap-2 mx-2">
       ${button.company_star(assoc.company, size='sm')}
       ${button.a(icon='pencil-square', color='warning', size='sm', url=request.route_url('company_activity_edit', company_id=assoc.company.id, project_id=assoc.project.id))}
-      ${button.del_row(icon='dash-lg', color='warning', size='sm', url=request.route_url('activity_unlink', company_id=assoc.company.id, project_id=assoc.project.id))}
+      ${button.del_row(icon='dash-lg', color='danger', size='sm', url=request.route_url('activity_unlink', company_id=assoc.company.id, project_id=assoc.project.id))}
     </div>
   </td>
 </tr>
