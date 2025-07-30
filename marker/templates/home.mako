@@ -73,7 +73,7 @@
         ${_("Summary of the database content.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('report'))}
+        ${button.a(icon='folder', color='secondary', url=request.route_url('report_all'))}
       </p>
     </div>
   </div>

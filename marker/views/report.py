@@ -1,9 +1,8 @@
-from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
+from pyramid.httpexceptions import HTTPNotFound
 from pyramid.view import view_config
 from sqlalchemy.sql import func, select
 from sqlalchemy.sql.expression import desc
 
-from ..forms import ReportForm
 from ..forms.select import REPORTS
 from ..models import (
     Activity,
@@ -24,30 +23,22 @@ class ReportView:
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name="report", renderer="report_form.mako", permission="view")
-    def view(self):
+    @view_config(route_name="report_all", renderer="report_view.mako", permission="view")
+    def all(self):
         _ = self.request.translate
-        form = ReportForm(self.request.POST)
-
-        if self.request.method == "POST" and form.validate():
-            report = form.report.data
-            next_url = self.request.route_url("report_all", rel=report)
-            return HTTPSeeOther(location=next_url)
-
         return {
-            "url": self.request.route_url("report"),
             "heading": _("Report"),
-            "form": form,
+            "reports": REPORTS,
             "counter": len(REPORTS),
         }
 
-    @view_config(route_name="report_all", renderer="report.mako", permission="view")
+    @view_config(route_name="report_view", renderer="report.mako", permission="view")
     @view_config(
         route_name="report_more",
         renderer="report_more.mako",
         permission="view",
     )
-    def all(self):
+    def view(self):
         rel = self.request.matchdict.get("rel", "companies-tags")
         page = int(self.request.params.get("page", 1))
         reports = dict(REPORTS)

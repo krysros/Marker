@@ -424,8 +424,8 @@ def includeme(config):
         factory=comment_factory,
     )
 
-    config.add_route("report", "/report", factory=default_factory)
-    config.add_route("report_all", "/report/{rel}", factory=default_factory)
+    config.add_route("report_all", "/report", factory=default_factory)
+    config.add_route("report_view", "/report/{rel}", factory=default_factory)
     config.add_route("report_more", "/report/{rel}/more", factory=default_factory)
 
     config.add_route("user_all", "/user", factory=default_factory)
