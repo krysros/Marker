@@ -93,19 +93,19 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="localeDropdown">
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="${request.route_url('set_locale', locale='en')}">
+              <a class="dropdown-item d-flex align-items-center${' active' if request.locale_name == 'en' else ''}" href="${request.route_url('set_locale', locale='en')}">
                 <span class="me-2">🇬🇧</span> English
-                % if request.locale_name == "en":
-                  <i class="bi bi-check2 ms-auto"></i>
-                % endif
+                <svg class="bi ms-auto d-none" aria-hidden="true">
+                  <use href="#check2"></use>
+                </svg>
               </a>
             </li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="${request.route_url('set_locale', locale='pl')}">
+              <a class="dropdown-item d-flex align-items-center${' active' if request.locale_name == 'pl' else ''}" href="${request.route_url('set_locale', locale='pl')}">
                 <span class="me-2">🇵🇱</span> Polski
-                % if request.locale_name == "pl":
-                  <i class="bi bi-check2 ms-auto"></i>
-                % endif
+                <svg class="bi ms-auto d-none" aria-hidden="true">
+                  <use href="#check2"></use>
+                </svg>
               </a>
             </li>
           </ul>
