@@ -1,3 +1,8 @@
+2.2b1
+-----
+
+- Reports as a list
+
 2.1
 ---
 
