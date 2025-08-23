@@ -935,14 +935,15 @@ class ProjectView:
                 ).scalar_one_or_none()
 
                 if not exist:
-                    a = Activity(stage=form.stage.data, role=form.role.data)
-                    a.company = company
-                    project.companies.append(a)
-                    log.info(
-                        _("The user %s added the company to the project")
-                        % self.request.identity.name
-                    )
-                    self.request.session.flash(_("success:Added to the database"))
+                    with self.request.dbsession.no_autoflush:
+                        a = Activity(stage=form.stage.data, role=form.role.data)
+                        a.company = company
+                        project.companies.append(a)
+                        log.info(
+                            _("The user %s added the company to the project")
+                            % self.request.identity.name
+                        )
+                        self.request.session.flash(_("success:Added to the database"))
             next_url = self.request.route_url(
                 "project_companies", project_id=project.id, slug=project.slug
             )
