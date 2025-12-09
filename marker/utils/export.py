@@ -70,11 +70,11 @@ def response_contacts_xlsx(rows, default_date_format="yyyy-mm-dd"):
     cell_format = workbook.add_format({"bold": True})
 
     header_row = [
-        _("Fullname"),
+        _("Name"),
         _("Role"),
         _("Phone"),
         _("Email"),
-        _("Company/Project"),
+        _("Company_Project"),
     ]
 
     # Write rows.
