@@ -24,6 +24,7 @@ from ..forms.select import (
     STAGES,
     USER_ROLES,
     select_countries,
+    select_subdivisions,
 )
 from ..models import (
     Activity,
@@ -826,6 +827,7 @@ class CompanyView:
         _ = self.request.translate
         form = CompanyForm(self.request.POST, request=self.request)
         countries = dict(select_countries())
+        subdivisions = dict(select_subdivisions(form.country.data))
         if self.request.method == "POST" and form.validate():
             company = Company(
                 name=form.name.data,
@@ -864,7 +866,7 @@ class CompanyView:
                 "company_view", company_id=company.id, slug=company.slug
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Add a company"), "form": form}
+        return {"heading": _("Add a company"), "form": form, "subdivisions": subdivisions}
 
     @view_config(
         route_name="company_edit", renderer="company_form.mako", permission="edit"
@@ -874,7 +876,7 @@ class CompanyView:
         company = self.request.context.company
         form = CompanyForm(self.request.POST, company, request=self.request)
         countries = dict(select_countries())
-
+        subdivisions = dict(select_subdivisions(form.country.data))
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
             loc = location(
@@ -900,7 +902,7 @@ class CompanyView:
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Edit company details"), "form": form}
+        return {"heading": _("Edit company details"), "form": form, "subdivisions": subdivisions}
 
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):

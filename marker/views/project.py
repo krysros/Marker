@@ -26,6 +26,7 @@ from ..forms.select import (
     STATUS,
     USER_ROLES,
     select_countries,
+    select_subdivisions,
 )
 from ..models import (
     Activity,
@@ -723,7 +724,7 @@ class ProjectView:
         _ = self.request.translate
         form = ProjectForm(self.request.POST, request=self.request)
         countries = dict(select_countries())
-
+        subdivisions = dict(select_subdivisions())
         if self.request.method == "POST" and form.validate():
             project = Project(
                 name=form.name.data,
@@ -761,7 +762,7 @@ class ProjectView:
                 "project_view", project_id=project.id, slug=project.slug
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Add a project"), "form": form}
+        return {"heading": _("Add a project"), "form": form, "subdivisions": subdivisions}
 
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"
@@ -771,7 +772,7 @@ class ProjectView:
         project = self.request.context.project
         form = ProjectForm(self.request.POST, project, request=self.request)
         countries = dict(select_countries())
-
+        subdivisions = dict(select_subdivisions(form.country.data))
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
             loc = location(
@@ -799,7 +800,7 @@ class ProjectView:
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Edit project details"), "form": form}
+        return {"heading": _("Edit project details"), "form": form, "subdivisions": subdivisions}
 
     @view_config(
         route_name="project_delete",

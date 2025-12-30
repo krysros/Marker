@@ -42,7 +42,15 @@
       </div>
       <div class="mb-3">
         ${form.subdivision.label(class_="form-label")}
-        ${form.subdivision(class_="form-control" + (" is-invalid" if form.errors.get("subdivision") else ""))}
+        <select class="form-control" id="subdivision" name="subdivision">
+        % for code, name in subdivisions.items():
+          % if form.subdivision.data == code:
+            <option value="${code}" selected>${name}</option>
+          % else:
+            <option value="${code}">${name}</option>
+          % endif
+        % endfor
+        </select>
         % for error in form.errors.get("subdivision", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
