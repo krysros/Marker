@@ -1,5 +1,10 @@
 <%inherit file="layout.mako"/>
 
+<%
+  from marker.forms.select import select_subdivisions
+  subdivisions = dict(select_subdivisions(form.country.data))
+%>
+
 <div class="card mt-4 mb-4">
   <div class="card-header">${heading}</div>
   <div class="card-body">
