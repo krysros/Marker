@@ -765,6 +765,66 @@ class ProjectView:
         return {"heading": _("Add a project"), "form": form}
 
     @view_config(
+        route_name="project_add_from_search", renderer="project_form.mako", permission="edit"
+    )
+    def add_from_search(self):
+        _ = self.request.translate
+        form = ProjectForm(self.request.POST, request=self.request)
+        countries = dict(select_countries())
+
+        if self.request.method == "POST" and form.validate():
+            project = Project(
+                name=form.name.data,
+                street=form.street.data,
+                postcode=form.postcode.data,
+                city=form.city.data,
+                subdivision=form.subdivision.data,
+                country=form.country.data,
+                website=form.website.data,
+                color=form.color.data,
+                deadline=form.deadline.data,
+                stage=form.stage.data,
+                delivery_method=form.delivery_method.data,
+            )
+            loc = location(
+                street=form.street.data,
+                city=form.city.data,
+                # state=getattr(
+                #     pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
+                # ),
+                country=countries.get(form.country.data),
+                postalcode=form.postcode.data,
+            )
+            if loc is not None:
+                project.latitude = loc["lat"]
+                project.longitude = loc["lon"]
+
+            project.created_by = self.request.identity
+            self.request.dbsession.add(project)
+            self.request.dbsession.flush()
+            self.request.session.flash(_("success:Added to the database"))
+            self.request.session.flash(_("info:Add tags and contacts"))
+            log.info(_("The user %s has added a project") % self.request.identity.name)
+            next_url = self.request.route_url(
+                "project_view", project_id=project.id, slug=project.slug
+            )
+            return HTTPSeeOther(location=next_url)
+
+        form.name.data = self.request.params.get("name", None)
+        form.street.data = self.request.params.get("street", None)
+        form.postcode.data = self.request.params.get("postcode", None)
+        form.city.data = self.request.params.get("city", None)
+        form.country.data = self.request.params.get("country", None)
+        form.subdivision.data = self.request.params.get("subdivision", None)
+        form.website.data = self.request.params.get("website", None)
+        form.color.data = self.request.params.get("color", None)
+        form.deadline.data = self.request.params.get("deadline", None)
+        form.stage.data = self.request.params.get("stage", None)
+        form.delivery_method.data = self.request.params.get("delivery_method", None)
+        
+        return {"heading": _("Add a project"), "form": form}
+
+    @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"
     )
     def edit(self):
