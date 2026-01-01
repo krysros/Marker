@@ -866,66 +866,19 @@ class CompanyView:
                 "company_view", company_id=company.id, slug=company.slug
             )
             return HTTPSeeOther(location=next_url)
-        return {"heading": _("Add a company"), "form": form}
 
-    @view_config(
-        route_name="company_add_from_search", renderer="company_form.mako", permission="edit"
-    )
-    def add_from_search(self):
-        _ = self.request.translate
-        form = CompanyForm(self.request.POST, request=self.request)
-        countries = dict(select_countries())
-
-        if self.request.method == "POST" and form.validate():
-            company = Company(
-                name=form.name.data,
-                street=form.street.data,
-                postcode=form.postcode.data,
-                city=form.city.data,
-                subdivision=form.subdivision.data,
-                country=form.country.data,
-                website=form.website.data,
-                color=form.color.data,
-                NIP=form.NIP.data,
-                REGON=form.REGON.data,
-                KRS=form.KRS.data,
-                court=form.court.data,
-            )
-            loc = location(
-                street=form.street.data,
-                city=form.city.data,
-                # state=getattr(
-                #     pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
-                # ),
-                country=countries.get(form.country.data),
-                postalcode=form.postcode.data,
-            )
-            if loc is not None:
-                company.latitude = loc["lat"]
-                company.longitude = loc["lon"]
-
-            company.created_by = self.request.identity
-            self.request.dbsession.add(company)
-            self.request.dbsession.flush()
-            self.request.session.flash(_("success:Added to the database"))
-            self.request.session.flash(_("info:Add tags and contacts"))
-            log.info(_("The user %s has added a company") % self.request.identity.name)
-            next_url = self.request.route_url(
-                "company_view", company_id=company.id, slug=company.slug
-            )
-            return HTTPSeeOther(location=next_url)
-        
-        form.name.data = self.request.params.get("name", None)
-        form.street.data = self.request.params.get("street", None)
-        form.postcode.data = self.request.params.get("postcode", None)
-        form.city.data = self.request.params.get("city", None)
-        form.country.data = self.request.params.get("country", None)
-        form.subdivision.data = self.request.params.get("subdivision", None)
-        form.website.data = self.request.params.get("website", None)
-        form.color.data = self.request.params.get("color", None)
-        form.NIP.data = self.request.params.get("NIP", None)
-        form.REGON.data = self.request.params.get("REGON", None)
-        form.KRS.data = self.request.params.get("KRS", None)
+        if self.request.query_string:
+            form.name.data = self.request.params.get("name", None)
+            form.street.data = self.request.params.get("street", None)
+            form.postcode.data = self.request.params.get("postcode", None)
+            form.city.data = self.request.params.get("city", None)
+            form.country.data = self.request.params.get("country", None)
+            form.subdivision.data = self.request.params.get("subdivision", None)
+            form.website.data = self.request.params.get("website", None)
+            form.color.data = self.request.params.get("color", None)
+            form.NIP.data = self.request.params.get("NIP", None)
+            form.REGON.data = self.request.params.get("REGON", None)
+            form.KRS.data = self.request.params.get("KRS", None)
 
         return {"heading": _("Add a company"), "form": form}
 

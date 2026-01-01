@@ -37,9 +37,9 @@
   </div>
   <div class="alert alert-info" role="alert">
     % if request.matched_route.name.startswith("company"):
-    <a href="${request.route_url('company_add_from_search', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
+    <a href="${request.route_url('company_add', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
     % elif request.matched_route.name.startswith("project"):
-    <a href="${request.route_url('project_add_from_search', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
+    <a href="${request.route_url('project_add', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
     % endif
   </div>
   % endif

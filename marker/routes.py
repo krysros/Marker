@@ -26,7 +26,6 @@ def includeme(config):
     config.add_route("company_json", "/company/json", factory=default_factory)
     config.add_route("company_map", "/company/map", factory=default_factory)
     config.add_route("company_add", "/company/add", factory=default_factory)
-    config.add_route("company_add_from_search", "/company/add_from_search", factory=default_factory)
     config.add_route("company_search", "/company/search", factory=default_factory)
     config.add_route("company_select", "/company/select", factory=default_factory)
     config.add_route(
@@ -160,7 +159,6 @@ def includeme(config):
     config.add_route("project_json", "/project/json", factory=default_factory)
     config.add_route("project_map", "/project/map", factory=default_factory)
     config.add_route("project_add", "/project/add", factory=default_factory)
-    config.add_route("project_add_from_search", "/project/add_from_search", factory=default_factory)
     config.add_route("project_search", "/project/search", factory=default_factory)
     config.add_route("project_select", "/project/select", factory=default_factory)
     config.add_route(
