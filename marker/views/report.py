@@ -32,7 +32,9 @@ class ReportView:
             "counter": len(REPORTS),
         }
 
-    @view_config(route_name="report_view", renderer="report_view.mako", permission="view")
+    @view_config(
+        route_name="report_view", renderer="report_view.mako", permission="view"
+    )
     @view_config(
         route_name="report_more",
         renderer="report_more.mako",
