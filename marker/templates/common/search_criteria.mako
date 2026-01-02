@@ -35,12 +35,14 @@
       % endif
     % endfor
   </div>
+  % if request.matched_route.name.startswith("company"):
   <div class="alert alert-info" role="alert">
-    % if request.matched_route.name.startswith("company"):
     <a href="${request.route_url('company_add', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
-    % elif request.matched_route.name.startswith("project"):
-    <a href="${request.route_url('project_add', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
-    % endif
   </div>
+  % elif request.matched_route.name.startswith("project"):
+  <div class="alert alert-info" role="alert">
+    <a href="${request.route_url('project_add', _query=request.query_string)}" class="alert-link">${_("Go to form...")}</a>
+  </div>
+  % endif
   % endif
 % endif
