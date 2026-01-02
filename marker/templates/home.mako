@@ -55,6 +55,7 @@
       <p>
         ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
         ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
+        ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
       </p>
     </div>
     <div class="col">

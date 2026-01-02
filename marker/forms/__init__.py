@@ -10,6 +10,7 @@ from .company import CompanyForm  # flake8: noqa
 from .company import CompanySearchForm  # flake8: noqa
 from .contact import ContactFilterForm  # flake8: noqa
 from .contact import ContactForm  # flaske8: noqa
+from .contact import ContactImportForm  # flake8: noqa
 from .contact import ContactSearchForm  # flake8: noqa
 from .login import LoginForm  # flake8: noqa
 from .project import ProjectActivityForm  # flake8: noqa

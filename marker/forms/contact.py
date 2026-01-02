@@ -1,5 +1,5 @@
-from wtforms import EmailField, Form, HiddenField, SelectField, StringField
-from wtforms.validators import InputRequired, Length
+from wtforms import EmailField, FileField, Form, HiddenField, SelectField, StringField
+from wtforms.validators import DataRequired, InputRequired, Length
 
 from .filters import strip_filter, title
 from .select import PARENTS
@@ -51,3 +51,7 @@ class ContactFilterForm(Form):
     phone = HiddenField(_("Phone"), filters=[strip_filter])
     email = HiddenField(_("Email"), filters=[strip_filter])
     parent = SelectField(_("Parent"), choices=PARENTS)
+
+
+class ContactImportForm(Form):
+    csv_file = FileField(_("CSV file"), validators=[DataRequired()])

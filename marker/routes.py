@@ -384,6 +384,9 @@ def includeme(config):
     config.add_route("contact_search", "/contact/search", factory=default_factory)
     config.add_route("contact_count", "/contact/count", factory=default_factory)
     config.add_route(
+        "contact_import_csv", "/contacts/import_csv", factory=default_factory
+    )
+    config.add_route(
         "contact_view",
         r"/contact/{contact_id:\d+}/{slug}",
         factory=contact_factory,
