@@ -1,7 +1,8 @@
-2.2b1
------
+2.2
+---
 
 - Reports as a list
+- Import from Google Contacts CSV file
 
 2.1
 ---
