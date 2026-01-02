@@ -24,7 +24,6 @@ from ..forms.select import (
     STAGES,
     USER_ROLES,
     select_countries,
-    select_subdivisions,
 )
 from ..models import (
     Activity,
