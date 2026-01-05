@@ -17,7 +17,7 @@
         % endfor
       </div>
       <div class="mb-3">
-        <button type="submit" class="btn btn-primary" onclick="if (document.querySelector('input[name=csv_file]').files.length > 0) { document.getElementById('import-alert').classList.remove('d-none'); } else { alert('Please select a CSV file'); return false; }">${_("Submit")}</button>
+        <button type="submit" class="btn btn-primary" onclick="if (document.querySelector('input[name=csv_file]').files.length > 0) { document.getElementById('import-alert').classList.remove('d-none'); } else { alert('${_("Please select a CSV file")}'); return false; }">${_("Submit")}</button>
       </div>
     </form>
   </div>
