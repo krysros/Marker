@@ -2102,7 +2102,27 @@ class UserView:
     )
     def json_companies(self):
         user = self.request.context.user
+        
+        # Bounding box parameters for lazy loading
+        north = self.request.params.get("north", None)
+        south = self.request.params.get("south", None)
+        east = self.request.params.get("east", None)
+        west = self.request.params.get("west", None)
+        
         stmt = select(Company).filter(Company.created_by == user)
+        
+        # Filter by bounding box if provided
+        if north and south and east and west:
+            try:
+                north = float(north)
+                south = float(south)
+                east = float(east)
+                west = float(west)
+                stmt = stmt.filter(Company.latitude.between(south, north))
+                stmt = stmt.filter(Company.longitude.between(west, east))
+            except (ValueError, TypeError):
+                pass  # Invalid coordinates, ignore filtering
+        
         companies = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
@@ -2129,7 +2149,27 @@ class UserView:
     )
     def json_projects(self):
         user = self.request.context.user
+        
+        # Bounding box parameters for lazy loading
+        north = self.request.params.get("north", None)
+        south = self.request.params.get("south", None)
+        east = self.request.params.get("east", None)
+        west = self.request.params.get("west", None)
+        
         stmt = select(Project).filter(Project.created_by == user)
+        
+        # Filter by bounding box if provided
+        if north and south and east and west:
+            try:
+                north = float(north)
+                south = float(south)
+                east = float(east)
+                west = float(west)
+                stmt = stmt.filter(Project.latitude.between(south, north))
+                stmt = stmt.filter(Project.longitude.between(west, east))
+            except (ValueError, TypeError):
+                pass  # Invalid coordinates, ignore filtering
+        
         projects = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
