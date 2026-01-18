@@ -570,6 +570,11 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_merge_selected_tags",
+        "/user/{username}/merge_selected_tags",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_selected_contacts",
         "/user/{username}/selected_contacts",
         factory=user_factory,

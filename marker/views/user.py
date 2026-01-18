@@ -35,7 +35,9 @@ from ..models import (
     Tag,
     User,
     companies_stars,
+    companies_tags,
     projects_stars,
+    projects_tags,
     selected_companies,
     selected_contacts,
     selected_projects,
@@ -1695,6 +1697,91 @@ class UserView:
         self.request.session.flash(_("success:Selected tags deleted"))
         log.info(
             _("The user %s deleted selected tags") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_tags", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_merge_selected_tags",
+        request_method="POST",
+        permission="edit",
+    )
+    def merge_selected_tags(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        new_name = self.request.params.get("merge_tag_name", None)
+        
+        if not new_name or not user.selected_tags:
+            self.request.session.flash(_("warning:Please provide a name and select tags"))
+            next_url = self.request.route_url("user_selected_tags", username=user.name)
+            response = self.request.response
+            response.headers = {"HX-Redirect": next_url}
+            response.status_code = 303
+            return response
+        
+        # Get all selected tag IDs and collect companies/projects BEFORE deletions
+        selected_ids = [tag.id for tag in user.selected_tags]
+        companies_to_add = set()
+        projects_to_add = set()
+        
+        for tag in user.selected_tags:
+            companies_to_add.update(tag.companies)
+            projects_to_add.update(tag.projects)
+        
+        # Check if a tag with the new name already exists (created by this user)
+        existing_tag = self.request.dbsession.execute(
+            select(Tag).filter(Tag.name == new_name, Tag.creator_id == user.id)
+        ).scalar()
+        
+        if existing_tag:
+            # Merge into existing tag with that name
+            target_tag = existing_tag
+            # Remove target tag from selected IDs so we don't delete its associations
+            ids_to_delete = [tag_id for tag_id in selected_ids if tag_id != target_tag.id]
+        else:
+            # Create a new tag with the given name
+            target_tag = Tag(name=new_name)
+            target_tag.created_by = user
+            self.request.dbsession.add(target_tag)
+            self.request.dbsession.flush()  # Ensure it gets an ID
+            ids_to_delete = selected_ids
+        
+        # Remove associations from selected_tags table for tags to be deleted
+        if ids_to_delete:
+            stmt = delete(selected_tags).where(selected_tags.c.tag_id.in_(ids_to_delete))
+            self.request.dbsession.execute(stmt)
+            
+            # Remove associations from companies_tags and projects_tags for tags to be deleted
+            stmt = delete(companies_tags).where(companies_tags.c.tag_id.in_(ids_to_delete))
+            self.request.dbsession.execute(stmt)
+            
+            stmt = delete(projects_tags).where(projects_tags.c.tag_id.in_(ids_to_delete))
+            self.request.dbsession.execute(stmt)
+        
+        # Add companies and projects to target tag (if not already there)
+        for company in companies_to_add:
+            if company not in target_tag.companies:
+                target_tag.companies.append(company)
+        
+        for project in projects_to_add:
+            if project not in target_tag.projects:
+                target_tag.projects.append(project)
+        
+        # Delete the old tags (but not the target tag)
+        for tag in user.selected_tags:
+            if tag.id != target_tag.id:
+                stmt = delete(Tag).where(Tag.id == tag.id)
+                self.request.dbsession.execute(stmt)
+        
+        # Clear selection
+        user.selected_tags = []
+        
+        self.request.session.flash(_("success:Selected tags merged"))
+        log.info(
+            _("The user %s merged selected tags to '%s'") % (self.request.identity.name, new_name)
         )
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
