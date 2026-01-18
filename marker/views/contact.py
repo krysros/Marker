@@ -4,11 +4,11 @@ from io import StringIO
 
 from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select
+from sqlalchemy import func, select, delete
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import ORDER_CRITERIA, PARENTS, SORT_CRITERIA
-from ..models import Comment, Company, Contact, Tag
+from ..models import Comment, Company, Contact, Tag, selected_contacts
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
@@ -149,6 +149,10 @@ class ContactView:
     def delete(self):
         _ = self.request.translate
         contact = self.request.context.contact
+        stmt = delete(selected_contacts).where(
+            selected_contacts.c.contact_id == contact.id
+        )
+        self.request.dbsession.execute(stmt)
         self.request.dbsession.delete(contact)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s deleted the contact") % self.request.identity.name)

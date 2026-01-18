@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select
+from sqlalchemy import func, select, delete
 
 from ..forms import CompanyFilterForm, ProjectFilterForm, TagForm, TagSearchForm
 from ..forms.select import (
@@ -13,7 +13,7 @@ from ..forms.select import (
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
 )
-from ..models import Company, Project, Tag, companies_stars, projects_stars
+from ..models import Company, Project, Tag, companies_stars, projects_stars, selected_tags
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter
@@ -807,6 +807,10 @@ class TagView:
     def delete(self):
         _ = self.request.translate
         tag = self.request.context.tag
+        stmt = delete(selected_tags).where(
+            selected_tags.c.tag_id == tag.id
+        )
+        self.request.dbsession.execute(stmt)
         self.request.dbsession.delete(tag)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s removed the tag") % self.request.identity.name)

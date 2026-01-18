@@ -4,7 +4,7 @@ import logging
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, func, select, delete
 
 from ..forms import (
     ActivityForm,
@@ -36,6 +36,7 @@ from ..models import (
     Tag,
     User,
     projects_stars,
+    selected_projects,
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
@@ -823,6 +824,14 @@ class ProjectView:
     def delete(self):
         _ = self.request.translate
         project = self.request.context.project
+        stmt_1 = delete(projects_stars).where(
+            projects_stars.c.project_id == project.id
+        )
+        stmt_2 = delete(selected_projects).where(
+            selected_projects.c.project_id == project.id
+        )
+        self.request.dbsession.execute(stmt_1)
+        self.request.dbsession.execute(stmt_2)
         self.request.dbsession.delete(project)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s deleted the project") % self.request.identity.name)

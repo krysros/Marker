@@ -54,6 +54,16 @@
   </button>
 </%def>
 
+<%def name="delete_selected(icon='trash', color='danger', size=None, url='#', confirm_text=None)">
+  % if request.is_authenticated and request.identity.role == 'editor' or 'admin':
+    <button type="button" class="btn btn-${color}${' btn-' + size if size else ''}" hx-post="${url}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${confirm_text or _("Are you sure?")}'>
+  % else:
+    <button type="button" class="btn btn-${color}${' btn-' + size if size else ''}" disabled>
+  % endif
+    <i class="bi bi-${icon}"></i>
+  </button>
+</%def>
+
 <%def name="company_star(company, size=None)">
 <button class="btn btn-primary${' btn-' + size if size else ''}" hx-post="${request.route_url('company_star', company_id=company.id, slug=company.slug)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-target="#company-star-${company.id}" hx-swap="innerHTML">
   <div id="company-star-${company.id}">

@@ -5,6 +5,7 @@
   <i class="bi bi-check-square"></i> ${_("Projects")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
+    ${button.delete_selected(url=request.route_url('user_delete_selected_projects', username=user.name, _query=q), confirm_text=_("Delete all selected projects?"))}
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_selected_projects', username=user.name, _query=q))}
     ${button.button(icon='square', color='warning', url=request.route_url('user_clear_selected_projects', username=user.name))}
     ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_projects', username=user.name, _query=q))}

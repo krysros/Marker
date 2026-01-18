@@ -3,7 +3,7 @@ import logging
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, func, select, delete
 
 from ..forms import (
     ActivityForm,
@@ -34,6 +34,7 @@ from ..models import (
     Tag,
     User,
     companies_stars,
+    selected_companies,
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
@@ -921,6 +922,14 @@ class CompanyView:
     def delete(self):
         _ = self.request.translate
         company = self.request.context.company
+        stmt_1 = delete(companies_stars).where(
+            companies_stars.c.company_id == company.id
+        )
+        stmt_2 = delete(selected_companies).where(
+            selected_companies.c.company_id == company.id
+        )
+        self.request.dbsession.execute(stmt_1)
+        self.request.dbsession.execute(stmt_2)
         self.request.dbsession.delete(company)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s deleted the company") % self.request.identity.name)

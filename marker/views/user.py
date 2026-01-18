@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select
+from sqlalchemy import func, select, delete
 
 from ..forms import (
     CommentFilterForm,
@@ -1587,6 +1587,116 @@ class UserView:
             _("The user %s cleared the selected contacts") % self.request.identity.name
         )
         next_url = self.request.route_url("user_selected_contacts", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_delete_selected_companies",
+        request_method="POST",
+        permission="edit",
+    )
+    def delete_selected_companies(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        selected_ids = [company.id for company in user.selected_companies]
+
+        stmt_1 = delete(companies_stars).where(
+            companies_stars.c.user_id == user.id
+        )
+        stmt_2 = delete(selected_companies).where(
+            selected_companies.c.user_id == user.id
+        )
+        self.request.dbsession.execute(stmt_1)
+        self.request.dbsession.execute(stmt_2)
+
+        stmt = delete(Company).where(Company.id.in_(selected_ids))
+        self.request.dbsession.execute(stmt)
+        self.request.session.flash(_("success:Selected companies deleted"))
+        log.info(
+            _("The user %s deleted selected companies") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_companies", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_delete_selected_projects",
+        request_method="POST",
+        permission="edit",
+    )
+    def delete_selected_projects(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        selected_ids = [project.id for project in user.selected_projects]
+        stmt_1 = delete(projects_stars).where(
+            projects_stars.c.user_id == user.id
+        )
+        stmt_2 = delete(selected_projects).where(
+            selected_projects.c.user_id == user.id
+        )
+        self.request.dbsession.execute(stmt_1)
+        self.request.dbsession.execute(stmt_2)
+        stmt = delete(Project).where(Project.id.in_(selected_ids))
+        self.request.dbsession.execute(stmt)
+        self.request.session.flash(_("success:Selected projects deleted"))
+        log.info(
+            _("The user %s deleted selected projects") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_projects", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_delete_selected_contacts",
+        request_method="POST",
+        permission="edit",
+    )
+    def delete_selected_contacts(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        selected_ids = [contact.id for contact in user.selected_contacts]
+        stmt = delete(selected_contacts).where(
+            selected_contacts.c.user_id == user.id
+        )
+        self.request.dbsession.execute(stmt)
+        stmt = delete(Contact).where(Contact.id.in_(selected_ids))
+        self.request.dbsession.execute(stmt)
+        self.request.session.flash(_("success:Selected contacts deleted"))
+        log.info(
+            _("The user %s deleted selected contacts") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_contacts", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_delete_selected_tags",
+        request_method="POST",
+        permission="edit",
+    )
+    def delete_selected_tags(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        selected_ids = [tag.id for tag in user.selected_tags]
+        stmt = delete(selected_tags).where(
+            selected_tags.c.user_id == user.id
+        )
+        self.request.dbsession.execute(stmt)
+        stmt = delete(Tag).where(Tag.id.in_(selected_ids))
+        self.request.dbsession.execute(stmt)
+        self.request.session.flash(_("success:Selected tags deleted"))
+        log.info(
+            _("The user %s deleted selected tags") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
