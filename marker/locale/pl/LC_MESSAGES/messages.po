@@ -813,7 +813,7 @@ msgstr "Usunąć wszystkie wybrane projekty"
 
 #: marker/templates/user/user_selected_tags.mako:31
 msgid "Merge selected tags"
-msgstr "Połącz wybrane tagi"
+msgstr "Scal wybrane tagi"
 
 #: marker/templates/user/user_selected_tags.mako:38
 msgid "New tag name"
@@ -829,7 +829,7 @@ msgstr "Anuluj"
 
 #: marker/templates/user/user_selected_tags.mako:45
 msgid "Merge"
-msgstr "Połącz"
+msgstr "Scal"
 
 #: marker/templates/user/user_view.mako:14 marker/views/user.py:66
 msgid "User"
@@ -1221,12 +1221,12 @@ msgstr "warning:Proszę podać nazwę i wybrać tagi"
 
 #: marker/views/user.py:1782
 msgid "success:Selected tags merged"
-msgstr "success:Wybrane tagi zostały połączone"
+msgstr "success:Wybrane tagi zostały scalone"
 
 #: marker/views/user.py:1784
 #, python-format
 msgid "The user %s merged selected tags to '%s'"
-msgstr "Użytkownik %s połączył zaznaczone tagi w '%s'"
+msgstr "Użytkownik %s scalił zaznaczone tagi w '%s'"
 
 #: marker/views/user.py:1928
 #, python-format
