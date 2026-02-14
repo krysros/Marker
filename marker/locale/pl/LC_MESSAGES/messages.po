@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-19 20:09+0100\n"
+"POT-Creation-Date: 2026-02-14 18:48+0100\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -19,10 +19,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: marker/forms/account.py:11 marker/forms/contact.py:11
-#: marker/forms/contact.py:42 marker/forms/contact.py:49
-#: marker/forms/user.py:29 marker/forms/user.py:73 marker/forms/user.py:80
-#: marker/templates/company/company_contacts.mako:23
+#: marker/forms/account.py:11 marker/forms/user.py:29 marker/forms/user.py:73
+#: marker/forms/user.py:80 marker/templates/company/company_contacts.mako:23
 #: marker/templates/contact/contact_table.mako:6
 #: marker/templates/contact/contact_view.mako:25
 #: marker/templates/project/project_contacts.mako:23
@@ -88,13 +86,14 @@ msgstr "Rodzic"
 
 #: marker/forms/company.py:44 marker/forms/company.py:174
 #: marker/forms/company.py:191 marker/forms/company.py:225
-#: marker/forms/project.py:29 marker/forms/project.py:100
-#: marker/forms/project.py:123 marker/forms/project.py:159
-#: marker/forms/select.py:27 marker/forms/select.py:34
-#: marker/forms/select.py:44 marker/forms/select.py:56 marker/forms/tag.py:12
-#: marker/forms/tag.py:41 marker/forms/tag.py:46 marker/forms/user.py:21
-#: marker/forms/user.py:72 marker/forms/user.py:79
-#: marker/templates/company/company_view.mako:31
+#: marker/forms/contact.py:11 marker/forms/contact.py:42
+#: marker/forms/contact.py:49 marker/forms/project.py:29
+#: marker/forms/project.py:100 marker/forms/project.py:123
+#: marker/forms/project.py:159 marker/forms/select.py:27
+#: marker/forms/select.py:34 marker/forms/select.py:44
+#: marker/forms/select.py:56 marker/forms/tag.py:12 marker/forms/tag.py:41
+#: marker/forms/tag.py:46 marker/forms/user.py:21 marker/forms/user.py:72
+#: marker/forms/user.py:79 marker/templates/company/company_view.mako:31
 #: marker/templates/project/project_view.mako:29
 #: marker/templates/tag/tag_view.mako:19
 #: marker/templates/user/user_table.mako:5
@@ -804,7 +803,6 @@ msgid "Delete all selected companies?"
 msgstr "Usunąć wszystkie zaznaczone firmy?"
 
 #: marker/templates/user/user_selected_contacts.mako:8
-#, python-format
 msgid "Delete all selected contacts?"
 msgstr "Usunąć wszystkie wybrane kontakty?"
 
