@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-14 18:48+0100\n"
+"POT-Creation-Date: 2026-02-14 19:00+0100\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -131,9 +131,10 @@ msgstr "Kod pocztowy"
 #: marker/forms/select.py:57 marker/templates/company/company_table.mako:7
 #: marker/templates/company/company_view.mako:45
 #: marker/templates/project/project_table.mako:7
-#: marker/templates/project/project_view.mako:43 marker/views/tag.py:543
-#: marker/views/tag.py:751 marker/views/user.py:1013 marker/views/user.py:1312
-#: marker/views/user.py:1921 marker/views/user.py:2148
+#: marker/templates/project/project_view.mako:43 marker/utils/export.py:78
+#: marker/views/tag.py:543 marker/views/tag.py:751 marker/views/user.py:1013
+#: marker/views/user.py:1312 marker/views/user.py:1921
+#: marker/views/user.py:2148
 msgid "City"
 msgstr "Miasto"
 
@@ -143,9 +144,9 @@ msgstr "Miasto"
 #: marker/forms/select.py:36 marker/forms/select.py:46
 #: marker/forms/select.py:58 marker/templates/company/company_view.mako:47
 #: marker/templates/project/project_view.mako:45 marker/utils/export.py:26
-#: marker/views/tag.py:544 marker/views/tag.py:752 marker/views/user.py:1014
-#: marker/views/user.py:1313 marker/views/user.py:1922
-#: marker/views/user.py:2149
+#: marker/utils/export.py:79 marker/views/tag.py:544 marker/views/tag.py:752
+#: marker/views/user.py:1014 marker/views/user.py:1313
+#: marker/views/user.py:1922 marker/views/user.py:2149
 msgid "Subdivision"
 msgstr "Województwo"
 
@@ -155,9 +156,9 @@ msgstr "Województwo"
 #: marker/forms/select.py:37 marker/forms/select.py:47
 #: marker/forms/select.py:59 marker/templates/company/company_view.mako:49
 #: marker/templates/project/project_view.mako:47 marker/utils/export.py:32
-#: marker/views/tag.py:545 marker/views/tag.py:753 marker/views/user.py:1015
-#: marker/views/user.py:1314 marker/views/user.py:1923
-#: marker/views/user.py:2150
+#: marker/utils/export.py:80 marker/views/tag.py:545 marker/views/tag.py:753
+#: marker/views/user.py:1015 marker/views/user.py:1314
+#: marker/views/user.py:1923 marker/views/user.py:2150
 msgid "Country"
 msgstr "Kraj"
 

@@ -75,6 +75,9 @@ def response_contacts_xlsx(rows, default_date_format="yyyy-mm-dd"):
         _("Phone"),
         _("Email"),
         _("Company_Project"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
     ]
 
     # Write rows.
@@ -88,8 +91,22 @@ def response_contacts_xlsx(rows, default_date_format="yyyy-mm-dd"):
         worksheet.write(i, 3, row.email)
         if row.company:
             worksheet.write(i, 4, row.company.name)
+            worksheet.write(i, 5, row.company.city)
+            worksheet.write(
+                i, 6, getattr(pycountry.subdivisions.get(code=row.company.subdivision), "name", "")
+            )
+            worksheet.write(
+                i, 7, getattr(pycountry.countries.get(alpha_2=row.company.country), "name", "")
+            )
         if row.project:
             worksheet.write(i, 4, row.project.name)
+            worksheet.write(i, 5, row.project.city)
+            worksheet.write(
+                i, 6, getattr(pycountry.subdivisions.get(code=row.project.subdivision), "name", "")
+            )
+            worksheet.write(
+                i, 7, getattr(pycountry.countries.get(alpha_2=row.project.country), "name", "")
+            )
 
     # Close the workbook before streaming the data.
     workbook.close()
