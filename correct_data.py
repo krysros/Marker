@@ -19,6 +19,87 @@ def main():
             dbsession.commit()
 
     for company in dbsession.execute(select(models.Company)).scalars():
+        if 'ul.' in company.street:
+            _, street = company.street.split('ul.', maxsplit=1)
+            company.street = street.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'UL.' in company.street:
+            _, street = company.street.split('UL.', maxsplit=1)
+            company.street = street.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if company.name.startswith('Sz. P.'):
+            company.name = company.name.removeprefix('Sz. P.').strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'Sz. P.' in company.name:
+            name, _ = company.name.split('Sz. P.', maxsplit=1)
+            company.name = name.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'sz. P.' in company.name:
+            name, _ = company.name.split('sz. P.', maxsplit=1)
+            company.name = name.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'Sz.P.' in company.name:
+            name, _ = company.name.split('Sz.P.', maxsplit=1)
+            company.name = name.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'Sz. Pani' in company.name:
+            name, _ = company.name.split('Sz. Pani', maxsplit=1)
+            company.name = name.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if company.name.endswith(','):
+            company.name = company.name.removesuffix(',').strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'k.' in company.city:
+            city, _ = company.city.split('k.', maxsplit=1)
+            company.city = city.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'K.' in company.city:
+            city, _ = company.city.split('K.', maxsplit=1)
+            company.city = city.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if 'k,' in company.city:
+            city, _ = company.city.split('k,', maxsplit=1)
+            company.city = city.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if '/' in company.city:
+            city, _ = company.city.split('/', maxsplit=1)
+            company.city = city.strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if company.city.startswith('-'):
+            company.city = company.city.removeprefix('-').strip()
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
+        if re.search(r'\d', company.city):
+            cleaned_city = re.sub(r'^\d+\s*', '', company.city)
+            company.city = cleaned_city
+            dbsession.commit()
+
+    for company in dbsession.execute(select(models.Company)).scalars():
         city = dash_filter(company.city)
         match = re.search(r'(\d{2}-\d{3})\s+(.*)', city)
 
