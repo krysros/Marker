@@ -37,11 +37,13 @@
   </div>
   % if request.matched_route.name.startswith("company"):
   <div class="alert alert-info" role="alert">
-    <a href="${request.route_url('company_add', _query={**form.data})}" class="alert-link">${_("Go to form...")}</a>
+    ${_("Don't see what you're looking for?")}
+    <a href="${request.route_url('company_add', _query={**form.data})}" class="alert-link">${_("Go to the form and add...")}</a>
   </div>
   % elif request.matched_route.name.startswith("project"):
   <div class="alert alert-info" role="alert">
-    <a href="${request.route_url('project_add', _query={**form.data})}" class="alert-link">${_("Go to form...")}</a>
+    ${_("Don't see what you're looking for?")}
+    <a href="${request.route_url('project_add', _query={**form.data})}" class="alert-link">${_("Go to the form and add...")}</a>
   </div>
   % endif
   % endif

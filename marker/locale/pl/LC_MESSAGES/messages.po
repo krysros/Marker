@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-14 19:00+0100\n"
+"POT-Creation-Date: 2026-02-15 09:56+0100\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -716,9 +716,14 @@ msgid "Search criteria"
 msgstr "Kryteria wyszukiwania"
 
 #: marker/templates/common/search_criteria.mako:40
-#: marker/templates/common/search_criteria.mako:44
-msgid "Go to form..."
-msgstr "Przejdź do formularza..."
+#: marker/templates/common/search_criteria.mako:45
+msgid "Don't see what you're looking for?"
+msgstr "Nie ma tego czego szukasz?"
+
+#: marker/templates/common/search_criteria.mako:41
+#: marker/templates/common/search_criteria.mako:46
+msgid "Go to the form and add..."
+msgstr "Przejdź do formularza i dodaj..."
 
 #: marker/templates/company/company_contacts.mako:27
 #: marker/templates/company/company_projects.mako:26
