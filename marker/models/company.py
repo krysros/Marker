@@ -93,7 +93,7 @@ class Company(Base):
     @property
     def count_projects(self) -> int:
         return object_session(self).scalar(
-            select(func.count(Activity.company_id)).where(
+            select(func.count()).where(
                 Activity.company_id == self.id
             )
         )
@@ -101,7 +101,7 @@ class Company(Base):
     @property
     def count_tags(self) -> int:
         return object_session(self).scalar(
-            select(func.count(companies_tags.c.company_id)).where(
+            select(func.count()).where(
                 companies_tags.c.company_id == self.id
             )
         )
@@ -125,7 +125,7 @@ class Company(Base):
     @property
     def count_stars(self) -> int:
         return object_session(self).scalar(
-            select(func.count(companies_stars.c.company_id)).where(
+            select(func.count()).where(
                 companies_stars.c.company_id == self.id
             )
         )
