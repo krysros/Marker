@@ -15,7 +15,7 @@ FN:${contact.name | vescape}
 ROLE:${contact.role | vescape}
 % endif
 % if contact.phone:
-TEL;TYPE=work,voice;VALUE=uri:tel:${contact.phone | vescape}
+TEL;TYPE=work,voice;VALUE=tel:${contact.phone | vescape}
 % endif
 % if contact.email:
 EMAIL;TYPE=work:${contact.email | vescape}
