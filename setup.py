@@ -37,6 +37,8 @@ tests_require = [
     "pytest-cov",
     "pylint",  # default linter used by Python ext for Visual Studio Code
     "sqlalchemy-data-model-visualizer",
+    # ensure setuptools stays below v81 when installing testing extras
+    "setuptools < 81",
 ]
 
 setup(
