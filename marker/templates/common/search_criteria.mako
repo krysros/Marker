@@ -18,7 +18,7 @@
         % elif k == "parent":
           <strong>${parents.get(v)}</strong>;
         % elif k == "role":
-          <strong>${roles.get(v)}</strong>;
+          <strong>${form.data["role"]}</strong>;
         % elif k == "country":
           <strong>${pycountry.countries.get(alpha_2=v).name}</strong>;
         % elif k == "subdivision":
