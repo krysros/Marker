@@ -34,5 +34,38 @@
         <%include file="footer.mako"/>
       </div>
     </main>
+    <!-- keyboard shortcuts for pages with a single green plus or red trash button -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        /* helper for "add" buttons */
+        const plusButtons = document.querySelectorAll('.btn.btn-success i.bi-plus-lg');
+        if (plusButtons.length === 1) {
+            const btn = plusButtons[0].closest('a,button');
+            if (btn) {
+                btn.setAttribute('accesskey', '+');
+                document.addEventListener('keydown', function(e){
+                    if (e.key === '+' || e.key === 'Insert' || e.code === 'NumpadAdd'){
+                        e.preventDefault();
+                        btn.click();
+                    }
+                });
+            }
+        }
+        /* helper for "delete" buttons */
+        const trashButtons = document.querySelectorAll('.btn.btn-danger i.bi-trash');
+        if (trashButtons.length === 1) {
+            const btn = trashButtons[0].closest('a,button');
+            if (btn) {
+                btn.setAttribute('accesskey', '-');
+                document.addEventListener('keydown', function(e){
+                    if (e.key === '-' || e.key === 'Delete' || e.code === 'NumpadSubtract'){
+                        e.preventDefault();
+                        btn.click();
+                    }
+                });
+            }
+        }
+    });
+    </script>
   </body>
 </html>
