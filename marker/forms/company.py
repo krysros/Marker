@@ -242,3 +242,32 @@ class CompanyActivityForm(ActivityForm):
         ).scalar_one_or_none()
         if not exists:
             raise ValidationError(_("There is no company with this name"))
+
+
+class CompanyLinkForm(Form):
+    name = StringField(
+        _("Name"),
+        validators=[
+            InputRequired(),
+            Length(min=1, max=200),
+        ],
+        filters=[strip_filter],
+    )
+
+    def __init__(self, *args, request, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+        try:
+            self.edited_item = args[1]
+        except IndexError:
+            self.edited_item = None
+
+    def validate_name(self, field):
+        # if we are editing (not used here) ignore same value
+        if self.edited_item and self.edited_item.name == field.data:
+            return
+        exists = self.request.dbsession.execute(
+            select(Company).filter_by(name=field.data)
+        ).scalar_one_or_none()
+        if not exists:
+            raise ValidationError(_("There is no company with this name"))

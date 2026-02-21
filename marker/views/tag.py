@@ -5,7 +5,14 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select, delete
 
-from ..forms import CompanyFilterForm, ProjectFilterForm, TagForm, TagSearchForm
+from ..forms import (
+    CompanyFilterForm,
+    ProjectFilterForm,
+    TagForm,
+    TagSearchForm,
+    CompanyLinkForm,
+    ProjectLinkForm,
+)
 from ..forms.select import (
     COLORS,
     ORDER_CRITERIA,
@@ -769,6 +776,73 @@ class TagView:
         tag = self.request.context.tag
         return tag.count_projects
 
+    @view_config(
+        route_name="tag_add_company",
+        renderer="tag_add_company.mako",
+        permission="edit",
+    )
+    def add_company(self):
+        _ = self.request.translate
+        form = CompanyLinkForm(self.request.POST, request=self.request)
+        tag = self.request.context.tag
+
+        if self.request.method == "POST" and form.validate():
+            company = self.request.dbsession.execute(
+                select(Company).filter_by(name=form.name.data)
+            ).scalar_one_or_none()
+            if company and company not in tag.companies:
+                tag.companies.append(company)
+                log.info(
+                    _("The user %s has added a company to the tag")
+                    % self.request.identity.name
+                )
+                self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "tag_companies",
+                tag_id=tag.id,
+                slug=tag.slug,
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Add a company"),
+            "form": form,
+            "tag": tag,
+            "tag_pills": self.pills(tag),
+        }
+
+    @view_config(
+        route_name="tag_add_project",
+        renderer="tag_add_project.mako",
+        permission="edit",
+    )
+    def add_project(self):
+        _ = self.request.translate
+        form = ProjectLinkForm(self.request.POST, request=self.request)
+        tag = self.request.context.tag
+
+        if self.request.method == "POST" and form.validate():
+            project = self.request.dbsession.execute(
+                select(Project).filter_by(name=form.name.data)
+            ).scalar_one_or_none()
+            if project and project not in tag.projects:
+                tag.projects.append(project)
+                log.info(
+                    _("The user %s has added a project to the tag")
+                    % self.request.identity.name
+                )
+                self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "tag_projects",
+                tag_id=tag.id,
+                slug=tag.slug,
+            )
+            return HTTPSeeOther(location=next_url)
+        return {
+            "heading": _("Add a project"),
+            "form": form,
+            "tag": tag,
+            "tag_pills": self.pills(tag),
+        }
     @view_config(route_name="tag_add", renderer="tag_form.mako", permission="edit")
     def add(self):
         _ = self.request.translate

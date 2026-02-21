@@ -5,6 +5,7 @@ from .comment import CommentFilterForm  # flake8: noqa
 from .comment import CommentForm  # flake8: noqa
 from .comment import CommentSearchForm  # flake8: noqa
 from .company import CompanyActivityForm  # flake8: noqa
+from .company import CompanyLinkForm  # flake8: noqa
 from .company import CompanyFilterForm  # flake8: noqa
 from .company import CompanyForm  # flake8: noqa
 from .company import CompanySearchForm  # flake8: noqa
@@ -14,6 +15,7 @@ from .contact import ContactImportForm  # flake8: noqa
 from .contact import ContactSearchForm  # flake8: noqa
 from .login import LoginForm  # flake8: noqa
 from .project import ProjectActivityForm  # flake8: noqa
+from .project import ProjectLinkForm  # flake8: noqa
 from .project import ProjectFilterForm  # flake8: noqa
 from .project import ProjectForm  # flake8: noqa
 from .project import ProjectSearchForm  # flake8: noqa

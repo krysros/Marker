@@ -359,6 +359,16 @@ def includeme(config):
         factory=tag_factory,
     )
     config.add_route(
+        "tag_add_company",
+        r"/tag/{tag_id:\d+}/{slug}/add_company",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_add_project",
+        r"/tag/{tag_id:\d+}/{slug}/add_project",
+        factory=tag_factory,
+    )
+    config.add_route(
         "tag_edit",
         r"/tag/{tag_id:\d+}/{slug}/edit",
         factory=tag_factory,
