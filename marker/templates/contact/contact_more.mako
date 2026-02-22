@@ -9,9 +9,10 @@
 % if loop.last:
 <tr hx-get="${next_page}"
     hx-trigger="revealed"
-    hx-swap="afterend">
+    hx-swap="afterend"
+    class="table-${contact.color}">
 % else:
-<tr>
+<tr class="table-${contact.color}">
 % endif
   <td>${checkbox.checkbox(contact, selected=request.identity.selected_contacts, url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
   <td>

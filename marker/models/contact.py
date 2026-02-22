@@ -15,6 +15,7 @@ class Contact(Base):
     role: Mapped[Optional[str]]
     phone: Mapped[Optional[str]]
     email: Mapped[Optional[str]]
+    color: Mapped[Optional[str]]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
@@ -43,11 +44,13 @@ class Contact(Base):
         role: str,
         phone: str,
         email: str,
+        color: str,
     ) -> None:
         self.name = name
         self.role = role
         self.phone = phone
         self.email = email
+        self.color = color
 
     @property
     def slug(self) -> str:
