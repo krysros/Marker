@@ -1,3 +1,66 @@
 [build-system]
-requires = ["setuptools < 81"]
+requires = ["setuptools<81"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "marker"
+version = "2.2"
+description = "marker"
+authors = [
+    {name = "Krystian Rosiński", email = "krystian.rosinski@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["web", "wsgi", "bfg", "pylons", "pyramid"]
+classifiers = [
+    "Programming Language :: Python",
+    "Framework :: Pyramid",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+]
+dependencies = [
+    "plaster_pastedeploy",
+    "pyramid",
+    "pyramid_mako",
+    "pyramid_debugtoolbar",
+    "pyramid_retry",
+    "pyramid_tm",
+    "SQLAlchemy >= 2.0",
+    "transaction",
+    "zope.sqlalchemy",
+    "waitress",
+    "argon2-cffi",
+    "WTForms",
+    "python-slugify",
+    "xlsxwriter",
+    "alembic",
+    "zxcvbn",
+    "Babel",
+    "Unidecode",
+    "markdown",
+    "pycountry",
+]
+
+[project.optional-dependencies]
+testing = [
+    "WebTest",
+    "pytest",
+    "pytest-cov",
+    "pylint",
+    "sqlalchemy-data-model-visualizer",
+    "setuptools < 81",
+]
+
+[project.urls]
+Homepage = "https://github.com/krysros/marker"
+
+[project.scripts]
+initialize_marker_db = "marker.scripts.initialize_db:main"
+
+[project.entry-points."paste.app_factory"]
+main = "marker:main"
+
+[tool.setuptools]
+packages = {find = {exclude = ["tests"]}}
+include-package-data = true
+zip-safe = false

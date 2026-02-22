@@ -8,10 +8,10 @@ Currently available languages:
 
 Run these commands in project's directory (replace `pl` with your locale):
 
-    python setup.py extract_messages -o marker/locale/messages.pot
+    pybabel extract -F babel.cfg -o marker/locale/marker.pot .
 
-    python setup.py init_catalog -l pl -i marker/locale/messages.pot -o marker/locale/pl/LC_MESSAGES/messages.po
+    pybabel init -i marker/locale/marker.pot -d marker/locale -l pl
 
-    python setup.py update_catalog -l pl -i marker/locale/messages.pot -o marker/locale/pl/LC_MESSAGES/messages.po
+    pybabel update -i marker/locale/marker.pot -d marker/locale
 
-    python setup.py compile_catalog -i marker/locale/pl/LC_MESSAGES/messages.po -o marker/locale/pl/LC_MESSAGES/messages.mo
+    pybabel compile -d marker/locale

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-21 13:37+0100\n"
+"POT-Creation-Date: 2026-02-22 19:39+0100\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -21,7 +21,6 @@ msgstr ""
 
 #: marker/forms/account.py:11 marker/forms/user.py:29 marker/forms/user.py:73
 #: marker/forms/user.py:80 marker/templates/company/company_contacts.mako:23
-#: marker/templates/contact/contact_table.mako:6
 #: marker/templates/contact/contact_view.mako:25
 #: marker/templates/project/project_contacts.mako:23
 #: marker/templates/user/user_table.mako:6
@@ -30,7 +29,7 @@ msgid "Fullname"
 msgstr "Imię i nazwisko"
 
 #: marker/forms/account.py:18 marker/forms/contact.py:33
-#: marker/forms/contact.py:45 marker/forms/contact.py:52
+#: marker/forms/contact.py:46 marker/forms/contact.py:54
 #: marker/forms/user.py:36 marker/forms/user.py:74 marker/forms/user.py:81
 #: marker/templates/company/company_contacts.mako:26
 #: marker/templates/contact/contact_table.mako:9
@@ -63,10 +62,11 @@ msgid "Stage"
 msgstr "Etap"
 
 #: marker/forms/association.py:10 marker/forms/contact.py:19
-#: marker/forms/contact.py:43 marker/forms/contact.py:50
+#: marker/forms/contact.py:44 marker/forms/contact.py:52
 #: marker/forms/user.py:37 marker/forms/user.py:75 marker/forms/user.py:82
 #: marker/templates/company/company_contacts.mako:24
 #: marker/templates/company/company_projects.mako:25
+#: marker/templates/contact/contact_table.mako:7
 #: marker/templates/contact/contact_view.mako:38
 #: marker/templates/project/project_companies.mako:25
 #: marker/templates/project/project_contacts.mako:24
@@ -80,14 +80,14 @@ msgstr "Rola"
 msgid "Comment"
 msgstr "Komentarz"
 
-#: marker/forms/comment.py:25 marker/forms/contact.py:53
+#: marker/forms/comment.py:25 marker/forms/contact.py:55
 msgid "Parent"
 msgstr "Rodzic"
 
 #: marker/forms/company.py:44 marker/forms/company.py:174
 #: marker/forms/company.py:191 marker/forms/company.py:225
 #: marker/forms/company.py:249 marker/forms/contact.py:11
-#: marker/forms/contact.py:42 marker/forms/contact.py:49
+#: marker/forms/contact.py:43 marker/forms/contact.py:51
 #: marker/forms/project.py:29 marker/forms/project.py:100
 #: marker/forms/project.py:123 marker/forms/project.py:159
 #: marker/forms/project.py:183 marker/forms/select.py:27
@@ -95,6 +95,7 @@ msgstr "Rodzic"
 #: marker/forms/select.py:56 marker/forms/tag.py:12 marker/forms/tag.py:41
 #: marker/forms/tag.py:46 marker/forms/user.py:21 marker/forms/user.py:72
 #: marker/forms/user.py:79 marker/templates/company/company_view.mako:31
+#: marker/templates/contact/contact_table.mako:6
 #: marker/templates/project/project_view.mako:29
 #: marker/templates/tag/tag_view.mako:19
 #: marker/templates/user/user_table.mako:5
@@ -131,6 +132,7 @@ msgstr "Kod pocztowy"
 #: marker/forms/select.py:35 marker/forms/select.py:45
 #: marker/forms/select.py:57 marker/templates/company/company_table.mako:7
 #: marker/templates/company/company_view.mako:45
+#: marker/templates/contact/contact_table.mako:11
 #: marker/templates/project/project_table.mako:7
 #: marker/templates/project/project_view.mako:43 marker/utils/export.py:78
 #: marker/views/tag.py:550 marker/views/tag.py:758 marker/views/user.py:1013
@@ -173,8 +175,10 @@ msgid "Website"
 msgstr "Strona internetowa"
 
 #: marker/forms/company.py:75 marker/forms/company.py:183
-#: marker/forms/company.py:200 marker/forms/project.py:60
-#: marker/forms/project.py:119 marker/forms/project.py:138
+#: marker/forms/company.py:200 marker/forms/contact.py:39
+#: marker/forms/contact.py:47 marker/forms/contact.py:56
+#: marker/forms/project.py:60 marker/forms/project.py:119
+#: marker/forms/project.py:138
 msgid "Color"
 msgstr "Kolor"
 
@@ -227,15 +231,15 @@ msgstr "Numer KRS powinien się składać z 10 cyfr"
 msgid "There is no company with this name"
 msgstr "Nie ma firmy o takiej nazwie"
 
-#: marker/forms/contact.py:26 marker/forms/contact.py:44
-#: marker/forms/contact.py:51 marker/templates/company/company_contacts.mako:25
+#: marker/forms/contact.py:26 marker/forms/contact.py:45
+#: marker/forms/contact.py:53 marker/templates/company/company_contacts.mako:25
 #: marker/templates/contact/contact_table.mako:8
 #: marker/templates/contact/contact_view.mako:41
 #: marker/templates/project/project_contacts.mako:25 marker/utils/export.py:75
 msgid "Phone"
 msgstr "Telefon"
 
-#: marker/forms/contact.py:57
+#: marker/forms/contact.py:60
 msgid "CSV file"
 msgstr "Plik CSV"
 
@@ -614,7 +618,7 @@ msgstr "Konto"
 #: marker/templates/company/company_filter.mako:34
 #: marker/templates/company/company_form.mako:106
 #: marker/templates/contact/contact_filter.mako:22
-#: marker/templates/contact/contact_form.mako:37
+#: marker/templates/contact/contact_form.mako:44
 #: marker/templates/contact/contact_import.mako:20
 #: marker/templates/project/project_activity_form.mako:38
 #: marker/templates/project/project_add_comment.mako:25
@@ -732,7 +736,7 @@ msgstr "Przejdź do formularza i dodaj..."
 #: marker/templates/company/company_projects.mako:26
 #: marker/templates/company/company_table.mako:10
 #: marker/templates/company/company_tags.mako:24
-#: marker/templates/contact/contact_table.mako:10
+#: marker/templates/contact/contact_table.mako:12
 #: marker/templates/project/project_companies.mako:26
 #: marker/templates/project/project_contacts.mako:27
 #: marker/templates/project/project_table.mako:10
@@ -743,7 +747,7 @@ msgstr "Akcja"
 
 #: marker/templates/company/company_more.mako:20
 #: marker/templates/company/company_view.mako:73
-#: marker/templates/contact/contact_more.mako:16
+#: marker/templates/contact/contact_more.mako:20
 #: marker/templates/contact/contact_row.mako:10
 #: marker/templates/contact/contact_view.mako:64
 #: marker/templates/project/project_more.mako:21
@@ -756,7 +760,7 @@ msgstr "Utworzono"
 
 #: marker/templates/company/company_more.mako:21
 #: marker/templates/company/company_view.mako:79
-#: marker/templates/contact/contact_more.mako:17
+#: marker/templates/contact/contact_more.mako:21
 #: marker/templates/contact/contact_row.mako:11
 #: marker/templates/contact/contact_view.mako:71
 #: marker/templates/project/project_more.mako:22
@@ -785,6 +789,10 @@ msgstr "Data modyfikacji"
 #: marker/templates/contact/contact_import.mako:20
 msgid "Please select a CSV file"
 msgstr "Proszę wybrać plik CSV"
+
+#: marker/templates/contact/contact_table.mako:10 marker/utils/export.py:77
+msgid "Company_Project"
+msgstr "Firma_Projekt"
 
 #: marker/templates/contact/contact_view.mako:8
 #: marker/templates/contact/contact_view.mako:20
@@ -842,10 +850,6 @@ msgstr "Scal"
 #: marker/templates/user/user_view.mako:14 marker/views/user.py:66
 msgid "User"
 msgstr "Użytkownik"
-
-#: marker/utils/export.py:77
-msgid "Company_Project"
-msgstr "Firma_Projekt"
 
 #: marker/views/account.py:23 marker/views/account.py:38
 #: marker/views/company.py:910 marker/views/company.py:1140
