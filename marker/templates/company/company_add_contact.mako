@@ -22,24 +22,31 @@
       </div>
       <div class="mb-3">
         ${form.role.label(class_="form-label")}
-${form.role(class_="form-control" + (" is-invalid" if form.errors.get("role") else ""))}
-% for error in form.errors.get("role", []):
-  <div class="invalid-feedback">${error}</div>
-% endfor
+        ${form.role(class_="form-control" + (" is-invalid" if form.errors.get("role") else ""))}
+        % for error in form.errors.get("role", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.phone.label(class_="form-label")}
-${form.phone(class_="form-control" + (" is-invalid" if form.errors.get("phone") else ""))}
-% for error in form.errors.get("phone", []):
-  <div class="invalid-feedback">${error}</div>
-% endfor
+        ${form.phone(class_="form-control" + (" is-invalid" if form.errors.get("phone") else ""))}
+        % for error in form.errors.get("phone", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         ${form.email.label(class_="form-label")}
-${form.email(class_="form-control" + (" is-invalid" if form.errors.get("email") else ""))}
-% for error in form.errors.get("email", []):
-  <div class="invalid-feedback">${error}</div>
-% endfor
+        ${form.email(class_="form-control" + (" is-invalid" if form.errors.get("email") else ""))}
+        % for error in form.errors.get("email", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      <div class="mb-3">
+        ${form.color.label(class_="form-label")}
+        ${form.color(class_="form-control" + (" is-invalid" if form.errors.get("color") else ""))}
+        % for error in form.errors.get("color", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
       </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>

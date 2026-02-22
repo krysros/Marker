@@ -42,6 +42,13 @@
         % endfor
       </div>
       <div class="mb-3">
+        ${form.color.label(class_="form-label")}
+        ${form.color(class_="form-control" + (" is-invalid" if form.errors.get("color") else ""))}
+        % for error in form.errors.get("color", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>
       </div>
     </form>

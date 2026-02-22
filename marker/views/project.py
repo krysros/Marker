@@ -1061,6 +1061,7 @@ class ProjectView:
                 role=form.role.data,
                 phone=form.phone.data,
                 email=form.email.data,
+                color=form.color.data,
             )
             contact.created_by = self.request.identity
             if contact not in project.contacts:
