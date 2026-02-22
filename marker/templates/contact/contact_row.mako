@@ -3,7 +3,7 @@
 <%page args="contact"/>
 
 % if contact:
-<tr>
+<tr class="table-${contact.color}">
   <td>${checkbox.checkbox(contact, selected=request.identity.selected_contacts, url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
   <td>
     <a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a><br>
