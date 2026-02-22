@@ -3,10 +3,12 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>${_("Fullname")}</th>
-        <th></th>
+        <th>${_("Name")}</th>
+        <th>${_("Role")}</th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
+        <th>${_("Company_Project")}</th>
+        <th>${_("City")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>
