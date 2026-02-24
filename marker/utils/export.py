@@ -59,7 +59,7 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     return response
 
 
-def response_contacts_xlsx(rows, default_date_format="yyyy-mm-dd"):
+def response_xlsx_contacts(rows, default_date_format="yyyy-mm-dd"):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     # Create a workbook.

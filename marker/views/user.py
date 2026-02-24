@@ -43,7 +43,7 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_contacts_xlsx, response_xlsx
+from ..utils.export import response_xlsx_contacts, response_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter
 
@@ -1569,7 +1569,7 @@ class UserView:
             stmt = stmt.order_by(getattr(Contact, _sort).desc())
 
         contacts = self.request.dbsession.execute(stmt).scalars()
-        response = response_contacts_xlsx(contacts)
+        response = response_xlsx_contacts(contacts)
         log.info(
             _("The user %s exported the data of selected contacts")
             % self.request.identity.name
