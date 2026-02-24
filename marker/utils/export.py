@@ -59,7 +59,7 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     return response
 
 
-def response_xlsx_contacts(rows, default_date_format="yyyy-mm-dd"):
+def response_xlsx_contacts_company(rows, default_date_format="yyyy-mm-dd"):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     # Create a workbook.
@@ -74,7 +74,7 @@ def response_xlsx_contacts(rows, default_date_format="yyyy-mm-dd"):
         _("Role"),
         _("Phone"),
         _("Email"),
-        _("Company_Project"),
+        _("Company"),
         _("City"),
         _("Subdivision"),
         _("Country"),
@@ -89,24 +89,67 @@ def response_xlsx_contacts(rows, default_date_format="yyyy-mm-dd"):
         worksheet.write(i, 1, row.role)
         worksheet.write(i, 2, row.phone)
         worksheet.write(i, 3, row.email)
-        if row.company:
-            worksheet.write(i, 4, row.company.name)
-            worksheet.write(i, 5, row.company.city)
-            worksheet.write(
-                i, 6, getattr(pycountry.subdivisions.get(code=row.company.subdivision), "name", "")
-            )
-            worksheet.write(
-                i, 7, getattr(pycountry.countries.get(alpha_2=row.company.country), "name", "")
-            )
-        if row.project:
-            worksheet.write(i, 4, row.project.name)
-            worksheet.write(i, 5, row.project.city)
-            worksheet.write(
-                i, 6, getattr(pycountry.subdivisions.get(code=row.project.subdivision), "name", "")
-            )
-            worksheet.write(
-                i, 7, getattr(pycountry.countries.get(alpha_2=row.project.country), "name", "")
-            )
+        worksheet.write(i, 4, row.company.name)
+        worksheet.write(i, 5, row.company.city)
+        worksheet.write(
+            i, 6, getattr(pycountry.subdivisions.get(code=row.company.subdivision), "name", "")
+        )
+        worksheet.write(
+            i, 7, getattr(pycountry.countries.get(alpha_2=row.company.country), "name", "")
+        )
+
+    # Close the workbook before streaming the data.
+    workbook.close()
+    # Rewind the buffer.
+    output.seek(0)
+    # Construct a server response.
+    response = Response()
+    response.body_file = output
+    response.content_type = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response.content_disposition = 'attachment; filename="Marker.xlsx"'
+    return response
+
+
+def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
+    # Create an in-memory output file for the new workbook.
+    output = io.BytesIO()
+    # Create a workbook.
+    workbook = xlsxwriter.Workbook(
+        output, {"constant_memory": True, "default_date_format": default_date_format}
+    )
+    worksheet = workbook.add_worksheet()
+    cell_format = workbook.add_format({"bold": True})
+
+    header_row = [
+        _("Name"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
+        _("Project"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+    ]
+
+    # Write rows.
+    for j, elem in enumerate(header_row):
+        worksheet.write(0, j, str(elem), cell_format)
+
+    for i, row in enumerate(rows, start=1):
+        worksheet.write(i, 0, row.name)
+        worksheet.write(i, 1, row.role)
+        worksheet.write(i, 2, row.phone)
+        worksheet.write(i, 3, row.email)
+        worksheet.write(i, 4, row.project.name)
+        worksheet.write(i, 5, row.project.city)
+        worksheet.write(
+            i, 6, getattr(pycountry.subdivisions.get(code=row.project.subdivision), "name", "")
+        )
+        worksheet.write(
+            i, 7, getattr(pycountry.countries.get(alpha_2=row.project.country), "name", "")
+        )
 
     # Close the workbook before streaming the data.
     workbook.close()

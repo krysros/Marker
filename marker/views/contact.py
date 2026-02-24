@@ -35,7 +35,7 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        parent = self.request.params.get("parent", None)
+        parent = self.request.params.get("parent", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)

@@ -7,7 +7,11 @@
         <th>${_("Role")}</th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
-        <th>${_("Company_Project")}</th>
+        % if q["parent"] == "companies":
+        <th>${_("Company")}</th>
+        % elif q["parent"] == "projects":
+        <th>${_("Project")}</th>
+        % endif
         <th>${_("City")}</th>
         <th>${_("Action")}</th>
       </tr>

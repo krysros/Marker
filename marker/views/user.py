@@ -43,7 +43,7 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_xlsx_contacts, response_xlsx
+from ..utils.export import response_xlsx_contacts_company,response_xlsx_contacts_project, response_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter
 
@@ -218,7 +218,7 @@ class UserView:
     def comments(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        parent = self.request.params.get("parent", None)
+        parent = self.request.params.get("parent", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
@@ -647,7 +647,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        parent = self.request.params.get("parent", None)
+        parent = self.request.params.get("parent", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -1467,7 +1467,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        parent = self.request.params.get("parent", None)
+        parent = self.request.params.get("parent", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -1554,6 +1554,7 @@ class UserView:
     def export_selected_contacts(self):
         _ = self.request.translate
         user = self.request.context.user
+        _parent = self.request.params.get("parent", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
@@ -1563,13 +1564,23 @@ class UserView:
             .filter(user.id == selected_contacts.c.user_id)
         )
 
+        if _parent == "companies":
+            stmt = stmt.filter(Contact.company)
+        elif _parent == "projects":
+            stmt = stmt.filter(Contact.project)
+
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Contact, _sort).desc())
 
         contacts = self.request.dbsession.execute(stmt).scalars()
-        response = response_xlsx_contacts(contacts)
+
+        if _parent == "companies":
+            response = response_xlsx_contacts_company(contacts)
+        elif _parent == "projects":
+            response = response_xlsx_contacts_project(contacts)
+
         log.info(
             _("The user %s exported the data of selected contacts")
             % self.request.identity.name

@@ -125,7 +125,6 @@ PROJECT_DELIVERY_METHODS = [
 
 
 PARENTS = [
-    ("", "---"),
     ("companies", _("Companies")),
     ("projects", _("Projects")),
 ]
