@@ -10,7 +10,9 @@
     <small class="text-body-secondary">${_("Created at")}: ${contact.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
     <small class="text-body-secondary">${_("Updated at")}: ${contact.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>
-  <td>${contact.role or "---"}</td>
+  <td>
+    ${contact.role or "---"}
+  </td>
   <td>${contact.phone or "---"}</td>
   % if contact.email:
   <td><a href="mailto:${contact.email}">${contact.email}</a></td>
