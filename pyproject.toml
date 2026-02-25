@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools<81"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "plaster_pastedeploy",
-    "pyramid",
+    "pyramid==2.1a1",
     "pyramid_mako",
     "pyramid_debugtoolbar",
     "pyramid_retry",
@@ -48,7 +48,6 @@ testing = [
     "pytest-cov",
     "pylint",
     "sqlalchemy-data-model-visualizer",
-    "setuptools < 81",
 ]
 
 [project.urls]
