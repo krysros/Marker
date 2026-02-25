@@ -10,7 +10,7 @@ authors = [
     {name = "Krystian Rosiński", email = "krystian.rosinski@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.13"
 keywords = ["web", "wsgi", "bfg", "pylons", "pyramid"]
 classifiers = [
     "Programming Language :: Python",
