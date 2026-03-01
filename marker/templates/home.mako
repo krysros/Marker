@@ -18,9 +18,11 @@
         ${_("Companies, corporations, organizations.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('company_all'))}
-        ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
-        ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+        <div class="d-flex flex-wrap gap-2">
+          ${button.a(icon='folder', color='secondary', url=request.route_url('company_all'))}
+          ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
+          ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+        </div>
       </p>
     </div>
     <div class="col">
@@ -29,10 +31,12 @@
         ${_("Currently implemented or completed projects.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('project_all'))}
-        ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
-        ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
-      </p>
+        <div class="d-flex flex-wrap gap-2">
+          ${button.a(icon='folder', color='secondary', url=request.route_url('project_all'))}
+          ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
+          ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
+        </div>
+        </p>
     </div>
     <div class="col">
       <h2><i class="bi bi-tags"></i> ${_("Tags")}</h2>
@@ -40,9 +44,11 @@
         ${_("Business profiles of companies and types of projects.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('tag_all'))}
-        ${button.a(icon='search', color='primary', url=request.route_url('tag_search'))}
-        ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
+        <div class="d-flex flex-wrap gap-2">
+          ${button.a(icon='folder', color='secondary', url=request.route_url('tag_all'))}
+          ${button.a(icon='search', color='primary', url=request.route_url('tag_search'))}
+          ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
+        </div>
       </p>
     </div>
   </div>
@@ -53,9 +59,11 @@
         ${_("Contacts assigned to companies and projects.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
-        ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
-        ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
+        <div class="d-flex flex-wrap gap-2">
+          ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
+          ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
+          ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
+        </div>
       </p>
     </div>
     <div class="col">
@@ -64,8 +72,10 @@
         ${_("Comments on companies and projects.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('comment_all'))}
-        ${button.a(icon='search', color='primary', url=request.route_url('comment_search'))}
+        <div class="d-flex flex-wrap gap-2">
+          ${button.a(icon='folder', color='secondary', url=request.route_url('comment_all'))}
+          ${button.a(icon='search', color='primary', url=request.route_url('comment_search'))}
+        </div>
       </p>
     </div>
     <div class="col">
@@ -74,7 +84,9 @@
         ${_("Summary of the database content.")}
       </p>
       <p>
-        ${button.a(icon='folder', color='secondary', url=request.route_url('report_all'))}
+        <div class="d-flex flex-wrap gap-2">
+          ${button.a(icon='folder', color='secondary', url=request.route_url('report_all'))}
+        </div>
       </p>
     </div>
   </div>
