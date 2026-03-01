@@ -16,6 +16,11 @@
 
 <%include file="project_lead.mako"/>
 
+<div class="hstack gap-2 mb-4">
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
+</div>
+
 <div class="table-responsive">
   <table class="table table-striped">
     <thead>
@@ -26,7 +31,7 @@
       </tr>
     </thead>
     <tbody id="new-tag">
-      % for tag in project.tags:
+      % for tag in tags:
         <%include file="tag_row_project.mako" args="tag=tag, project=project"/>
       % endfor
     </tbody>

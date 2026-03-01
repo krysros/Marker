@@ -22,6 +22,7 @@ from ..forms.select import (
     COMPANY_ROLES,
     ORDER_CRITERIA,
     PROJECT_DELIVERY_METHODS,
+    SORT_CRITERIA,
     SORT_CRITERIA_PROJECTS,
     STAGES,
     STATUS,
@@ -613,15 +614,62 @@ class ProjectView:
         permission="view",
     )
     def view(self):
+        _ = self.request.translate
         project = self.request.context.project
+        route_name = self.request.matched_route.name
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = dict(SORT_CRITERIA)
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {"sort": _sort, "order": _order}
         stages = dict(STAGES)
         countries = dict(select_countries())
         company_roles = dict(COMPANY_ROLES)
         delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        contacts = list(project.contacts)
+        tags = list(project.tags)
+
+        if route_name == "project_contacts":
+            allowed_sorts = {"name", "created_at", "updated_at"}
+            if _sort not in allowed_sorts:
+                _sort = "created_at"
+                q["sort"] = _sort
+
+            if _order not in {"asc", "desc"}:
+                _order = "desc"
+                q["order"] = _order
+
+            stmt = select(Contact).filter(Contact.project_id == project.id)
+            if _order == "asc":
+                stmt = stmt.order_by(getattr(Contact, _sort).asc(), Contact.id)
+            else:
+                stmt = stmt.order_by(getattr(Contact, _sort).desc(), Contact.id)
+            contacts = self.request.dbsession.execute(stmt).scalars().all()
+        elif route_name == "project_tags":
+            sort_criteria = {
+                "name": _("Name"),
+                "created_at": _("Date created"),
+                "updated_at": _("Date modified"),
+            }
+
+            allowed_sorts = {"name", "created_at", "updated_at"}
+            if _sort not in allowed_sorts:
+                _sort = "created_at"
+                q["sort"] = _sort
+
+            if _order not in {"asc", "desc"}:
+                _order = "asc"
+                q["order"] = _order
+
+            stmt = select(Tag).filter(Tag.projects.any(Project.id == project.id))
+            if _order == "asc":
+                stmt = stmt.order_by(getattr(Tag, _sort).asc(), Tag.id)
+            else:
+                stmt = stmt.order_by(getattr(Tag, _sort).desc(), Tag.id)
+            tags = self.request.dbsession.execute(stmt).scalars().all()
 
         if is_bulk_select_request(self.request):
             checked = self.request.params.get("checked", "false").lower() == "true"
-            route_name = self.request.matched_route.name
 
             if route_name == "project_companies":
                 items = [assoc.project for assoc in project.companies]
@@ -654,6 +702,11 @@ class ProjectView:
             "countries": countries,
             "company_roles": company_roles,
             "delivery_methods": delivery_methods,
+            "contacts": contacts,
+            "tags": tags,
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "title": project.name,
             "project_pills": self.pills(project),
         }

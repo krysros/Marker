@@ -16,6 +16,11 @@
 
 <%include file="company_lead.mako"/>
 
+<div class="hstack gap-2 mb-4">
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
+</div>
+
 <div class="table-responsive">
   <table class="table table-striped">
     <thead>
@@ -29,7 +34,7 @@
       </tr>
     </thead>
     <tbody id="new-contact">
-      % for contact in company.contacts:
+      % for contact in contacts:
         <%include file="contact_row.mako" args="contact=contact"/>
       % endfor
     </tbody>
