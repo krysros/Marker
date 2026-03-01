@@ -16,8 +16,8 @@
       ${form.email(class_="form-control")}
     % endif
     <div class="mb-3">
-      ${form.parent.label(class_="form-label")}
-      ${form.parent(class_="form-control")}
+      ${form.category.label(class_="form-label")}
+      ${form.category(class_="form-control")}
     </div>
     <button type="submit" class="btn btn-primary">${_("Submit")}</button>
   </form>

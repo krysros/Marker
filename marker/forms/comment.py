@@ -2,7 +2,7 @@ from wtforms import Form, HiddenField, SelectField, TextAreaField
 from wtforms.validators import InputRequired
 
 from .filters import strip_filter
-from .select import PARENTS
+from .select import CATEGORIES
 from .ts import TranslationString as _
 
 
@@ -22,4 +22,4 @@ class CommentSearchForm(Form):
 
 class CommentFilterForm(Form):
     comment = HiddenField(_("Comment"), filters=[strip_filter])
-    parent = SelectField(_("Parent"), choices=PARENTS)
+    category = SelectField(_("Category"), choices=CATEGORIES)

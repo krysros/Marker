@@ -7,7 +7,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select, delete
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
-from ..forms.select import ORDER_CRITERIA, PARENTS, SORT_CRITERIA
+from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA
 from ..models import Comment, Company, Contact, Tag, selected_contacts
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
@@ -35,12 +35,12 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        parent = self.request.params.get("parent", "companies")
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
-        parents = dict(PARENTS)
+        categories = dict(CATEGORIES)
         q = {}
         stmt = select(Contact)
 
@@ -60,12 +60,12 @@ class ContactView:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
             q["email"] = email
 
-        if parent == "companies":
+        if category == "companies":
             stmt = stmt.filter(Contact.company)
-            q["parent"] = parent
-        elif parent == "projects":
+            q["category"] = category
+        elif category == "projects":
             stmt = stmt.filter(Contact.project)
-            q["parent"] = parent
+            q["category"] = category
 
         q["sort"] = _sort
         q["order"] = _order
@@ -103,7 +103,7 @@ class ContactView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
-            "parents": parents,
+            "categories": categories,
             "form": form,
         }
 

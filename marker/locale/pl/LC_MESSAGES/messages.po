@@ -83,8 +83,8 @@ msgid "Comment"
 msgstr "Komentarz"
 
 #: marker/forms/comment.py:25 marker/forms/contact.py:55
-msgid "Parent"
-msgstr "Rodzic"
+msgid "Category"
+msgstr "Kategoria"
 
 #: marker/forms/company.py:44 marker/forms/company.py:174
 #: marker/forms/company.py:191 marker/forms/company.py:225

@@ -15,9 +15,9 @@ from ..forms import (
     UserSearchForm,
 )
 from ..forms.select import (
+    CATEGORIES,
     COLORS,
     ORDER_CRITERIA,
-    PARENTS,
     PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
@@ -218,21 +218,21 @@ class UserView:
     def comments(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        parent = self.request.params.get("parent", "companies")
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
-        parents = dict(PARENTS)
+        categories = dict(CATEGORIES)
         q = {}
 
         stmt = select(Comment).filter(Comment.created_by == user)
 
-        if parent == "companies":
+        if category == "companies":
             stmt = stmt.filter(Comment.company)
-            q["parent"] = parent
-        elif parent == "projects":
+            q["category"] = category
+        elif category == "projects":
             stmt = stmt.filter(Comment.project)
-            q["parent"] = parent
+            q["category"] = category
 
         if _order == "asc":
             stmt = stmt.order_by(Comment.created_at.asc())
@@ -271,7 +271,7 @@ class UserView:
             "user": user,
             "paginator": paginator,
             "order_criteria": order_criteria,
-            "parents": parents,
+            "categories": categories,
             "next_page": next_page,
             "title": user.fullname,
             "user_pills": self.pills(user),
@@ -647,12 +647,12 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        parent = self.request.params.get("parent", "companies")
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
-        parents = dict(PARENTS)
+        categories = dict(CATEGORIES)
         q = {}
 
         stmt = select(Contact).filter(Contact.created_by == user)
@@ -673,12 +673,12 @@ class UserView:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
             q["email"] = email
 
-        if parent == "companies":
+        if category == "companies":
             stmt = stmt.filter(Contact.company)
-            q["parent"] = parent
-        elif parent == "projects":
+            q["category"] = category
+        elif category == "projects":
             stmt = stmt.filter(Contact.project)
-            q["parent"] = parent
+            q["category"] = category
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -718,7 +718,7 @@ class UserView:
             "user": user,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
-            "parents": parents,
+            "categories": categories,
             "paginator": paginator,
             "next_page": next_page,
             "title": user.fullname,
@@ -1467,7 +1467,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        parent = self.request.params.get("parent", "companies")
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -1499,12 +1499,12 @@ class UserView:
             stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
             q["email"] = email
 
-        if parent == "companies":
+        if category == "companies":
             stmt = stmt.filter(Contact.company)
-            q["parent"] = parent
-        elif parent == "projects":
+            q["category"] = category
+        elif category == "projects":
             stmt = stmt.filter(Contact.project)
-            q["parent"] = parent
+            q["category"] = category
 
         if _order == "asc":
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
@@ -1554,7 +1554,7 @@ class UserView:
     def export_selected_contacts(self):
         _ = self.request.translate
         user = self.request.context.user
-        _parent = self.request.params.get("parent", "companies")
+        _category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
@@ -1564,9 +1564,9 @@ class UserView:
             .filter(user.id == selected_contacts.c.user_id)
         )
 
-        if _parent == "companies":
+        if _category == "companies":
             stmt = stmt.filter(Contact.company)
-        elif _parent == "projects":
+        elif _category == "projects":
             stmt = stmt.filter(Contact.project)
 
         if _order == "asc":
@@ -1576,9 +1576,9 @@ class UserView:
 
         contacts = self.request.dbsession.execute(stmt).scalars()
 
-        if _parent == "companies":
+        if _category == "companies":
             response = response_xlsx_contacts_company(contacts)
-        elif _parent == "projects":
+        elif _category == "projects":
             response = response_xlsx_contacts_project(contacts)
 
         log.info(

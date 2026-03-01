@@ -7,9 +7,9 @@
         <th>${_("Role")}</th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
-        % if q["parent"] == "companies":
+        % if q["category"] == "companies":
         <th>${_("Company")}</th>
-        % elif q["parent"] == "projects":
+        % elif q["category"] == "projects":
         <th>${_("Project")}</th>
         % endif
         <th>${_("City")}</th>

@@ -15,8 +15,8 @@
           <strong>${colors.get(v)}</strong>;
         % elif k == "status":
           <strong>${statuses.get(v)}</strong>;
-        % elif k == "parent":
-          <strong>${parents.get(v)}</strong>;
+        % elif k == "category":
+          <strong>${categories.get(v)}</strong>;
         % elif k == "role":
           <strong>${form.data["role"]}</strong>;
         % elif k == "country":

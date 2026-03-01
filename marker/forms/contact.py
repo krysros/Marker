@@ -2,7 +2,7 @@ from wtforms import EmailField, FileField, Form, HiddenField, SelectField, Strin
 from wtforms.validators import DataRequired, InputRequired, Length
 
 from .filters import strip_filter
-from .select import PARENTS, COLORS
+from .select import CATEGORIES, COLORS
 from .ts import TranslationString as _
 
 
@@ -52,7 +52,7 @@ class ContactFilterForm(Form):
     role = HiddenField(_("Role"), filters=[strip_filter])
     phone = HiddenField(_("Phone"), filters=[strip_filter])
     email = HiddenField(_("Email"), filters=[strip_filter])
-    parent = SelectField(_("Parent"), choices=PARENTS)
+    category = SelectField(_("Category"), choices=CATEGORIES)
     color = SelectField(_("Color"), choices=COLORS)
 
 

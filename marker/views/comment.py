@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, select
 
 from ..forms import CommentFilterForm, CommentSearchForm
-from ..forms.select import ORDER_CRITERIA, PARENTS
+from ..forms.select import CATEGORIES, ORDER_CRITERIA
 from ..models import Comment
 from ..utils.paginator import get_paginator
 from . import Filter
@@ -30,11 +30,11 @@ class CommentView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
-        parent = self.request.params.get("parent", "companies")
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
-        parents = dict(PARENTS)
+        categories = dict(CATEGORIES)
         q = {}
         stmt = select(Comment)
 
@@ -42,12 +42,12 @@ class CommentView:
             stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
             q["comment"] = comment
 
-        if parent == "companies":
+        if category == "companies":
             stmt = stmt.filter(Comment.company)
-            q["parent"] = parent
-        elif parent == "projects":
+            q["category"] = category
+        elif category == "projects":
             stmt = stmt.filter(Comment.project)
-            q["parent"] = parent
+            q["category"] = category
 
         q["sort"] = _sort
         q["order"] = _order
@@ -83,7 +83,7 @@ class CommentView:
             "next_page": next_page,
             "counter": counter,
             "order_criteria": order_criteria,
-            "parents": parents,
+            "categories": categories,
             "form": form,
         }
 

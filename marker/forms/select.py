@@ -124,7 +124,7 @@ PROJECT_DELIVERY_METHODS = [
 ]
 
 
-PARENTS = [
+CATEGORIES = [
     ("companies", _("Companies")),
     ("projects", _("Projects")),
 ]
