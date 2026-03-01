@@ -1,5 +1,6 @@
 import datetime
 import logging
+from uuid import uuid4
 
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
@@ -54,6 +55,16 @@ log = logging.getLogger(__name__)
 class ProjectView:
     def __init__(self, request):
         self.request = request
+
+    def _normalized_tags(self):
+        seen = set()
+        tags = []
+        for value in self.request.params.getall("tag"):
+            name = value.strip()
+            if name and name not in seen:
+                seen.add(name)
+                tags.append(name)
+        return tags
 
     def pills(self, project):
         _ = self.request.translate
@@ -769,6 +780,7 @@ class ProjectView:
         _ = self.request.translate
         form = ProjectForm(self.request.POST, request=self.request)
         countries = dict(select_countries())
+        tags = self._normalized_tags()
 
         if self.request.method == "POST" and form.validate():
             project = Project(
@@ -800,6 +812,18 @@ class ProjectView:
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
+
+            for tag_name in tags:
+                tag = self.request.dbsession.execute(
+                    select(Tag).filter_by(name=tag_name)
+                ).scalar_one_or_none()
+
+                if not tag:
+                    tag = Tag(name=tag_name)
+                    tag.created_by = self.request.identity
+                if tag not in project.tags:
+                    project.tags.append(tag)
+
             self.request.session.flash(_("success:Added to the database"))
             self.request.session.flash(_("info:Add tags and contacts"))
             log.info(_("The user %s has added a project") % self.request.identity.name)
@@ -821,7 +845,26 @@ class ProjectView:
             form.stage.data = self.request.params.get("stage", None)
             form.delivery_method.data = self.request.params.get("delivery_method", None)
 
-        return {"heading": _("Add a project"), "form": form}
+        return {"heading": _("Add a project"), "form": form, "tags": tags}
+
+    @view_config(
+        route_name="project_add_tag_input",
+        renderer="project_tag_input_row.mako",
+        permission="edit",
+    )
+    def add_tag_input(self):
+        return {
+            "row_id": uuid4().hex,
+            "value": "",
+        }
+
+    @view_config(
+        route_name="project_add_tag_input_remove",
+        renderer="string",
+        permission="edit",
+    )
+    def add_tag_input_remove(self):
+        return ""
 
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"

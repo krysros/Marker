@@ -1,4 +1,5 @@
 import logging
+from uuid import uuid4
 
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
@@ -52,6 +53,16 @@ log = logging.getLogger(__name__)
 class CompanyView:
     def __init__(self, request):
         self.request = request
+
+    def _normalized_tags(self):
+        seen = set()
+        tags = []
+        for value in self.request.params.getall("tag"):
+            name = value.strip()
+            if name and name not in seen:
+                seen.add(name)
+                tags.append(name)
+        return tags
 
     def pills(self, company):
         _ = self.request.translate
@@ -873,6 +884,7 @@ class CompanyView:
         _ = self.request.translate
         form = CompanyForm(self.request.POST, request=self.request)
         countries = dict(select_countries())
+        tags = self._normalized_tags()
 
         if self.request.method == "POST" and form.validate():
             company = Company(
@@ -905,6 +917,17 @@ class CompanyView:
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
+
+            for tag_name in tags:
+                tag = self.request.dbsession.execute(
+                    select(Tag).filter_by(name=tag_name)
+                ).scalar_one_or_none()
+                if not tag:
+                    tag = Tag(name=tag_name)
+                    tag.created_by = self.request.identity
+                if tag not in company.tags:
+                    company.tags.append(tag)
+
             self.request.session.flash(_("success:Added to the database"))
             self.request.session.flash(_("info:Add tags and contacts"))
             log.info(_("The user %s has added a company") % self.request.identity.name)
@@ -926,7 +949,26 @@ class CompanyView:
             form.REGON.data = self.request.params.get("REGON", None)
             form.KRS.data = self.request.params.get("KRS", None)
 
-        return {"heading": _("Add a company"), "form": form}
+        return {"heading": _("Add a company"), "form": form, "tags": tags}
+
+    @view_config(
+        route_name="company_add_tag_input",
+        renderer="company_tag_input_row.mako",
+        permission="edit",
+    )
+    def add_tag_input(self):
+        return {
+            "row_id": uuid4().hex,
+            "value": "",
+        }
+
+    @view_config(
+        route_name="company_add_tag_input_remove",
+        renderer="string",
+        permission="edit",
+    )
+    def add_tag_input_remove(self):
+        return ""
 
     @view_config(
         route_name="company_edit", renderer="company_form.mako", permission="edit"
