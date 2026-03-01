@@ -23,6 +23,7 @@ from ..forms.select import (
     ORDER_CRITERIA,
     PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA,
+    SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_PROJECTS,
     STAGES,
     STATUS,
@@ -48,6 +49,7 @@ from . import (
     htmx_refresh_response,
     is_bulk_select_request,
     set_select_all_state,
+    sort_column,
 )
 
 log = logging.getLogger(__name__)
@@ -276,9 +278,9 @@ class ProjectView:
                 )
         else:
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
+                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
             elif _order == "desc":
-                stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
+                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -327,17 +329,37 @@ class ProjectView:
     )
     @view_config(
         route_name="project_more_comments",
-        renderer="project_more.mako",
+        renderer="comment_more.mako",
         permission="view",
     )
     def comments(self):
+        _ = self.request.translate
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Comment)
-            .filter(Comment.project_id == project.id)
-            .order_by(Comment.created_at.desc())
-        )
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = {
+            "created_at": _("Date created"),
+            "updated_at": _("Date modified"),
+        }
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {"sort": _sort, "order": _order}
+
+        allowed_sorts = {"created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+            q["sort"] = _sort
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+            q["order"] = _order
+
+        stmt = select(Comment).filter(Comment.project_id == project.id)
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Comment, _sort).asc(), Comment.id)
+        else:
+            stmt = stmt.order_by(sort_column(Comment, _sort).desc(), Comment.id)
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -347,9 +369,15 @@ class ProjectView:
             "project_more_comments",
             project_id=project.id,
             slug=project.slug,
-            _query={"page": page + 1},
+            _query={
+                **q,
+                "page": page + 1,
+            },
         )
         return {
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "project": project,
@@ -454,9 +482,9 @@ class ProjectView:
                 )
         else:
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
+                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
             elif _order == "desc":
-                stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
+                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -626,11 +654,46 @@ class ProjectView:
         countries = dict(select_countries())
         company_roles = dict(COMPANY_ROLES)
         delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        companies_assoc = list(project.companies)
         contacts = list(project.contacts)
         tags = list(project.tags)
 
-        if route_name == "project_contacts":
-            allowed_sorts = {"name", "created_at", "updated_at"}
+        if route_name == "project_companies":
+            sort_criteria = {
+                "name": _("Company"),
+                "stage": _("Stage"),
+                "role": _("Role"),
+                "created_at": _("Created at"),
+                "updated_at": _("Updated at"),
+            }
+
+            allowed_sorts = {"name", "stage", "role", "created_at", "updated_at"}
+            if _sort not in allowed_sorts:
+                _sort = "name"
+                q["sort"] = _sort
+
+            if _order not in {"asc", "desc"}:
+                _order = "asc"
+                q["order"] = _order
+
+            stmt = select(Activity).join(Company).filter(Activity.project_id == project.id)
+            order_column = {
+                "name": Company.name,
+                "stage": Activity.stage,
+                "role": Activity.role,
+                "created_at": Company.created_at,
+                "updated_at": Company.updated_at,
+            }[_sort]
+            if _order == "asc":
+                stmt = stmt.order_by(order_column.asc(), Activity.company_id)
+            else:
+                stmt = stmt.order_by(order_column.desc(), Activity.company_id)
+            companies_assoc = self.request.dbsession.execute(stmt).scalars().all()
+
+        elif route_name == "project_contacts":
+            sort_criteria = dict(SORT_CRITERIA_CONTACTS)
+
+            allowed_sorts = {"name", "role", "created_at", "updated_at"}
             if _sort not in allowed_sorts:
                 _sort = "created_at"
                 q["sort"] = _sort
@@ -641,13 +704,13 @@ class ProjectView:
 
             stmt = select(Contact).filter(Contact.project_id == project.id)
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Contact, _sort).asc(), Contact.id)
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
             else:
-                stmt = stmt.order_by(getattr(Contact, _sort).desc(), Contact.id)
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
             contacts = self.request.dbsession.execute(stmt).scalars().all()
         elif route_name == "project_tags":
             sort_criteria = {
-                "name": _("Name"),
+                "name": _("Tag"),
                 "created_at": _("Date created"),
                 "updated_at": _("Date modified"),
             }
@@ -663,9 +726,9 @@ class ProjectView:
 
             stmt = select(Tag).filter(Tag.projects.any(Project.id == project.id))
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Tag, _sort).asc(), Tag.id)
+                stmt = stmt.order_by(sort_column(Tag, _sort).asc(), Tag.id)
             else:
-                stmt = stmt.order_by(getattr(Tag, _sort).desc(), Tag.id)
+                stmt = stmt.order_by(sort_column(Tag, _sort).desc(), Tag.id)
             tags = self.request.dbsession.execute(stmt).scalars().all()
 
         if is_bulk_select_request(self.request):
@@ -702,6 +765,7 @@ class ProjectView:
             "countries": countries,
             "company_roles": company_roles,
             "delivery_methods": delivery_methods,
+            "companies_assoc": companies_assoc,
             "contacts": contacts,
             "tags": tags,
             "q": q,
@@ -783,9 +847,9 @@ class ProjectView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Project, _sort).asc())
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Project, _sort).desc())
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1048,14 +1112,41 @@ class ProjectView:
         permission="view",
     )
     def projects_stars(self):
+        _ = self.request.translate
         project = self.request.context.project
         page = int(self.request.params.get("page", 1))
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = {
+            "name": _("Name"),
+            "fullname": _("Fullname"),
+            "email": _("Email"),
+            "created_at": _("Date created"),
+            "updated_at": _("Date modified"),
+        }
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {"sort": _sort, "order": _order}
         user_roles = dict(USER_ROLES)
+
+        allowed_sorts = {"name", "fullname", "email", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+            q["sort"] = _sort
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+            q["order"] = _order
+
         stmt = (
             select(User)
             .join(projects_stars)
             .filter(project.id == projects_stars.c.project_id)
         )
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(User, _sort).asc(), User.id)
+        else:
+            stmt = stmt.order_by(sort_column(User, _sort).desc(), User.id)
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -1065,9 +1156,15 @@ class ProjectView:
             "project_more_stars",
             project_id=project.id,
             slug=project.slug,
-            _query={"page": page + 1},
+            _query={
+                **q,
+                "page": page + 1,
+            },
         )
         return {
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "project": project,

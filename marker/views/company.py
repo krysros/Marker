@@ -22,6 +22,7 @@ from ..forms.select import (
     COURTS,
     ORDER_CRITERIA,
     SORT_CRITERIA,
+    SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_COMPANIES,
     STAGES,
     USER_ROLES,
@@ -46,6 +47,7 @@ from . import (
     htmx_refresh_response,
     is_bulk_select_request,
     set_select_all_state,
+    sort_column,
 )
 
 log = logging.getLogger(__name__)
@@ -268,9 +270,9 @@ class CompanyView:
                 )
         else:
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Company, _sort).asc(), Company.id)
+                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
             elif _order == "desc":
-                stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
+                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -342,11 +344,46 @@ class CompanyView:
         countries = dict(select_countries())
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
+        projects_assoc = list(company.projects)
         contacts = list(company.contacts)
         tags = list(company.tags)
 
-        if route_name == "company_contacts":
-            allowed_sorts = {"name", "created_at", "updated_at"}
+        if route_name == "company_projects":
+            sort_criteria = {
+                "name": _("Project"),
+                "stage": _("Stage"),
+                "role": _("Role"),
+                "created_at": _("Created at"),
+                "updated_at": _("Updated at"),
+            }
+
+            allowed_sorts = {"name", "stage", "role", "created_at", "updated_at"}
+            if _sort not in allowed_sorts:
+                _sort = "name"
+                q["sort"] = _sort
+
+            if _order not in {"asc", "desc"}:
+                _order = "asc"
+                q["order"] = _order
+
+            stmt = select(Activity).join(Project).filter(Activity.company_id == company.id)
+            order_column = {
+                "name": Project.name,
+                "stage": Activity.stage,
+                "role": Activity.role,
+                "created_at": Project.created_at,
+                "updated_at": Project.updated_at,
+            }[_sort]
+            if _order == "asc":
+                stmt = stmt.order_by(order_column.asc(), Activity.project_id)
+            else:
+                stmt = stmt.order_by(order_column.desc(), Activity.project_id)
+            projects_assoc = self.request.dbsession.execute(stmt).scalars().all()
+
+        elif route_name == "company_contacts":
+            sort_criteria = dict(SORT_CRITERIA_CONTACTS)
+
+            allowed_sorts = {"name", "role", "created_at", "updated_at"}
             if _sort not in allowed_sorts:
                 _sort = "created_at"
                 q["sort"] = _sort
@@ -357,13 +394,13 @@ class CompanyView:
 
             stmt = select(Contact).filter(Contact.company_id == company.id)
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Contact, _sort).asc(), Contact.id)
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
             else:
-                stmt = stmt.order_by(getattr(Contact, _sort).desc(), Contact.id)
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
             contacts = self.request.dbsession.execute(stmt).scalars().all()
         elif route_name == "company_tags":
             sort_criteria = {
-                "name": _("Name"),
+                "name": _("Tag"),
                 "created_at": _("Date created"),
                 "updated_at": _("Date modified"),
             }
@@ -379,9 +416,9 @@ class CompanyView:
 
             stmt = select(Tag).filter(Tag.companies.any(Company.id == company.id))
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Tag, _sort).asc(), Tag.id)
+                stmt = stmt.order_by(sort_column(Tag, _sort).asc(), Tag.id)
             else:
-                stmt = stmt.order_by(getattr(Tag, _sort).desc(), Tag.id)
+                stmt = stmt.order_by(sort_column(Tag, _sort).desc(), Tag.id)
             tags = self.request.dbsession.execute(stmt).scalars().all()
 
         if is_bulk_select_request(self.request):
@@ -418,6 +455,7 @@ class CompanyView:
             "countries": countries,
             "stages": stages,
             "company_roles": company_roles,
+            "projects_assoc": projects_assoc,
             "contacts": contacts,
             "tags": tags,
             "q": q,
@@ -521,9 +559,9 @@ class CompanyView:
                 )
         else:
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Company, _sort).asc(), Company.id)
+                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
             elif _order == "desc":
-                stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
+                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -674,14 +712,41 @@ class CompanyView:
         permission="view",
     )
     def companies_stars(self):
+        _ = self.request.translate
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = {
+            "name": _("Name"),
+            "fullname": _("Fullname"),
+            "email": _("Email"),
+            "created_at": _("Date created"),
+            "updated_at": _("Date modified"),
+        }
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {"sort": _sort, "order": _order}
         user_roles = dict(USER_ROLES)
+
+        allowed_sorts = {"name", "fullname", "email", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+            q["sort"] = _sort
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+            q["order"] = _order
+
         stmt = (
             select(User)
             .join(companies_stars)
             .filter(company.id == companies_stars.c.company_id)
         )
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(User, _sort).asc(), User.id)
+        else:
+            stmt = stmt.order_by(sort_column(User, _sort).desc(), User.id)
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -691,9 +756,15 @@ class CompanyView:
             "company_more_stars",
             company_id=company.id,
             slug=company.slug,
-            _query={"page": page + 1},
+            _query={
+                **q,
+                "page": page + 1,
+            },
         )
         return {
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
@@ -814,11 +885,30 @@ class CompanyView:
         _ = self.request.translate
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Comment)
-            .filter(Comment.company_id == company.id)
-            .order_by(Comment.created_at.desc())
-        )
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = {
+            "created_at": _("Date created"),
+            "updated_at": _("Date modified"),
+        }
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {"sort": _sort, "order": _order}
+
+        allowed_sorts = {"created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+            q["sort"] = _sort
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+            q["order"] = _order
+
+        stmt = select(Comment).filter(Comment.company_id == company.id)
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Comment, _sort).asc(), Comment.id)
+        else:
+            stmt = stmt.order_by(sort_column(Comment, _sort).desc(), Comment.id)
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -828,10 +918,16 @@ class CompanyView:
             "company_more_comments",
             company_id=company.id,
             slug=company.slug,
-            _query={"page": page + 1},
+            _query={
+                **q,
+                "page": page + 1,
+            },
         )
 
         return {
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "company": company,
@@ -889,9 +985,9 @@ class CompanyView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Company, _sort).asc())
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Company, _sort).desc())
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(

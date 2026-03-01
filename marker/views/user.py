@@ -20,6 +20,7 @@ from ..forms.select import (
     ORDER_CRITERIA,
     PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA,
+    SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_EXT,
     SORT_CRITERIA_PROJECTS,
@@ -45,7 +46,7 @@ from ..models import (
 )
 from ..utils.export import response_xlsx_contacts_company,response_xlsx_contacts_project, response_xlsx
 from ..utils.paginator import get_paginator
-from . import Filter, handle_bulk_selection, is_bulk_select_request
+from . import Filter, handle_bulk_selection, is_bulk_select_request, sort_column
 
 log = logging.getLogger(__name__)
 
@@ -133,6 +134,13 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = select(User)
 
         if name:
@@ -155,9 +163,9 @@ class UserView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(User, _sort).asc())
+            stmt = stmt.order_by(sort_column(User, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(User, _sort).desc())
+            stmt = stmt.order_by(sort_column(User, _sort).desc())
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -224,6 +232,10 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         categories = dict(CATEGORIES)
         q = {}
+
+        _sort = "created_at"
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = select(Comment).filter(Comment.created_by == user)
 
@@ -294,8 +306,16 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria["name"] = self.request.translate("Tag")
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         q["sort"] = _sort
         q["order"] = _order
@@ -303,9 +323,9 @@ class UserView:
         stmt = select(Tag).filter(Tag.created_by == user)
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Tag, _sort).asc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Tag, _sort).desc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -372,9 +392,26 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
+        sort_criteria["name"] = self.request.translate("Company")
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+            "stars",
+            "comments",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = select(Company).filter(Company.created_by == user)
 
@@ -427,11 +464,24 @@ class UserView:
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
                 )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).asc(), Company.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).desc(), Company.id)
+                )
         else:
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Company, _sort).asc(), Company.id)
+                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
             elif _order == "desc":
-                stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
+                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -511,12 +561,20 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        sort_criteria["name"] = self.request.translate("Project")
         colors = dict(COLORS)
         statuses = dict(STATUS)
         stages = dict(STAGES)
         project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         now = datetime.datetime.now()
         q = {}
+
+        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at", "stars", "comments"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = select(Project).filter(Project.created_by == user)
 
@@ -587,11 +645,24 @@ class UserView:
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )
                 )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).asc(), Project.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).desc(), Project.id)
+                )
         else:
             if _order == "asc":
-                stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
+                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
             elif _order == "desc":
-                stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
+                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -665,10 +736,18 @@ class UserView:
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS)
+        sort_criteria["name"] = self.request.translate("Name")
         order_criteria = dict(ORDER_CRITERIA)
         categories = dict(CATEGORIES)
         q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = select(Contact).filter(Contact.created_by == user)
 
@@ -701,9 +780,9 @@ class UserView:
             )
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Contact, _sort).asc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Contact, _sort).desc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
 
         q["sort"] = _sort
         q["order"] = _order
@@ -839,9 +918,17 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
+        sort_criteria["name"] = self.request.translate("Company")
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         q = {}
+
+        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = (
             select(Company)
@@ -862,9 +949,9 @@ class UserView:
             q["subdivision"] = list(subdivision)
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Company, _sort).asc())
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Company, _sort).desc())
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -966,6 +1053,20 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         q = {}
 
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(Company)
             .join(selected_companies)
@@ -985,9 +1086,9 @@ class UserView:
             q["subdivision"] = list(subdivision)
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Company, _sort).asc())
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Company, _sort).desc())
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
         q["sort"] = _sort
         q["order"] = _order
@@ -1011,6 +1112,20 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(
                 Company.name,
@@ -1026,9 +1141,9 @@ class UserView:
         )
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Company, _sort).asc())
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Company, _sort).desc())
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
         companies = self.request.dbsession.execute(stmt).all()
         header_row = [
@@ -1088,9 +1203,24 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        sort_criteria["name"] = self.request.translate("Project")
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = (
             select(Project)
@@ -1126,9 +1256,9 @@ class UserView:
             q["delivery_method"] = delivery_method
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Project, _sort).asc())
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Project, _sort).desc())
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1252,6 +1382,20 @@ class UserView:
         now = datetime.datetime.now()
         q = {}
 
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(Project)
             .join(selected_projects)
@@ -1286,9 +1430,9 @@ class UserView:
             q["delivery_method"] = delivery_method
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Project, _sort).asc())
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Project, _sort).desc())
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
         q["sort"] = _sort
         q["order"] = _order
@@ -1312,6 +1456,20 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(
                 Project.name,
@@ -1330,9 +1488,9 @@ class UserView:
         )
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Project, _sort).asc())
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Project, _sort).desc())
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
         projects = self.request.dbsession.execute(stmt).all()
         header_row = [
@@ -1391,6 +1549,13 @@ class UserView:
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         q["sort"] = _sort
         q["order"] = _order
 
@@ -1399,9 +1564,9 @@ class UserView:
         )
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Tag, _sort).asc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Tag, _sort).desc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1447,6 +1612,13 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
+        allowed_sorts = {"name", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(Tag.name)
             .join(selected_tags)
@@ -1454,9 +1626,9 @@ class UserView:
         )
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Tag, _sort).asc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Tag, _sort).desc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
 
         tags = self.request.dbsession.execute(stmt).all()
         header_row = [_("Tag")]
@@ -1505,9 +1677,16 @@ class UserView:
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS)
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         q["sort"] = _sort
         q["order"] = _order
@@ -1542,9 +1721,9 @@ class UserView:
             q["category"] = category
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Contact, _sort).asc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Contact, _sort).desc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1598,6 +1777,13 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
+        allowed_sorts = {"name", "role", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(Contact)
             .join(selected_contacts)
@@ -1610,9 +1796,9 @@ class UserView:
             stmt = stmt.filter(Contact.project)
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Contact, _sort).asc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Contact, _sort).desc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
 
         contacts = self.request.dbsession.execute(stmt).scalars()
 
@@ -1859,9 +2045,17 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
+        sort_criteria["name"] = self.request.translate("Company")
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = (
             select(Company)
@@ -1885,9 +2079,9 @@ class UserView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Company, _sort).asc())
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Company, _sort).desc())
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1941,6 +2135,13 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
+        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(
                 Company.name,
@@ -1965,9 +2166,9 @@ class UserView:
             stmt = stmt.filter(Company.country == country)
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Company, _sort).asc())
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Company, _sort).desc())
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
         companies = self.request.dbsession.execute(stmt).all()
         header_row = [
@@ -2073,10 +2274,18 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
+        sort_criteria["name"] = self.request.translate("Project")
         order_criteria = dict(ORDER_CRITERIA)
         project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         now = datetime.datetime.now()
         q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         stmt = (
             select(Project)
@@ -2107,9 +2316,9 @@ class UserView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Project, _sort).asc())
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Project, _sort).desc())
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -2165,6 +2374,13 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
 
+        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         stmt = (
             select(
                 Project.name,
@@ -2197,9 +2413,9 @@ class UserView:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Project, _sort).asc())
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Project, _sort).desc())
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
         projects = self.request.dbsession.execute(stmt).all()
         header_row = [

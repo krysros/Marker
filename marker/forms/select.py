@@ -30,6 +30,14 @@ SORT_CRITERIA = [
 ]
 
 
+SORT_CRITERIA_CONTACTS = [
+    ("name", _("Fullname")),
+    ("role", _("Role")),
+    ("created_at", _("Date created")),
+    ("updated_at", _("Date modified")),
+]
+
+
 SORT_CRITERIA_EXT = [
     ("name", _("Name")),
     ("city", _("City")),

@@ -10,6 +10,8 @@
   </td>
   <td>${stages.get(assoc.stage)}</td>
   <td>${company_roles.get(assoc.role)}</td>
+  <td>${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}</td>
+  <td>${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}</td>
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.project_star(assoc.project, size='sm')}

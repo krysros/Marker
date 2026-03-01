@@ -1,9 +1,18 @@
 from urllib.parse import parse_qsl, urlencode
 
+from sqlalchemy import func
+
 
 class Filter:
     def __init__(self, **entries):
         self.__dict__.update(entries)
+
+
+def sort_column(model, sort_key):
+    column = getattr(model, sort_key)
+    if sort_key == "name":
+        return func.lower(column)
+    return column
 
 
 def is_bulk_select_request(request):

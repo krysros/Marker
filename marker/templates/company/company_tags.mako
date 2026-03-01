@@ -27,6 +27,8 @@
       <tr>
         <th>${checkbox.select_all()}</th>
         <th>${_("Tag")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>

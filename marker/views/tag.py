@@ -29,6 +29,7 @@ from . import (
     htmx_refresh_response,
     is_bulk_select_request,
     set_select_all_state,
+    sort_column,
 )
 
 log = logging.getLogger(__name__)
@@ -100,9 +101,9 @@ class TagView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Tag, _sort).asc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Tag, _sort).desc())
+            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -460,11 +461,11 @@ class TagView:
         else:
             if _order == "asc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, _sort).asc(), Company.id
+                    sort_column(Company, _sort).asc(), Company.id
                 )
             elif _order == "desc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, _sort).desc(), Company.id
+                    sort_column(Company, _sort).desc(), Company.id
                 )
 
         q["sort"] = _sort
@@ -551,11 +552,11 @@ class TagView:
         else:
             if _order == "asc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, _sort).asc(), Company.id
+                    sort_column(Company, _sort).asc(), Company.id
                 )
             elif _order == "desc":
                 stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    getattr(Company, _sort).desc(), Company.id
+                    sort_column(Company, _sort).desc(), Company.id
                 )
 
         companies = self.request.dbsession.execute(stmt).all()
@@ -672,11 +673,11 @@ class TagView:
         else:
             if _order == "asc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, _sort).asc(), Project.id
+                    sort_column(Project, _sort).asc(), Project.id
                 )
             elif _order == "desc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, _sort).desc(), Project.id
+                    sort_column(Project, _sort).desc(), Project.id
                 )
 
         q["sort"] = _sort
@@ -764,11 +765,11 @@ class TagView:
         else:
             if _order == "asc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, _sort).asc(), Project.id
+                    sort_column(Project, _sort).asc(), Project.id
                 )
             elif _order == "desc":
                 stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    getattr(Project, _sort).desc(), Project.id
+                    sort_column(Project, _sort).desc(), Project.id
                 )
 
         projects = self.request.dbsession.execute(stmt).all()

@@ -14,4 +14,10 @@
 </div>
 
 <%include file="company_lead.mako"/>
+
+<div class="hstack gap-2 mb-4">
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
+</div>
+
 <%include file="comment_more.mako"/>

@@ -16,6 +16,11 @@
 
 <%include file="company_lead.mako"/>
 
+<div class="hstack gap-2 mb-4">
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
+</div>
+
 <div class="table-responsive">
   <table class="table table-striped">
     <thead>
@@ -24,11 +29,13 @@
         <th>${_("Project")}</th>
         <th>${_("Stage")}</th>
         <th>${_("Role")}</th>
+        <th>${_("Created at")}</th>
+        <th>${_("Updated at")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>
     <tbody id="new-assoc">
-      % for assoc in company.projects:
+      % for assoc in projects_assoc:
         <%include file="project_row.mako" args="assoc=assoc"/>
       % endfor
     </tbody>

@@ -8,7 +8,7 @@ from pyramid.view import view_config
 from sqlalchemy import func, or_, select, delete
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
-from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA
+from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
 from ..models import (
     Comment,
     Company,
@@ -20,7 +20,13 @@ from ..models import (
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from . import Filter, handle_bulk_selection, is_bulk_select_request, set_select_all_state
+from . import (
+    Filter,
+    handle_bulk_selection,
+    is_bulk_select_request,
+    set_select_all_state,
+    sort_column,
+)
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +75,7 @@ class ContactView:
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
-        sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS)
         order_criteria = dict(ORDER_CRITERIA)
         categories = dict(CATEGORIES)
         q = {}
@@ -102,9 +108,9 @@ class ContactView:
         q["order"] = _order
 
         if _order == "asc":
-            stmt = stmt.order_by(getattr(Contact, _sort).asc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
         elif _order == "desc":
-            stmt = stmt.order_by(getattr(Contact, _sort).desc())
+            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
