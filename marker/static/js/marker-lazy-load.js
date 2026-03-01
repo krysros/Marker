@@ -25,18 +25,6 @@ class LazyMarkerLoader {
     
     this.debounceTimer = null;
     
-    // Bootstrap color mapping (from Bootstrap 5.3)
-    this.bootstrapColors = {
-      'primary': '#0d6efd',
-      'secondary': '#6c757d',
-      'success': '#198754',
-      'danger': '#dc3545',
-      'warning': '#ffc107',
-      'info': '#0dcaf0',
-      'light': '#f8f9fa',
-      'dark': '#212529'
-    };
-    
     // Add markers to map
     this.map.addLayer(this.markers);
   }
@@ -127,10 +115,7 @@ class LazyMarkerLoader {
       const title = this._createMarkerTitle(item);
       const marker = L.marker(
         new L.LatLng(item.latitude, item.longitude),
-        { 
-          title: this._stripHtml(title),
-          ...this._getMarkerOptions(item)
-        }
+        { title: this._stripHtml(title) }
       );
       
       marker.bindPopup(title);
@@ -149,47 +134,6 @@ class LazyMarkerLoader {
     const country = item.country ? `<br>${this._escapeHtml(item.country)}` : '';
     
     return title + street + city + country;
-  }
-  
-  /**
-   * Get marker options based on item properties
-   */
-  _getMarkerOptions(item) {
-    const options = {};
-    
-    // Apply color if available
-    if (item.color) {
-      options.icon = L.icon({
-        iconUrl: `data:image/svg+xml;base64,${this._getColoredMarkerSvg(item.color)}`,
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-    }
-    
-    return options;
-  }
-  
-  /**
-   * Get base64 encoded colored marker SVG
-   */
-  _getColoredMarkerSvg(color) {
-    // Map Bootstrap color names to hex values, or use as-is if hex color
-    let hexColor = this.bootstrapColors[color] || color;
-    
-    // Validate that it's a valid color format
-    if (!/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(hexColor)) {
-      // If not valid hex, use bootstrap primary as default
-      hexColor = this.bootstrapColors['primary'];
-    }
-    
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41">
-      <path fill="${hexColor}" d="M12.5,0 C5.6,0 0,5.6 0,12.5 C0,20 12.5,41 12.5,41 C12.5,41 25,20 25,12.5 C25,5.6 19.4,0 12.5,0 Z" />
-      <circle cx="12.5" cy="12.5" r="5" fill="white" />
-    </svg>`;
-    
-    return btoa(svg);
   }
   
   /**
