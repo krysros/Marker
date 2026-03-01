@@ -30,13 +30,13 @@
         <th>${_("Role")}</th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
+        <th>${_("Company")}</th>
+        <th>${_("City")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>
     <tbody id="new-contact">
-      % for contact in contacts:
-        <%include file="contact_row.mako" args="contact=contact"/>
-      % endfor
+      <%include file="contact_more.mako" args="paginator=contacts"/>
     </tbody>
   </table>
 </div>

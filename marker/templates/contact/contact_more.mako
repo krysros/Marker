@@ -1,12 +1,13 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
+<%page args="paginator, next_page=None"/>
 
 <%!
   import pycountry
 %>
 
 % for contact in paginator:
-% if loop.last:
+% if loop.last and next_page:
 <tr hx-get="${next_page}"
     hx-trigger="revealed"
     hx-swap="afterend"
