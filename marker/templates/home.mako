@@ -62,6 +62,7 @@
         <div class="d-flex flex-wrap gap-2">
           ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
           ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
+          ${button.a(icon='tags', color='primary', url=request.route_url('contact_search_tags'))}
           ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
         </div>
       </p>

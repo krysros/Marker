@@ -19,6 +19,9 @@
           <a class="nav-link" role="button" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" role="button" href="${request.route_url('contact_search_tags')}"><i class="bi bi-tags"></i> ${_("Search contacts")}</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('comment_all')}"><i class="bi bi-chat-left-text"></i> ${_("Comments")}</a>
         </li>
         <li class="nav-item">

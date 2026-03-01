@@ -392,6 +392,29 @@ def includeme(config):
     config.add_route("contact_all", "/contact", factory=default_factory)
     config.add_route("contact_more", "/contact/more", factory=default_factory)
     config.add_route("contact_search", "/contact/search", factory=default_factory)
+    config.add_route(
+        "contact_search_tags", "/contact/search/tags", factory=default_factory
+    )
+    config.add_route(
+        "contact_search_tags_results",
+        "/contact/search/tags/results",
+        factory=default_factory,
+    )
+    config.add_route(
+        "contact_search_tags_results_more",
+        "/contact/search/tags/results/more",
+        factory=default_factory,
+    )
+    config.add_route(
+        "contact_search_tags_input",
+        "/contact/search/tags/input",
+        factory=default_factory,
+    )
+    config.add_route(
+        "contact_search_tags_input_remove",
+        "/contact/search/tags/input/remove",
+        factory=default_factory,
+    )
     config.add_route("contact_count", "/contact/count", factory=default_factory)
     config.add_route(
         "contact_import_csv", "/contacts/import_csv", factory=default_factory

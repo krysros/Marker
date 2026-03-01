@@ -955,13 +955,14 @@ class TagView:
         request_method="GET",
     )
     def select(self):
-        name = self.request.params.get("name")
+        name = self.request.params.get("name") or self.request.params.get("tag")
+        list_id = self.request.params.get("list_id", "tags")
         tags = []
         if name:
             tags = self.request.dbsession.execute(
                 select(Tag).filter(Tag.name.ilike("%" + name + "%"))
             ).scalars()
-        return {"tags": tags}
+        return {"tags": tags, "list_id": list_id}
 
     @view_config(
         route_name="tag_search",

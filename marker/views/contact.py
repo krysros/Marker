@@ -1,14 +1,22 @@
 import csv
 import logging
+from uuid import uuid4
 from io import StringIO
 
 from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select, delete
+from sqlalchemy import func, or_, select, delete
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA
-from ..models import Comment, Company, Contact, Tag, selected_contacts
+from ..models import (
+    Comment,
+    Company,
+    Contact,
+    Project,
+    Tag,
+    selected_contacts,
+)
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
@@ -20,6 +28,29 @@ log = logging.getLogger(__name__)
 class ContactView:
     def __init__(self, request):
         self.request = request
+
+    def _normalized_tags(self):
+        seen = set()
+        tags = []
+        for value in self.request.params.getall("tag"):
+            name = value.strip()
+            if name and name not in seen:
+                seen.add(name)
+                tags.append(name)
+        return tags
+
+    def _stmt_contacts_by_tags(self, tags):
+        stmt = select(Contact).distinct().order_by(Contact.created_at.desc(), Contact.id.desc())
+
+        if tags:
+            stmt = stmt.filter(
+                or_(
+                    Contact.company.has(Company.tags.any(Tag.name.in_(tags))),
+                    Contact.project.has(Project.tags.any(Tag.name.in_(tags))),
+                )
+            )
+
+        return stmt
 
     @view_config(
         route_name="contact_all", renderer="contact_all.mako", permission="view"
@@ -204,6 +235,105 @@ class ContactView:
                 )
             )
         return {"heading": _("Find a contact"), "form": form}
+
+    @view_config(
+        route_name="contact_search_tags",
+        renderer="contact_search_tags.mako",
+        permission="view",
+    )
+    def search_tags(self):
+        _ = self.request.translate
+        tags = self._normalized_tags()
+        q = {}
+
+        if tags:
+            q["tag"] = tags
+
+        if self.request.method == "POST":
+            return HTTPSeeOther(
+                location=self.request.route_url("contact_search_tags_results", _query=q)
+            )
+
+        return {
+            "tags": tags,
+            "heading": _("Search contacts"),
+        }
+
+    @view_config(
+        route_name="contact_search_tags_results",
+        renderer="contact_search_tags_results.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="contact_search_tags_results_more",
+        renderer="contact_more.mako",
+        permission="view",
+    )
+    def search_tags_results(self):
+        _ = self.request.translate
+        tags = self._normalized_tags()
+        page = int(self.request.params.get("page", 1))
+        q = {}
+
+        if not tags:
+            return HTTPSeeOther(location=self.request.route_url("contact_search_tags"))
+
+        q["tag"] = tags
+
+        paginator = []
+        counter = 0
+        next_page = self.request.route_url(
+            "contact_search_tags_results_more",
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        stmt = self._stmt_contacts_by_tags(tags)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_contacts
+            )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        return {
+            "q": q,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+            "tags": tags,
+            "heading": _("Search contacts"),
+        }
+
+    @view_config(
+        route_name="contact_search_tags_input",
+        renderer="contact_tag_input_row.mako",
+        permission="view",
+    )
+    def search_tags_input(self):
+        return {
+            "row_id": uuid4().hex,
+            "value": "",
+        }
+
+    @view_config(
+        route_name="contact_search_tags_input_remove",
+        renderer="string",
+        permission="view",
+    )
+    def search_tags_input_remove(self):
+        return ""
 
     @view_config(route_name="contact_vcard", permission="view")
     def vcard(self):
