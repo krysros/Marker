@@ -4,31 +4,30 @@ Marker
 Getting Started
 ---------------
 
-Change directory into your newly created project if not already there. Your current directory should be the same as this INSTALL.md file and setup.py.
+Change directory into your newly created project if not already there. Your current directory should be the same as this INSTALL.md file and pyproject.toml.
 
     cd marker
 
-Create and activate a Python (or conda) virtual environment, if not already created.
+Install the project with its testing requirements.
 
-Install the project in editable mode with its testing requirements.
-
-    pip install -e ".[testing]"
+    uv sync --extra testing
 
 Initialize and upgrade the database using Alembic.
 
-    alembic -c development.ini upgrade head
+    uv run alembic -c development.ini upgrade head
 
 Load default data into the database using a script.
 
-    initialize_marker_db development.ini
+    uv run initialize_marker_db development.ini
 
 Run your project's tests.
 
-    pytest
+    uv run pytest
 
 Run your project.
 
-    pserve development.ini
+    uv run pserve development.ini --reload
+
 
 
 Log in
