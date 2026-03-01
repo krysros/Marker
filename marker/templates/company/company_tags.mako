@@ -1,6 +1,7 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
+<%namespace name="checkbox" file="checkbox.mako"/>
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(company_pills)}</div>
@@ -19,7 +20,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>#</th>
+        <th>${checkbox.select_all()}</th>
         <th>${_("Tag")}</th>
         <th>${_("Action")}</th>
       </tr>

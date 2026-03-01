@@ -40,7 +40,13 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from . import Filter
+from . import (
+    Filter,
+    handle_bulk_selection,
+    htmx_refresh_response,
+    is_bulk_select_request,
+    set_select_all_state,
+)
 
 log = logging.getLogger(__name__)
 
@@ -261,6 +267,11 @@ class ProjectView:
                 stmt = stmt.order_by(getattr(Project, _sort).asc(), Project.id)
             elif _order == "desc":
                 stmt = stmt.order_by(getattr(Project, _sort).desc(), Project.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_projects
+            )
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -597,6 +608,35 @@ class ProjectView:
         company_roles = dict(COMPANY_ROLES)
         delivery_methods = dict(PROJECT_DELIVERY_METHODS)
 
+        if is_bulk_select_request(self.request):
+            checked = self.request.params.get("checked", "false").lower() == "true"
+            route_name = self.request.matched_route.name
+
+            if route_name == "project_companies":
+                items = [assoc.project for assoc in project.companies]
+                selected_items = self.request.identity.selected_projects
+            elif route_name == "project_tags":
+                items = list(project.tags)
+                selected_items = self.request.identity.selected_tags
+            elif route_name == "project_contacts":
+                items = list(project.contacts)
+                selected_items = self.request.identity.selected_contacts
+            else:
+                items = []
+                selected_items = []
+
+            if checked:
+                for item in items:
+                    if item not in selected_items:
+                        selected_items.append(item)
+            else:
+                for item in items:
+                    if item in selected_items:
+                        selected_items.remove(item)
+
+            set_select_all_state(self.request, checked)
+            return htmx_refresh_response(self.request)
+
         return {
             "project": project,
             "stages": stages,
@@ -682,6 +722,11 @@ class ProjectView:
             stmt = stmt.order_by(getattr(Project, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Project, _sort).desc())
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_projects
+            )
 
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
@@ -987,6 +1032,7 @@ class ProjectView:
     def check(self):
         project = self.request.context.project
         selected_projects = self.request.identity.selected_projects
+        set_select_all_state(self.request, False)
 
         if project in selected_projects:
             selected_projects.remove(project)

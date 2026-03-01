@@ -23,7 +23,13 @@ from ..forms.select import (
 from ..models import Company, Project, Tag, companies_stars, projects_stars, selected_tags
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
-from . import Filter
+from . import (
+    Filter,
+    handle_bulk_selection,
+    htmx_refresh_response,
+    is_bulk_select_request,
+    set_select_all_state,
+)
 
 log = logging.getLogger(__name__)
 
@@ -97,6 +103,11 @@ class TagView:
             stmt = stmt.order_by(getattr(Tag, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Tag, _sort).desc())
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_tags
+            )
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -459,6 +470,11 @@ class TagView:
         q["sort"] = _sort
         q["order"] = _order
 
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_companies
+            )
+
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
@@ -665,6 +681,11 @@ class TagView:
 
         q["sort"] = _sort
         q["order"] = _order
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_projects
+            )
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -919,6 +940,7 @@ class TagView:
     def check(self):
         tag = self.request.context.tag
         selected_tags = self.request.identity.selected_tags
+        set_select_all_state(self.request, False)
 
         if tag in selected_tags:
             selected_tags.remove(tag)

@@ -1,8 +1,10 @@
+<%namespace name="checkbox" file="checkbox.mako"/>
+
 <div class="table-responsive">
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>#</th>
+        <th>${checkbox.select_all()}</th>
         <th>${_("Project")}</th>
         <th>${_("City")}</th>
         <th>${_("Stars")}</th>

@@ -12,7 +12,7 @@ from ..models import Comment, Company, Contact, Tag, selected_contacts
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from . import Filter
+from . import Filter, handle_bulk_selection, is_bulk_select_request, set_select_all_state
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +74,11 @@ class ContactView:
             stmt = stmt.order_by(getattr(Contact, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Contact, _sort).desc())
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_contacts
+            )
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
@@ -215,6 +220,7 @@ class ContactView:
     def check(self):
         contact = self.request.context.contact
         selected_contacts = self.request.identity.selected_contacts
+        set_select_all_state(self.request, False)
 
         if contact in selected_contacts:
             selected_contacts.remove(contact)

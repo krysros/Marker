@@ -38,7 +38,13 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from . import Filter
+from . import (
+    Filter,
+    handle_bulk_selection,
+    htmx_refresh_response,
+    is_bulk_select_request,
+    set_select_all_state,
+)
 
 log = logging.getLogger(__name__)
 
@@ -254,6 +260,11 @@ class CompanyView:
             elif _order == "desc":
                 stmt = stmt.order_by(getattr(Company, _sort).desc(), Company.id)
 
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_companies
+            )
+
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt)
         ).scalar()
@@ -313,6 +324,35 @@ class CompanyView:
         countries = dict(select_countries())
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
+
+        if is_bulk_select_request(self.request):
+            checked = self.request.params.get("checked", "false").lower() == "true"
+            route_name = self.request.matched_route.name
+
+            if route_name == "company_projects":
+                items = [assoc.project for assoc in company.projects]
+                selected_items = self.request.identity.selected_projects
+            elif route_name == "company_tags":
+                items = list(company.tags)
+                selected_items = self.request.identity.selected_tags
+            elif route_name == "company_contacts":
+                items = list(company.contacts)
+                selected_items = self.request.identity.selected_contacts
+            else:
+                items = []
+                selected_items = []
+
+            if checked:
+                for item in items:
+                    if item not in selected_items:
+                        selected_items.append(item)
+            else:
+                for item in items:
+                    if item in selected_items:
+                        selected_items.remove(item)
+
+            set_select_all_state(self.request, checked)
+            return htmx_refresh_response(self.request)
 
         return {
             "company": company,
@@ -790,6 +830,11 @@ class CompanyView:
         elif _order == "desc":
             stmt = stmt.order_by(getattr(Company, _sort).desc())
 
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_companies
+            )
+
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -984,6 +1029,7 @@ class CompanyView:
     def check(self):
         company = self.request.context.company
         selected_companies = self.request.identity.selected_companies
+        set_select_all_state(self.request, False)
 
         if company in selected_companies:
             selected_companies.remove(company)
