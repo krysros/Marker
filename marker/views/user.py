@@ -600,11 +600,13 @@ class UserView:
     def tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         sort_criteria["name"] = self.request.translate("Tag")
         order_criteria = dict(ORDER_CRITERIA)
+        categories = dict(CATEGORIES)
         q = {}
 
         allowed_sorts = set(sort_criteria)
@@ -618,6 +620,7 @@ class UserView:
         q["order"] = _order
 
         stmt = select(Tag).filter(Tag.created_by == user)
+        stmt, category = self._filter_tags_by_category(stmt, category, q=q)
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Tag, _sort).asc())
@@ -660,10 +663,47 @@ class UserView:
             "paginator": paginator,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
+            "categories": categories,
             "next_page": next_page,
             "title": user.fullname,
             "user_pills": self.pills(user),
         }
+
+    @view_config(
+        route_name="user_export_tags",
+        permission="view",
+    )
+    def export_tags(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        category = self.request.params.get("category", "companies")
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+
+        allowed_sorts = {"name", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        stmt = select(Tag).filter(Tag.created_by == user)
+        stmt, category = self._filter_tags_by_category(stmt, category)
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
+
+        tags = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._tag_export_rows(tags, category=category)
+        header_row = self._tag_export_header(category=category)
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        log.info(
+            _("The user %s exported the data of selected tags")
+            % self.request.identity.name
+        )
+        return response
 
     @view_config(
         route_name="user_companies",
@@ -828,6 +868,112 @@ class UserView:
             "user_pills": self.pills(user),
             "form": form,
         }
+
+    @view_config(
+        route_name="user_export_companies",
+        permission="view",
+    )
+    def export_companies(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        website = self.request.params.get("website", None)
+        color = self.request.params.get("color", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+            "stars",
+            "comments",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        stmt = select(Company).filter(Company.created_by == user)
+
+        if name:
+            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+
+        if website:
+            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if _sort == "stars":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(companies_stars)
+                    .group_by(Company)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(companies_stars)
+                    .group_by(Company)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
+                )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).asc(), Company.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company)
+                    .order_by(func.count(Company.comments).desc(), Company.id)
+                )
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
+
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._company_export_rows(companies)
+        header_row = self._company_export_header()
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        log.info(
+            _("The user %s exported the data of selected companies")
+            % self.request.identity.name
+        )
+        return response
 
     @view_config(
         route_name="user_projects",
@@ -1014,6 +1160,130 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_export_projects",
+        permission="view",
+    )
+    def export_projects(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        name = self.request.params.get("name", None)
+        street = self.request.params.get("street", None)
+        postcode = self.request.params.get("postcode", None)
+        city = self.request.params.get("city", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        website = self.request.params.get("website", None)
+        color = self.request.params.get("color", None)
+        deadline = self.request.params.get("deadline", None)
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+            "stars",
+            "comments",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        stmt = select(Project).filter(Project.created_by == user)
+
+        if name:
+            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+
+        if street:
+            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+
+        if postcode:
+            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+
+        if city:
+            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+
+        if website:
+            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
+        if deadline:
+            deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
+            stmt = stmt.filter(Project.deadline <= deadline_dt)
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+
+        if _sort == "stars":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(projects_stars)
+                    .group_by(Project)
+                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(projects_stars)
+                    .group_by(Project)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
+                )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).asc(), Project.id)
+                )
+            elif _order == "desc":
+                stmt = (
+                    stmt.join(Project.comments)
+                    .group_by(Project)
+                    .order_by(func.count(Project.comments).desc(), Project.id)
+                )
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
+
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._project_export_rows(projects)
+        header_row = self._project_export_header()
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        log.info(
+            _("The user %s exported the data of selected projects")
+            % self.request.identity.name
+        )
+        return response
+
+    @view_config(
         route_name="user_contacts",
         renderer="user_contacts.mako",
         permission="view",
@@ -1121,6 +1391,64 @@ class UserView:
             "user_pills": self.pills(user),
             "form": form,
         }
+
+    @view_config(
+        route_name="user_export_contacts",
+        permission="view",
+    )
+    def export_contacts(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        category = self.request.params.get("category", "companies")
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+
+        allowed_sorts = {"name", "role", "created_at", "updated_at"}
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        stmt = select(Contact).filter(Contact.created_by == user)
+
+        if name:
+            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+
+        if role:
+            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+
+        if phone:
+            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+
+        if email:
+            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+
+        if category == "projects":
+            stmt = stmt.filter(Contact.project)
+        else:
+            category = "companies"
+            stmt = stmt.filter(Contact.company)
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
+
+        contacts = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._selected_contacts_export_rows(contacts, category)
+        header_row = self._selected_contacts_export_header(category)
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
+
+        log.info(
+            _("The user %s exported the data of selected contacts")
+            % self.request.identity.name
+        )
+        return response
 
     @view_config(route_name="user_add", renderer="user_form.mako", permission="admin")
     def add(self):

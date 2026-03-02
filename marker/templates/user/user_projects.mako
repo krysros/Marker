@@ -4,6 +4,7 @@
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_projects', username=user.name))}</div>
+  <div>${button.a(icon='download', color='primary', url=request.route_url('user_export_projects', username=user.name, _query=q))}</div>
   <div>${button.a(icon='map', color='secondary', url=request.route_url('user_map_projects', username=user.name))}</div>
 </div>
 

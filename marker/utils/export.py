@@ -53,6 +53,13 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     def _normalized(text):
         return str(text or "").strip().lower()
 
+    def _safe_cell_value(value):
+        if value is None:
+            return ""
+        if isinstance(value, (datetime.datetime, datetime.date, str, int, float, bool)):
+            return value
+        return str(value)
+
     subdivision_markers = {
         _normalized(_("Subdivision")),
         "subdivision",
@@ -99,7 +106,7 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
 
     # Write rows.
     for j, elem in enumerate(header_row):
-        worksheet.write(0, j, elem, cell_format)
+        worksheet.write(0, j, _safe_cell_value(elem), cell_format)
 
     for i, row in enumerate(rows, start=1):
         row_color = None
@@ -113,6 +120,8 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
                 if any(marker and marker in header_name for marker in markers):
                     elem = transform(elem)
                     break
+
+            elem = _safe_cell_value(elem)
 
             if row_color in row_formats:
                 if isinstance(elem, (datetime.datetime, datetime.date)):

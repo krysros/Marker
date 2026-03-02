@@ -496,6 +496,11 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_export_companies",
+        "/user/{username}/export_companies",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_projects",
         "/user/{username}/projects",
         factory=user_factory,
@@ -505,16 +510,31 @@ def includeme(config):
         "/user/{username}/more_projects",
         factory=user_factory,
     )
+    config.add_route(
+        "user_export_projects",
+        "/user/{username}/export_projects",
+        factory=user_factory,
+    )
     config.add_route("user_tags", "/user/{username}/tags", factory=user_factory)
     config.add_route(
         "user_more_tags",
         "/user/{username}/more_tags",
         factory=user_factory,
     )
+    config.add_route(
+        "user_export_tags",
+        "/user/{username}/export_tags",
+        factory=user_factory,
+    )
     config.add_route("user_contacts", "/user/{username}/contacts", factory=user_factory)
     config.add_route(
         "user_more_contacts",
         "/user/{username}/more_contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_export_contacts",
+        "/user/{username}/export_contacts",
         factory=user_factory,
     )
     config.add_route("user_comments", "/user/{username}/comments", factory=user_factory)

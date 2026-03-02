@@ -4,6 +4,7 @@
 
 <div class="hstack gap-2 mb-4">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_contacts', username=user.name))}</div>
+  <div>${button.a(icon='download', color='primary', url=request.route_url('user_export_contacts', username=user.name, _query=q))}</div>
 </div>
 
 <p class="lead">${user.fullname}</p>
