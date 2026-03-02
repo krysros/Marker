@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-02 02:15+0100\n"
+"POT-Creation-Date: 2026-03-02 02:22+0100\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -585,6 +585,7 @@ msgid "Currently implemented or completed projects."
 msgstr "Aktualnie realizowane lub zakończone projekty."
 
 #: marker/templates/base/navbar.mako:16 marker/templates/base/navbar.mako:58
+#: marker/templates/common/search_criteria.mako:39
 #: marker/templates/company/company_form.mako:109
 #: marker/templates/contact/contact_search_tags.mako:18
 #: marker/templates/contact/contact_search_tags_results.mako:17
@@ -762,17 +763,17 @@ msgstr "Sortuj"
 msgid "Order"
 msgstr "Kolejność"
 
-#: marker/templates/common/search_criteria.mako:10
+#: marker/templates/common/search_criteria.mako:11
 msgid "Search criteria"
 msgstr "Kryteria wyszukiwania"
 
-#: marker/templates/common/search_criteria.mako:40
-#: marker/templates/common/search_criteria.mako:45
+#: marker/templates/common/search_criteria.mako:48
+#: marker/templates/common/search_criteria.mako:53
 msgid "Don't see what you're looking for?"
 msgstr "Nie ma tego czego szukasz?"
 
-#: marker/templates/common/search_criteria.mako:41
-#: marker/templates/common/search_criteria.mako:46
+#: marker/templates/common/search_criteria.mako:49
+#: marker/templates/common/search_criteria.mako:54
 msgid "Go to the form and add..."
 msgstr "Przejdź do formularza i dodaj..."
 
