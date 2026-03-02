@@ -72,6 +72,9 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -100,17 +103,56 @@ class ContactView:
         if category == "companies":
             stmt = stmt.filter(Contact.company)
             q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.company.has(Company.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
         elif category == "projects":
             stmt = stmt.filter(Contact.project)
             q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.project.has(Project.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
+
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
 
         q["sort"] = _sort
         q["order"] = _order
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
+        if _sort in {"country", "subdivision"}:
+            if category == "projects":
+                stmt = stmt.join(Contact.project)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.join(Contact.company)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        elif _sort == "color":
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(

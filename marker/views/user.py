@@ -1300,6 +1300,9 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -1337,19 +1340,53 @@ class UserView:
         if category == "companies":
             stmt = stmt.filter(Contact.company)
             q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.company.has(Company.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
         elif category == "projects":
             stmt = stmt.filter(Contact.project)
             q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.project.has(Project.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
+
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
                 self.request, stmt, self.request.identity.selected_contacts
             )
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
+        if _sort in {"country", "subdivision"}:
+            if category == "projects":
+                stmt = stmt.join(Contact.project)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.join(Contact.company)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
 
         q["sort"] = _sort
         q["order"] = _order
@@ -1403,11 +1440,22 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
-        allowed_sorts = {"name", "role", "created_at", "updated_at"}
+        allowed_sorts = {
+            "name",
+            "role",
+            "country",
+            "subdivision",
+            "color",
+            "created_at",
+            "updated_at",
+        }
         if _sort not in allowed_sorts:
             _sort = "created_at"
 
@@ -1430,14 +1478,43 @@ class UserView:
 
         if category == "projects":
             stmt = stmt.filter(Contact.project)
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.project.has(Project.subdivision.in_(subdivision))
+                )
         else:
             category = "companies"
             stmt = stmt.filter(Contact.company)
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.company.has(Company.subdivision.in_(subdivision))
+                )
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+
+        if _sort in {"country", "subdivision"}:
+            if category == "projects":
+                stmt = stmt.join(Contact.project)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.join(Contact.company)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
 
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
@@ -2276,6 +2353,9 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
         category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -2318,14 +2398,48 @@ class UserView:
         if category == "companies":
             stmt = stmt.filter(Contact.company)
             q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.company.has(Company.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
         elif category == "projects":
             stmt = stmt.filter(Contact.project)
             q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.project.has(Project.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
+
+        if _sort in {"country", "subdivision"}:
+            if category == "projects":
+                stmt = stmt.join(Contact.project)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.join(Contact.company)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -2375,11 +2489,26 @@ class UserView:
     def export_selected_contacts(self):
         _ = self.request.translate
         user = self.request.context.user
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
         _category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
-        allowed_sorts = {"name", "role", "created_at", "updated_at"}
+        allowed_sorts = {
+            "name",
+            "role",
+            "country",
+            "subdivision",
+            "color",
+            "created_at",
+            "updated_at",
+        }
         if _sort not in allowed_sorts:
             _sort = "created_at"
 
@@ -2392,18 +2521,60 @@ class UserView:
             .filter(user.id == selected_contacts.c.user_id)
         )
 
+        if name:
+            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+
+        if role:
+            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+
+        if phone:
+            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+
+        if email:
+            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+
         if _category == "companies":
             stmt = stmt.filter(Contact.company)
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.company.has(Company.subdivision.in_(subdivision))
+                )
         elif _category == "projects":
             stmt = stmt.filter(Contact.project)
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.project.has(Project.subdivision.in_(subdivision))
+                )
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Contact, _sort).desc())
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+
+        category = "projects" if _category == "projects" else "companies"
+
+        if _sort in {"country", "subdivision"}:
+            if category == "projects":
+                stmt = stmt.join(Contact.project)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.join(Contact.company)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
 
         contacts = self.request.dbsession.execute(stmt).scalars().all()
-        category = "projects" if _category == "projects" else "companies"
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
         response = response_xlsx(rows, header_row, row_colors=row_colors)

@@ -1,8 +1,16 @@
-from wtforms import EmailField, FileField, Form, HiddenField, SelectField, StringField
+from wtforms import (
+    EmailField,
+    FileField,
+    Form,
+    HiddenField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+)
 from wtforms.validators import DataRequired, InputRequired, Length
 
 from .filters import strip_filter
-from .select import CATEGORIES, COLORS
+from .select import CATEGORIES, COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
 
@@ -53,7 +61,28 @@ class ContactFilterForm(Form):
     phone = HiddenField(_("Phone"), filters=[strip_filter])
     email = HiddenField(_("Email"), filters=[strip_filter])
     category = SelectField(_("Category"), choices=CATEGORIES)
+    subdivision = SelectMultipleField(
+        _("Subdivision"), choices=select_subdivisions(), validate_choice=False
+    )
+    country = SelectField(_("Country"), choices=select_countries())
     color = SelectField(_("Color"), choices=COLORS)
+
+    def __init__(self, *args, request, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+
+        try:
+            self.edited_item = args[1]
+        except IndexError:
+            self.edited_item = None
+
+        try:
+            country = self.edited_item.country
+        except AttributeError:
+            country = None
+
+        self.subdivision.choices = select_subdivisions(country)
+        self.subdivision.default = self.request.GET.getall("subdivision")
 
 
 class ContactImportForm(Form):
