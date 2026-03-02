@@ -5,7 +5,8 @@
 %>
 
 % if form:
-  % if any(x for x in form.data.values() if x):
+  <% tags = q.get("tag", []) if q else [] %>
+  % if any(x for x in form.data.values() if x) or tags:
   <div class="alert alert-info" role="alert">
     <strong>${_("Search criteria")}: </strong>
     % for k, v in form.data.items():
@@ -34,16 +35,23 @@
         % endif
       % endif
     % endfor
+    % if tags:
+      ${_("Tags")}: <strong>${"; ".join(tags)}</strong>;
+    % endif
   </div>
+  <% add_query = {**form.data} %>
+  % if tags:
+    <% add_query["tag"] = tags %>
+  % endif
   % if request.matched_route.name.startswith("company"):
   <div class="alert alert-info" role="alert">
     ${_("Don't see what you're looking for?")}
-    <a href="${request.route_url('company_add', _query={**form.data})}" class="alert-link">${_("Go to the form and add...")}</a>
+    <a href="${request.route_url('company_add', _query=add_query)}" class="alert-link">${_("Go to the form and add...")}</a>
   </div>
   % elif request.matched_route.name.startswith("project"):
   <div class="alert alert-info" role="alert">
     ${_("Don't see what you're looking for?")}
-    <a href="${request.route_url('project_add', _query={**form.data})}" class="alert-link">${_("Go to the form and add...")}</a>
+    <a href="${request.route_url('project_add', _query=add_query)}" class="alert-link">${_("Go to the form and add...")}</a>
   </div>
   % endif
   % endif
