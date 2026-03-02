@@ -168,6 +168,7 @@ class ProjectView:
     )
     def all(self):
         page = int(self.request.params.get("page", 1))
+        tags = self._normalized_tags()
         name = self.request.params.get("name", None)
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
@@ -192,6 +193,10 @@ class ProjectView:
         q = {}
 
         stmt = select(Project)
+
+        if tags:
+            stmt = stmt.filter(Project.tags.any(Tag.name.in_(tags)))
+            q["tag"] = tags
 
         if name:
             stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
@@ -969,16 +974,33 @@ class ProjectView:
         renderer="project_tag_input_row.mako",
         permission="edit",
     )
+    @view_config(
+        route_name="project_search_tag_input",
+        renderer="project_tag_input_row.mako",
+        permission="view",
+    )
     def add_tag_input(self):
+        route_name = self.request.matched_route.name
+        remove_route = (
+            "project_search_tag_input_remove"
+            if route_name == "project_search_tag_input"
+            else "project_add_tag_input_remove"
+        )
         return {
             "row_id": uuid4().hex,
             "value": "",
+            "remove_route": remove_route,
         }
 
     @view_config(
         route_name="project_add_tag_input_remove",
         renderer="string",
         permission="edit",
+    )
+    @view_config(
+        route_name="project_search_tag_input_remove",
+        renderer="string",
+        permission="view",
     )
     def add_tag_input_remove(self):
         return ""
@@ -1070,10 +1092,14 @@ class ProjectView:
     def search(self):
         _ = self.request.translate
         form = ProjectSearchForm(self.request.POST)
+        tags = self._normalized_tags()
         q = {}
         for fieldname, value in form.data.items():
             if value:
                 q[fieldname] = value
+
+        if tags:
+            q["tag"] = tags
 
         if self.request.method == "POST" and form.validate():
             return HTTPSeeOther(
@@ -1082,7 +1108,7 @@ class ProjectView:
                     _query=q,
                 )
             )
-        return {"heading": _("Find a project"), "form": form}
+        return {"heading": _("Find a project"), "form": form, "tags": tags}
 
     @view_config(
         route_name="project_star",

@@ -1,4 +1,4 @@
-<%page args="row_id='company-tag-1', value=''"/>
+<%page args="row_id='company-tag-1', value='', remove_route='company_add_tag_input_remove'"/>
 
 <div class="tag-input-row">
   <div class="input-group">
@@ -20,7 +20,7 @@
             class="btn btn-outline-danger"
             title="${_('Action')}"
             aria-label="${_('Action')}"
-            hx-get="${request.route_url('company_add_tag_input_remove')}"
+            hx-get="${request.route_url(remove_route)}"
             hx-target="closest .tag-input-row"
             hx-swap="outerHTML">
       <i class="bi bi-dash-lg"></i>

@@ -3,6 +3,9 @@
     <i class="bi bi-filter"></i> ${_("Filter")}
   </button>
   <form class="dropdown-menu p-4" style="min-width: 420px;">
+    % for tag in q.get("tag", []):
+      <input type="hidden" name="tag" value="${tag}">
+    % endfor
     % if form.name.data:
       ${form.name(class_="form-control")}
     % endif

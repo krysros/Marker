@@ -34,6 +34,16 @@ def includeme(config):
         "/company/add/tag_input/remove",
         factory=default_factory,
     )
+    config.add_route(
+        "company_search_tag_input",
+        "/company/search/tag_input",
+        factory=default_factory,
+    )
+    config.add_route(
+        "company_search_tag_input_remove",
+        "/company/search/tag_input/remove",
+        factory=default_factory,
+    )
     config.add_route("company_search", "/company/search", factory=default_factory)
     config.add_route("company_select", "/company/select", factory=default_factory)
     config.add_route(
@@ -173,6 +183,16 @@ def includeme(config):
     config.add_route(
         "project_add_tag_input_remove",
         "/project/add/tag_input/remove",
+        factory=default_factory,
+    )
+    config.add_route(
+        "project_search_tag_input",
+        "/project/search/tag_input",
+        factory=default_factory,
+    )
+    config.add_route(
+        "project_search_tag_input_remove",
+        "/project/search/tag_input/remove",
         factory=default_factory,
     )
     config.add_route("project_search", "/project/search", factory=default_factory)

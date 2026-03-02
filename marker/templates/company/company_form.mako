@@ -102,23 +102,25 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
-      % if request.matched_route.name == "company_add":
+      % if request.matched_route.name in ("company_add", "company_search"):
+      <% tag_input_route = 'company_search_tag_input' if request.matched_route.name == 'company_search' else 'company_add_tag_input' %>
+      <% tag_remove_route = 'company_search_tag_input_remove' if request.matched_route.name == 'company_search' else 'company_add_tag_input_remove' %>
       <div class="mb-3">
         <label class="form-label">${_("Tags")}</label>
         <div id="company-tag-inputs" class="vstack gap-2">
           % if tags:
             % for index, value in enumerate(tags, start=1):
-              <%include file="company_tag_input_row.mako" args="row_id='company-tag-' + str(index), value=value"/>
+              <%include file="company_tag_input_row.mako" args="row_id='company-tag-' + str(index), value=value, remove_route=tag_remove_route"/>
             % endfor
           % else:
-            <%include file="company_tag_input_row.mako" args="row_id='company-tag-1', value=''"/>
+            <%include file="company_tag_input_row.mako" args="row_id='company-tag-1', value='', remove_route=tag_remove_route"/>
           % endif
         </div>
         <button type="button"
                 class="btn btn-outline-secondary btn-sm mt-2"
                 title="${_('Tag')}"
                 aria-label="${_('Tag')}"
-                hx-get="${request.route_url('company_add_tag_input')}"
+                hx-get="${request.route_url(tag_input_route)}"
                 hx-target="#company-tag-inputs"
                 hx-swap="beforeend">
           <i class="bi bi-plus-lg me-1"></i>${_('Tag')}
