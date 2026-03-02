@@ -1,3 +1,14 @@
+2.3
+---
+
+- Switched project environment/dependency workflow to uv
+- Unified and expanded XLSX exports (full fields without `id/created_at/updated_at`, tags at the end, consistent headers in selected/stars/user views)
+- Added XLSX export options to user views for companies, projects, tags and contacts
+- Added contact filtering and sorting by country, subdivision and color
+- Added optional tag-scoped search for companies and projects (including dynamic tag inputs in search forms)
+- Improved search criteria UX by including tags in result criteria and preserving them in "Go to the form and add..."
+- Improved export robustness by normalizing unsupported values (e.g. `TranslationString`) before writing XLSX
+
 2.2
 ---
 
