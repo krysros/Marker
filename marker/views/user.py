@@ -44,7 +44,7 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_xlsx_contacts_company,response_xlsx_contacts_project, response_xlsx
+from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import Filter, handle_bulk_selection, is_bulk_select_request, sort_column
 
@@ -118,6 +118,303 @@ class UserView:
                 "init_value": self.count_comments,
             },
         ]
+
+    def _contact_export_header(self):
+        _ = self.request.translate
+        return [
+            _("Contact name"),
+            _("Contact role"),
+            _("Contact phone"),
+            _("Contact email"),
+        ]
+
+    def _company_export_header(self):
+        _ = self.request.translate
+        return [
+            *self._contact_export_header(),
+            _("Company name"),
+            _("Company street"),
+            _("Company post code"),
+            _("Company city"),
+            _("Company subdivision"),
+            _("Company country"),
+            _("Company website"),
+            _("Company NIP"),
+            _("Company REGON"),
+            _("Company KRS"),
+            _("Company court"),
+            _("Tags"),
+        ]
+
+    def _project_export_header(self):
+        _ = self.request.translate
+        return [
+            *self._contact_export_header(),
+            _("Project name"),
+            _("Project street"),
+            _("Project post code"),
+            _("Project city"),
+            _("Project subdivision"),
+            _("Project country"),
+            _("Project website"),
+            _("Project deadline"),
+            _("Project stage"),
+            _("Project delivery method"),
+            _("Tags"),
+        ]
+
+    def _tag_export_header(self, category="companies"):
+        _ = self.request.translate
+        if category == "projects":
+            return [
+                *self._contact_export_header(),
+                _("Tag"),
+                _("Project name"),
+                _("Project street"),
+                _("Project post code"),
+                _("Project city"),
+                _("Project subdivision"),
+                _("Project country"),
+                _("Project website"),
+                _("Project deadline"),
+                _("Project stage"),
+                _("Project delivery method"),
+                _("Tags"),
+            ]
+
+        return [
+            *self._contact_export_header(),
+            _("Tag"),
+            _("Company name"),
+            _("Company street"),
+            _("Company post code"),
+            _("Company city"),
+            _("Company subdivision"),
+            _("Company country"),
+            _("Company website"),
+            _("Company NIP"),
+            _("Company REGON"),
+            _("Company KRS"),
+            _("Company court"),
+            _("Tags"),
+        ]
+
+    def _tags_as_string(self, tags):
+        names = [tag.name for tag in tags if getattr(tag, "name", None)]
+        return " ::: ".join(sorted(names))
+
+    def _contact_row_values(self, contact):
+        return [
+            contact.name,
+            contact.role,
+            contact.phone,
+            contact.email,
+        ]
+
+    def _resolve_row_color(self, object_color, contact_color=None):
+        return contact_color or object_color or ""
+
+    def _filter_tags_by_category(self, stmt, category, q=None):
+        normalized_category = "projects" if category == "projects" else "companies"
+        if normalized_category == "projects":
+            stmt = stmt.filter(Tag.projects.any())
+        else:
+            stmt = stmt.filter(Tag.companies.any())
+
+        if q is not None:
+            q["category"] = normalized_category
+
+        return stmt, normalized_category
+
+    def _company_row_values(self, company):
+        return [
+            company.name,
+            company.street,
+            company.postcode,
+            company.city,
+            company.subdivision,
+            company.country,
+            company.website,
+            company.NIP,
+            company.REGON,
+            company.KRS,
+            company.court,
+        ]
+
+    def _project_row_values(self, project):
+        return [
+            project.name,
+            project.street,
+            project.postcode,
+            project.city,
+            project.subdivision,
+            project.country,
+            project.website,
+            project.deadline,
+            project.stage,
+            project.delivery_method,
+        ]
+
+    def _selected_contacts_export_header(self, category):
+        if category == "projects":
+            return self._project_export_header()
+        return self._company_export_header()
+
+    def _selected_contacts_export_rows(self, contacts, category):
+        rows = []
+        row_colors = []
+        is_projects = category == "projects"
+
+        for contact in contacts:
+            linked_object = contact.project if is_projects else contact.company
+
+            if linked_object:
+                if is_projects:
+                    base_values = self._project_row_values(linked_object)
+                else:
+                    base_values = self._company_row_values(linked_object)
+                tags_value = self._tags_as_string(linked_object.tags)
+                object_color = linked_object.color
+            else:
+                base_values = [""] * (10 if is_projects else 11)
+                tags_value = ""
+                object_color = ""
+
+            rows.append([
+                *self._contact_row_values(contact),
+                *base_values,
+                tags_value,
+            ])
+            row_colors.append(self._resolve_row_color(object_color, contact.color))
+
+        return rows, row_colors
+
+    def _rows_for_objects_with_contacts(self, objects, get_base_values):
+        rows = []
+        row_colors = []
+
+        for obj in objects:
+            base_values = get_base_values(obj)
+            tags_value = self._tags_as_string(obj.tags)
+            contacts = list(obj.contacts)
+
+            if not contacts:
+                rows.append(["", "", "", "", *base_values, tags_value])
+                row_colors.append(self._resolve_row_color(obj.color))
+                continue
+
+            for contact in contacts:
+                rows.append(
+                    [
+                        *self._contact_row_values(contact),
+                        *base_values,
+                        tags_value,
+                    ]
+                )
+                row_colors.append(self._resolve_row_color(obj.color, contact.color))
+
+        return rows, row_colors
+
+    def _company_export_rows(self, companies):
+        return self._rows_for_objects_with_contacts(
+            companies, self._company_row_values
+        )
+
+    def _project_export_rows(self, projects):
+        return self._rows_for_objects_with_contacts(
+            projects, self._project_row_values
+        )
+
+    def _tag_export_rows(self, tags, category="companies"):
+        rows = []
+        row_colors = []
+        empty_contact = ["", "", "", ""]
+
+        for tag in tags:
+            if category == "projects":
+                for project in tag.projects:
+                    project_values = self._project_row_values(project)
+                    tags_value = self._tags_as_string(project.tags)
+                    contacts = list(project.contacts)
+
+                    if not contacts:
+                        rows.append(
+                            [
+                                *empty_contact,
+                                tag.name,
+                                *project_values,
+                                tags_value,
+                            ]
+                        )
+                        row_colors.append(self._resolve_row_color(project.color))
+                        continue
+
+                    for contact in contacts:
+                        rows.append(
+                            [
+                                *self._contact_row_values(contact),
+                                tag.name,
+                                *project_values,
+                                tags_value,
+                            ]
+                        )
+                        row_colors.append(
+                            self._resolve_row_color(project.color, contact.color)
+                        )
+
+                if not tag.projects:
+                    rows.append(
+                        [
+                            *empty_contact,
+                            tag.name,
+                            *([""] * 10),
+                            "",
+                        ]
+                    )
+                    row_colors.append("")
+                continue
+
+            for company in tag.companies:
+                company_values = self._company_row_values(company)
+                tags_value = self._tags_as_string(company.tags)
+                contacts = list(company.contacts)
+
+                if not contacts:
+                    rows.append(
+                        [
+                            *empty_contact,
+                            tag.name,
+                            *company_values,
+                            tags_value,
+                        ]
+                    )
+                    row_colors.append(self._resolve_row_color(company.color))
+                    continue
+
+                for contact in contacts:
+                    rows.append(
+                        [
+                            *self._contact_row_values(contact),
+                            tag.name,
+                            *company_values,
+                            tags_value,
+                        ]
+                    )
+                    row_colors.append(
+                        self._resolve_row_color(company.color, contact.color)
+                    )
+
+            if not tag.companies:
+                rows.append(
+                    [
+                        *empty_contact,
+                        tag.name,
+                        *([""] * 11),
+                        "",
+                    ]
+                )
+                row_colors.append("")
+        return rows, row_colors
 
     @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
     @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
@@ -1127,15 +1424,7 @@ class UserView:
             _order = "desc"
 
         stmt = (
-            select(
-                Company.name,
-                Company.street,
-                Company.postcode,
-                Company.city,
-                Company.subdivision,
-                Company.country,
-                Company.website,
-            )
+            select(Company)
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
         )
@@ -1145,17 +1434,11 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
-        companies = self.request.dbsession.execute(stmt).all()
-        header_row = [
-            _("Name"),
-            _("Street"),
-            _("Post code"),
-            _("City"),
-            _("Subdivision"),
-            _("Country"),
-            _("Website"),
-        ]
-        response = response_xlsx(companies, header_row)
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._company_export_rows(companies)
+
+        header_row = self._company_export_header()
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -1471,18 +1754,7 @@ class UserView:
             _order = "desc"
 
         stmt = (
-            select(
-                Project.name,
-                Project.street,
-                Project.postcode,
-                Project.city,
-                Project.subdivision,
-                Project.country,
-                Project.website,
-                Project.deadline,
-                Project.stage,
-                Project.delivery_method,
-            )
+            select(Project)
             .join(selected_projects)
             .filter(user.id == selected_projects.c.user_id)
         )
@@ -1492,20 +1764,11 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(stmt).all()
-        header_row = [
-            _("Name"),
-            _("Street"),
-            _("Post code"),
-            _("City"),
-            _("Subdivision"),
-            _("Country"),
-            _("Website"),
-            _("Deadline"),
-            _("Stage"),
-            _("Project delivery method"),
-        ]
-        response = response_xlsx(projects, header_row)
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._project_export_rows(projects)
+
+        header_row = self._project_export_header()
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -1543,10 +1806,13 @@ class UserView:
     def selected_tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria["name"] = self.request.translate("Tag")
         order_criteria = dict(ORDER_CRITERIA)
+        categories = dict(CATEGORIES)
         q = {}
 
         allowed_sorts = set(sort_criteria)
@@ -1562,6 +1828,8 @@ class UserView:
         stmt = (
             select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
         )
+
+        stmt, category = self._filter_tags_by_category(stmt, category, q=q)
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Tag, _sort).asc())
@@ -1597,6 +1865,7 @@ class UserView:
             "user": user,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
+            "categories": categories,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
@@ -1609,6 +1878,7 @@ class UserView:
     def export_selected_tags(self):
         _ = self.request.translate
         user = self.request.context.user
+        category = self.request.params.get("category", "companies")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
@@ -1620,19 +1890,23 @@ class UserView:
             _order = "desc"
 
         stmt = (
-            select(Tag.name)
+            select(Tag)
             .join(selected_tags)
             .filter(user.id == selected_tags.c.user_id)
         )
+
+        stmt, category = self._filter_tags_by_category(stmt, category)
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Tag, _sort).asc())
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Tag, _sort).desc())
 
-        tags = self.request.dbsession.execute(stmt).all()
-        header_row = [_("Tag")]
-        response = response_xlsx(tags, header_row)
+        tags = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._tag_export_rows(tags, category=category)
+
+        header_row = self._tag_export_header(category=category)
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -1800,12 +2074,11 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Contact, _sort).desc())
 
-        contacts = self.request.dbsession.execute(stmt).scalars()
-
-        if _category == "companies":
-            response = response_xlsx_contacts_company(contacts)
-        elif _category == "projects":
-            response = response_xlsx_contacts_project(contacts)
+        contacts = self.request.dbsession.execute(stmt).scalars().all()
+        category = "projects" if _category == "projects" else "companies"
+        rows, row_colors = self._selected_contacts_export_rows(contacts, category)
+        header_row = self._selected_contacts_export_header(category)
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -2143,15 +2416,7 @@ class UserView:
             _order = "desc"
 
         stmt = (
-            select(
-                Company.name,
-                Company.street,
-                Company.postcode,
-                Company.city,
-                Company.subdivision,
-                Company.country,
-                Company.website,
-            )
+            select(Company)
             .join(companies_stars)
             .filter(user.id == companies_stars.c.user_id)
         )
@@ -2170,17 +2435,11 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
-        companies = self.request.dbsession.execute(stmt).all()
-        header_row = [
-            _("Name"),
-            _("Street"),
-            _("Post code"),
-            _("City"),
-            _("Subdivision"),
-            _("Country"),
-            _("Website"),
-        ]
-        response = response_xlsx(companies, header_row)
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._company_export_rows(companies)
+
+        header_row = self._company_export_header()
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of companies with a star")
             % self.request.identity.name
@@ -2382,18 +2641,7 @@ class UserView:
             _order = "desc"
 
         stmt = (
-            select(
-                Project.name,
-                Project.street,
-                Project.postcode,
-                Project.city,
-                Project.subdivision,
-                Project.country,
-                Project.website,
-                Project.deadline,
-                Project.stage,
-                Project.delivery_method,
-            )
+            select(Project)
             .join(projects_stars)
             .filter(user.id == projects_stars.c.user_id)
         )
@@ -2417,20 +2665,11 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(stmt).all()
-        header_row = [
-            _("Name"),
-            _("Street"),
-            _("Post code"),
-            _("City"),
-            _("Subdivision"),
-            _("Country"),
-            _("Website"),
-            _("Deadline"),
-            _("Stage"),
-            _("Project delivery method"),
-        ]
-        response = response_xlsx(projects, header_row)
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        rows, row_colors = self._project_export_rows(projects)
+
+        header_row = self._project_export_header()
+        response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of projects with a star")
             % self.request.identity.name

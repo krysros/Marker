@@ -16,6 +16,24 @@
 <hr>
 
 <div class="hstack gap-2 mb-4">
+  <div class="dropdown">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+      <i class="bi bi-filter"></i> ${_("Filter")}
+    </button>
+    <form class="dropdown-menu p-4" style="min-width: 200px;">
+      <input type="hidden" name="sort" value="${q.get('sort', 'created_at')}">
+      <input type="hidden" name="order" value="${q.get('order', 'desc')}">
+      <div class="mb-3">
+        <label class="form-label" for="category">${_("Category")}</label>
+        <select class="form-control" id="category" name="category">
+          % for k, v in categories.items():
+            <option value="${k}" ${'selected' if q.get('category', 'companies') == k else ''}>${v}</option>
+          % endfor
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">${_("Submit")}</button>
+    </form>
+  </div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
 </div>

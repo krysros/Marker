@@ -1,4 +1,5 @@
 import io
+import datetime
 from urllib.parse import quote
 
 import pycountry
@@ -8,10 +9,11 @@ from pyramid.path import AssetResolver
 from pyramid.response import Response
 from unidecode import unidecode
 
+from ..forms.select import COURTS, PROJECT_DELIVERY_METHODS, STAGES
 from ..forms.ts import TranslationString as _
 
 
-def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
+def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors=None):
     # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
     # Create a workbook.
@@ -20,30 +22,105 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd"):
     )
     worksheet = workbook.add_worksheet()
     cell_format = workbook.add_format({"bold": True})
+    courts_map = dict(COURTS)
+    stages_map = dict(STAGES)
+    delivery_methods_map = dict(PROJECT_DELIVERY_METHODS)
+    bootstrap_palette = {
+        "primary": {"bg": "#DCEBFF", "font": "#1F2D3D"},
+        "secondary": {"bg": "#ECEFF1", "font": "#1F2D3D"},
+        "success": {"bg": "#DDF3E4", "font": "#1F2D3D"},
+        "danger": {"bg": "#FBE3E6", "font": "#1F2D3D"},
+        "warning": {"bg": "#FFF4CC", "font": "#1F2D3D"},
+        "info": {"bg": "#D8F4FB", "font": "#1F2D3D"},
+        "light": {"bg": "#F8F9FA", "font": "#1F2D3D"},
+        "dark": {"bg": "#D6D8DB", "font": "#1F2D3D"},
+    }
 
-    index_of_subdivision = None
-    try:
-        index_of_subdivision = header_row.index(str(_("Subdivision")))
-    except ValueError:
-        pass
+    row_formats = {}
+    row_date_formats = {}
+    for color_key, palette in bootstrap_palette.items():
+        row_formats[color_key] = workbook.add_format(
+            {"bg_color": palette["bg"], "font_color": palette["font"]}
+        )
+        row_date_formats[color_key] = workbook.add_format(
+            {
+                "bg_color": palette["bg"],
+                "font_color": palette["font"],
+                "num_format": default_date_format,
+            }
+        )
 
-    index_of_country = None
-    try:
-        index_of_country = header_row.index(str(_("Country")))
-    except ValueError:
-        pass
+    def _normalized(text):
+        return str(text or "").strip().lower()
+
+    subdivision_markers = {
+        _normalized(_("Subdivision")),
+        "subdivision",
+        "województwo",
+    }
+    country_markers = {
+        _normalized(_("Country")),
+        "country",
+        "kraj",
+    }
+    court_markers = {
+        _normalized(_("Court")),
+        "court",
+        "sąd",
+    }
+    stage_markers = {
+        _normalized(_("Stage")),
+        _normalized(_("Project stage")),
+        "stage",
+        "project stage",
+    }
+    delivery_method_markers = {
+        _normalized(_("Project delivery method")),
+        _normalized(_("Delivery method")),
+        "project delivery method",
+        "delivery method",
+    }
+    column_transformers = [
+        (
+            subdivision_markers,
+            lambda value: getattr(pycountry.subdivisions.get(code=value), "name", ""),
+        ),
+        (
+            country_markers,
+            lambda value: getattr(pycountry.countries.get(alpha_2=value), "name", ""),
+        ),
+        (court_markers, lambda value: courts_map.get(value, value or "")),
+        (stage_markers, lambda value: stages_map.get(value, value or "")),
+        (
+            delivery_method_markers,
+            lambda value: delivery_methods_map.get(value, value or ""),
+        ),
+    ]
 
     # Write rows.
     for j, elem in enumerate(header_row):
         worksheet.write(0, j, elem, cell_format)
 
     for i, row in enumerate(rows, start=1):
+        row_color = None
+        if row_colors and len(row_colors) >= i:
+            row_color = str(row_colors[i - 1] or "").strip().lower()
+
         for j, elem in enumerate(row):
-            if j == index_of_subdivision:
-                elem = getattr(pycountry.subdivisions.get(code=elem), "name", "---")
-            elif j == index_of_country:
-                elem = getattr(pycountry.countries.get(alpha_2=elem), "name", "---")
-            worksheet.write(i, j, elem)
+            header_name = _normalized(header_row[j])
+
+            for markers, transform in column_transformers:
+                if any(marker and marker in header_name for marker in markers):
+                    elem = transform(elem)
+                    break
+
+            if row_color in row_formats:
+                if isinstance(elem, (datetime.datetime, datetime.date)):
+                    worksheet.write(i, j, elem, row_date_formats[row_color])
+                else:
+                    worksheet.write(i, j, elem, row_formats[row_color])
+            else:
+                worksheet.write(i, j, elem)
 
     # Close the workbook before streaming the data.
     workbook.close()

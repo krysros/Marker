@@ -88,6 +88,7 @@ class TagView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria["name"] = self.request.translate("Tag")
         order_criteria = dict(ORDER_CRITERIA)
         q = {}
 
