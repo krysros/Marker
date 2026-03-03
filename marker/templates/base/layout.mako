@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js"></script>
-    <script src="${request.static_url('marker:static/js/color-modes.js')}"></script>
+    <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>
     <script src="${request.static_url('marker:static/js/marker-select-all-state.js')}"></script>
     <link rel="stylesheet" href="${request.static_url('marker:static/css/style.css')}">
     % if title:
