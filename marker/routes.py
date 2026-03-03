@@ -589,11 +589,6 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
-        "user_clear_selected_companies",
-        "/user/{username}/clear_selected_companies",
-        factory=user_factory,
-    )
-    config.add_route(
         "user_delete_selected_companies",
         "/user/{username}/delete_selected_companies",
         factory=user_factory,
@@ -624,11 +619,6 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
-        "user_clear_selected_projects",
-        "/user/{username}/clear_selected_projects",
-        factory=user_factory,
-    )
-    config.add_route(
         "user_delete_selected_projects",
         "/user/{username}/delete_selected_projects",
         factory=user_factory,
@@ -646,11 +636,6 @@ def includeme(config):
     config.add_route(
         "user_export_selected_tags",
         "/user/{username}/export_selected_tags",
-        factory=user_factory,
-    )
-    config.add_route(
-        "user_clear_selected_tags",
-        "/user/{username}/clear_selected_tags",
         factory=user_factory,
     )
     config.add_route(
@@ -676,11 +661,6 @@ def includeme(config):
     config.add_route(
         "user_export_selected_contacts",
         "/user/{username}/export_selected_contacts",
-        factory=user_factory,
-    )
-    config.add_route(
-        "user_clear_selected_contacts",
-        "/user/{username}/clear_selected_contacts",
         factory=user_factory,
     )
     config.add_route(

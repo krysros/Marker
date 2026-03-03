@@ -6,7 +6,6 @@
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
-    ${button.button(icon='square', color='warning', url=request.route_url('user_clear_selected_tags', username=user.name))}
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
     </button>

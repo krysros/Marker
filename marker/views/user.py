@@ -1851,24 +1851,6 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_clear_selected_companies",
-        request_method="POST",
-        permission="view",
-    )
-    def clear_selected_companies(self):
-        _ = self.request.translate
-        user = self.request.context.user
-        user.selected_companies = []
-        log.info(
-            _("The user %s cleared the selected companies") % self.request.identity.name
-        )
-        next_url = self.request.route_url("user_selected_companies", username=user.name)
-        response = self.request.response
-        response.headers = {"HX-Redirect": next_url}
-        response.status_code = 303
-        return response
-
-    @view_config(
         route_name="user_selected_projects",
         renderer="user_selected_projects.mako",
         permission="view",
@@ -2181,24 +2163,6 @@ class UserView:
         return response
 
     @view_config(
-        route_name="user_clear_selected_projects",
-        request_method="POST",
-        permission="view",
-    )
-    def clear_selected_projects(self):
-        _ = self.request.translate
-        user = self.request.context.user
-        user.selected_projects = []
-        log.info(
-            _("The user %s cleared the selected projects") % self.request.identity.name
-        )
-        next_url = self.request.route_url("user_selected_projects", username=user.name)
-        response = self.request.response
-        response.headers = {"HX-Redirect": next_url}
-        response.status_code = 303
-        return response
-
-    @view_config(
         route_name="user_selected_tags",
         renderer="user_selected_tags.mako",
         permission="view",
@@ -2316,24 +2280,6 @@ class UserView:
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
         )
-        return response
-
-    @view_config(
-        route_name="user_clear_selected_tags",
-        request_method="POST",
-        permission="view",
-    )
-    def clear_selected_tags(self):
-        _ = self.request.translate
-        user = self.request.context.user
-        user.selected_tags = []
-        log.info(
-            _("The user %s cleared the selected tags") % self.request.identity.name
-        )
-        next_url = self.request.route_url("user_selected_tags", username=user.name)
-        response = self.request.response
-        response.headers = {"HX-Redirect": next_url}
-        response.status_code = 303
         return response
 
     @view_config(
@@ -2583,24 +2529,6 @@ class UserView:
             _("The user %s exported the data of selected contacts")
             % self.request.identity.name
         )
-        return response
-
-    @view_config(
-        route_name="user_clear_selected_contacts",
-        request_method="POST",
-        permission="view",
-    )
-    def clear_selected_contacts(self):
-        _ = self.request.translate
-        user = self.request.context.user
-        user.selected_contacts = []
-        log.info(
-            _("The user %s cleared the selected contacts") % self.request.identity.name
-        )
-        next_url = self.request.route_url("user_selected_contacts", username=user.name)
-        response = self.request.response
-        response.headers = {"HX-Redirect": next_url}
-        response.status_code = 303
         return response
 
     @view_config(
