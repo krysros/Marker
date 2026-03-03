@@ -7,6 +7,19 @@
 <div class="card mt-4 mb-4">
   <div class="card-header">${heading}</div>
   <div class="card-body">
+    <div class="alert alert-info" role="alert">
+      <strong>${_("Required CSV structure (Google Contacts)")}</strong>
+      <div class="small mt-2">${_("The file must include at least the following columns:")}</div>
+      <ul class="small mb-0 mt-2">
+        <li><code>Organization Name</code></li>
+        <li><code>First Name</code></li>
+        <li><code>E-mail 1 - Value</code></li>
+        <li><code>Phone 1 - Value</code></li>
+        <li><code>Labels</code></li>
+        <li><code>Notes</code></li>
+      </ul>
+    </div>
+
     <form action="${request.current_route_path()}" method="post" accept-charset="utf-8" enctype="multipart/form-data" hx-boost="true" hx-indicator="#import-alert">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-03 20:43+0100\n"
+"POT-Creation-Date: 2026-03-03 21:22+0100\n"
 "PO-Revision-Date: 2023-09-25 09:08+0200\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -654,7 +654,7 @@ msgstr "Konto"
 #: marker/templates/company/company_form.mako:131
 #: marker/templates/contact/contact_filter.mako:35
 #: marker/templates/contact/contact_form.mako:44
-#: marker/templates/contact/contact_import.mako:20
+#: marker/templates/contact/contact_import.mako:33
 #: marker/templates/project/project_activity_form.mako:38
 #: marker/templates/project/project_add_comment.mako:25
 #: marker/templates/project/project_add_contact.mako:52
@@ -854,9 +854,13 @@ msgstr "Zmodyfikowano"
 msgid "Modification date"
 msgstr "Data modyfikacji"
 
-#: marker/templates/contact/contact_import.mako:20
-msgid "Please select a CSV file"
-msgstr "Proszę wybrać plik CSV"
+#: marker/templates/contact/contact_import.mako:11
+msgid "Required CSV structure (Google Contacts)"
+msgstr "Wymagana struktura CSV (Google Contacts)"
+
+#: marker/templates/contact/contact_import.mako:12
+msgid "The file must include at least the following columns:"
+msgstr "Plik musi zawierać co najmniej następujące kolumny:"
 
 #: marker/templates/contact/contact_view.mako:8
 #: marker/templates/contact/contact_view.mako:20
@@ -925,7 +929,7 @@ msgstr "Sposób realizacji projektu"
 
 #: marker/views/account.py:23 marker/views/account.py:38
 #: marker/views/company.py:1168 marker/views/company.py:1403
-#: marker/views/contact.py:224 marker/views/project.py:1033
+#: marker/views/contact.py:246 marker/views/project.py:1033
 #: marker/views/project.py:1410 marker/views/tag.py:894
 #: marker/views/user.py:1560
 msgid "success:Changes have been saved"
@@ -1040,14 +1044,14 @@ msgstr "Użytkownik %s zmienił dane firmy"
 msgid "Edit company details"
 msgstr "Edytuj dane firmy"
 
-#: marker/views/company.py:1192 marker/views/contact.py:241
+#: marker/views/company.py:1192 marker/views/contact.py:263
 #: marker/views/project.py:1063 marker/views/tag.py:912
 #: marker/views/user.py:1574
 msgid "success:Removed from the database"
 msgstr "success:Usunięto z bazy danych"
 
 #: marker/views/company.py:1193 marker/views/company.py:1210
-#: marker/views/contact.py:259
+#: marker/views/contact.py:281
 #, python-format
 msgid "The user %s deleted the company"
 msgstr "Użytkownik %s usunął firmę"
@@ -1085,38 +1089,49 @@ msgstr "Edytuj szczegóły aktywności"
 msgid "The user %s unlinked the company from the project"
 msgstr "Użytkownik %s odczepił firmę od projektu"
 
-#: marker/views/contact.py:228
+#: marker/views/contact.py:250
 #, python-format
 msgid "User %s changed contact details"
 msgstr "Użytkownik %s zmienił dane kontaktowe"
 
-#: marker/views/contact.py:230
+#: marker/views/contact.py:252
 msgid "Edit contact"
 msgstr "Edytuj kontakt"
 
-#: marker/views/contact.py:242
+#: marker/views/contact.py:264
 #, python-format
 msgid "The user %s deleted the contact"
 msgstr "Użytkownik %s usunął kontakt"
 
-#: marker/views/contact.py:285
+#: marker/views/contact.py:307
 msgid "Find a contact"
 msgstr "Znajdź kontakt"
 
-#: marker/views/contact.py:307 marker/views/contact.py:364
+#: marker/views/contact.py:329 marker/views/contact.py:386
 msgid "Search contacts"
 msgstr "Szukaj kontaktów"
 
-#: marker/views/contact.py:429
+#: marker/views/contact.py:450
+msgid "warning:Could not read CSV file. Please upload a valid UTF-8 CSV."
+msgstr "warning:Nie udało się odczytać pliku CSV. Prześlij poprawny plik CSV w kodowaniu UTF-8."
+
+#: marker/views/contact.py:458
+#, python-format
+msgid ""
+"warning:CSV structure is incompatible with Google Contacts. Missing "
+"columns: %s"
+msgstr "warning:Struktura CSV jest niezgodna z Google Contacts. Brakujące kolumny: %s"
+
+#: marker/views/contact.py:468
 msgid "success:CSV file has been imported"
 msgstr "success:Plik CSV został zaimportowany"
 
-#: marker/views/contact.py:430
+#: marker/views/contact.py:469
 #, python-format
 msgid "User %s imported CSV file"
 msgstr "Użytkownik %s zaimportował plik CSV"
 
-#: marker/views/contact.py:433
+#: marker/views/contact.py:472
 msgid "Import CSV"
 msgstr "Importuj CSV"
 
@@ -1544,4 +1559,7 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
 #~ msgid "The user %s cleared the selected contacts"
 #~ msgstr "Użytkownik %s wyczyścił zaznaczone kontakty"
+
+#~ msgid "Please select a CSV file"
+#~ msgstr "Proszę wybrać plik CSV"
 

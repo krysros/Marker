@@ -31,6 +31,28 @@ from . import (
 log = logging.getLogger(__name__)
 
 
+GOOGLE_CONTACTS_REQUIRED_COLUMNS = {
+    "Organization Name",
+    "Address 1 - Street",
+    "Address 1 - Postal Code",
+    "Address 1 - City",
+    "Address 1 - Region",
+    "Address 1 - Country",
+    "Website 1 - Value",
+    "Labels",
+    "Notes",
+    "First Name",
+    "Name Prefix",
+    "Middle Name",
+    "Last Name",
+    "Name Suffix",
+    "Organization Title",
+    "Organization Department",
+    "Phone 1 - Value",
+    "E-mail 1 - Value",
+}
+
+
 class ContactView:
     def __init__(self, request):
         self.request = request
@@ -421,7 +443,24 @@ class ContactView:
             if not csv_file:
                 return HTTPFound(location=referrer)
 
-            reader = self._parse_csv(csv_file)
+            reader, headers = self._parse_csv(csv_file)
+
+            if not reader:
+                self.request.session.flash(
+                    _("warning:Could not read CSV file. Please upload a valid UTF-8 CSV.")
+                )
+                return HTTPFound(location=referrer)
+
+            missing_columns = self._missing_google_contacts_columns(headers)
+            if missing_columns:
+                self.request.session.flash(
+                    _(
+                        "warning:CSV structure is incompatible with Google Contacts. "
+                        "Missing columns: %s"
+                    )
+                    % ", ".join(missing_columns)
+                )
+                return HTTPFound(location=referrer)
 
             for row in reader:
                 self._add_row(row)
@@ -439,12 +478,16 @@ class ContactView:
                 text = data.decode("utf-8", errors="replace")
             else:
                 text = str(data)
-        except Exception as e:
-            print("Error reading uploaded CSV:", e)
+        except Exception:
+            return None, set()
 
         f = StringIO(text)
         reader = csv.DictReader(f)
-        return reader
+        headers = set(reader.fieldnames or [])
+        return reader, headers
+
+    def _missing_google_contacts_columns(self, headers):
+        return sorted(GOOGLE_CONTACTS_REQUIRED_COLUMNS - set(headers or []))
 
     def _add_row(self, row):
         # Prepare Company
