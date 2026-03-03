@@ -1,16 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<h2>
-  <i class="bi bi-people"></i> ${_("Contacts")}
-  <div class="float-end">
-    ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
-    ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
-  </div>
-</h2>
-
-<hr>
-
 <div class="card mt-4 mb-4">
   <div class="card-header">${heading}</div>
   <div class="card-body">
@@ -33,7 +23,7 @@
                 hx-swap="beforeend">
           <i class="bi bi-plus-lg"></i>
         </button>
-        <button type="submit" class="btn btn-primary">${_("Search contacts")}</button>
+        <button type="submit" class="btn btn-primary">${_("Search")}</button>
       </div>
     </form>
   </div>
