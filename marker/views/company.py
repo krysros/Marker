@@ -4,7 +4,7 @@ from uuid import uuid4
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import and_, func, select, delete
+from sqlalchemy import and_, delete, func, select
 
 from ..forms import (
     ActivityForm,
@@ -22,8 +22,8 @@ from ..forms.select import (
     COURTS,
     ORDER_CRITERIA,
     SORT_CRITERIA,
-    SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_COMPANIES,
+    SORT_CRITERIA_CONTACTS,
     STAGES,
     USER_ROLES,
     select_countries,
@@ -42,8 +42,8 @@ from ..models import (
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from . import (
-    enforce_delete_rate_limit,
     Filter,
+    enforce_delete_rate_limit,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -372,7 +372,9 @@ class CompanyView:
                 _order = "asc"
                 q["order"] = _order
 
-            stmt = select(Activity).join(Project).filter(Activity.company_id == company.id)
+            stmt = (
+                select(Activity).join(Project).filter(Activity.company_id == company.id)
+            )
             order_column = {
                 "name": Project.name,
                 "stage": Activity.stage,

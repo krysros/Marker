@@ -46,15 +46,11 @@ class Tag(Base):
     @property
     def count_companies(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).where(
-                companies_tags.c.tag_id == self.id
-            )
+            select(func.count()).where(companies_tags.c.tag_id == self.id)
         )
 
     @property
     def count_projects(self) -> int:
         return object_session(self).scalar(
-            select(func.count()).where(
-                projects_tags.c.tag_id == self.id
-            )
+            select(func.count()).where(projects_tags.c.tag_id == self.id)
         )

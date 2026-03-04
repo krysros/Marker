@@ -1,6 +1,6 @@
-from urllib.parse import parse_qsl, urlencode
 import datetime
 import math
+from urllib.parse import parse_qsl, urlencode
 
 from pyramid.httpexceptions import HTTPFound
 from sqlalchemy import func
@@ -93,8 +93,7 @@ def enforce_delete_rate_limit(request, records_to_delete=1):
     if blocked_until and blocked_until > now:
         minutes_left = math.ceil((blocked_until - now).total_seconds() / 60)
         request.session.flash(
-            _("warning:Deletion is blocked. Try again in %s minutes.")
-            % minutes_left
+            _("warning:Deletion is blocked. Try again in %s minutes.") % minutes_left
         )
         return _delete_block_response(request)
 

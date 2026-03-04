@@ -41,8 +41,7 @@ def main(argv=sys.argv):
             dbsession = env["request"].dbsession
             setup_models(dbsession)
     except OperationalError:
-        print(
-            """
+        print("""
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
 
@@ -52,5 +51,4 @@ might be caused by one of the following things:
 2.  Your database server may not be running.  Check that the
     database server referred to by the "sqlalchemy.url" setting in
     your "development.ini" file is running.
-            """
-        )
+            """)

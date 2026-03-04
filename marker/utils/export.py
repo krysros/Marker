@@ -1,5 +1,5 @@
-import io
 import datetime
+import io
 from urllib.parse import quote
 
 import pycountry
@@ -178,10 +178,16 @@ def response_xlsx_contacts_company(rows, default_date_format="yyyy-mm-dd"):
         worksheet.write(i, 4, row.company.name)
         worksheet.write(i, 5, row.company.city)
         worksheet.write(
-            i, 6, getattr(pycountry.subdivisions.get(code=row.company.subdivision), "name", "")
+            i,
+            6,
+            getattr(
+                pycountry.subdivisions.get(code=row.company.subdivision), "name", ""
+            ),
         )
         worksheet.write(
-            i, 7, getattr(pycountry.countries.get(alpha_2=row.company.country), "name", "")
+            i,
+            7,
+            getattr(pycountry.countries.get(alpha_2=row.company.country), "name", ""),
         )
 
     # Close the workbook before streaming the data.
@@ -231,10 +237,16 @@ def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
         worksheet.write(i, 4, row.project.name)
         worksheet.write(i, 5, row.project.city)
         worksheet.write(
-            i, 6, getattr(pycountry.subdivisions.get(code=row.project.subdivision), "name", "")
+            i,
+            6,
+            getattr(
+                pycountry.subdivisions.get(code=row.project.subdivision), "name", ""
+            ),
         )
         worksheet.write(
-            i, 7, getattr(pycountry.countries.get(alpha_2=row.project.country), "name", "")
+            i,
+            7,
+            getattr(pycountry.countries.get(alpha_2=row.project.country), "name", ""),
         )
 
     # Close the workbook before streaming the data.

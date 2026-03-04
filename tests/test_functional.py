@@ -68,8 +68,8 @@ def test_plus_shortcut_script_and_single_button(testapp, dbsession):
     # log in as the admin user so that the comments page can be reached
     login_page = testapp.get("/login", status=200)
     form = login_page.forms[0]
-    form['username'] = 'admin'
-    form['password'] = 'admin'
+    form["username"] = "admin"
+    form["password"] = "admin"
     # the login view redirects on success (303 See Other)
     form.submit(status=303)
 
@@ -82,14 +82,19 @@ def test_plus_shortcut_script_and_single_button(testapp, dbsession):
     # separate line from the <a> or <button> tag, so a simple substring match
     # was failing.
     import re
-    count = len(re.findall(r'class="[^"]*btn-success[^"]*".*?<i class="bi bi-plus-lg"', res.text, re.S))
+
+    count = len(
+        re.findall(
+            r'class="[^"]*btn-success[^"]*".*?<i class="bi bi-plus-lg"', res.text, re.S
+        )
+    )
     if count != 1:
         # dump a small snippet for easier debugging
-        idx = res.text.find('plus-lg')
-        snippet = res.text[idx-100:idx+200] if idx != -1 else '<not found>'
+        idx = res.text.find("plus-lg")
+        snippet = res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
         print("Lines containing plus-lg:")
         for line in res.text.splitlines():
-            if 'plus-lg' in line:
+            if "plus-lg" in line:
                 print(line)
     assert count == 1
 
@@ -136,8 +141,8 @@ def test_trash_shortcut_script_and_single_button(testapp, dbsession):
     # login then fetch view page
     login_page = testapp.get("/login", status=200)
     form = login_page.forms[0]
-    form['username'] = 'admin2'
-    form['password'] = 'admin'
+    form["username"] = "admin2"
+    form["password"] = "admin"
     form.submit(status=303)
 
     url = f"/company/{company.id}/{company.slug}"
@@ -146,11 +151,16 @@ def test_trash_shortcut_script_and_single_button(testapp, dbsession):
     # count only red trash icons anywhere on page using regex that matches
     # <i class="bi bi-trash" inside a btn-danger.
     import re
+
     trash_count = len(
-        re.findall(r'class="[^"]*btn-danger[^"]*".*?<i class="bi bi-trash"', res.text, re.S)
+        re.findall(
+            r'class="[^"]*btn-danger[^"]*".*?<i class="bi bi-trash"', res.text, re.S
+        )
     )
     assert trash_count == 1
-    assert 'keyboard shortcuts for pages with a single green plus or red trash' in res.text
+    assert (
+        "keyboard shortcuts for pages with a single green plus or red trash" in res.text
+    )
 
 
 def test_selected_tags_page_shows_all_selected_tags_by_default(testapp, dbsession):
@@ -178,4 +188,3 @@ def test_selected_tags_page_shows_all_selected_tags_by_default(testapp, dbsessio
     res = testapp.get("/user/selected-tags-user/selected_tags", status=200)
 
     assert "Visible Selected Tag" in res.text
-

@@ -3,15 +3,15 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select, delete
+from sqlalchemy import delete, func, select
 
 from ..forms import (
     CompanyFilterForm,
+    CompanyLinkForm,
     ProjectFilterForm,
+    ProjectLinkForm,
     TagForm,
     TagSearchForm,
-    CompanyLinkForm,
-    ProjectLinkForm,
 )
 from ..forms.select import (
     COLORS,
@@ -20,12 +20,19 @@ from ..forms.select import (
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
 )
-from ..models import Company, Project, Tag, companies_stars, projects_stars, selected_tags
+from ..models import (
+    Company,
+    Project,
+    Tag,
+    companies_stars,
+    projects_stars,
+    selected_tags,
+)
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
-    enforce_delete_rate_limit,
     Filter,
+    enforce_delete_rate_limit,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -265,7 +272,7 @@ class TagView:
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
-        
+
         # Bounding box parameters for lazy loading
         north = self.request.params.get("north", None)
         south = self.request.params.get("south", None)
@@ -282,7 +289,7 @@ class TagView:
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
-        
+
         # Filter by bounding box if provided
         if north and south and east and west:
             try:
@@ -328,7 +335,7 @@ class TagView:
         country = self.request.params.get("country", None)
         subdivision = self.request.params.getall("subdivision")
         now = datetime.datetime.now()
-        
+
         # Bounding box parameters for lazy loading
         north = self.request.params.get("north", None)
         south = self.request.params.get("south", None)
@@ -357,7 +364,7 @@ class TagView:
 
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
-        
+
         # Filter by bounding box if provided
         if north and south and east and west:
             try:
@@ -867,6 +874,7 @@ class TagView:
             "tag": tag,
             "tag_pills": self.pills(tag),
         }
+
     @view_config(route_name="tag_add", renderer="tag_form.mako", permission="edit")
     def add(self):
         _ = self.request.translate
@@ -908,9 +916,7 @@ class TagView:
         if blocked_response:
             return blocked_response
         tag = self.request.context.tag
-        stmt = delete(selected_tags).where(
-            selected_tags.c.tag_id == tag.id
-        )
+        stmt = delete(selected_tags).where(selected_tags.c.tag_id == tag.id)
         self.request.dbsession.execute(stmt)
         self.request.dbsession.delete(tag)
         self.request.session.flash(_("success:Removed from the database"))

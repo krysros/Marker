@@ -6,9 +6,8 @@ Create Date: 2026-03-03 22:10:00.000000
 
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7f2b2cf8f4b1"
@@ -18,12 +17,18 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("users", sa.Column("delete_window_start", sa.DateTime(), nullable=True))
+    op.add_column(
+        "users", sa.Column("delete_window_start", sa.DateTime(), nullable=True)
+    )
     op.add_column(
         "users",
-        sa.Column("delete_window_count", sa.Integer(), nullable=False, server_default="0"),
+        sa.Column(
+            "delete_window_count", sa.Integer(), nullable=False, server_default="0"
+        ),
     )
-    op.add_column("users", sa.Column("delete_blocked_until", sa.DateTime(), nullable=True))
+    op.add_column(
+        "users", sa.Column("delete_blocked_until", sa.DateTime(), nullable=True)
+    )
 
 
 def downgrade():

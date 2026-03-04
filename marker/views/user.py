@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select, delete
+from sqlalchemy import delete, func, select
 
 from ..forms import (
     CommentFilterForm,
@@ -20,8 +20,8 @@ from ..forms.select import (
     ORDER_CRITERIA,
     PROJECT_DELIVERY_METHODS,
     SORT_CRITERIA,
-    SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_COMPANIES,
+    SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_EXT,
     SORT_CRITERIA_PROJECTS,
     STAGES,
@@ -286,11 +286,13 @@ class UserView:
                 tags_value = ""
                 object_color = ""
 
-            rows.append([
-                *self._contact_row_values(contact),
-                *base_values,
-                tags_value,
-            ])
+            rows.append(
+                [
+                    *self._contact_row_values(contact),
+                    *base_values,
+                    tags_value,
+                ]
+            )
             row_colors.append(self._resolve_row_color(object_color, contact.color))
 
         return rows, row_colors
@@ -322,14 +324,10 @@ class UserView:
         return rows, row_colors
 
     def _company_export_rows(self, companies):
-        return self._rows_for_objects_with_contacts(
-            companies, self._company_row_values
-        )
+        return self._rows_for_objects_with_contacts(companies, self._company_row_values)
 
     def _project_export_rows(self, projects):
-        return self._rows_for_objects_with_contacts(
-            projects, self._project_row_values
-        )
+        return self._rows_for_objects_with_contacts(projects, self._project_row_values)
 
     def _tag_export_rows(self, tags, category="companies"):
         rows = []
@@ -1018,7 +1016,16 @@ class UserView:
         now = datetime.datetime.now()
         q = {}
 
-        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at", "stars", "comments"}
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+            "stars",
+            "comments",
+        }
         if _sort not in allowed_sorts:
             _sort = "created_at"
 
@@ -1631,7 +1638,14 @@ class UserView:
         colors = dict(COLORS)
         q = {}
 
-        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at"}
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
         if _sort not in allowed_sorts:
             _sort = "created_at"
 
@@ -2266,9 +2280,7 @@ class UserView:
             _order = "desc"
 
         stmt = (
-            select(Tag)
-            .join(selected_tags)
-            .filter(user.id == selected_tags.c.user_id)
+            select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
         )
 
         stmt, category = self._filter_tags_by_category(stmt, category)
@@ -2553,9 +2565,7 @@ class UserView:
         if blocked_response:
             return blocked_response
 
-        stmt_1 = delete(companies_stars).where(
-            companies_stars.c.user_id == user.id
-        )
+        stmt_1 = delete(companies_stars).where(companies_stars.c.user_id == user.id)
         stmt_2 = delete(selected_companies).where(
             selected_companies.c.user_id == user.id
         )
@@ -2588,12 +2598,8 @@ class UserView:
         )
         if blocked_response:
             return blocked_response
-        stmt_1 = delete(projects_stars).where(
-            projects_stars.c.user_id == user.id
-        )
-        stmt_2 = delete(selected_projects).where(
-            selected_projects.c.user_id == user.id
-        )
+        stmt_1 = delete(projects_stars).where(projects_stars.c.user_id == user.id)
+        stmt_2 = delete(selected_projects).where(selected_projects.c.user_id == user.id)
         self.request.dbsession.execute(stmt_1)
         self.request.dbsession.execute(stmt_2)
         stmt = delete(Project).where(Project.id.in_(selected_ids))
@@ -2622,9 +2628,7 @@ class UserView:
         )
         if blocked_response:
             return blocked_response
-        stmt = delete(selected_contacts).where(
-            selected_contacts.c.user_id == user.id
-        )
+        stmt = delete(selected_contacts).where(selected_contacts.c.user_id == user.id)
         self.request.dbsession.execute(stmt)
         stmt = delete(Contact).where(Contact.id.in_(selected_ids))
         self.request.dbsession.execute(stmt)
@@ -2652,16 +2656,12 @@ class UserView:
         )
         if blocked_response:
             return blocked_response
-        stmt = delete(selected_tags).where(
-            selected_tags.c.user_id == user.id
-        )
+        stmt = delete(selected_tags).where(selected_tags.c.user_id == user.id)
         self.request.dbsession.execute(stmt)
         stmt = delete(Tag).where(Tag.id.in_(selected_ids))
         self.request.dbsession.execute(stmt)
         self.request.session.flash(_("success:Selected tags deleted"))
-        log.info(
-            _("The user %s deleted selected tags") % self.request.identity.name
-        )
+        log.info(_("The user %s deleted selected tags") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -2677,34 +2677,38 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         new_name = self.request.params.get("merge_tag_name", None)
-        
+
         if not new_name or not user.selected_tags:
-            self.request.session.flash(_("warning:Please provide a name and select tags"))
+            self.request.session.flash(
+                _("warning:Please provide a name and select tags")
+            )
             next_url = self.request.route_url("user_selected_tags", username=user.name)
             response = self.request.response
             response.headers = {"HX-Redirect": next_url}
             response.status_code = 303
             return response
-        
+
         # Get all selected tag IDs and collect companies/projects BEFORE deletions
         selected_ids = [tag.id for tag in user.selected_tags]
         companies_to_add = set()
         projects_to_add = set()
-        
+
         for tag in user.selected_tags:
             companies_to_add.update(tag.companies)
             projects_to_add.update(tag.projects)
-        
+
         # Check if a tag with the new name already exists (created by this user)
         existing_tag = self.request.dbsession.execute(
             select(Tag).filter(Tag.name == new_name, Tag.creator_id == user.id)
         ).scalar()
-        
+
         if existing_tag:
             # Merge into existing tag with that name
             target_tag = existing_tag
             # Remove target tag from selected IDs so we don't delete its associations
-            ids_to_delete = [tag_id for tag_id in selected_ids if tag_id != target_tag.id]
+            ids_to_delete = [
+                tag_id for tag_id in selected_ids if tag_id != target_tag.id
+            ]
         else:
             # Create a new tag with the given name
             target_tag = Tag(name=new_name)
@@ -2718,40 +2722,47 @@ class UserView:
         )
         if blocked_response:
             return blocked_response
-        
+
         # Remove associations from selected_tags table for tags to be deleted
         if ids_to_delete:
-            stmt = delete(selected_tags).where(selected_tags.c.tag_id.in_(ids_to_delete))
+            stmt = delete(selected_tags).where(
+                selected_tags.c.tag_id.in_(ids_to_delete)
+            )
             self.request.dbsession.execute(stmt)
-            
+
             # Remove associations from companies_tags and projects_tags for tags to be deleted
-            stmt = delete(companies_tags).where(companies_tags.c.tag_id.in_(ids_to_delete))
+            stmt = delete(companies_tags).where(
+                companies_tags.c.tag_id.in_(ids_to_delete)
+            )
             self.request.dbsession.execute(stmt)
-            
-            stmt = delete(projects_tags).where(projects_tags.c.tag_id.in_(ids_to_delete))
+
+            stmt = delete(projects_tags).where(
+                projects_tags.c.tag_id.in_(ids_to_delete)
+            )
             self.request.dbsession.execute(stmt)
-        
+
         # Add companies and projects to target tag (if not already there)
         for company in companies_to_add:
             if company not in target_tag.companies:
                 target_tag.companies.append(company)
-        
+
         for project in projects_to_add:
             if project not in target_tag.projects:
                 target_tag.projects.append(project)
-        
+
         # Delete the old tags (but not the target tag)
         for tag in user.selected_tags:
             if tag.id != target_tag.id:
                 stmt = delete(Tag).where(Tag.id == tag.id)
                 self.request.dbsession.execute(stmt)
-        
+
         # Clear selection
         user.selected_tags = []
-        
+
         self.request.session.flash(_("success:Selected tags merged"))
         log.info(
-            _("The user %s merged selected tags to '%s'") % (self.request.identity.name, new_name)
+            _("The user %s merged selected tags to '%s'")
+            % (self.request.identity.name, new_name)
         )
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
@@ -2868,7 +2879,14 @@ class UserView:
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
-        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at"}
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
         if _sort not in allowed_sorts:
             _sort = "created_at"
 
@@ -3093,7 +3111,14 @@ class UserView:
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
 
-        allowed_sorts = {"name", "city", "subdivision", "country", "created_at", "updated_at"}
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
         if _sort not in allowed_sorts:
             _sort = "created_at"
 
@@ -3275,15 +3300,15 @@ class UserView:
     )
     def json_companies(self):
         user = self.request.context.user
-        
+
         # Bounding box parameters for lazy loading
         north = self.request.params.get("north", None)
         south = self.request.params.get("south", None)
         east = self.request.params.get("east", None)
         west = self.request.params.get("west", None)
-        
+
         stmt = select(Company).filter(Company.created_by == user)
-        
+
         # Filter by bounding box if provided
         if north and south and east and west:
             try:
@@ -3295,7 +3320,7 @@ class UserView:
                 stmt = stmt.filter(Company.longitude.between(west, east))
             except (ValueError, TypeError):
                 pass  # Invalid coordinates, ignore filtering
-        
+
         companies = self.request.dbsession.execute(stmt).scalars()
         res = [
             {
@@ -3322,15 +3347,15 @@ class UserView:
     )
     def json_projects(self):
         user = self.request.context.user
-        
+
         # Bounding box parameters for lazy loading
         north = self.request.params.get("north", None)
         south = self.request.params.get("south", None)
         east = self.request.params.get("east", None)
         west = self.request.params.get("west", None)
-        
+
         stmt = select(Project).filter(Project.created_by == user)
-        
+
         # Filter by bounding box if provided
         if north and south and east and west:
             try:
@@ -3342,7 +3367,7 @@ class UserView:
                 stmt = stmt.filter(Project.longitude.between(west, east))
             except (ValueError, TypeError):
                 pass  # Invalid coordinates, ignore filtering
-        
+
         projects = self.request.dbsession.execute(stmt).scalars()
         res = [
             {

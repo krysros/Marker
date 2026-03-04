@@ -5,7 +5,7 @@ from uuid import uuid4
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import and_, func, select, delete
+from sqlalchemy import and_, delete, func, select
 
 from ..forms import (
     ActivityForm,
@@ -44,8 +44,8 @@ from ..models import (
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from . import (
-    enforce_delete_rate_limit,
     Filter,
+    enforce_delete_rate_limit,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -682,7 +682,9 @@ class ProjectView:
                 _order = "asc"
                 q["order"] = _order
 
-            stmt = select(Activity).join(Company).filter(Activity.project_id == project.id)
+            stmt = (
+                select(Activity).join(Company).filter(Activity.project_id == project.id)
+            )
             order_column = {
                 "name": Company.name,
                 "stage": Activity.stage,
@@ -1055,9 +1057,7 @@ class ProjectView:
         if blocked_response:
             return blocked_response
         project = self.request.context.project
-        stmt_1 = delete(projects_stars).where(
-            projects_stars.c.project_id == project.id
-        )
+        stmt_1 = delete(projects_stars).where(projects_stars.c.project_id == project.id)
         stmt_2 = delete(selected_projects).where(
             selected_projects.c.project_id == project.id
         )

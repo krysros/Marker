@@ -1,28 +1,21 @@
 import csv
 import logging
-from uuid import uuid4
 from io import StringIO
+from uuid import uuid4
 
 from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, or_, select, delete
+from sqlalchemy import delete, func, or_, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
-from ..models import (
-    Comment,
-    Company,
-    Contact,
-    Project,
-    Tag,
-    selected_contacts,
-)
+from ..models import Comment, Company, Contact, Project, Tag, selected_contacts
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from . import (
-    enforce_delete_rate_limit,
     Filter,
+    enforce_delete_rate_limit,
     handle_bulk_selection,
     is_bulk_select_request,
     set_select_all_state,
@@ -69,7 +62,11 @@ class ContactView:
         return tags
 
     def _stmt_contacts_by_tags(self, tags):
-        stmt = select(Contact).distinct().order_by(Contact.created_at.desc(), Contact.id.desc())
+        stmt = (
+            select(Contact)
+            .distinct()
+            .order_by(Contact.created_at.desc(), Contact.id.desc())
+        )
 
         if tags:
             stmt = stmt.filter(
@@ -454,7 +451,9 @@ class ContactView:
 
             if not reader:
                 self.request.session.flash(
-                    _("warning:Could not read CSV file. Please upload a valid UTF-8 CSV.")
+                    _(
+                        "warning:Could not read CSV file. Please upload a valid UTF-8 CSV."
+                    )
                 )
                 return HTTPFound(location=referrer)
 
