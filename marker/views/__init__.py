@@ -1,5 +1,8 @@
 from urllib.parse import parse_qsl, urlencode
+import datetime
+import math
 
+from pyramid.httpexceptions import HTTPFound
 from sqlalchemy import func
 
 
@@ -61,3 +64,63 @@ def htmx_refresh_response(request):
     response.headers = {"HX-Refresh": "true"}
     response.status_code = 200
     return response
+
+
+DELETE_LIMIT_COUNT = 10
+DELETE_LIMIT_WINDOW = datetime.timedelta(minutes=1)
+DELETE_BLOCK_DURATION = datetime.timedelta(hours=1)
+
+
+def _delete_block_response(request):
+    if request.headers.get("HX-Request") == "true":
+        return htmx_refresh_response(request)
+    referrer = request.referrer or request.route_url("home")
+    return HTTPFound(location=referrer)
+
+
+def enforce_delete_rate_limit(request, records_to_delete=1):
+    user = request.identity
+    if user is None:
+        return None
+
+    if user.role != "editor":
+        return None
+
+    now = datetime.datetime.now()
+    _ = request.translate
+
+    blocked_until = user.delete_blocked_until
+    if blocked_until and blocked_until > now:
+        minutes_left = math.ceil((blocked_until - now).total_seconds() / 60)
+        request.session.flash(
+            _("warning:Deletion is blocked. Try again in %s minutes.")
+            % minutes_left
+        )
+        return _delete_block_response(request)
+
+    if records_to_delete <= 0:
+        return None
+
+    window_start = user.delete_window_start
+    window_count = user.delete_window_count or 0
+
+    if not window_start or now - window_start > DELETE_LIMIT_WINDOW:
+        window_start = now
+        window_count = 0
+
+    new_count = window_count + records_to_delete
+    if new_count > DELETE_LIMIT_COUNT:
+        user.delete_blocked_until = now + DELETE_BLOCK_DURATION
+        user.delete_window_start = now
+        user.delete_window_count = 0
+        request.session.flash(
+            _(
+                "warning:You deleted more than 10 records in 1 minute. "
+                "Deleting is blocked for 60 minutes."
+            )
+        )
+        return _delete_block_response(request)
+
+    user.delete_window_start = window_start
+    user.delete_window_count = new_count
+    return None

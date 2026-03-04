@@ -46,7 +46,13 @@ from ..models import (
 )
 from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
-from . import Filter, handle_bulk_selection, is_bulk_select_request, sort_column
+from . import (
+    Filter,
+    enforce_delete_rate_limit,
+    handle_bulk_selection,
+    is_bulk_select_request,
+    sort_column,
+)
 
 log = logging.getLogger(__name__)
 
@@ -465,7 +471,7 @@ class UserView:
             stmt = stmt.order_by(sort_column(User, _sort).desc())
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.subquery())
         ).scalar()
 
         paginator = (
@@ -2175,7 +2181,7 @@ class UserView:
     def selected_tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -2198,7 +2204,8 @@ class UserView:
             select(Tag).join(selected_tags).filter(user.id == selected_tags.c.user_id)
         )
 
-        stmt, category = self._filter_tags_by_category(stmt, category, q=q)
+        if category in {"companies", "projects"}:
+            stmt, category = self._filter_tags_by_category(stmt, category, q=q)
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Tag, _sort).asc())
@@ -2211,7 +2218,7 @@ class UserView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.subquery())
         ).scalar()
 
         paginator = (
@@ -2540,6 +2547,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [company.id for company in user.selected_companies]
+        blocked_response = enforce_delete_rate_limit(
+            self.request, records_to_delete=len(selected_ids)
+        )
+        if blocked_response:
+            return blocked_response
 
         stmt_1 = delete(companies_stars).where(
             companies_stars.c.user_id == user.id
@@ -2571,6 +2583,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [project.id for project in user.selected_projects]
+        blocked_response = enforce_delete_rate_limit(
+            self.request, records_to_delete=len(selected_ids)
+        )
+        if blocked_response:
+            return blocked_response
         stmt_1 = delete(projects_stars).where(
             projects_stars.c.user_id == user.id
         )
@@ -2600,6 +2617,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [contact.id for contact in user.selected_contacts]
+        blocked_response = enforce_delete_rate_limit(
+            self.request, records_to_delete=len(selected_ids)
+        )
+        if blocked_response:
+            return blocked_response
         stmt = delete(selected_contacts).where(
             selected_contacts.c.user_id == user.id
         )
@@ -2625,6 +2647,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [tag.id for tag in user.selected_tags]
+        blocked_response = enforce_delete_rate_limit(
+            self.request, records_to_delete=len(selected_ids)
+        )
+        if blocked_response:
+            return blocked_response
         stmt = delete(selected_tags).where(
             selected_tags.c.user_id == user.id
         )
@@ -2685,6 +2712,12 @@ class UserView:
             self.request.dbsession.add(target_tag)
             self.request.dbsession.flush()  # Ensure it gets an ID
             ids_to_delete = selected_ids
+
+        blocked_response = enforce_delete_rate_limit(
+            self.request, records_to_delete=len(ids_to_delete)
+        )
+        if blocked_response:
+            return blocked_response
         
         # Remove associations from selected_tags table for tags to be deleted
         if ids_to_delete:

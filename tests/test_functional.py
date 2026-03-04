@@ -152,3 +152,30 @@ def test_trash_shortcut_script_and_single_button(testapp, dbsession):
     assert trash_count == 1
     assert 'keyboard shortcuts for pages with a single green plus or red trash' in res.text
 
+
+def test_selected_tags_page_shows_all_selected_tags_by_default(testapp, dbsession):
+    user = models.user.User(
+        name="selected-tags-user",
+        password="admin",
+        fullname="Selected Tags User",
+        email="selected.tags@example.com",
+        role="admin",
+    )
+    tag = models.tag.Tag(name="Visible Selected Tag")
+    tag.created_by = user
+    user.selected_tags.append(tag)
+
+    dbsession.add(user)
+    dbsession.add(tag)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "selected-tags-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    res = testapp.get("/user/selected-tags-user/selected_tags", status=200)
+
+    assert "Visible Selected Tag" in res.text
+

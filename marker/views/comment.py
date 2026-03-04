@@ -8,7 +8,7 @@ from ..forms import CommentFilterForm, CommentSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA
 from ..models import Comment
 from ..utils.paginator import get_paginator
-from . import Filter
+from . import Filter, enforce_delete_rate_limit
 
 log = logging.getLogger(__name__)
 
@@ -105,6 +105,9 @@ class CommentView:
     )
     def delete(self):
         _ = self.request.translate
+        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
+        if blocked_response:
+            return blocked_response
         comment = self.request.context.comment
         self.request.dbsession.delete(comment)
         log.info(_("The user %s deleted the comment") % self.request.identity.name)

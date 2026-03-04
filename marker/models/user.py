@@ -35,6 +35,13 @@ class User(Base):
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
         default=datetime.datetime.now, onupdate=datetime.datetime.now
     )
+    delete_window_start: Mapped[Optional[datetime.datetime]] = mapped_column(
+        nullable=True
+    )
+    delete_window_count: Mapped[int] = mapped_column(default=0)
+    delete_blocked_until: Mapped[Optional[datetime.datetime]] = mapped_column(
+        nullable=True
+    )
 
     @property
     def password(self) -> None:
