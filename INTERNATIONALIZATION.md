@@ -15,3 +15,4 @@ Run these commands in project's directory (replace `pl` with your locale):
     uv run pybabel update -i marker/locale/marker.pot -d marker/locale
 
     uv run pybabel compile -d marker/locale
+

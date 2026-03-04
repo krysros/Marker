@@ -564,17 +564,13 @@ msgstr "Aplikacja dla Generalnych Wykonawców"
 
 #: marker/templates/home.mako:8
 msgid ""
-"Find recommended companies with a specific business profile and projects "
-"that meet the required criteria. Check which companies have implemented "
-"the largest number of projects, which subdivisions are the most "
-"entrepreneurial and in which industries there is the greatest "
-"competition."
+"Marker helps general contractors manage market relationships by unifying "
+"companies, projects, contacts, and activity data in one place for fast "
+"filtering, analysis, and reporting."
 msgstr ""
-"Znajdź najczęściej rekomendowane firmy o określonym profilu działalności "
-"oraz projekty spełniające wymagane kryteria. Sprawdź, które firmy "
-"zrealizowały największą liczbę projektów, które województwa są "
-"najbardziej przedsiębiorcze i w jakich branżach jest największa "
-"konkurencja."
+"Marker pomaga generalnym wykonawcom zarządzać relacjami rynkowymi, "
+"integrując dane o firmach, projektach, kontaktach i aktywnościach w "
+"jednym miejscu na potrzeby szybkiego filtrowania, analizy i raportowania."
 
 #: marker/templates/base/navbar.mako:28
 #: marker/templates/contact/contact_search_tags.mako:26

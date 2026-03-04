@@ -1,10 +1,7 @@
 # Marker
 
-App for General Contractors.
+Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting.
 
-## Usage example
-
-Find the most frequently recommended companies with a specific business profile and projects that meet the required criteria. Check which companies have implemented the largest number of projects, which subdivisions are the most entrepreneurial and in which industries there is the greatest competition.
 
 ## Screenshots
 

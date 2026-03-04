@@ -5,7 +5,7 @@
   <div class="container">
     <h1>${project} <small class="text-body-secondary">${_("App for General Contractors")}</small></h1>
     <p class="fs-4">
-      ${_("Find recommended companies with a specific business profile and projects that meet the required criteria. Check which companies have implemented the largest number of projects, which subdivisions are the most entrepreneurial and in which industries there is the greatest competition.")}
+      ${_("Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting.")}
     </p>
     <div>
       ${button.a(title=_("Search"), icon='search', color='primary', size='lg', url=request.route_url('contact_search_tags'))}
