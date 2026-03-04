@@ -62,7 +62,17 @@
       </div>
       <div class="mb-3">
         ${form.website.label(class_="form-label")}
-        ${form.website(class_="form-control" + (" is-invalid" if form.errors.get("website") else ""))}
+        % if request.matched_route.name == "project_add":
+          ${form.website(
+            class_="form-control" + (" is-invalid" if form.errors.get("website") else ""),
+            **{
+              "data-website-autofill-url": request.route_url("project_website_autofill"),
+              "data-subdivision-url": request.route_url("subdivision"),
+            }
+          )}
+        % else:
+          ${form.website(class_="form-control" + (" is-invalid" if form.errors.get("website") else ""))}
+        % endif
         % for error in form.errors.get("website", []):
           <div class="invalid-feedback">${error}</div>
         % endfor

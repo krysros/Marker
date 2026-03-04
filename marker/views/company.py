@@ -41,6 +41,7 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
+from ..utils.website_autofill import company_autofill_from_website
 from . import (
     Filter,
     enforce_delete_rate_limit,
@@ -1106,6 +1107,15 @@ class CompanyView:
             form.KRS.data = self.request.params.get("KRS", None)
 
         return {"heading": _("Add a company"), "form": form, "tags": tags}
+
+    @view_config(
+        route_name="company_website_autofill",
+        renderer="json",
+        permission="edit",
+    )
+    def website_autofill(self):
+        website = self.request.params.get("website", "")
+        return {"fields": company_autofill_from_website(website)}
 
     @view_config(
         route_name="company_add_tag_input",

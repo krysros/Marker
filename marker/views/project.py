@@ -43,6 +43,7 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
+from ..utils.website_autofill import project_autofill_from_website
 from . import (
     Filter,
     enforce_delete_rate_limit,
@@ -971,6 +972,15 @@ class ProjectView:
             form.delivery_method.data = self.request.params.get("delivery_method", None)
 
         return {"heading": _("Add a project"), "form": form, "tags": tags}
+
+    @view_config(
+        route_name="project_website_autofill",
+        renderer="json",
+        permission="edit",
+    )
+    def website_autofill(self):
+        website = self.request.params.get("website", "")
+        return {"fields": project_autofill_from_website(website)}
 
     @view_config(
         route_name="project_add_tag_input",

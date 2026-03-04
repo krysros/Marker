@@ -39,6 +39,7 @@ dependencies = [
     "Unidecode",
     "markdown",
     "pycountry",
+    "beautifulsoup4",
 ]
 
 [project.optional-dependencies]

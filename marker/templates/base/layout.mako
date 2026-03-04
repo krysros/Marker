@@ -18,6 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js"></script>
     <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>
     <script src="${request.static_url('marker:static/js/marker-select-all-state.js')}"></script>
+    <script src="${request.static_url('marker:static/js/marker-website-autofill.js')}"></script>
     <link rel="stylesheet" href="${request.static_url('marker:static/css/style.css')}">
     % if title:
     <title>Marker - ${title}</title>
