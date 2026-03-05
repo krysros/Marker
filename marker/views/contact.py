@@ -579,10 +579,9 @@ class ContactView:
         # Prepare Comments
 
         comment = row["Notes"]
-        comment = comment.strip()
 
         if comment:
-            comment = Comment(comment=comment)
+            comment = Comment(comment=comment.strip())
             comment.created_by = self.request.identity
             company.comments.append(comment)
 
@@ -619,6 +618,7 @@ class ContactView:
             role=role,
             phone=phone,
             email=email,
+            color="",
         )
         contact.created_by = self.request.identity
 
