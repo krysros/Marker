@@ -544,6 +544,38 @@ class ContactView:
 
         return ""
 
+    @staticmethod
+    def _same_contact_data(contact, name, role, phone, email):
+        return (
+            (contact.name or "") == name
+            and (contact.role or "") == role
+            and (contact.phone or "") == phone
+            and (contact.email or "") == email
+        )
+
+    def _company_has_same_contact(self, company, name, role, phone, email):
+        for existing_contact in company.contacts:
+            if self._same_contact_data(
+                existing_contact,
+                name=name,
+                role=role,
+                phone=phone,
+                email=email,
+            ):
+                return True
+
+        existing_contact_id = self.request.dbsession.execute(
+            select(Contact.id)
+            .where(Contact.company_id == company.id)
+            .where(Contact.name == name)
+            .where(func.coalesce(Contact.role, "") == role)
+            .where(func.coalesce(Contact.phone, "") == phone)
+            .where(func.coalesce(Contact.email, "") == email)
+            .limit(1)
+        ).scalar_one_or_none()
+
+        return existing_contact_id is not None
+
     def _add_row(self, row):
         # Prepare Company
 
@@ -603,34 +635,6 @@ class ContactView:
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
 
-        # Prepare Tags
-
-        labels = self._csv_row_value(row, "Labels", "Group Membership")
-        tags = [
-            label.strip()
-            for label in labels.split(":::")
-            if label.strip() and not label.strip().startswith("*")
-        ]
-
-        for tag_name in tags:
-            tag = self.request.dbsession.execute(
-                select(Tag).filter_by(name=tag_name)
-            ).scalar_one_or_none()
-            if not tag:
-                tag = Tag(tag_name)
-                tag.created_by = self.request.identity
-            if tag not in company.tags:
-                company.tags.append(tag)
-
-        # Prepare Comments
-
-        comment = self._csv_row_value(row, "Notes")
-
-        if comment:
-            comment = Comment(comment=comment)
-            comment.created_by = self.request.identity
-            company.comments.append(comment)
-
         # Prepare Contact
 
         first_name = self._csv_row_value(row, "First Name", "Given Name", "Name")
@@ -674,6 +678,37 @@ class ContactView:
 
         if not "@" in email:
             email = ""
+
+        if self._company_has_same_contact(company, name, role, phone, email):
+            return False
+
+        # Prepare Tags
+
+        labels = self._csv_row_value(row, "Labels", "Group Membership")
+        tags = [
+            label.strip()
+            for label in labels.split(":::")
+            if label.strip() and not label.strip().startswith("*")
+        ]
+
+        for tag_name in tags:
+            tag = self.request.dbsession.execute(
+                select(Tag).filter_by(name=tag_name)
+            ).scalar_one_or_none()
+            if not tag:
+                tag = Tag(tag_name)
+                tag.created_by = self.request.identity
+            if tag not in company.tags:
+                company.tags.append(tag)
+
+        # Prepare Comments
+
+        comment = self._csv_row_value(row, "Notes")
+
+        if comment:
+            comment = Comment(comment=comment)
+            comment.created_by = self.request.identity
+            company.comments.append(comment)
 
         contact = Contact(
             name=name,

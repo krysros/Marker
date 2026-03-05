@@ -96,3 +96,44 @@ def test_add_row_supports_google_alias_columns(dummy_request, dbsession, monkeyp
     assert contact.role == "CEO"
     assert contact.phone == "123456789"
     assert contact.email == "jan.kowalski@example.com"
+
+
+def test_add_row_skips_duplicate_contact_for_same_company(
+    dummy_request, dbsession, monkeypatch
+):
+    monkeypatch.setattr("marker.views.contact.location", lambda **kwargs: None)
+    user = _create_user(dbsession, "google-csv-import-dedup-user")
+    request = SimpleNamespace(dbsession=dbsession, identity=user)
+    view = ContactView(request)
+
+    row = {
+        "Organization 1 - Name": "Acme",
+        "Address 1 - Street": "ul. Testowa 1",
+        "Address 1 - Postal Code": "00-001",
+        "Address 1 - City": "Warszawa",
+        "Address 1 - Region": "Mazowieckie",
+        "Address 1 - Country": "Poland",
+        "Website 1 - Value": "https://acme.example.com",
+        "Group Membership": "Klienci ::: * My Contacts",
+        "Notes": "Wazny klient",
+        "Given Name": "jan",
+        "Name Prefix": "dr",
+        "Additional Name": "adam",
+        "Family Name": "kowalski",
+        "Name Suffix": "PhD",
+        "Organization 1 - Title": "CEO",
+        "Organization 1 - Department": "Sales",
+        "Phone 1 - Value": "123456789",
+        "E-mail 1 - Value": "jan.kowalski@example.com",
+    }
+
+    added_first = view._add_row(row)
+    added_second = view._add_row(row)
+    dbsession.flush()
+
+    assert added_first is True
+    assert added_second is False
+
+    company = dbsession.execute(select(models.Company).filter_by(name="Acme")).scalar_one()
+    assert len(company.contacts) == 1
+    assert len(company.comments) == 1
