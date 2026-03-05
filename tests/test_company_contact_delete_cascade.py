@@ -83,6 +83,10 @@ def test_delete_company_removes_assigned_contacts(dbsession):
     dbsession.add(company)
     dbsession.flush()
 
+    selector = _create_user(dbsession, "single-company-selected-contact-user")
+    selector.selected_contacts.append(contact)
+    dbsession.flush()
+
     company_id = company.id
     contact_id = contact.id
 
@@ -98,6 +102,16 @@ def test_delete_company_removes_assigned_contacts(dbsession):
     assert (
         dbsession.execute(select(models.Contact).where(models.Contact.id == contact_id)).scalar_one_or_none()
         is None
+    )
+    assert (
+        dbsession.execute(
+            select(models.selected_contacts.c.contact_id).where(
+                models.selected_contacts.c.contact_id == contact_id
+            )
+        )
+        .scalars()
+        .all()
+        == []
     )
 
 
@@ -117,6 +131,10 @@ def test_delete_selected_companies_removes_assigned_contacts(dbsession):
 
     user.selected_companies.append(company_1)
     user.selected_companies.append(company_2)
+
+    selector = _create_user(dbsession, "bulk-company-selected-contact-user")
+    selector.selected_contacts.append(contact_1)
+    selector.selected_contacts.append(contact_2)
     dbsession.flush()
 
     request = _request_stub(dbsession, user, SimpleNamespace(user=user))
@@ -140,12 +158,26 @@ def test_delete_selected_companies_removes_assigned_contacts(dbsession):
         .all()
         == []
     )
+    assert (
+        dbsession.execute(
+            select(models.selected_contacts.c.contact_id).where(
+                models.selected_contacts.c.contact_id.in_([contact_1_id, contact_2_id])
+            )
+        )
+        .scalars()
+        .all()
+        == []
+    )
 
 
 def test_raw_company_delete_cascades_to_contacts(dbsession):
     user = _create_user(dbsession, "raw-company-delete-admin")
     company, contact = _create_company_with_contact(user, "raw")
     dbsession.add(company)
+    dbsession.flush()
+
+    selector = _create_user(dbsession, "raw-company-selected-contact-user")
+    selector.selected_contacts.append(contact)
     dbsession.flush()
 
     company_id = company.id
@@ -165,4 +197,14 @@ def test_raw_company_delete_cascades_to_contacts(dbsession):
             select(models.Contact).where(models.Contact.id == contact_id)
         ).scalar_one_or_none()
         is None
+    )
+    assert (
+        dbsession.execute(
+            select(models.selected_contacts.c.contact_id).where(
+                models.selected_contacts.c.contact_id == contact_id
+            )
+        )
+        .scalars()
+        .all()
+        == []
     )
