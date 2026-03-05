@@ -26,24 +26,12 @@ log = logging.getLogger(__name__)
 
 
 GOOGLE_CONTACTS_REQUIRED_COLUMNS = {
-    "Organization Name",
-    "Address 1 - Street",
-    "Address 1 - Postal Code",
-    "Address 1 - City",
-    "Address 1 - Region",
-    "Address 1 - Country",
-    "Website 1 - Value",
-    "Labels",
-    "Notes",
-    "First Name",
-    "Name Prefix",
-    "Middle Name",
-    "Last Name",
-    "Name Suffix",
-    "Organization Title",
-    "Organization Department",
-    "Phone 1 - Value",
-    "E-mail 1 - Value",
+    "Organization Name": ("Organization Name", "Organization 1 - Name"),
+    "First Name": ("First Name", "Given Name"),
+    "E-mail 1 - Value": ("E-mail 1 - Value",),
+    "Phone 1 - Value": ("Phone 1 - Value",),
+    "Labels": ("Labels", "Group Membership"),
+    "Notes": ("Notes",),
 }
 
 
@@ -468,11 +456,25 @@ class ContactView:
                 )
                 return HTTPFound(location=referrer)
 
+            imported_count = 0
+            skipped_count = 0
             for row in reader:
-                self._add_row(row)
+                if self._add_row(row):
+                    imported_count += 1
+                else:
+                    skipped_count += 1
 
-            self.request.session.flash(_("success:CSV file has been imported"))
-            log.info(_("User %s imported CSV file") % self.request.identity.name)
+            self.request.session.flash(
+                _(
+                    "success:CSV file has been imported. Contacts added: %s. "
+                    "Skipped rows: %s"
+                )
+                % (imported_count, skipped_count)
+            )
+            log.info(
+                _("User %s imported CSV file (%s contacts, %s skipped)")
+                % (self.request.identity.name, imported_count, skipped_count)
+            )
             # return HTTPSeeOther(location=next_url)
             return HTTPFound(location=referrer)
         return {"heading": _("Import CSV"), "form": form}
@@ -481,46 +483,90 @@ class ContactView:
         try:
             data = file.read()
             if isinstance(data, bytes):
-                text = data.decode("utf-8", errors="replace")
+                try:
+                    # utf-8-sig strips BOM when present.
+                    text = data.decode("utf-8-sig")
+                except UnicodeDecodeError:
+                    text = data.decode("utf-8", errors="replace")
             else:
                 text = str(data)
         except Exception:
             return None, set()
 
         f = StringIO(text)
-        reader = csv.DictReader(f)
+        sample = text[:4096]
+        try:
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;\t")
+        except csv.Error:
+            dialect = csv.excel
+
+        reader = csv.DictReader(f, dialect=dialect)
+        if reader.fieldnames:
+            reader.fieldnames = [
+                self._normalize_csv_header(header) for header in reader.fieldnames
+            ]
         headers = set(reader.fieldnames or [])
         return reader, headers
 
     def _missing_google_contacts_columns(self, headers):
-        return sorted(GOOGLE_CONTACTS_REQUIRED_COLUMNS - set(headers or []))
+        available_headers = {
+            self._normalize_csv_header(header) for header in (headers or [])
+        }
+        missing_columns = []
+
+        for display_name, aliases in GOOGLE_CONTACTS_REQUIRED_COLUMNS.items():
+            if not any(alias in available_headers for alias in aliases):
+                missing_columns.append(display_name)
+
+        return missing_columns
+
+    @staticmethod
+    def _normalize_csv_header(header):
+        if header is None:
+            return ""
+        return str(header).lstrip("\ufeff").strip()
+
+    @staticmethod
+    def _csv_row_value(row, *columns):
+        for column in columns:
+            value = row.get(column)
+            if value is None:
+                continue
+
+            value = value.strip()
+            if value:
+                return value
+
+        for column in columns:
+            value = row.get(column)
+            if value is not None:
+                return value.strip()
+
+        return ""
 
     def _add_row(self, row):
         # Prepare Company
 
-        company_name = row["Organization Name"]
-        company_name = company_name.strip()
+        company_name = self._csv_row_value(
+            row,
+            "Organization Name",
+            "Organization 1 - Name",
+        )
 
         if not company_name:
-            return
+            return False
 
-        street = row["Address 1 - Street"]
-        street = street.strip()
+        street = self._csv_row_value(row, "Address 1 - Street")
 
-        postcode = row["Address 1 - Postal Code"]
-        postcode = postcode.strip()
+        postcode = self._csv_row_value(row, "Address 1 - Postal Code")
 
-        city = row["Address 1 - City"]
-        city = city.strip()
+        city = self._csv_row_value(row, "Address 1 - City")
 
-        subdivision = row["Address 1 - Region"]
-        subdivision = subdivision.strip()
+        subdivision = self._csv_row_value(row, "Address 1 - Region")
 
-        country = row["Address 1 - Country"]
-        country = country.strip()
+        country = self._csv_row_value(row, "Address 1 - Country")
 
-        website = row["Website 1 - Value"]
-        website = website.strip()
+        website = self._csv_row_value(row, "Website 1 - Value")
 
         company = self.request.dbsession.execute(
             select(Company).filter_by(name=company_name)
@@ -559,11 +605,11 @@ class ContactView:
 
         # Prepare Tags
 
-        labels = row["Labels"]
+        labels = self._csv_row_value(row, "Labels", "Group Membership")
         tags = [
             label.strip()
             for label in labels.split(":::")
-            if not label.strip().startswith("*")
+            if label.strip() and not label.strip().startswith("*")
         ]
 
         for tag_name in tags:
@@ -578,37 +624,53 @@ class ContactView:
 
         # Prepare Comments
 
-        comment = row["Notes"]
+        comment = self._csv_row_value(row, "Notes")
 
         if comment:
-            comment = Comment(comment=comment.strip())
+            comment = Comment(comment=comment)
             comment.created_by = self.request.identity
             company.comments.append(comment)
 
         # Prepare Contact
 
-        name = row["First Name"].title()
-        if row["Name Prefix"]:
-            name = row["Name Prefix"] + " " + name
-        if row["Middle Name"]:
-            name = name + " " + row["Middle Name"].title()
-        if row["Last Name"]:
-            name = name + " " + row["Last Name"].title()
-        if row["Name Suffix"]:
-            name = name + " " + row["Name Suffix"]
-        name = name.strip()
+        first_name = self._csv_row_value(row, "First Name", "Given Name", "Name")
+        prefix = self._csv_row_value(row, "Name Prefix")
+        middle_name = self._csv_row_value(row, "Middle Name", "Additional Name")
+        last_name = self._csv_row_value(row, "Last Name", "Family Name")
+        suffix = self._csv_row_value(row, "Name Suffix")
+
+        name_parts = []
+        if prefix:
+            name_parts.append(prefix)
+        if first_name:
+            name_parts.append(first_name.title())
+        if middle_name:
+            name_parts.append(middle_name.title())
+        if last_name:
+            name_parts.append(last_name.title())
+        if suffix:
+            name_parts.append(suffix)
+
+        name = " ".join(name_parts).strip()
 
         if not name:
-            return
+            return False
 
-        role = row["Organization Title"] or row["Organization Department"]
-        role = role.strip()
+        role = self._csv_row_value(
+            row,
+            "Organization Title",
+            "Organization 1 - Title",
+        )
+        if not role:
+            role = self._csv_row_value(
+                row,
+                "Organization Department",
+                "Organization 1 - Department",
+            )
 
-        phone = row["Phone 1 - Value"]
-        phone = phone.strip()
+        phone = self._csv_row_value(row, "Phone 1 - Value")
 
-        email = row["E-mail 1 - Value"]
-        email = email.strip()
+        email = self._csv_row_value(row, "E-mail 1 - Value")
 
         if not "@" in email:
             email = ""
@@ -624,3 +686,6 @@ class ContactView:
 
         if contact not in company.contacts:
             company.contacts.append(contact)
+            return True
+
+        return False
