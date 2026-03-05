@@ -188,3 +188,268 @@ def test_selected_tags_page_shows_all_selected_tags_by_default(testapp, dbsessio
     res = testapp.get("/user/selected-tags-user/selected_tags", status=200)
 
     assert "Visible Selected Tag" in res.text
+
+
+def test_company_website_autofill_supports_developer_descriptors(
+    testapp, dbsession, monkeypatch
+):
+    from marker.utils import website_autofill
+
+    user = models.user.User(
+        name="company-autofill-descriptor-editor",
+        password="admin",
+        fullname="Company Autofill Descriptor Editor",
+        email="company.autofill.descriptor@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-descriptor-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    for descriptor in ("Deweloper", "Developer"):
+        html = f"""
+        <html>
+            <head>
+                <title>Kontakt - Alfa</title>
+                <meta property="og:site_name" content="Alfa" />
+            </head>
+            <body>
+                Alfa {descriptor}
+                ul. Przykładowa 1
+                00-001 Warszawa
+            </body>
+        </html>
+        """
+
+        monkeypatch.setattr(
+            website_autofill,
+            "_download_html",
+            lambda url, timeout, html=html: (html, "https://alfa.pl/kontakt/"),
+        )
+
+        response = testapp.get(
+            "/company/add/website_autofill",
+            params={"website": "https://alfa.pl/kontakt/"},
+            status=200,
+        )
+        fields = response.json["fields"]
+
+        assert fields["name"] == f"Alfa {descriptor}"
+
+
+def test_company_website_autofill_prefers_company_like_descriptor_casing(
+    testapp, dbsession, monkeypatch
+):
+    from marker.utils import website_autofill
+
+    user = models.user.User(
+        name="company-autofill-descriptor-casing-editor",
+        password="admin",
+        fullname="Company Autofill Descriptor Casing Editor",
+        email="company.autofill.descriptor.casing@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-descriptor-casing-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    html = """
+    <html>
+        <head>
+            <title>Kontakt - alfa</title>
+        </head>
+        <body>
+            alfa developer
+            Alfa Developer
+            ul. Przykładowa 1
+            00-001 Warszawa
+        </body>
+    </html>
+    """
+
+    monkeypatch.setattr(
+        website_autofill,
+        "_download_html",
+        lambda url, timeout: (html, "https://alfa.pl/kontakt/"),
+    )
+
+    response = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://alfa.pl/kontakt/"},
+        status=200,
+    )
+    fields = response.json["fields"]
+
+    assert fields["name"] == "Alfa Developer"
+
+
+def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
+    testapp, dbsession, monkeypatch
+):
+    from marker.utils import website_autofill
+
+    user = models.user.User(
+        name="company-autofill-address-block-editor",
+        password="admin",
+        fullname="Company Autofill Address Block Editor",
+        email="company.autofill.address.block@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-address-block-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    html_variants = (
+        """
+        <html>
+            <head>
+                <title>Kontakt</title>
+            </head>
+            <body>
+                Nowa Przestrzeń Developer
+                Kwiatowa 12
+                00-123 Warszawa
+            </body>
+        </html>
+        """,
+        """
+        <html>
+            <head>
+                <title>Kontakt</title>
+            </head>
+            <body>
+                Nowa Przestrzeń Developer, Kwiatowa 12, 00-123 Warszawa
+            </body>
+        </html>
+        """,
+    )
+
+    for html in html_variants:
+        monkeypatch.setattr(
+            website_autofill,
+            "_download_html",
+            lambda url, timeout, html=html: (
+                html,
+                "https://nowa-przestrzen.pl/kontakt/",
+            ),
+        )
+
+        response = testapp.get(
+            "/company/add/website_autofill",
+            params={"website": "https://nowa-przestrzen.pl/kontakt/"},
+            status=200,
+        )
+        fields = response.json["fields"]
+
+        assert fields["name"] == "Nowa Przestrzeń Developer"
+        assert fields["street"] == "Kwiatowa 12"
+        assert fields["postcode"] == "00-123"
+        assert fields["city"] == "Warszawa"
+
+
+def test_company_website_autofill_includes_trade_prefix_from_previous_line(
+    testapp, dbsession, monkeypatch
+):
+    from marker.utils import website_autofill
+
+    user = models.user.User(
+        name="company-autofill-prefix-editor",
+        password="admin",
+        fullname="Company Autofill Prefix Editor",
+        email="company.autofill.prefix@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-prefix-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    html_cases = (
+        (
+            "FHU",
+            "FHU Alfa",
+        ),
+        (
+            "Przedsiębiorstwo Handlowo-Usługowe",
+            "Przedsiębiorstwo Handlowo-Usługowe Alfa",
+        ),
+    )
+
+    for prefix_line, expected_name in html_cases:
+        html = f"""
+        <html>
+            <head>
+                <title>Kontakt</title>
+            </head>
+            <body>
+                {prefix_line}
+                Alfa
+                Kwiatowa 12
+                00-123 Warszawa
+            </body>
+        </html>
+        """
+
+        monkeypatch.setattr(
+            website_autofill,
+            "_download_html",
+            lambda url, timeout, html=html: (
+                html,
+                "https://alfa.pl/kontakt/",
+            ),
+        )
+
+        response = testapp.get(
+            "/company/add/website_autofill",
+            params={"website": "https://alfa.pl/kontakt/"},
+            status=200,
+        )
+        fields = response.json["fields"]
+
+        assert fields["name"] == expected_name
+        assert fields["street"] == "Kwiatowa 12"
+        assert fields["postcode"] == "00-123"
+        assert fields["city"] == "Warszawa"

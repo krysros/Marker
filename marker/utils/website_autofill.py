@@ -61,6 +61,7 @@ _ADDRESS_ONLY_LABEL_RE = re.compile(
 	r"^(?:adres(?:\s+siedziby)?|siedziba)\s*[:\-]?\s*$",
 	re.IGNORECASE,
 )
+_ADDRESS_PART_SPLIT_RE = re.compile(r"\s*,\s*")
 _STREET_RE = re.compile(
 	r"\b(?:ul\.?|ulica)\s*([^\n,;|]{3,100})",
 	re.IGNORECASE,
@@ -75,6 +76,7 @@ _NAME_TAIL_RE = re.compile(
 	r"(?:"
 	r",?\s*\b(?:ul\.?|ulica|al\.?|aleja|plac|pl\.?|os\.?|adres|nip|regon|krs|tel\.?|telefon|e-?mail|kontakt|infolinia|z\s+siedzib[aą])\b"
 	r"|,\s*\d{2}[\-–—]?\d{3}\b"
+	r"|,\s*[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż][A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż0-9\-\s]{1,80}\d+[A-Za-z0-9/\-]*\b"
 	r"|https?://"
 	r"|www\."
 	r")",
@@ -141,6 +143,69 @@ _LEGAL_FORM_PATTERNS = tuple(
 		for pattern in country_patterns
 	)
 )
+_COMPANY_DESCRIPTOR_PATTERNS = (
+	re.compile(r"\bdeweloper\b"),
+	re.compile(r"\bdeveloper\b"),
+)
+_COMPANY_PREFIX_PATTERNS = (
+	re.compile(r"\bf\.?\s*h\.?\s*u\.?\b"),
+	re.compile(r"\bp\.?\s*p\.?\s*h\.?\s*u\.?\b"),
+	re.compile(r"\bp\.?\s*h\.?\s*u\.?\b"),
+	re.compile(r"\bp\.?\s*u\.?\s*h\.?\b"),
+	re.compile(r"\bfirma\s+handlowo(?:[-\s]+)uslugowa\b"),
+	re.compile(r"\bfirma\s+uslugowo(?:[-\s]+)handlowa\b"),
+	re.compile(r"\bprzedsiebiorstwo\s+handlowo(?:[-\s]+)uslugowe\b"),
+	re.compile(r"\bprzedsiebiorstwo\s+uslugowo(?:[-\s]+)handlowe\b"),
+	re.compile(
+		r"\bprzedsiebiorstwo\s+produkcyjno(?:[-\s]+)handlowo(?:[-\s]+)uslugowe\b"
+	),
+	re.compile(
+		r"\bprzedsiebiorstwo\s+produkcyjno(?:[-\s]+)uslugowo(?:[-\s]+)handlowe\b"
+	),
+)
+_NON_NAME_LINE_KEYWORDS = (
+	"kontakt",
+	"contact",
+	"adres",
+	"address",
+	"telefon",
+	"phone",
+	"email",
+	"e-mail",
+	"nip",
+	"regon",
+	"krs",
+	"www",
+	"http",
+)
+_NAME_CASE_TOKEN_RE = re.compile(
+	r"[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż][A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż0-9\-]*"
+)
+_NAME_CASE_STOPWORDS = {
+	"i",
+	"oraz",
+	"and",
+	"or",
+	"of",
+	"the",
+	"for",
+	"to",
+	"z",
+	"ze",
+	"w",
+	"we",
+	"na",
+	"do",
+	"de",
+	"da",
+	"di",
+	"del",
+	"van",
+	"von",
+	"la",
+	"le",
+	"el",
+}
 
 
 def _parse_html_document(html):
@@ -242,12 +307,14 @@ def _extract_autofill_data(website, max_name_length, prefer_legal_name=True):
 	)
 	if not country_code:
 		country_code = _country_code_from_hostname(hostname)
+	address_block = _extract_name_address_block(parsed["visible_lines"])
 
 	address = _extract_address(
 		json_ld,
 		parsed["visible_text"],
 		parsed["visible_lines"],
 		country_code,
+		address_block=address_block,
 	)
 
 	if not country_code:
@@ -275,6 +342,7 @@ def _extract_autofill_data(website, max_name_length, prefer_legal_name=True):
 		name_value = _select_preferred_name(
 			candidates=[
 				_organization_name(json_ld),
+				address_block.get("name"),
 				*_visible_legal_name_candidates(parsed["visible_lines"], hostname),
 				parsed["meta"].get("og:site_name"),
 				parsed["meta"].get("application-name"),
@@ -463,14 +531,22 @@ def _visible_legal_name_candidates(visible_lines, hostname):
 
 	for line in visible_lines or []:
 		line = _normalize_whitespace(line)
-		if not line or not _contains_legal_form(line):
+		if not line or not (
+			_contains_legal_form(line)
+			or _contains_company_descriptor(line)
+			or _contains_company_prefix(line)
+		):
 			continue
 
 		candidate = _trim_name_tail(line)
 		candidate = _trim_name_prefix_to_hostname(candidate, host_tokens)
 		candidate = _normalize_whitespace(candidate).strip(" ,;:-|")
 
-		if len(candidate) >= 2 and _contains_legal_form(candidate):
+		if len(candidate) >= 2 and (
+			_contains_legal_form(candidate)
+			or _contains_company_descriptor(candidate)
+			or _contains_company_prefix(candidate)
+		):
 			candidates.append(candidate)
 
 	return candidates
@@ -500,7 +576,7 @@ def _trim_name_prefix_to_hostname(value, host_tokens):
 
 
 def _select_preferred_name(candidates, hostname):
-	variants = []
+	variants = {}
 	for source_index, candidate in enumerate(candidates):
 		candidate = _normalize_whitespace(candidate)
 		if not candidate:
@@ -508,22 +584,46 @@ def _select_preferred_name(candidates, hostname):
 		for variant in _name_variants(candidate):
 			normalized = _normalize_whitespace(variant)
 			if len(normalized) >= 2:
-				variants.append((source_index, normalized))
+				folded = _fold_text(normalized)
+				if not folded:
+					continue
+
+				case_rank = _company_name_case_rank(normalized)
+				existing = variants.get(folded)
+				if not existing:
+					variants[folded] = {
+						"source_index": source_index,
+						"variant": normalized,
+						"case_rank": case_rank,
+					}
+					continue
+
+				if case_rank > existing["case_rank"]:
+					variants[folded] = {
+						"source_index": min(source_index, existing["source_index"]),
+						"variant": normalized,
+						"case_rank": case_rank,
+					}
+				elif (
+					case_rank == existing["case_rank"]
+					and source_index < existing["source_index"]
+				):
+					existing["source_index"] = source_index
+					existing["variant"] = normalized
 
 	if not variants:
 		return _hostname_name(hostname)
 
 	best_name = ""
 	best_rank = None
-	seen = set()
-	for source_index, variant in variants:
-		folded_variant = _fold_text(variant)
-		if not folded_variant or folded_variant in seen:
-			continue
-		seen.add(folded_variant)
+	for variant_data in variants.values():
+		source_index = variant_data["source_index"]
+		variant = variant_data["variant"]
+		case_rank = variant_data["case_rank"]
 
 		host_score = _hostname_match_score(variant, hostname)
 		has_legal_form = _contains_legal_form(variant)
+		has_descriptor = _contains_company_descriptor(variant)
 		has_core_name = _has_core_name_outside_legal_form(variant)
 		length = len(variant)
 
@@ -531,6 +631,9 @@ def _select_preferred_name(candidates, hostname):
 			int(has_legal_form and has_core_name and host_score > 0),
 			int(host_score > 0),
 			int(has_legal_form and has_core_name),
+			int(has_descriptor and host_score > 0),
+			int(has_descriptor and case_rank[0] > 0),
+			case_rank,
 			host_score,
 			int(length <= 90),
 			-abs(length - 40),
@@ -603,6 +706,54 @@ def _contains_legal_form(name):
 	return any(pattern.search(folded_name) for pattern in _LEGAL_FORM_PATTERNS)
 
 
+def _contains_company_descriptor(name):
+	folded_name = _fold_text(name)
+	return any(pattern.search(folded_name) for pattern in _COMPANY_DESCRIPTOR_PATTERNS)
+
+
+def _contains_company_prefix(name):
+	folded_name = _fold_text(name)
+	return any(pattern.search(folded_name) for pattern in _COMPANY_PREFIX_PATTERNS)
+
+
+def _company_name_case_rank(name):
+	tokens = []
+	for token in _NAME_CASE_TOKEN_RE.findall(name or ""):
+		folded_token = _fold_text(token)
+		if len(folded_token) < 2 or folded_token in _NAME_CASE_STOPWORDS:
+			continue
+		tokens.append(token)
+
+	if not tokens:
+		return (0, 0)
+
+	good_tokens = sum(1 for token in tokens if _is_company_case_token(token))
+	return (int(good_tokens == len(tokens)), good_tokens)
+
+
+def _is_company_case_token(token):
+	for part in token.split("-"):
+		letters = [char for char in part if char.isalpha()]
+		if not letters:
+			continue
+
+		if all(char.isupper() for char in letters):
+			continue
+
+		first_alpha_index = next(
+			(index for index, char in enumerate(part) if char.isalpha()),
+			-1,
+		)
+		if first_alpha_index < 0 or not part[first_alpha_index].isupper():
+			return False
+
+		tail = part[first_alpha_index + 1 :]
+		if any(char.isalpha() and not char.islower() for char in tail):
+			return False
+
+	return True
+
+
 def _has_core_name_outside_legal_form(name):
 	stripped = _fold_text(name)
 	for pattern in _LEGAL_FORM_PATTERNS:
@@ -637,7 +788,13 @@ def _jsonld_value(json_ld, key):
 	return ""
 
 
-def _extract_address(json_ld, visible_text, visible_lines, country_code):
+def _extract_address(
+	json_ld,
+	visible_text,
+	visible_lines,
+	country_code,
+	address_block=None,
+):
 	address = {
 		"street": "",
 		"postcode": "",
@@ -678,6 +835,28 @@ def _extract_address(json_ld, visible_text, visible_lines, country_code):
 
 	if not address["country_code"]:
 		address["country_code"] = _country_code_from_value(address["country"])
+
+	block = address_block or {}
+	_set_if_missing(
+		address,
+		"street",
+		block.get("street"),
+		sanitizer=lambda value: _sanitize_street(value, max_len=_MAX_STREET_LEN),
+	)
+	_set_if_missing(
+		address,
+		"postcode",
+		block.get("postcode"),
+		sanitizer=lambda value: _sanitize_postcode(
+			value, max_len=_MAX_POSTCODE_LEN
+		),
+	)
+	_set_if_missing(
+		address,
+		"city",
+		block.get("city"),
+		sanitizer=lambda value: _sanitize_city(value, max_len=_MAX_CITY_LEN),
+	)
 
 	if not (address["street"] and address["postcode"] and address["city"]):
 		line = _extract_address_line(visible_lines, visible_text)
@@ -744,6 +923,146 @@ def _extract_address_line(visible_lines, visible_text):
 			if next_lines:
 				return "\n".join(next_lines)
 	return _extract_by_regex(_ADDRESS_LINE_RE, visible_text)
+
+
+def _extract_name_address_block(visible_lines):
+	segments = _address_segments(visible_lines)
+	if len(segments) < 2:
+		return {}
+
+	for index, segment in enumerate(segments):
+		street = _extract_street_candidate(segment)
+		if not street:
+			continue
+
+		postcode, city = _extract_postcode_city_from_lines([segment])
+		if not (postcode and city):
+			for offset in (1, 2):
+				next_index = index + offset
+				if next_index >= len(segments):
+					break
+				postcode, city = _extract_postcode_city_from_lines(
+					[segments[next_index]]
+				)
+				if postcode and city:
+					break
+
+		if not (postcode and city):
+			continue
+
+		name = ""
+		for prev_index in range(index - 1, max(index - 4, -1), -1):
+			candidate = _normalize_whitespace(segments[prev_index]).strip(" ,;:-|")
+			if not _is_name_block_candidate(candidate):
+				continue
+			name = _compose_block_name(segments, prev_index, candidate)
+			if name:
+				break
+
+		return {
+			"name": name,
+			"street": street,
+			"postcode": postcode,
+			"city": city,
+		}
+
+	return {}
+
+
+def _compose_block_name(segments, name_index, name_candidate):
+	base_name = _sanitize_name(
+		name_candidate,
+		_MAX_COMPANY_NAME_LEN,
+		split_on_separators=False,
+	)
+	if not base_name:
+		return ""
+
+	if _contains_company_prefix(base_name):
+		return base_name
+
+	for prefix_index in range(name_index - 1, max(name_index - 3, -1), -1):
+		prefix_candidate = _normalize_whitespace(segments[prefix_index]).strip(
+			" ,;:-|"
+		)
+		if not _is_name_block_candidate(prefix_candidate):
+			continue
+		if not _contains_company_prefix(prefix_candidate):
+			continue
+
+		combined = _sanitize_name(
+			f"{prefix_candidate} {base_name}",
+			_MAX_COMPANY_NAME_LEN,
+			split_on_separators=False,
+		)
+		if combined and _fold_text(combined) != _fold_text(base_name):
+			return combined
+
+	return base_name
+
+
+def _address_segments(visible_lines):
+	segments = []
+	for line in visible_lines or []:
+		normalized_line = _normalize_whitespace(line)
+		if not normalized_line:
+			continue
+
+		parts = [
+			_normalize_whitespace(part).strip(" ,;:-|")
+			for part in _ADDRESS_PART_SPLIT_RE.split(normalized_line)
+			if _normalize_whitespace(part)
+		]
+		if len(parts) > 1:
+			segments.extend(part for part in parts if part)
+		else:
+			segments.append(normalized_line)
+
+	return segments
+
+
+def _extract_street_candidate(value):
+	value = _normalize_whitespace(value).strip(" ,;:-|")
+	if not value:
+		return ""
+
+	labeled_street = _extract_by_regex(_STREET_RE, value)
+	if labeled_street:
+		return _sanitize_street(labeled_street, max_len=_MAX_STREET_LEN)
+
+	if _POSTCODE_RE.search(value):
+		return ""
+	if not re.search(r"\d", value):
+		return ""
+	if not re.search(
+		r"[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż]",
+		value,
+	):
+		return ""
+
+	folded_value = _fold_text(value)
+	if any(keyword in folded_value for keyword in _NON_NAME_LINE_KEYWORDS):
+		return ""
+
+	return _sanitize_street(value, max_len=_MAX_STREET_LEN)
+
+
+def _is_name_block_candidate(value):
+	value = _normalize_whitespace(value)
+	if len(value) < 2:
+		return False
+	if _POSTCODE_RE.search(value):
+		return False
+	if _extract_street_candidate(value):
+		return False
+
+	folded_value = _fold_text(value)
+	if any(keyword in folded_value for keyword in _NON_NAME_LINE_KEYWORDS):
+		return False
+
+	return bool(
+		re.search(r"[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż]{2,}", value)
+	)
 
 
 def _extract_postcode_city_from_lines(lines):
