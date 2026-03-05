@@ -2558,22 +2558,25 @@ class UserView:
     def delete_selected_companies(self):
         _ = self.request.translate
         user = self.request.context.user
-        selected_ids = [company.id for company in user.selected_companies]
+        companies_to_delete = list(user.selected_companies)
+        selected_ids = [company.id for company in companies_to_delete]
         blocked_response = enforce_delete_rate_limit(
             self.request, records_to_delete=len(selected_ids)
         )
         if blocked_response:
             return blocked_response
 
-        stmt_1 = delete(companies_stars).where(companies_stars.c.user_id == user.id)
-        stmt_2 = delete(selected_companies).where(
-            selected_companies.c.user_id == user.id
-        )
-        self.request.dbsession.execute(stmt_1)
-        self.request.dbsession.execute(stmt_2)
+        for company in companies_to_delete:
+            stmt_1 = delete(companies_stars).where(
+                companies_stars.c.company_id == company.id
+            )
+            stmt_2 = delete(selected_companies).where(
+                selected_companies.c.company_id == company.id
+            )
+            self.request.dbsession.execute(stmt_1)
+            self.request.dbsession.execute(stmt_2)
+            self.request.dbsession.delete(company)
 
-        stmt = delete(Company).where(Company.id.in_(selected_ids))
-        self.request.dbsession.execute(stmt)
         self.request.session.flash(_("success:Selected companies deleted"))
         log.info(
             _("The user %s deleted selected companies") % self.request.identity.name
@@ -2592,18 +2595,25 @@ class UserView:
     def delete_selected_projects(self):
         _ = self.request.translate
         user = self.request.context.user
-        selected_ids = [project.id for project in user.selected_projects]
+        projects_to_delete = list(user.selected_projects)
+        selected_ids = [project.id for project in projects_to_delete]
         blocked_response = enforce_delete_rate_limit(
             self.request, records_to_delete=len(selected_ids)
         )
         if blocked_response:
             return blocked_response
-        stmt_1 = delete(projects_stars).where(projects_stars.c.user_id == user.id)
-        stmt_2 = delete(selected_projects).where(selected_projects.c.user_id == user.id)
-        self.request.dbsession.execute(stmt_1)
-        self.request.dbsession.execute(stmt_2)
-        stmt = delete(Project).where(Project.id.in_(selected_ids))
-        self.request.dbsession.execute(stmt)
+
+        for project in projects_to_delete:
+            stmt_1 = delete(projects_stars).where(
+                projects_stars.c.project_id == project.id
+            )
+            stmt_2 = delete(selected_projects).where(
+                selected_projects.c.project_id == project.id
+            )
+            self.request.dbsession.execute(stmt_1)
+            self.request.dbsession.execute(stmt_2)
+            self.request.dbsession.delete(project)
+
         self.request.session.flash(_("success:Selected projects deleted"))
         log.info(
             _("The user %s deleted selected projects") % self.request.identity.name

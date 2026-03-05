@@ -1,5 +1,5 @@
 import zope.sqlalchemy
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, event
 from sqlalchemy.orm import configure_mappers, sessionmaker
 
 # Import or define all models here to ensure they are attached to the
@@ -26,7 +26,17 @@ configure_mappers()
 
 
 def get_engine(settings, prefix="sqlalchemy."):
-    return engine_from_config(settings, prefix)
+    engine = engine_from_config(settings, prefix)
+
+    if engine.dialect.name == "sqlite":
+
+        @event.listens_for(engine, "connect")
+        def _set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+
+    return engine
 
 
 def get_session_factory(engine):
