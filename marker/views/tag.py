@@ -32,7 +32,6 @@ from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
-    enforce_delete_rate_limit,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -912,9 +911,6 @@ class TagView:
     @view_config(route_name="tag_delete", request_method="POST", permission="edit")
     def delete(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         tag = self.request.context.tag
         stmt = delete(selected_tags).where(selected_tags.c.tag_id == tag.id)
         self.request.dbsession.execute(stmt)
@@ -935,9 +931,6 @@ class TagView:
     )
     def tag_del_row(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         tag = self.request.context.tag
         self.request.dbsession.delete(tag)
         log.info(_("The user %s removed the tag") % self.request.identity.name)

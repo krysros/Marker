@@ -923,10 +923,6 @@ msgstr "Usunąć wszystkie wybrane kontakty?"
 msgid "Delete all selected projects?"
 msgstr "Usunąć wszystkie wybrane projekty"
 
-#: marker/templates/user/user_selected_tags.mako:28
-msgid "All"
-msgstr "Wszystkie"
-
 #: marker/templates/user/user_selected_tags.mako:49
 msgid "Merge selected tags"
 msgstr "Scal wybrane tagi"
@@ -958,19 +954,6 @@ msgstr "Etap projektu"
 #: marker/utils/export.py:86
 msgid "Delivery method"
 msgstr "Sposób realizacji projektu"
-
-#: marker/views/__init__.py:96
-#, python-format
-msgid "warning:Deletion is blocked. Try again in %s minutes."
-msgstr "warning:Usuwanie jest zablokowane. Spróbuj ponownie za %s minut."
-
-#: marker/views/__init__.py:117
-msgid ""
-"warning:You deleted more than 10 records in 1 minute. Deleting is blocked"
-" for 60 minutes."
-msgstr ""
-"warning:Usunąłeś więcej niż 10 rekordów w ciągu 1 minuty. Usuwanie "
-"zostało zablokowane na 60 minut."
 
 #: marker/views/account.py:23 marker/views/account.py:38
 #: marker/views/company.py:1181 marker/views/company.py:1422

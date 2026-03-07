@@ -48,7 +48,6 @@ from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
-    enforce_delete_rate_limit,
     handle_bulk_selection,
     is_bulk_select_request,
     sort_column,
@@ -2559,12 +2558,6 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         companies_to_delete = list(user.selected_companies)
-        selected_ids = [company.id for company in companies_to_delete]
-        blocked_response = enforce_delete_rate_limit(
-            self.request, records_to_delete=len(selected_ids)
-        )
-        if blocked_response:
-            return blocked_response
 
         for company in companies_to_delete:
             stmt_1 = delete(companies_stars).where(
@@ -2596,12 +2589,6 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         projects_to_delete = list(user.selected_projects)
-        selected_ids = [project.id for project in projects_to_delete]
-        blocked_response = enforce_delete_rate_limit(
-            self.request, records_to_delete=len(selected_ids)
-        )
-        if blocked_response:
-            return blocked_response
 
         for project in projects_to_delete:
             stmt_1 = delete(projects_stars).where(
@@ -2633,11 +2620,6 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [contact.id for contact in user.selected_contacts]
-        blocked_response = enforce_delete_rate_limit(
-            self.request, records_to_delete=len(selected_ids)
-        )
-        if blocked_response:
-            return blocked_response
         stmt = delete(selected_contacts).where(selected_contacts.c.user_id == user.id)
         self.request.dbsession.execute(stmt)
         stmt = delete(Contact).where(Contact.id.in_(selected_ids))
@@ -2661,11 +2643,6 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [tag.id for tag in user.selected_tags]
-        blocked_response = enforce_delete_rate_limit(
-            self.request, records_to_delete=len(selected_ids)
-        )
-        if blocked_response:
-            return blocked_response
         stmt = delete(selected_tags).where(selected_tags.c.user_id == user.id)
         self.request.dbsession.execute(stmt)
         stmt = delete(Tag).where(Tag.id.in_(selected_ids))
@@ -2726,12 +2703,6 @@ class UserView:
             self.request.dbsession.add(target_tag)
             self.request.dbsession.flush()  # Ensure it gets an ID
             ids_to_delete = selected_ids
-
-        blocked_response = enforce_delete_rate_limit(
-            self.request, records_to_delete=len(ids_to_delete)
-        )
-        if blocked_response:
-            return blocked_response
 
         # Remove associations from selected_tags table for tags to be deleted
         if ids_to_delete:

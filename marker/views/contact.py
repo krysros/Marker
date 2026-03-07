@@ -18,7 +18,6 @@ from ..utils.contact_csv_import import (
 )
 from . import (
     Filter,
-    enforce_delete_rate_limit,
     handle_bulk_selection,
     is_bulk_select_request,
     set_select_all_state,
@@ -233,9 +232,6 @@ class ContactView:
     @view_config(route_name="contact_delete", request_method="POST", permission="edit")
     def delete(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         contact = self.request.context.contact
         stmt = delete(selected_contacts).where(
             selected_contacts.c.contact_id == contact.id
@@ -258,9 +254,6 @@ class ContactView:
     )
     def del_row(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         contact = self.request.context.contact
         self.request.dbsession.delete(contact)
         log.info(_("The user %s deleted the company") % self.request.identity.name)

@@ -44,7 +44,6 @@ from ..utils.paginator import get_paginator
 from ..utils.website_autofill import company_autofill_from_website
 from . import (
     Filter,
-    enforce_delete_rate_limit,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -1186,9 +1185,6 @@ class CompanyView:
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         company = self.request.context.company
         stmt_1 = delete(companies_stars).where(
             companies_stars.c.company_id == company.id
@@ -1215,9 +1211,6 @@ class CompanyView:
     )
     def del_row(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         company = self.request.context.company
         self.request.dbsession.delete(company)
         log.info(_("The user %s deleted the company") % self.request.identity.name)

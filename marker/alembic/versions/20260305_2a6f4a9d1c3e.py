@@ -1,7 +1,7 @@
 """Set ON DELETE CASCADE on contacts.company_id
 
 Revision ID: 2a6f4a9d1c3e
-Revises: 7f2b2cf8f4b1
+Revises: 163919059dcc
 Create Date: 2026-03-05 12:30:00.000000
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "2a6f4a9d1c3e"
-down_revision = "7f2b2cf8f4b1"
+down_revision = "163919059dcc"
 branch_labels = None
 depends_on = None
 

@@ -46,7 +46,6 @@ from ..utils.paginator import get_paginator
 from ..utils.website_autofill import project_autofill_from_website
 from . import (
     Filter,
-    enforce_delete_rate_limit,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -1057,9 +1056,6 @@ class ProjectView:
     )
     def delete(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         project = self.request.context.project
         stmt_1 = delete(projects_stars).where(projects_stars.c.project_id == project.id)
         stmt_2 = delete(selected_projects).where(
@@ -1084,9 +1080,6 @@ class ProjectView:
     )
     def del_row(self):
         _ = self.request.translate
-        blocked_response = enforce_delete_rate_limit(self.request, records_to_delete=1)
-        if blocked_response:
-            return blocked_response
         project = self.request.context.project
         self.request.dbsession.delete(project)
         log.info(_("The user %s deleted the project") % self.request.identity.name)
