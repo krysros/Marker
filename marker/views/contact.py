@@ -31,7 +31,6 @@ GOOGLE_CONTACTS_REQUIRED_COLUMNS = {
     "E-mail 1 - Value": ("E-mail 1 - Value",),
     "Phone 1 - Value": ("Phone 1 - Value",),
     "Labels": ("Labels", "Group Membership"),
-    "Notes": ("Notes",),
 }
 
 
@@ -440,7 +439,7 @@ class ContactView:
             if not reader:
                 self.request.session.flash(
                     _(
-                        "warning:Could not read CSV file. Please upload a valid UTF-8 CSV."
+                        "warning:Could not read CSV file. Please upload a valid UTF-8, comma-separated CSV."
                     )
                 )
                 return HTTPFound(location=referrer)
@@ -499,6 +498,9 @@ class ContactView:
             dialect = csv.Sniffer().sniff(sample, delimiters=",;\t")
         except csv.Error:
             dialect = csv.excel
+
+        if getattr(dialect, "delimiter", ",") != ",":
+            return None, set()
 
         reader = csv.DictReader(f, dialect=dialect)
         if reader.fieldnames:

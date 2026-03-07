@@ -28,18 +28,30 @@ def test_google_contacts_header_aliases_are_accepted(dummy_request):
         "E-mail 1 - Value",
         "Phone 1 - Value",
         "Group Membership",
-        "Notes",
     }
 
     assert view._missing_google_contacts_columns(headers) == []
 
 
-def test_parse_csv_supports_utf8_bom_and_semicolon(dummy_request):
+def test_google_contacts_header_notes_is_optional(dummy_request):
+    view = ContactView(dummy_request)
+    headers = {
+        "Organization 1 - Name",
+        "Given Name",
+        "E-mail 1 - Value",
+        "Phone 1 - Value",
+        "Group Membership",
+    }
+
+    assert view._missing_google_contacts_columns(headers) == []
+
+
+def test_parse_csv_supports_utf8_bom_and_comma_separator(dummy_request):
     view = ContactView(dummy_request)
     payload = (
-        "\ufeffOrganization 1 - Name;Given Name;E-mail 1 - Value;"
-        "Phone 1 - Value;Group Membership;Notes\n"
-        "Acme;Jan;jan@example.com;123456789;Klienci ::: * My Contacts;Wazny\n"
+        "\ufeffOrganization 1 - Name,Given Name,E-mail 1 - Value,"
+        "Phone 1 - Value,Group Membership,Notes\n"
+        "Acme,Jan,jan@example.com,123456789,Klienci ::: * My Contacts,Wazny\n"
     ).encode("utf-8")
 
     reader, headers = view._parse_csv(BytesIO(payload))
@@ -50,6 +62,20 @@ def test_parse_csv_supports_utf8_bom_and_semicolon(dummy_request):
     row = next(reader)
     assert row["Organization 1 - Name"] == "Acme"
     assert row["Given Name"] == "Jan"
+
+
+def test_parse_csv_rejects_semicolon_separator(dummy_request):
+    view = ContactView(dummy_request)
+    payload = (
+        "Organization 1 - Name;Given Name;E-mail 1 - Value;"
+        "Phone 1 - Value;Group Membership;Notes\n"
+        "Acme;Jan;jan@example.com;123456789;Klienci ::: * My Contacts;Wazny\n"
+    ).encode("utf-8")
+
+    reader, headers = view._parse_csv(BytesIO(payload))
+
+    assert reader is None
+    assert headers == set()
 
 
 def test_add_row_supports_google_alias_columns(dummy_request, dbsession, monkeypatch):
