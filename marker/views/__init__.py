@@ -22,18 +22,39 @@ def is_bulk_select_request(request):
     return request.method == "POST" and request.params.get("_select_all") == "1"
 
 
+def update_selected_items(selected_items, items, checked):
+    if not items:
+        return
+
+    items_by_id = {
+        item.id: item for item in items if getattr(item, "id", None) is not None
+    }
+    if not items_by_id:
+        return
+
+    if checked:
+        selected_ids = {
+            item.id
+            for item in selected_items
+            if getattr(item, "id", None) is not None
+        }
+        for item_id, item in items_by_id.items():
+            if item_id not in selected_ids:
+                selected_items.append(item)
+        return
+
+    remove_ids = set(items_by_id.keys())
+    selected_items[:] = [
+        item
+        for item in selected_items
+        if getattr(item, "id", None) not in remove_ids
+    ]
+
+
 def apply_bulk_selection(request, stmt, selected_items):
     checked = request.params.get("checked", "false").lower() == "true"
     items = request.dbsession.execute(stmt).scalars().all()
-
-    if checked:
-        for item in items:
-            if item not in selected_items:
-                selected_items.append(item)
-    else:
-        for item in items:
-            if item in selected_items:
-                selected_items.remove(item)
+    update_selected_items(selected_items, items, checked)
 
 
 def _select_all_state_key(request):

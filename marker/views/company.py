@@ -50,6 +50,7 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
+    update_selected_items,
 )
 
 log = logging.getLogger(__name__)
@@ -446,14 +447,7 @@ class CompanyView:
                 items = []
                 selected_items = []
 
-            if checked:
-                for item in items:
-                    if item not in selected_items:
-                        selected_items.append(item)
-            else:
-                for item in items:
-                    if item in selected_items:
-                        selected_items.remove(item)
+            update_selected_items(selected_items, items, checked)
 
             set_select_all_state(self.request, checked)
             return htmx_refresh_response(self.request)
