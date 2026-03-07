@@ -1,10 +1,13 @@
 from io import BytesIO
-from types import SimpleNamespace
 
 from sqlalchemy import select
 
 from marker import models
-from marker.views.contact import ContactView
+from marker.utils.contact_csv_import import (
+    GoogleContactsCsvImporter,
+    missing_google_contacts_columns,
+    parse_google_contacts_csv,
+)
 
 
 def _create_user(dbsession, name):
@@ -20,8 +23,7 @@ def _create_user(dbsession, name):
     return user
 
 
-def test_google_contacts_header_aliases_are_accepted(dummy_request):
-    view = ContactView(dummy_request)
+def test_google_contacts_header_aliases_are_accepted():
     headers = {
         "Organization 1 - Name",
         "Given Name",
@@ -30,11 +32,10 @@ def test_google_contacts_header_aliases_are_accepted(dummy_request):
         "Group Membership",
     }
 
-    assert view._missing_google_contacts_columns(headers) == []
+    assert missing_google_contacts_columns(headers) == []
 
 
-def test_google_contacts_header_notes_is_optional(dummy_request):
-    view = ContactView(dummy_request)
+def test_google_contacts_header_notes_is_optional():
     headers = {
         "Organization 1 - Name",
         "Given Name",
@@ -43,46 +44,46 @@ def test_google_contacts_header_notes_is_optional(dummy_request):
         "Group Membership",
     }
 
-    assert view._missing_google_contacts_columns(headers) == []
+    assert missing_google_contacts_columns(headers) == []
 
 
-def test_parse_csv_supports_utf8_bom_and_comma_separator(dummy_request):
-    view = ContactView(dummy_request)
+def test_parse_csv_supports_utf8_bom_and_comma_separator():
     payload = (
         "\ufeffOrganization 1 - Name,Given Name,E-mail 1 - Value,"
         "Phone 1 - Value,Group Membership,Notes\n"
         "Acme,Jan,jan@example.com,123456789,Klienci ::: * My Contacts,Wazny\n"
     ).encode("utf-8")
 
-    reader, headers = view._parse_csv(BytesIO(payload))
+    reader, headers = parse_google_contacts_csv(BytesIO(payload))
 
     assert reader is not None
-    assert view._missing_google_contacts_columns(headers) == []
+    assert missing_google_contacts_columns(headers) == []
 
     row = next(reader)
     assert row["Organization 1 - Name"] == "Acme"
     assert row["Given Name"] == "Jan"
 
 
-def test_parse_csv_rejects_semicolon_separator(dummy_request):
-    view = ContactView(dummy_request)
+def test_parse_csv_rejects_semicolon_separator():
     payload = (
         "Organization 1 - Name;Given Name;E-mail 1 - Value;"
         "Phone 1 - Value;Group Membership;Notes\n"
         "Acme;Jan;jan@example.com;123456789;Klienci ::: * My Contacts;Wazny\n"
     ).encode("utf-8")
 
-    reader, headers = view._parse_csv(BytesIO(payload))
+    reader, headers = parse_google_contacts_csv(BytesIO(payload))
 
     assert reader is None
     assert headers == set()
 
 
-def test_add_row_supports_google_alias_columns(dummy_request, dbsession, monkeypatch):
-    monkeypatch.setattr("marker.views.contact.location", lambda **kwargs: None)
+def test_add_row_supports_google_alias_columns(dbsession):
     user = _create_user(dbsession, "google-csv-import-user")
-    request = SimpleNamespace(dbsession=dbsession, identity=user)
-    view = ContactView(request)
+    importer = GoogleContactsCsvImporter(
+        dbsession=dbsession,
+        identity=user,
+        geocode=lambda **kwargs: None,
+    )
 
     row = {
         "Organization 1 - Name": "Acme",
@@ -105,7 +106,7 @@ def test_add_row_supports_google_alias_columns(dummy_request, dbsession, monkeyp
         "E-mail 1 - Value": "jan.kowalski@example.com",
     }
 
-    added = view._add_row(row)
+    added = importer.add_row(row)
     dbsession.flush()
 
     assert added is True
@@ -125,12 +126,14 @@ def test_add_row_supports_google_alias_columns(dummy_request, dbsession, monkeyp
 
 
 def test_add_row_skips_duplicate_contact_for_same_company(
-    dummy_request, dbsession, monkeypatch
+    dbsession,
 ):
-    monkeypatch.setattr("marker.views.contact.location", lambda **kwargs: None)
     user = _create_user(dbsession, "google-csv-import-dedup-user")
-    request = SimpleNamespace(dbsession=dbsession, identity=user)
-    view = ContactView(request)
+    importer = GoogleContactsCsvImporter(
+        dbsession=dbsession,
+        identity=user,
+        geocode=lambda **kwargs: None,
+    )
 
     row = {
         "Organization 1 - Name": "Acme",
@@ -153,8 +156,8 @@ def test_add_row_skips_duplicate_contact_for_same_company(
         "E-mail 1 - Value": "jan.kowalski@example.com",
     }
 
-    added_first = view._add_row(row)
-    added_second = view._add_row(row)
+    added_first = importer.add_row(row)
+    added_second = importer.add_row(row)
     dbsession.flush()
 
     assert added_first is True

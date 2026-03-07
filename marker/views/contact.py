@@ -1,6 +1,4 @@
-import csv
 import logging
-from io import StringIO
 from uuid import uuid4
 
 from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
@@ -9,10 +7,15 @@ from sqlalchemy import delete, func, or_, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
-from ..models import Comment, Company, Contact, Project, Tag, selected_contacts
+from ..models import Company, Contact, Project, Tag, selected_contacts
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
+from ..utils.contact_csv_import import (
+    GoogleContactsCsvImporter,
+    missing_google_contacts_columns,
+    parse_google_contacts_csv,
+)
 from . import (
     Filter,
     enforce_delete_rate_limit,
@@ -23,15 +26,6 @@ from . import (
 )
 
 log = logging.getLogger(__name__)
-
-
-GOOGLE_CONTACTS_REQUIRED_COLUMNS = {
-    "Organization Name": ("Organization Name", "Organization 1 - Name"),
-    "First Name": ("First Name", "Given Name"),
-    "E-mail 1 - Value": ("E-mail 1 - Value",),
-    "Phone 1 - Value": ("Phone 1 - Value",),
-    "Labels": ("Labels", "Group Membership"),
-}
 
 
 class ContactView:
@@ -434,7 +428,7 @@ class ContactView:
             if not csv_file:
                 return HTTPFound(location=referrer)
 
-            reader, headers = self._parse_csv(csv_file)
+            reader, headers = parse_google_contacts_csv(csv_file)
 
             if not reader:
                 self.request.session.flash(
@@ -444,7 +438,7 @@ class ContactView:
                 )
                 return HTTPFound(location=referrer)
 
-            missing_columns = self._missing_google_contacts_columns(headers)
+            missing_columns = missing_google_contacts_columns(headers)
             if missing_columns:
                 self.request.session.flash(
                     _(
@@ -455,10 +449,11 @@ class ContactView:
                 )
                 return HTTPFound(location=referrer)
 
+            importer = self._get_csv_importer()
             imported_count = 0
             skipped_count = 0
             for row in reader:
-                if self._add_row(row):
+                if importer.add_row(row):
                     imported_count += 1
                 else:
                     skipped_count += 1
@@ -478,251 +473,9 @@ class ContactView:
             return HTTPFound(location=referrer)
         return {"heading": _("Import CSV"), "form": form}
 
-    def _parse_csv(self, file):
-        try:
-            data = file.read()
-            if isinstance(data, bytes):
-                try:
-                    # utf-8-sig strips BOM when present.
-                    text = data.decode("utf-8-sig")
-                except UnicodeDecodeError:
-                    text = data.decode("utf-8", errors="replace")
-            else:
-                text = str(data)
-        except Exception:
-            return None, set()
-
-        f = StringIO(text)
-        sample = text[:4096]
-        try:
-            dialect = csv.Sniffer().sniff(sample, delimiters=",;\t")
-        except csv.Error:
-            dialect = csv.excel
-
-        if getattr(dialect, "delimiter", ",") != ",":
-            return None, set()
-
-        reader = csv.DictReader(f, dialect=dialect)
-        if reader.fieldnames:
-            reader.fieldnames = [
-                self._normalize_csv_header(header) for header in reader.fieldnames
-            ]
-        headers = set(reader.fieldnames or [])
-        return reader, headers
-
-    def _missing_google_contacts_columns(self, headers):
-        available_headers = {
-            self._normalize_csv_header(header) for header in (headers or [])
-        }
-        missing_columns = []
-
-        for display_name, aliases in GOOGLE_CONTACTS_REQUIRED_COLUMNS.items():
-            if not any(alias in available_headers for alias in aliases):
-                missing_columns.append(display_name)
-
-        return missing_columns
-
-    @staticmethod
-    def _normalize_csv_header(header):
-        if header is None:
-            return ""
-        return str(header).lstrip("\ufeff").strip()
-
-    @staticmethod
-    def _csv_row_value(row, *columns):
-        for column in columns:
-            value = row.get(column)
-            if value is None:
-                continue
-
-            value = value.strip()
-            if value:
-                return value
-
-        for column in columns:
-            value = row.get(column)
-            if value is not None:
-                return value.strip()
-
-        return ""
-
-    @staticmethod
-    def _same_contact_data(contact, name, role, phone, email):
-        return (
-            (contact.name or "") == name
-            and (contact.role or "") == role
-            and (contact.phone or "") == phone
-            and (contact.email or "") == email
+    def _get_csv_importer(self):
+        return GoogleContactsCsvImporter(
+            dbsession=self.request.dbsession,
+            identity=self.request.identity,
+            geocode=location,
         )
-
-    def _company_has_same_contact(self, company, name, role, phone, email):
-        for existing_contact in company.contacts:
-            if self._same_contact_data(
-                existing_contact,
-                name=name,
-                role=role,
-                phone=phone,
-                email=email,
-            ):
-                return True
-
-        existing_contact_id = self.request.dbsession.execute(
-            select(Contact.id)
-            .where(Contact.company_id == company.id)
-            .where(Contact.name == name)
-            .where(func.coalesce(Contact.role, "") == role)
-            .where(func.coalesce(Contact.phone, "") == phone)
-            .where(func.coalesce(Contact.email, "") == email)
-            .limit(1)
-        ).scalar_one_or_none()
-
-        return existing_contact_id is not None
-
-    def _add_row(self, row):
-        # Prepare Company
-
-        company_name = self._csv_row_value(
-            row,
-            "Organization Name",
-            "Organization 1 - Name",
-        )
-
-        if not company_name:
-            return False
-
-        street = self._csv_row_value(row, "Address 1 - Street")
-
-        postcode = self._csv_row_value(row, "Address 1 - Postal Code")
-
-        city = self._csv_row_value(row, "Address 1 - City")
-
-        subdivision = self._csv_row_value(row, "Address 1 - Region")
-
-        country = self._csv_row_value(row, "Address 1 - Country")
-
-        website = self._csv_row_value(row, "Website 1 - Value")
-
-        company = self.request.dbsession.execute(
-            select(Company).filter_by(name=company_name)
-        ).scalar_one_or_none()
-        if not company:
-            company = Company(
-                name=company_name,
-                street=street,
-                postcode=postcode,
-                city=city,
-                subdivision=subdivision,
-                country=country,
-                website=website,
-                color="",
-                NIP="",
-                REGON="",
-                KRS="",
-                court="",
-            )
-            loc = location(
-                street=street,
-                city=city,
-                # state=getattr(
-                #     pycountry.subdivisions.get(code=subdivision), "name", ""
-                # ),
-                country=country,
-                postalcode=postcode,
-            )
-            if loc is not None:
-                company.latitude = loc["lat"]
-                company.longitude = loc["lon"]
-
-            company.created_by = self.request.identity
-            self.request.dbsession.add(company)
-            self.request.dbsession.flush()
-
-        # Prepare Contact
-
-        first_name = self._csv_row_value(row, "First Name", "Given Name", "Name")
-        prefix = self._csv_row_value(row, "Name Prefix")
-        middle_name = self._csv_row_value(row, "Middle Name", "Additional Name")
-        last_name = self._csv_row_value(row, "Last Name", "Family Name")
-        suffix = self._csv_row_value(row, "Name Suffix")
-
-        name_parts = []
-        if prefix:
-            name_parts.append(prefix)
-        if first_name:
-            name_parts.append(first_name.title())
-        if middle_name:
-            name_parts.append(middle_name.title())
-        if last_name:
-            name_parts.append(last_name.title())
-        if suffix:
-            name_parts.append(suffix)
-
-        name = " ".join(name_parts).strip()
-
-        if not name:
-            return False
-
-        role = self._csv_row_value(
-            row,
-            "Organization Title",
-            "Organization 1 - Title",
-        )
-        if not role:
-            role = self._csv_row_value(
-                row,
-                "Organization Department",
-                "Organization 1 - Department",
-            )
-
-        phone = self._csv_row_value(row, "Phone 1 - Value")
-
-        email = self._csv_row_value(row, "E-mail 1 - Value")
-
-        if not "@" in email:
-            email = ""
-
-        if self._company_has_same_contact(company, name, role, phone, email):
-            return False
-
-        # Prepare Tags
-
-        labels = self._csv_row_value(row, "Labels", "Group Membership")
-        tags = [
-            label.strip()
-            for label in labels.split(":::")
-            if label.strip() and not label.strip().startswith("*")
-        ]
-
-        for tag_name in tags:
-            tag = self.request.dbsession.execute(
-                select(Tag).filter_by(name=tag_name)
-            ).scalar_one_or_none()
-            if not tag:
-                tag = Tag(tag_name)
-                tag.created_by = self.request.identity
-            if tag not in company.tags:
-                company.tags.append(tag)
-
-        # Prepare Comments
-
-        comment = self._csv_row_value(row, "Notes")
-
-        if comment:
-            comment = Comment(comment=comment)
-            comment.created_by = self.request.identity
-            company.comments.append(comment)
-
-        contact = Contact(
-            name=name,
-            role=role,
-            phone=phone,
-            email=email,
-            color="",
-        )
-        contact.created_by = self.request.identity
-
-        if contact not in company.contacts:
-            company.contacts.append(contact)
-            return True
-
-        return False
