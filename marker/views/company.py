@@ -4,7 +4,7 @@ from uuid import uuid4
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import and_, delete, func, select
+from sqlalchemy import delete, func, select
 
 from ..forms import (
     ActivityForm,
@@ -50,6 +50,7 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
+    toggle_selected_item,
 )
 
 log = logging.getLogger(__name__)
@@ -341,6 +342,18 @@ class CompanyView:
     def view(self):
         _ = self.request.translate
         company = self.request.context.company
+        is_company_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_companies)
+                .where(
+                    selected_companies.c.user_id == self.request.identity.id,
+                    selected_companies.c.company_id == company.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         route_name = self.request.matched_route.name
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -351,9 +364,9 @@ class CompanyView:
         countries = dict(select_countries())
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
-        projects_assoc = list(company.projects)
-        contacts = list(company.contacts)
-        tags = list(company.tags)
+        projects_assoc = []
+        contacts = []
+        tags = []
         bulk_stmt = None
         bulk_selected_items = None
 
@@ -456,6 +469,7 @@ class CompanyView:
 
         return {
             "company": company,
+            "is_company_selected": is_company_selected,
             "courts": courts,
             "countries": countries,
             "stages": stages,
@@ -961,17 +975,30 @@ class CompanyView:
         colors = dict(COLORS)
         q = {}
 
+        # Compute similar companies through association-table self-join.
+        # This avoids correlated subqueries over tags that are expensive on large datasets.
+        base_tags = companies_tags.alias("base_tags")
+        other_tags = companies_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.company_id.label("company_id"),
+                func.count(func.distinct(base_tags.c.tag_id)).label("shared_tags"),
+            )
+            .select_from(
+                base_tags.join(other_tags, base_tags.c.tag_id == other_tags.c.tag_id)
+            )
+            .where(
+                base_tags.c.company_id == company.id,
+                other_tags.c.company_id != company.id,
+            )
+            .group_by(other_tags.c.company_id)
+            .subquery()
+        )
+
         stmt = (
             select(Company)
-            .join(Tag, Company.tags)
-            .filter(
-                and_(
-                    Tag.companies.any(Company.id == company.id),
-                    Company.id != company.id,
-                )
-            )
-            .group_by(Company)
-            .order_by(func.count(Tag.companies.any(Company.id == company.id)).desc())
+            .join(similarity, similarity.c.company_id == Company.id)
+            .order_by(similarity.c.shared_tags.desc(), Company.id)
         )
 
         if color:
@@ -1248,16 +1275,15 @@ class CompanyView:
         permission="view",
     )
     def check(self):
-        company = self.request.context.company
-        selected_companies = self.request.identity.selected_companies
+        company_id = self.request.context.company.id
         set_select_all_state(self.request, False)
-
-        if company in selected_companies:
-            selected_companies.remove(company)
-            return {"checked": False}
-        else:
-            selected_companies.append(company)
-            return {"checked": True}
+        checked = toggle_selected_item(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            company_id,
+        )
+        return {"checked": checked}
 
     @view_config(
         route_name="company_select",

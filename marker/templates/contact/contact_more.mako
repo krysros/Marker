@@ -15,7 +15,7 @@
 % else:
 <tr class="table-${contact.color}">
 % endif
-  <td>${checkbox.checkbox(contact, selected=request.identity.selected_contacts, url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
+  <td>${checkbox.checkbox(contact, selected_ids=selected_ids('selected_contacts'), url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
   <td>
     <a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a><br>
     <small class="text-body-secondary">${_("Created at")}: ${contact.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>

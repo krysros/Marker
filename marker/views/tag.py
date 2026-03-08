@@ -41,6 +41,7 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
+    toggle_selected_item,
 )
 
 log = logging.getLogger(__name__)
@@ -190,9 +191,26 @@ class TagView:
     )
     def view(self):
         tag = self.request.context.tag
+        is_tag_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_tags)
+                .where(
+                    selected_tags.c.user_id == self.request.identity.id,
+                    selected_tags.c.tag_id == tag.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         self.count_companies = tag.count_companies
         self.count_projects = tag.count_projects
-        return {"tag": tag, "title": tag.name, "tag_pills": self.pills(tag)}
+        return {
+            "tag": tag,
+            "is_tag_selected": is_tag_selected,
+            "title": tag.name,
+            "tag_pills": self.pills(tag),
+        }
 
     @view_config(
         route_name="tag_map_companies",
@@ -974,16 +992,15 @@ class TagView:
         permission="view",
     )
     def check(self):
-        tag = self.request.context.tag
-        selected_tags = self.request.identity.selected_tags
+        tag_id = self.request.context.tag.id
         set_select_all_state(self.request, False)
-
-        if tag in selected_tags:
-            selected_tags.remove(tag)
-            return {"checked": False}
-        else:
-            selected_tags.append(tag)
-            return {"checked": True}
+        checked = toggle_selected_item(
+            self.request,
+            selected_tags,
+            selected_tags.c.tag_id,
+            tag_id,
+        )
+        return {"checked": checked}
 
     @view_config(
         route_name="tag_select",

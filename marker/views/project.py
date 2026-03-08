@@ -5,7 +5,7 @@ from uuid import uuid4
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import and_, delete, func, select
+from sqlalchemy import delete, func, select
 
 from ..forms import (
     ActivityForm,
@@ -39,6 +39,7 @@ from ..models import (
     Tag,
     User,
     projects_stars,
+    projects_tags,
     selected_projects,
 )
 from ..utils.geo import location
@@ -51,6 +52,7 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
+    toggle_selected_item,
 )
 
 log = logging.getLogger(__name__)
@@ -650,6 +652,18 @@ class ProjectView:
     def view(self):
         _ = self.request.translate
         project = self.request.context.project
+        is_project_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_projects)
+                .where(
+                    selected_projects.c.user_id == self.request.identity.id,
+                    selected_projects.c.project_id == project.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         route_name = self.request.matched_route.name
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -660,9 +674,9 @@ class ProjectView:
         countries = dict(select_countries())
         company_roles = dict(COMPANY_ROLES)
         delivery_methods = dict(PROJECT_DELIVERY_METHODS)
-        companies_assoc = list(project.companies)
-        contacts = list(project.contacts)
-        tags = list(project.tags)
+        companies_assoc = []
+        contacts = []
+        tags = []
         bulk_stmt = None
         bulk_selected_items = None
 
@@ -761,6 +775,7 @@ class ProjectView:
 
         return {
             "project": project,
+            "is_project_selected": is_project_selected,
             "stages": stages,
             "countries": countries,
             "company_roles": company_roles,
@@ -803,17 +818,30 @@ class ProjectView:
         project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
         q = {}
 
+        # Compute similar projects through association-table self-join.
+        # This avoids correlated subqueries over tags that are expensive on large datasets.
+        base_tags = projects_tags.alias("base_tags")
+        other_tags = projects_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.project_id.label("project_id"),
+                func.count(func.distinct(base_tags.c.tag_id)).label("shared_tags"),
+            )
+            .select_from(
+                base_tags.join(other_tags, base_tags.c.tag_id == other_tags.c.tag_id)
+            )
+            .where(
+                base_tags.c.project_id == project.id,
+                other_tags.c.project_id != project.id,
+            )
+            .group_by(other_tags.c.project_id)
+            .subquery()
+        )
+
         stmt = (
             select(Project)
-            .join(Tag, Project.tags)
-            .filter(
-                and_(
-                    Tag.projects.any(Project.id == project.id),
-                    Project.id != project.id,
-                )
-            )
-            .group_by(Project)
-            .order_by(func.count(Tag.projects.any(Project.id == project.id)).desc())
+            .join(similarity, similarity.c.project_id == Project.id)
+            .order_by(similarity.c.shared_tags.desc(), Project.id)
         )
 
         if status == "in_progress":
@@ -1251,16 +1279,15 @@ class ProjectView:
         permission="view",
     )
     def check(self):
-        project = self.request.context.project
-        selected_projects = self.request.identity.selected_projects
+        project_id = self.request.context.project.id
         set_select_all_state(self.request, False)
-
-        if project in selected_projects:
-            selected_projects.remove(project)
-            return {"checked": False}
-        else:
-            selected_projects.append(project)
-            return {"checked": True}
+        checked = toggle_selected_item(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            project_id,
+        )
+        return {"checked": checked}
 
     @view_config(
         route_name="project_select",

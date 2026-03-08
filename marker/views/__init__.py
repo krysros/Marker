@@ -168,6 +168,44 @@ def apply_bulk_selection(request, stmt, selected_items):
     mark_changed(request.dbsession)
 
 
+def toggle_selected_item(request, selection_table, selected_column, item_id):
+    if item_id is None:
+        return False
+
+    user_column = selection_table.c.user_id
+    user_id = request.identity.id
+    exists = (
+        request.dbsession.execute(
+            select(1)
+            .select_from(selection_table)
+            .where(user_column == user_id, selected_column == item_id)
+            .limit(1)
+        ).first()
+        is not None
+    )
+
+    if exists:
+        request.dbsession.execute(
+            delete(selection_table).where(
+                user_column == user_id,
+                selected_column == item_id,
+            )
+        )
+        mark_changed(request.dbsession)
+        return False
+
+    request.dbsession.execute(
+        insert(selection_table).values(
+            {
+                selected_column.name: item_id,
+                user_column.name: user_id,
+            }
+        )
+    )
+    mark_changed(request.dbsession)
+    return True
+
+
 def _select_all_state_key(request):
     path, _, qs = request.path_qs.partition("?")
     params = [

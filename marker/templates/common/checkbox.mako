@@ -1,9 +1,9 @@
-<%def name="checkbox(obj, selected, url)">
+<%def name="checkbox(obj, url, selected_ids=None, is_checked=False)">
 <input class="form-check-input marker-select-item"
        type="checkbox"
        value="${obj.id}"
        autocomplete="off"
-       ${"checked" if obj in selected else ""}
+       ${"checked" if is_checked or (selected_ids is not None and obj.id in selected_ids) else ""}
        hx-post="${url}"
        hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
        hx-trigger="click"

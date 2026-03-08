@@ -22,6 +22,7 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
+    toggle_selected_item,
 )
 
 log = logging.getLogger(__name__)
@@ -232,10 +233,27 @@ class ContactView:
     )
     def view(self):
         contact = self.request.context.contact
+        is_contact_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_contacts)
+                .where(
+                    selected_contacts.c.user_id == self.request.identity.id,
+                    selected_contacts.c.contact_id == contact.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         template = vcard_template()
         vcard = template.render(contact=contact)
         vcard = vcard.replace("\r", r"\r").replace("\n", r"\n")
-        return {"contact": contact, "title": contact.name, "vcard": vcard}
+        return {
+            "contact": contact,
+            "is_contact_selected": is_contact_selected,
+            "title": contact.name,
+            "vcard": vcard,
+        }
 
     @view_config(
         route_name="contact_edit", renderer="contact_form.mako", permission="edit"
@@ -422,16 +440,15 @@ class ContactView:
         permission="view",
     )
     def check(self):
-        contact = self.request.context.contact
-        selected_contacts = self.request.identity.selected_contacts
+        contact_id = self.request.context.contact.id
         set_select_all_state(self.request, False)
-
-        if contact in selected_contacts:
-            selected_contacts.remove(contact)
-            return {"checked": False}
-        else:
-            selected_contacts.append(contact)
-            return {"checked": True}
+        checked = toggle_selected_item(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            contact_id,
+        )
+        return {"checked": checked}
 
     @view_config(
         route_name="contact_import_csv",

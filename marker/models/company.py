@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from slugify import slugify
-from sqlalchemy import ForeignKey, and_, func, select
+from sqlalchemy import ForeignKey, func, select
 from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import Activity, companies_stars, companies_tags
@@ -126,14 +126,14 @@ class Company(Base):
 
     @property
     def count_similar(self) -> int:
+        base_tags = companies_tags.alias("base_tags")
+        other_tags = companies_tags.alias("other_tags")
         return object_session(self).scalar(
-            select(func.count())
-            .select_from(Company)
-            .join(Tag, Company.tags)
-            .filter(
-                and_(
-                    Tag.companies.any(Company.id == self.id),
-                    Company.id != self.id,
-                )
+            select(func.count(func.distinct(other_tags.c.company_id))).select_from(
+                base_tags.join(other_tags, base_tags.c.tag_id == other_tags.c.tag_id)
+            )
+            .where(
+                base_tags.c.company_id == self.id,
+                other_tags.c.company_id != self.id,
             )
         )
