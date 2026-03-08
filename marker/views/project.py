@@ -51,7 +51,6 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
-    update_selected_items,
 )
 
 log = logging.getLogger(__name__)
@@ -664,6 +663,8 @@ class ProjectView:
         companies_assoc = list(project.companies)
         contacts = list(project.contacts)
         tags = list(project.tags)
+        bulk_stmt = None
+        bulk_selected_items = None
 
         if route_name == "project_companies":
             sort_criteria = {
@@ -698,6 +699,8 @@ class ProjectView:
             else:
                 stmt = stmt.order_by(order_column.desc(), Activity.company_id)
             companies_assoc = self.request.dbsession.execute(stmt).scalars().all()
+            bulk_stmt = stmt
+            bulk_selected_items = self.request.identity.selected_companies
 
         elif route_name == "project_contacts":
             sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -717,6 +720,8 @@ class ProjectView:
             else:
                 stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
             contacts = self.request.dbsession.execute(stmt).scalars().all()
+            bulk_stmt = stmt
+            bulk_selected_items = self.request.identity.selected_contacts
         elif route_name == "project_tags":
             sort_criteria = {
                 "name": _("Tag"),
@@ -739,24 +744,17 @@ class ProjectView:
             else:
                 stmt = stmt.order_by(sort_column(Tag, _sort).desc(), Tag.id)
             tags = self.request.dbsession.execute(stmt).scalars().all()
+            bulk_stmt = stmt
+            bulk_selected_items = self.request.identity.selected_tags
 
         if is_bulk_select_request(self.request):
             checked = self.request.params.get("checked", "false").lower() == "true"
-
-            if route_name == "project_companies":
-                items = [assoc.project for assoc in project.companies]
-                selected_items = self.request.identity.selected_projects
-            elif route_name == "project_tags":
-                items = list(project.tags)
-                selected_items = self.request.identity.selected_tags
-            elif route_name == "project_contacts":
-                items = list(project.contacts)
-                selected_items = self.request.identity.selected_contacts
-            else:
-                items = []
-                selected_items = []
-
-            update_selected_items(selected_items, items, checked)
+            if bulk_stmt is not None and bulk_selected_items is not None:
+                return handle_bulk_selection(
+                    self.request,
+                    bulk_stmt,
+                    bulk_selected_items,
+                )
 
             set_select_all_state(self.request, checked)
             return htmx_refresh_response(self.request)

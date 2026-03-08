@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import Column, ForeignKey, Integer, Table
+from sqlalchemy import Column, ForeignKey, Index, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .meta import Base
@@ -146,4 +146,29 @@ selected_contacts = Table(
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
     ),
+)
+
+
+Index(
+    "ix_selected_companies_user_company",
+    selected_companies.c.user_id,
+    selected_companies.c.company_id,
+)
+
+Index(
+    "ix_selected_projects_user_project",
+    selected_projects.c.user_id,
+    selected_projects.c.project_id,
+)
+
+Index(
+    "ix_selected_tags_user_tag",
+    selected_tags.c.user_id,
+    selected_tags.c.tag_id,
+)
+
+Index(
+    "ix_selected_contacts_user_contact",
+    selected_contacts.c.user_id,
+    selected_contacts.c.contact_id,
 )

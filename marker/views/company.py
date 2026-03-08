@@ -37,6 +37,7 @@ from ..models import (
     Tag,
     User,
     companies_stars,
+    companies_tags,
     selected_companies,
 )
 from ..utils.geo import location
@@ -49,7 +50,6 @@ from . import (
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
-    update_selected_items,
 )
 
 log = logging.getLogger(__name__)
@@ -354,6 +354,8 @@ class CompanyView:
         projects_assoc = list(company.projects)
         contacts = list(company.contacts)
         tags = list(company.tags)
+        bulk_stmt = None
+        bulk_selected_items = None
 
         if route_name == "company_projects":
             sort_criteria = {
@@ -388,6 +390,8 @@ class CompanyView:
             else:
                 stmt = stmt.order_by(order_column.desc(), Activity.project_id)
             projects_assoc = self.request.dbsession.execute(stmt).scalars().all()
+            bulk_stmt = stmt
+            bulk_selected_items = self.request.identity.selected_projects
 
         elif route_name == "company_contacts":
             sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -407,6 +411,8 @@ class CompanyView:
             else:
                 stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
             contacts = self.request.dbsession.execute(stmt).scalars().all()
+            bulk_stmt = stmt
+            bulk_selected_items = self.request.identity.selected_contacts
         elif route_name == "company_tags":
             sort_criteria = {
                 "name": _("Tag"),
@@ -423,30 +429,27 @@ class CompanyView:
                 _order = "asc"
                 q["order"] = _order
 
-            stmt = select(Tag).filter(Tag.companies.any(Company.id == company.id))
+            stmt = (
+                select(Tag)
+                .join(companies_tags)
+                .filter(companies_tags.c.company_id == company.id)
+            )
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Tag, _sort).asc(), Tag.id)
             else:
                 stmt = stmt.order_by(sort_column(Tag, _sort).desc(), Tag.id)
             tags = self.request.dbsession.execute(stmt).scalars().all()
+            bulk_stmt = stmt
+            bulk_selected_items = self.request.identity.selected_tags
 
         if is_bulk_select_request(self.request):
             checked = self.request.params.get("checked", "false").lower() == "true"
-
-            if route_name == "company_projects":
-                items = [assoc.project for assoc in company.projects]
-                selected_items = self.request.identity.selected_projects
-            elif route_name == "company_tags":
-                items = list(company.tags)
-                selected_items = self.request.identity.selected_tags
-            elif route_name == "company_contacts":
-                items = list(company.contacts)
-                selected_items = self.request.identity.selected_contacts
-            else:
-                items = []
-                selected_items = []
-
-            update_selected_items(selected_items, items, checked)
+            if bulk_stmt is not None and bulk_selected_items is not None:
+                return handle_bulk_selection(
+                    self.request,
+                    bulk_stmt,
+                    bulk_selected_items,
+                )
 
             set_select_all_state(self.request, checked)
             return htmx_refresh_response(self.request)
