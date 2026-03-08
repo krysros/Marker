@@ -30,7 +30,7 @@ class CommentView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)

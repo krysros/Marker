@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
 
 from ..forms import (
     CommentFilterForm,
@@ -220,13 +220,15 @@ class UserView:
         return contact_color or object_color or ""
 
     def _filter_tags_by_category(self, stmt, category, q=None):
-        normalized_category = "projects" if category == "projects" else "companies"
+        normalized_category = (
+            category if category in {"companies", "projects"} else ""
+        )
         if normalized_category == "projects":
             stmt = stmt.filter(Tag.projects.any())
-        else:
+        elif normalized_category == "companies":
             stmt = stmt.filter(Tag.companies.any())
 
-        if q is not None:
+        if q is not None and normalized_category:
             q["category"] = normalized_category
 
         return stmt, normalized_category
@@ -526,7 +528,7 @@ class UserView:
     def comments(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
@@ -603,7 +605,7 @@ class UserView:
     def tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -1315,7 +1317,7 @@ class UserView:
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -1371,6 +1373,23 @@ class UserView:
                     Contact.project.has(Project.subdivision.in_(subdivision))
                 )
                 q["subdivision"] = list(subdivision)
+        else:
+            if country:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.country == country),
+                        Contact.project.has(Project.country == country),
+                    )
+                )
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.subdivision.in_(subdivision)),
+                        Contact.project.has(Project.subdivision.in_(subdivision)),
+                    )
+                )
+                q["subdivision"] = list(subdivision)
 
         if color:
             stmt = stmt.filter(Contact.color == color)
@@ -1388,12 +1407,21 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
-            else:
+            elif category == "companies":
                 stmt = stmt.join(Contact.company)
                 if _order == "asc":
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+                relation_sort = func.coalesce(
+                    getattr(Project, _sort), getattr(Company, _sort)
+                )
+                if _order == "asc":
+                    stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -2194,7 +2222,7 @@ class UserView:
     def selected_tags(self):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
-        category = self.request.params.get("category")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -2320,7 +2348,7 @@ class UserView:
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -2381,6 +2409,23 @@ class UserView:
                     Contact.project.has(Project.subdivision.in_(subdivision))
                 )
                 q["subdivision"] = list(subdivision)
+        else:
+            if country:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.country == country),
+                        Contact.project.has(Project.country == country),
+                    )
+                )
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.subdivision.in_(subdivision)),
+                        Contact.project.has(Project.subdivision.in_(subdivision)),
+                    )
+                )
+                q["subdivision"] = list(subdivision)
 
         if color:
             stmt = stmt.filter(Contact.color == color)
@@ -2393,12 +2438,21 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
-            else:
+            elif category == "companies":
                 stmt = stmt.join(Contact.company)
                 if _order == "asc":
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+                relation_sort = func.coalesce(
+                    getattr(Project, _sort), getattr(Company, _sort)
+                )
+                if _order == "asc":
+                    stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)

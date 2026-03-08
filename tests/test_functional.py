@@ -1,6 +1,31 @@
 from marker import models
 
 
+def _assert_category_select_has_default_all(page_text):
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(page_text, "html.parser")
+    category_select = soup.find("select", {"name": "category"})
+    assert category_select is not None
+
+    options = category_select.find_all("option")
+    option_map = {option.get("value", ""): option.get_text(strip=True) for option in options}
+
+    selected_value = None
+    for option in options:
+        if option.has_attr("selected"):
+            selected_value = option.get("value", "")
+            break
+
+    if selected_value is None and options:
+        selected_value = options[0].get("value", "")
+
+    assert option_map.get("") == "All"
+    assert option_map.get("companies") == "Companies"
+    assert option_map.get("projects") == "Projects"
+    assert selected_value == ""
+
+
 def test_my_view_success(testapp, dbsession):
     model = models.user.User(
         name="admin",
@@ -161,6 +186,250 @@ def test_trash_shortcut_script_and_single_button(testapp, dbsession):
     assert (
         "keyboard shortcuts for pages with a single green plus or red trash" in res.text
     )
+
+
+def test_category_filter_defaults_to_all_across_category_views(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="category-all-user",
+        password="admin",
+        fullname="Category All User",
+        email="category.all.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Category All Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Category All Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    company_contact = models.contact.Contact(
+        name="Category All Company Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    company_contact.created_by = user
+    company_contact.company = company
+
+    project_contact = models.contact.Contact(
+        name="Category All Project Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    project_contact.created_by = user
+    project_contact.project = project
+
+    company_comment = models.comment.Comment("Category All Company Comment")
+    company_comment.created_by = user
+    company_comment.company = company
+
+    project_comment = models.comment.Comment("Category All Project Comment")
+    project_comment.created_by = user
+    project_comment.project = project
+
+    company_tag = models.tag.Tag(name="CategoryAllCompanyTag")
+    company_tag.created_by = user
+    company_tag.companies.append(company)
+
+    project_tag = models.tag.Tag(name="CategoryAllProjectTag")
+    project_tag.created_by = user
+    project_tag.projects.append(project)
+
+    dbsession.add_all(
+        [
+            company,
+            project,
+            company_contact,
+            project_contact,
+            company_comment,
+            project_comment,
+            company_tag,
+            project_tag,
+        ]
+    )
+
+    user.selected_contacts.append(company_contact)
+    user.selected_contacts.append(project_contact)
+    user.selected_tags.append(company_tag)
+    user.selected_tags.append(project_tag)
+
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "category-all-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    pages_with_category_filter = [
+        "/tag",
+        "/comment",
+        "/contact",
+        f"/user/{user.name}/comments",
+        f"/user/{user.name}/tags",
+        f"/user/{user.name}/contacts",
+        f"/user/{user.name}/selected_tags",
+        f"/user/{user.name}/selected_contacts",
+    ]
+
+    for page_url in pages_with_category_filter:
+        response = testapp.get(page_url, status=200)
+        _assert_category_select_has_default_all(response.text)
+
+
+def test_default_all_category_shows_company_and_project_records(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="category-all-content-user",
+        password="admin",
+        fullname="Category All Content User",
+        email="category.all.content@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Category Content Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Category Content Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    company_comment = models.comment.Comment("Company default-all comment")
+    company_comment.created_by = user
+    company_comment.company = company
+
+    project_comment = models.comment.Comment("Project default-all comment")
+    project_comment.created_by = user
+    project_comment.project = project
+
+    company_contact = models.contact.Contact(
+        name="Company default-all contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    company_contact.created_by = user
+    company_contact.company = company
+
+    project_contact = models.contact.Contact(
+        name="Project default-all contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    project_contact.created_by = user
+    project_contact.project = project
+
+    company_tag = models.tag.Tag(name="Company default-all tag")
+    company_tag.created_by = user
+    company_tag.companies.append(company)
+
+    project_tag = models.tag.Tag(name="Project default-all tag")
+    project_tag.created_by = user
+    project_tag.projects.append(project)
+
+    dbsession.add_all(
+        [
+            company,
+            project,
+            company_comment,
+            project_comment,
+            company_contact,
+            project_contact,
+            company_tag,
+            project_tag,
+        ]
+    )
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "category-all-content-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    comments_page = testapp.get("/comment", status=200)
+    assert "Company default-all comment" in comments_page.text
+    assert "Project default-all comment" in comments_page.text
+
+    contacts_page = testapp.get("/contact", status=200)
+    assert "Company default-all contact" in contacts_page.text
+    assert "Project default-all contact" in contacts_page.text
+
+    tags_all_page = testapp.get("/tag", status=200)
+    _assert_category_select_has_default_all(tags_all_page.text)
+    assert "Company default-all tag" in tags_all_page.text
+    assert "Project default-all tag" in tags_all_page.text
+
+    tags_companies_page = testapp.get("/tag", params={"category": "companies"}, status=200)
+    assert "Company default-all tag" in tags_companies_page.text
+    assert "Project default-all tag" not in tags_companies_page.text
+
+    tags_projects_page = testapp.get("/tag", params={"category": "projects"}, status=200)
+    assert "Company default-all tag" not in tags_projects_page.text
+    assert "Project default-all tag" in tags_projects_page.text
 
 def test_company_website_autofill_supports_developer_descriptors(
     testapp, dbsession, monkeypatch

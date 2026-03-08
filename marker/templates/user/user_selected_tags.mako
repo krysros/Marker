@@ -26,7 +26,7 @@
         <label class="form-label" for="category">${_("Category")}</label>
         <select class="form-control" id="category" name="category">
           % for k, v in categories.items():
-            <option value="${k}" ${'selected' if q.get('category', 'companies') == k else ''}>${v}</option>
+            <option value="${k}" ${'selected' if q.get('category', '') == k else ''}>${v}</option>
           % endfor
         </select>
       </div>

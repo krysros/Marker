@@ -9,10 +9,12 @@
         <th>${_("Role")}</th>
         <th>${_("Phone")}</th>
         <th>${_("Email")}</th>
-        % if q["category"] == "companies":
+        % if q.get("category") == "companies":
         <th>${_("Company")}</th>
-        % elif q["category"] == "projects":
+        % elif q.get("category") == "projects":
         <th>${_("Project")}</th>
+        % else:
+        <th>${_("Category")}</th>
         % endif
         <th>${_("City")}</th>
         <th>${_("Action")}</th>

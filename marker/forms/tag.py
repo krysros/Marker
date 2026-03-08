@@ -1,9 +1,10 @@
 from sqlalchemy import select
-from wtforms import Form, StringField
+from wtforms import Form, HiddenField, SelectField, StringField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Tag
 from .filters import strip_filter
+from .select import CATEGORIES
 from .ts import TranslationString as _
 
 
@@ -39,6 +40,11 @@ class TagForm(Form):
 
 class TagSearchForm(Form):
     name = StringField(_("Name"), filters=[strip_filter])
+
+
+class TagFilterForm(Form):
+    name = HiddenField(_("Name"), filters=[strip_filter])
+    category = SelectField(_("Category"), choices=CATEGORIES)
 
 
 class TagLinkForm(Form):

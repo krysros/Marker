@@ -35,6 +35,7 @@ companies_tags = Table(
         "tag_id",
         Integer,
         ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -46,11 +47,13 @@ projects_tags = Table(
         "project_id",
         Integer,
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "tag_id",
         Integer,
         ForeignKey("tags.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 

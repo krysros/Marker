@@ -75,7 +75,7 @@ class ContactView:
         subdivision = self.request.params.getall("subdivision")
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
-        category = self.request.params.get("category", "companies")
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -122,6 +122,23 @@ class ContactView:
                     Contact.project.has(Project.subdivision.in_(subdivision))
                 )
                 q["subdivision"] = list(subdivision)
+        else:
+            if country:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.country == country),
+                        Contact.project.has(Project.country == country),
+                    )
+                )
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.subdivision.in_(subdivision)),
+                        Contact.project.has(Project.subdivision.in_(subdivision)),
+                    )
+                )
+                q["subdivision"] = list(subdivision)
 
         if color:
             stmt = stmt.filter(Contact.color == color)
@@ -137,12 +154,21 @@ class ContactView:
                     stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
-            else:
+            elif category == "companies":
                 stmt = stmt.join(Contact.company)
                 if _order == "asc":
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+                relation_sort = func.coalesce(
+                    getattr(Project, _sort), getattr(Company, _sort)
+                )
+                if _order == "asc":
+                    stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
         elif _sort == "color":
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)

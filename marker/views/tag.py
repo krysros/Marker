@@ -10,10 +10,12 @@ from ..forms import (
     CompanyLinkForm,
     ProjectFilterForm,
     ProjectLinkForm,
+    TagFilterForm,
     TagForm,
     TagSearchForm,
 )
 from ..forms.select import (
+    CATEGORIES,
     COLORS,
     ORDER_CRITERIA,
     SORT_CRITERIA,
@@ -25,7 +27,9 @@ from ..models import (
     Project,
     Tag,
     companies_stars,
+    companies_tags,
     projects_stars,
+    projects_tags,
     selected_tags,
 )
 from ..utils.export import response_xlsx
@@ -92,11 +96,13 @@ class TagView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
+        category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
         sort_criteria["name"] = self.request.translate("Tag")
         order_criteria = dict(ORDER_CRITERIA)
+        categories = dict(CATEGORIES)
         q = {}
 
         stmt = select(Tag)
@@ -104,6 +110,23 @@ class TagView:
         if name:
             stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
             q["name"] = name
+
+        if category == "companies":
+            company_link_exists = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.tag_id == Tag.id)
+                .exists()
+            )
+            stmt = stmt.where(company_link_exists)
+            q["category"] = category
+        elif category == "projects":
+            project_link_exists = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.tag_id == Tag.id)
+                .exists()
+            )
+            stmt = stmt.where(project_link_exists)
+            q["category"] = category
 
         q["sort"] = _sort
         q["order"] = _order
@@ -119,7 +142,7 @@ class TagView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -136,13 +159,18 @@ class TagView:
             },
         )
 
+        obj = Filter(**q)
+        form = TagFilterForm(self.request.GET, obj, request=self.request)
+
         return {
             "q": q,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
+            "categories": categories,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "form": form,
         }
 
     @view_config(

@@ -136,6 +136,7 @@ PROJECT_DELIVERY_METHODS = [
 
 
 CATEGORIES = [
+    ("", _("All")),
     ("companies", _("Companies")),
     ("projects", _("Projects")),
 ]
