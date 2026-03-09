@@ -206,6 +206,15 @@ def toggle_selected_item(request, selection_table, selected_column, item_id):
     return True
 
 
+def clear_selected_rows(request, selection_table, selected_column, item_ids):
+    ids = {item_id for item_id in item_ids if item_id is not None}
+    if not ids:
+        return
+
+    request.dbsession.execute(delete(selection_table).where(selected_column.in_(ids)))
+    mark_changed(request.dbsession)
+
+
 def _select_all_state_key(request):
     path, _, qs = request.path_qs.partition("?")
     params = [

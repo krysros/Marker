@@ -39,12 +39,15 @@ from ..models import (
     companies_stars,
     companies_tags,
     selected_companies,
+    selected_contacts,
+    selected_tags,
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from ..utils.website_autofill import company_autofill_from_website
 from . import (
     Filter,
+    clear_selected_rows,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -803,14 +806,24 @@ class CompanyView:
         company = self.request.context.company
 
         if self.request.method == "POST" and form.validate():
+            created_tag = False
             tag = self.request.dbsession.execute(
                 select(Tag).filter_by(name=form.name.data)
             ).scalar_one_or_none()
             if not tag:
                 tag = Tag(form.name.data)
                 tag.created_by = self.request.identity
+                created_tag = True
             if tag not in company.tags:
                 company.tags.append(tag)
+                if created_tag:
+                    self.request.dbsession.flush()
+                    clear_selected_rows(
+                        self.request,
+                        selected_tags,
+                        selected_tags.c.tag_id,
+                        [tag.id],
+                    )
                 log.info(
                     _("The user %s has added a tag to the company")
                     % self.request.identity.name
@@ -848,6 +861,13 @@ class CompanyView:
             contact.created_by = self.request.identity
             if contact not in company.contacts:
                 company.contacts.append(contact)
+                self.request.dbsession.flush()
+                clear_selected_rows(
+                    self.request,
+                    selected_contacts,
+                    selected_contacts.c.contact_id,
+                    [contact.id],
+                )
                 log.info(
                     _("The user %s has added a contact to the company")
                     % self.request.identity.name
@@ -1097,6 +1117,18 @@ class CompanyView:
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
+            clear_selected_rows(
+                self.request,
+                selected_companies,
+                selected_companies.c.company_id,
+                [company.id],
+            )
+            clear_selected_rows(
+                self.request,
+                companies_stars,
+                companies_stars.c.company_id,
+                [company.id],
+            )
 
             for tag_name in tags:
                 tag = self.request.dbsession.execute(
@@ -1216,14 +1248,27 @@ class CompanyView:
     def delete(self):
         _ = self.request.translate
         company = self.request.context.company
-        stmt_1 = delete(companies_stars).where(
-            companies_stars.c.company_id == company.id
+        contact_ids = self.request.dbsession.execute(
+            select(Contact.id).where(Contact.company_id == company.id)
+        ).scalars().all()
+        clear_selected_rows(
+            self.request,
+            companies_stars,
+            companies_stars.c.company_id,
+            [company.id],
         )
-        stmt_2 = delete(selected_companies).where(
-            selected_companies.c.company_id == company.id
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            contact_ids,
         )
-        self.request.dbsession.execute(stmt_1)
-        self.request.dbsession.execute(stmt_2)
+        clear_selected_rows(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id],
+        )
         self.request.dbsession.delete(company)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s deleted the company") % self.request.identity.name)
@@ -1242,6 +1287,27 @@ class CompanyView:
     def del_row(self):
         _ = self.request.translate
         company = self.request.context.company
+        contact_ids = self.request.dbsession.execute(
+            select(Contact.id).where(Contact.company_id == company.id)
+        ).scalars().all()
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            contact_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id],
+        )
+        clear_selected_rows(
+            self.request,
+            companies_stars,
+            companies_stars.c.company_id,
+            [company.id],
+        )
         self.request.dbsession.delete(company)
         log.info(_("The user %s deleted the company") % self.request.identity.name)
         # This request responds with empty content,

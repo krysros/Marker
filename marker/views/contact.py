@@ -18,6 +18,7 @@ from ..utils.contact_csv_import import (
 )
 from . import (
     Filter,
+    clear_selected_rows,
     handle_bulk_selection,
     is_bulk_select_request,
     set_select_all_state,
@@ -277,10 +278,12 @@ class ContactView:
     def delete(self):
         _ = self.request.translate
         contact = self.request.context.contact
-        stmt = delete(selected_contacts).where(
-            selected_contacts.c.contact_id == contact.id
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            [contact.id],
         )
-        self.request.dbsession.execute(stmt)
         self.request.dbsession.delete(contact)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s deleted the contact") % self.request.identity.name)
@@ -299,6 +302,12 @@ class ContactView:
     def del_row(self):
         _ = self.request.translate
         contact = self.request.context.contact
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            [contact.id],
+        )
         self.request.dbsession.delete(contact)
         log.info(_("The user %s deleted the company") % self.request.identity.name)
         # This request responds with empty content,

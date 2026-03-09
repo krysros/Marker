@@ -36,6 +36,7 @@ from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
+    clear_selected_rows,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -929,6 +930,13 @@ class TagView:
             tag = Tag(form.name.data)
             tag.created_by = self.request.identity
             self.request.dbsession.add(tag)
+            self.request.dbsession.flush()
+            clear_selected_rows(
+                self.request,
+                selected_tags,
+                selected_tags.c.tag_id,
+                [tag.id],
+            )
             self.request.session.flash(_("success:Added to the database"))
             log.info(_("The user %s has added a tag") % self.request.identity.name)
             next_url = self.request.route_url("tag_all")
@@ -958,8 +966,12 @@ class TagView:
     def delete(self):
         _ = self.request.translate
         tag = self.request.context.tag
-        stmt = delete(selected_tags).where(selected_tags.c.tag_id == tag.id)
-        self.request.dbsession.execute(stmt)
+        clear_selected_rows(
+            self.request,
+            selected_tags,
+            selected_tags.c.tag_id,
+            [tag.id],
+        )
         self.request.dbsession.delete(tag)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s removed the tag") % self.request.identity.name)
@@ -978,6 +990,12 @@ class TagView:
     def tag_del_row(self):
         _ = self.request.translate
         tag = self.request.context.tag
+        clear_selected_rows(
+            self.request,
+            selected_tags,
+            selected_tags.c.tag_id,
+            [tag.id],
+        )
         self.request.dbsession.delete(tag)
         log.info(_("The user %s removed the tag") % self.request.identity.name)
         # This request responds with empty content,

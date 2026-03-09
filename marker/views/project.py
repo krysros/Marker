@@ -40,13 +40,16 @@ from ..models import (
     User,
     projects_stars,
     projects_tags,
+    selected_contacts,
     selected_projects,
+    selected_tags,
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
 from ..utils.website_autofill import project_autofill_from_website
 from . import (
     Filter,
+    clear_selected_rows,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -957,6 +960,18 @@ class ProjectView:
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
+            clear_selected_rows(
+                self.request,
+                selected_projects,
+                selected_projects.c.project_id,
+                [project.id],
+            )
+            clear_selected_rows(
+                self.request,
+                projects_stars,
+                projects_stars.c.project_id,
+                [project.id],
+            )
 
             for tag_name in tags:
                 tag = self.request.dbsession.execute(
@@ -1083,12 +1098,27 @@ class ProjectView:
     def delete(self):
         _ = self.request.translate
         project = self.request.context.project
-        stmt_1 = delete(projects_stars).where(projects_stars.c.project_id == project.id)
-        stmt_2 = delete(selected_projects).where(
-            selected_projects.c.project_id == project.id
+        contact_ids = self.request.dbsession.execute(
+            select(Contact.id).where(Contact.project_id == project.id)
+        ).scalars().all()
+        clear_selected_rows(
+            self.request,
+            projects_stars,
+            projects_stars.c.project_id,
+            [project.id],
         )
-        self.request.dbsession.execute(stmt_1)
-        self.request.dbsession.execute(stmt_2)
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            contact_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id],
+        )
         self.request.dbsession.delete(project)
         self.request.session.flash(_("success:Removed from the database"))
         log.info(_("The user %s deleted the project") % self.request.identity.name)
@@ -1107,6 +1137,27 @@ class ProjectView:
     def del_row(self):
         _ = self.request.translate
         project = self.request.context.project
+        contact_ids = self.request.dbsession.execute(
+            select(Contact.id).where(Contact.project_id == project.id)
+        ).scalars().all()
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            contact_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id],
+        )
+        clear_selected_rows(
+            self.request,
+            projects_stars,
+            projects_stars.c.project_id,
+            [project.id],
+        )
         self.request.dbsession.delete(project)
         log.info(_("The user %s deleted the project") % self.request.identity.name)
         # This request responds with empty content,
@@ -1314,6 +1365,7 @@ class ProjectView:
         project = self.request.context.project
 
         if self.request.method == "POST" and form.validate():
+            created_tag = False
             tag = self.request.dbsession.execute(
                 select(Tag).filter_by(name=form.name.data)
             ).scalar_one_or_none()
@@ -1321,8 +1373,17 @@ class ProjectView:
             if not tag:
                 tag = Tag(name=form.name.data)
                 tag.created_by = self.request.identity
+                created_tag = True
             if tag not in project.tags:
                 project.tags.append(tag)
+                if created_tag:
+                    self.request.dbsession.flush()
+                    clear_selected_rows(
+                        self.request,
+                        selected_tags,
+                        selected_tags.c.tag_id,
+                        [tag.id],
+                    )
                 log.info(
                     _("The user %s has added a tag to the project")
                     % self.request.identity.name
@@ -1360,6 +1421,13 @@ class ProjectView:
             contact.created_by = self.request.identity
             if contact not in project.contacts:
                 project.contacts.append(contact)
+                self.request.dbsession.flush()
+                clear_selected_rows(
+                    self.request,
+                    selected_contacts,
+                    selected_contacts.c.contact_id,
+                    [contact.id],
+                )
                 log.info(
                     _("The user %s has added a contact to the project")
                     % self.request.identity.name

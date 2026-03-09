@@ -48,6 +48,7 @@ from ..utils.export import response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
+    clear_selected_rows,
     handle_bulk_selection,
     is_bulk_select_request,
     sort_column,
@@ -2614,14 +2615,25 @@ class UserView:
         companies_to_delete = list(user.selected_companies)
 
         for company in companies_to_delete:
+            contact_ids = self.request.dbsession.execute(
+                select(Contact.id).where(Contact.company_id == company.id)
+            ).scalars().all()
             stmt_1 = delete(companies_stars).where(
                 companies_stars.c.company_id == company.id
             )
-            stmt_2 = delete(selected_companies).where(
-                selected_companies.c.company_id == company.id
+            clear_selected_rows(
+                self.request,
+                selected_contacts,
+                selected_contacts.c.contact_id,
+                contact_ids,
+            )
+            clear_selected_rows(
+                self.request,
+                selected_companies,
+                selected_companies.c.company_id,
+                [company.id],
             )
             self.request.dbsession.execute(stmt_1)
-            self.request.dbsession.execute(stmt_2)
             self.request.dbsession.delete(company)
 
         self.request.session.flash(_("success:Selected companies deleted"))
@@ -2645,14 +2657,25 @@ class UserView:
         projects_to_delete = list(user.selected_projects)
 
         for project in projects_to_delete:
+            contact_ids = self.request.dbsession.execute(
+                select(Contact.id).where(Contact.project_id == project.id)
+            ).scalars().all()
             stmt_1 = delete(projects_stars).where(
                 projects_stars.c.project_id == project.id
             )
-            stmt_2 = delete(selected_projects).where(
-                selected_projects.c.project_id == project.id
+            clear_selected_rows(
+                self.request,
+                selected_contacts,
+                selected_contacts.c.contact_id,
+                contact_ids,
+            )
+            clear_selected_rows(
+                self.request,
+                selected_projects,
+                selected_projects.c.project_id,
+                [project.id],
             )
             self.request.dbsession.execute(stmt_1)
-            self.request.dbsession.execute(stmt_2)
             self.request.dbsession.delete(project)
 
         self.request.session.flash(_("success:Selected projects deleted"))
@@ -2674,10 +2697,17 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [contact.id for contact in user.selected_contacts]
-        stmt = delete(selected_contacts).where(selected_contacts.c.user_id == user.id)
-        self.request.dbsession.execute(stmt)
-        stmt = delete(Contact).where(Contact.id.in_(selected_ids))
-        self.request.dbsession.execute(stmt)
+
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            selected_ids,
+        )
+
+        if selected_ids:
+            stmt = delete(Contact).where(Contact.id.in_(selected_ids))
+            self.request.dbsession.execute(stmt)
         self.request.session.flash(_("success:Selected contacts deleted"))
         log.info(
             _("The user %s deleted selected contacts") % self.request.identity.name
@@ -2697,10 +2727,22 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         selected_ids = [tag.id for tag in user.selected_tags]
-        stmt = delete(selected_tags).where(selected_tags.c.user_id == user.id)
-        self.request.dbsession.execute(stmt)
-        stmt = delete(Tag).where(Tag.id.in_(selected_ids))
-        self.request.dbsession.execute(stmt)
+
+        clear_selected_rows(
+            self.request,
+            selected_tags,
+            selected_tags.c.tag_id,
+            selected_ids,
+        )
+
+        if selected_ids:
+            self.request.dbsession.execute(
+                delete(companies_tags).where(companies_tags.c.tag_id.in_(selected_ids))
+            )
+            self.request.dbsession.execute(
+                delete(projects_tags).where(projects_tags.c.tag_id.in_(selected_ids))
+            )
+            self.request.dbsession.execute(delete(Tag).where(Tag.id.in_(selected_ids)))
         self.request.session.flash(_("success:Selected tags deleted"))
         log.info(_("The user %s deleted selected tags") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_tags", username=user.name)
