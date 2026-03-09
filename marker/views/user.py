@@ -66,6 +66,114 @@ class UserView:
         self.count_contacts = 0
         self.count_comments = 0
 
+    def _is_truthy(self, value):
+        if isinstance(value, bool):
+            return value
+        if value is None:
+            return False
+        return str(value).strip().lower() in {"1", "true", "on", "yes"}
+
+    def _delete_user_with_data_requested(self):
+        return self._is_truthy(self.request.params.get("delete_with_data"))
+
+    def _delete_user_created_data(self, user):
+        dbsession = self.request.dbsession
+
+        companies_to_delete = dbsession.execute(
+            select(Company).where(Company.creator_id == user.id)
+        ).scalars().all()
+        projects_to_delete = dbsession.execute(
+            select(Project).where(Project.creator_id == user.id)
+        ).scalars().all()
+
+        company_ids = [company.id for company in companies_to_delete]
+        project_ids = [project.id for project in projects_to_delete]
+
+        created_contact_ids = dbsession.execute(
+            select(Contact.id).where(Contact.creator_id == user.id)
+        ).scalars().all()
+        created_tag_ids = dbsession.execute(
+            select(Tag.id).where(Tag.creator_id == user.id)
+        ).scalars().all()
+        created_comment_ids = dbsession.execute(
+            select(Comment.id).where(Comment.creator_id == user.id)
+        ).scalars().all()
+
+        company_contact_ids = []
+        project_contact_ids = []
+
+        if company_ids:
+            company_contact_ids = dbsession.execute(
+                select(Contact.id).where(Contact.company_id.in_(company_ids))
+            ).scalars().all()
+
+        if project_ids:
+            project_contact_ids = dbsession.execute(
+                select(Contact.id).where(Contact.project_id.in_(project_ids))
+            ).scalars().all()
+
+        contact_ids_to_delete = list(
+            {
+                *created_contact_ids,
+                *company_contact_ids,
+                *project_contact_ids,
+            }
+        )
+
+        clear_selected_rows(
+            self.request,
+            selected_contacts,
+            selected_contacts.c.contact_id,
+            contact_ids_to_delete,
+        )
+        clear_selected_rows(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            company_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            project_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            selected_tags,
+            selected_tags.c.tag_id,
+            created_tag_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            companies_stars,
+            companies_stars.c.company_id,
+            company_ids,
+        )
+        clear_selected_rows(
+            self.request,
+            projects_stars,
+            projects_stars.c.project_id,
+            project_ids,
+        )
+
+        for company in companies_to_delete:
+            dbsession.delete(company)
+
+        for project in projects_to_delete:
+            dbsession.delete(project)
+
+        dbsession.flush()
+
+        if created_tag_ids:
+            dbsession.execute(delete(Tag).where(Tag.id.in_(created_tag_ids)))
+
+        if created_contact_ids:
+            dbsession.execute(delete(Contact).where(Contact.id.in_(created_contact_ids)))
+
+        if created_comment_ids:
+            dbsession.execute(delete(Comment).where(Comment.id.in_(created_comment_ids)))
+
     def pills(self, user):
         _ = self.request.translate
         return [
@@ -1611,9 +1719,25 @@ class UserView:
     def delete(self):
         _ = self.request.translate
         user = self.request.context.user
+        with_data = self._delete_user_with_data_requested()
+
+        if with_data:
+            self._delete_user_created_data(user)
+
         self.request.dbsession.delete(user)
-        self.request.session.flash(_("success:Removed from the database"))
-        log.info(_("The user %s deleted the user") % self.request.identity.name)
+
+        if with_data:
+            self.request.session.flash(
+                _("success:Removed user account with all added data from the database")
+            )
+            log.info(
+                _("The user %s deleted the user with all added data")
+                % self.request.identity.name
+            )
+        else:
+            self.request.session.flash(_("success:Removed from the database"))
+            log.info(_("The user %s deleted the user") % self.request.identity.name)
+
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
