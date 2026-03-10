@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "plaster_pastedeploy",
-    "pyramid==2.1rc3",
+    "pyramid==2.1rc4",
     "pyramid_mako",
     "pyramid_debugtoolbar",
     "pyramid_retry",

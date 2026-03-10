@@ -476,7 +476,7 @@ requires-dist = [
     { name = "markdown" },
     { name = "plaster-pastedeploy" },
     { name = "pycountry" },
-    { name = "pyramid", specifier = "==2.1rc3" },
+    { name = "pyramid", specifier = "==2.1rc4" },
     { name = "pyramid-debugtoolbar" },
     { name = "pyramid-mako" },
     { name = "pyramid-retry" },
@@ -689,7 +689,7 @@ wheels = [
 
 [[package]]
 name = "pyramid"
-version = "2.1rc3"
+version = "2.1rc4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "hupper" },
@@ -702,9 +702,9 @@ dependencies = [
     { name = "zope-deprecation" },
     { name = "zope-interface" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/86/2f/17d32a3decc88516d6ebf9594a7fea83bd198c107d4ab1a0c21a547b1c4a/pyramid-2.1rc3.tar.gz", hash = "sha256:01b79ebf1ea538a7f920473569732c02c97e2b219161a4201190acdcb7ffc0dc", size = 2629062, upload-time = "2026-03-09T22:42:41.851Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b0/2a/fef860de8c1cc3875ae22deaef5f1d009aedb2181414ad000bb20c0993c6/pyramid-2.1rc4.tar.gz", hash = "sha256:152e0485efdc26832bbdbf51c6a37cc5ade2c1b3c356a640f9f9c0ec8eb5be12", size = 2629229, upload-time = "2026-03-10T19:37:50.373Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1d/ae/827fdf0b71784fc10a3c1918789ed0748efff85d9ab6ef80884c2c512a12/pyramid-2.1rc3-py3-none-any.whl", hash = "sha256:5023a3cab315431d91e26ec8f3170b74569d1c02afb889074f8ac4d871c8979d", size = 243430, upload-time = "2026-03-09T22:42:39.862Z" },
+    { url = "https://files.pythonhosted.org/packages/59/fb/d680228c3d723769099221fb5b0ad4a0cc27da56253d98e64df9b5eedbe8/pyramid-2.1rc4-py3-none-any.whl", hash = "sha256:47724e4c4d07f69fc75fdbae4fbfd29d465db0e6aef205a6bb69378a0e3549d3", size = 243450, upload-time = "2026-03-10T19:37:48.029Z" },
 ]
 
 [[package]]
