@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-10 19:20+0100\n"
+"POT-Creation-Date: 2026-03-10 19:38+0100\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -877,25 +877,29 @@ msgstr "Nie zamykaj karty przeglądarki. Trwa importowanie..."
 msgid "CSV file requirements"
 msgstr "Wymagania pliku CSV"
 
-#: marker/templates/contact/contact_import.mako:42
+#: marker/templates/contact/contact_import.mako:43
+msgid "Export Google Contacts from "
+msgstr "Wyeksportuj Kontakty Google ze strony "
+
+#: marker/templates/contact/contact_import.mako:44
+msgid "Alternatively, prepare data according to the "
+msgstr "Alternatywnie przygotuj dane zgodnie z "
+
+#: marker/templates/contact/contact_import.mako:45
+msgid "sample template"
+msgstr "przykładowym szablonem"
+
+#: marker/templates/contact/contact_import.mako:47
+msgid "Contacts without a company (Organization Name) will not be imported."
+msgstr "Kontakty bez nazwy firmy (Organization Name) nie zostaną zaimportowane."
+
+#: marker/templates/contact/contact_import.mako:44
 msgid ""
 "The file must be UTF-8 encoded and comma-separated. Other separators are "
 "not allowed."
 msgstr ""
 "Plik musi być zakodowany w UTF-8 i rozdzielony przecinkami. Inne "
 "separatory nie są dopuszczalne."
-
-#: marker/templates/contact/contact_import.mako:43
-msgid ""
-"To import contacts, you need to export them from Google Contacts in CSV "
-"format. Make sure to select the Google CSV format when exporting."
-msgstr ""
-"Aby importować kontakty, wyeksportuj je z Google Contacts do formatu CSV."
-" Upewnij się, że podczas eksportu wybrano format Google CSV."
-
-#: marker/templates/contact/contact_import.mako:44
-msgid "Contacts without a company (Organization Name) will not be imported."
-msgstr "Kontakty bez firmy (Organization Name) nie zostaną zaimportowane."
 
 #: marker/templates/contact/contact_import.mako:45
 msgid "The file must include at least the following columns: "

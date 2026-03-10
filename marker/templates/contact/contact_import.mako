@@ -39,9 +39,16 @@
           >
             <div class="accordion-body small">
               <ul class="mb-2">
-                <li>${_("The file must be UTF-8 encoded and comma-separated. Other separators are not allowed.")}</li>
-                <li>${_("To import contacts, you need to export them from Google Contacts in CSV format. Make sure to select the Google CSV format when exporting.")}</li>
+                <li>
+                  ${_("Export Google Contacts from ")}
+                  <a href="https://contacts.google.com/" target="_blank" rel="noopener noreferrer">https://contacts.google.com/</a>.
+                </li>
+                <li>
+                  ${_("Alternatively, prepare data according to the ")}
+                  <a href="https://docs.google.com/spreadsheets/d/1trkW9YG7CEDyGm8ptTOIhRRT779qqiGoMRbx6QPbWMM/copy" target="_blank" rel="noopener noreferrer">${_("sample template")}</a>.
+                </li>
                 <li>${_("Contacts without a company (Organization Name) will not be imported.")}</li>
+                <li>${_("The file must be UTF-8 encoded and comma-separated. Other separators are not allowed.")}</li>
                 <li>${_("The file must include at least the following columns: ")}</li>
               </ul>
               <ul class="mb-2">
