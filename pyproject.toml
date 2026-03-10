@@ -42,13 +42,19 @@ dependencies = [
     "beautifulsoup4",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
+docs = [
+    "sqlalchemy-data-model-visualizer",
+]
 testing = [
     "WebTest",
     "pytest",
     "pytest-cov",
+]
+lint = [
     "pylint",
-    "sqlalchemy-data-model-visualizer",
+    "black",
+    "isort",
 ]
 
 [project.urls]

@@ -10,7 +10,7 @@ Change directory into your newly created project if not already there. Your curr
 
 Install the project with its testing requirements.
 
-    uv sync --extra testing
+    uv sync --group testing
 
 Initialize and upgrade the database using Alembic.
 
