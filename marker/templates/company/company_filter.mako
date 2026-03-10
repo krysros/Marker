@@ -6,6 +6,9 @@
     % for tag in q.get("tag", []):
       <input type="hidden" name="tag" value="${tag}">
     % endfor
+    % if form.website.data:
+      ${form.website(class_="form-control")}
+    % endif
     % if form.name.data:
       ${form.name(class_="form-control")}
     % endif
@@ -27,9 +30,6 @@
       ${form.subdivision(class_="form-control")}
       <small class="text-body-secondary">Ctrl + Click</small>
     </div>
-    % if form.website.data:
-      ${form.website(class_="form-control")}
-    % endif
     <div class="mb-3">
       ${form.color.label(class_="form-label")}
       ${form.color(class_="form-control")}
