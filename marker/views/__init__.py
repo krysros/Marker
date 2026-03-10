@@ -14,7 +14,6 @@ from ..models import (
     selected_tags,
 )
 
-
 _SELECTION_TARGETS = {
     "selected_companies": (
         selected_companies,
@@ -67,9 +66,7 @@ def update_selected_items(selected_items, items, checked):
 
     if checked:
         selected_ids = {
-            item.id
-            for item in selected_items
-            if getattr(item, "id", None) is not None
+            item.id for item in selected_items if getattr(item, "id", None) is not None
         }
         for item_id, item in items_by_id.items():
             if item_id not in selected_ids:
@@ -78,9 +75,7 @@ def update_selected_items(selected_items, items, checked):
 
     remove_ids = set(items_by_id.keys())
     selected_items[:] = [
-        item
-        for item in selected_items
-        if getattr(item, "id", None) not in remove_ids
+        item for item in selected_items if getattr(item, "id", None) not in remove_ids
     ]
 
 

@@ -8,14 +8,14 @@ from sqlalchemy import delete, func, or_, select
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
 from ..models import Company, Contact, Project, Tag, selected_contacts
-from ..utils.export import response_vcard, vcard_template
-from ..utils.geo import location
-from ..utils.paginator import get_paginator
 from ..utils.contact_csv_import import (
     GoogleContactsCsvImporter,
     missing_google_contacts_columns,
     parse_google_contacts_csv,
 )
+from ..utils.export import response_vcard, vcard_template
+from ..utils.geo import location
+from ..utils.paginator import get_paginator
 from . import (
     Filter,
     clear_selected_rows,

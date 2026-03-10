@@ -79,38 +79,56 @@ class UserView:
     def _delete_user_created_data(self, user):
         dbsession = self.request.dbsession
 
-        companies_to_delete = dbsession.execute(
-            select(Company).where(Company.creator_id == user.id)
-        ).scalars().all()
-        projects_to_delete = dbsession.execute(
-            select(Project).where(Project.creator_id == user.id)
-        ).scalars().all()
+        companies_to_delete = (
+            dbsession.execute(select(Company).where(Company.creator_id == user.id))
+            .scalars()
+            .all()
+        )
+        projects_to_delete = (
+            dbsession.execute(select(Project).where(Project.creator_id == user.id))
+            .scalars()
+            .all()
+        )
 
         company_ids = [company.id for company in companies_to_delete]
         project_ids = [project.id for project in projects_to_delete]
 
-        created_contact_ids = dbsession.execute(
-            select(Contact.id).where(Contact.creator_id == user.id)
-        ).scalars().all()
-        created_tag_ids = dbsession.execute(
-            select(Tag.id).where(Tag.creator_id == user.id)
-        ).scalars().all()
-        created_comment_ids = dbsession.execute(
-            select(Comment.id).where(Comment.creator_id == user.id)
-        ).scalars().all()
+        created_contact_ids = (
+            dbsession.execute(select(Contact.id).where(Contact.creator_id == user.id))
+            .scalars()
+            .all()
+        )
+        created_tag_ids = (
+            dbsession.execute(select(Tag.id).where(Tag.creator_id == user.id))
+            .scalars()
+            .all()
+        )
+        created_comment_ids = (
+            dbsession.execute(select(Comment.id).where(Comment.creator_id == user.id))
+            .scalars()
+            .all()
+        )
 
         company_contact_ids = []
         project_contact_ids = []
 
         if company_ids:
-            company_contact_ids = dbsession.execute(
-                select(Contact.id).where(Contact.company_id.in_(company_ids))
-            ).scalars().all()
+            company_contact_ids = (
+                dbsession.execute(
+                    select(Contact.id).where(Contact.company_id.in_(company_ids))
+                )
+                .scalars()
+                .all()
+            )
 
         if project_ids:
-            project_contact_ids = dbsession.execute(
-                select(Contact.id).where(Contact.project_id.in_(project_ids))
-            ).scalars().all()
+            project_contact_ids = (
+                dbsession.execute(
+                    select(Contact.id).where(Contact.project_id.in_(project_ids))
+                )
+                .scalars()
+                .all()
+            )
 
         contact_ids_to_delete = list(
             {
@@ -169,10 +187,14 @@ class UserView:
             dbsession.execute(delete(Tag).where(Tag.id.in_(created_tag_ids)))
 
         if created_contact_ids:
-            dbsession.execute(delete(Contact).where(Contact.id.in_(created_contact_ids)))
+            dbsession.execute(
+                delete(Contact).where(Contact.id.in_(created_contact_ids))
+            )
 
         if created_comment_ids:
-            dbsession.execute(delete(Comment).where(Comment.id.in_(created_comment_ids)))
+            dbsession.execute(
+                delete(Comment).where(Comment.id.in_(created_comment_ids))
+            )
 
     def pills(self, user):
         _ = self.request.translate
@@ -329,9 +351,7 @@ class UserView:
         return contact_color or object_color or ""
 
     def _filter_tags_by_category(self, stmt, category, q=None):
-        normalized_category = (
-            category if category in {"companies", "projects"} else ""
-        )
+        normalized_category = category if category in {"companies", "projects"} else ""
         if normalized_category == "projects":
             stmt = stmt.filter(Tag.projects.any())
         elif normalized_category == "companies":
@@ -2739,9 +2759,13 @@ class UserView:
         companies_to_delete = list(user.selected_companies)
 
         for company in companies_to_delete:
-            contact_ids = self.request.dbsession.execute(
-                select(Contact.id).where(Contact.company_id == company.id)
-            ).scalars().all()
+            contact_ids = (
+                self.request.dbsession.execute(
+                    select(Contact.id).where(Contact.company_id == company.id)
+                )
+                .scalars()
+                .all()
+            )
             stmt_1 = delete(companies_stars).where(
                 companies_stars.c.company_id == company.id
             )
@@ -2781,9 +2805,13 @@ class UserView:
         projects_to_delete = list(user.selected_projects)
 
         for project in projects_to_delete:
-            contact_ids = self.request.dbsession.execute(
-                select(Contact.id).where(Contact.project_id == project.id)
-            ).scalars().all()
+            contact_ids = (
+                self.request.dbsession.execute(
+                    select(Contact.id).where(Contact.project_id == project.id)
+                )
+                .scalars()
+                .all()
+            )
             stmt_1 = delete(projects_stars).where(
                 projects_stars.c.project_id == project.id
             )

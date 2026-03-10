@@ -129,7 +129,8 @@ class Company(Base):
         base_tags = companies_tags.alias("base_tags")
         other_tags = companies_tags.alias("other_tags")
         return object_session(self).scalar(
-            select(func.count(func.distinct(other_tags.c.company_id))).select_from(
+            select(func.count(func.distinct(other_tags.c.company_id)))
+            .select_from(
                 base_tags.join(other_tags, base_tags.c.tag_id == other_tags.c.tag_id)
             )
             .where(

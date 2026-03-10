@@ -8,7 +8,6 @@ from .models import (
     selected_tags,
 )
 
-
 _SELECTION_ID_SOURCES = {
     "selected_companies": (
         selected_companies,

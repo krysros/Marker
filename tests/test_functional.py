@@ -1,5 +1,6 @@
-from marker import models
 from sqlalchemy import select
+
+from marker import models
 
 
 def _assert_category_select_has_default_all(page_text):
@@ -10,7 +11,9 @@ def _assert_category_select_has_default_all(page_text):
     assert category_select is not None
 
     options = category_select.find_all("option")
-    option_map = {option.get("value", ""): option.get_text(strip=True) for option in options}
+    option_map = {
+        option.get("value", ""): option.get_text(strip=True) for option in options
+    }
 
     selected_value = None
     for option in options:
@@ -29,6 +32,7 @@ def _assert_category_select_has_default_all(page_text):
 
 def _extract_hx_csrf_token(page_text):
     import json
+
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(page_text, "html.parser")
@@ -438,11 +442,15 @@ def test_default_all_category_shows_company_and_project_records(testapp, dbsessi
     assert "Company default-all tag" in tags_all_page.text
     assert "Project default-all tag" in tags_all_page.text
 
-    tags_companies_page = testapp.get("/tag", params={"category": "companies"}, status=200)
+    tags_companies_page = testapp.get(
+        "/tag", params={"category": "companies"}, status=200
+    )
     assert "Company default-all tag" in tags_companies_page.text
     assert "Project default-all tag" not in tags_companies_page.text
 
-    tags_projects_page = testapp.get("/tag", params={"category": "projects"}, status=200)
+    tags_projects_page = testapp.get(
+        "/tag", params={"category": "projects"}, status=200
+    )
     assert "Company default-all tag" not in tags_projects_page.text
     assert "Project default-all tag" in tags_projects_page.text
 
@@ -481,11 +489,15 @@ def test_select_all_tags_bulk_updates_selected_tags_table(testapp, dbsession):
     )
     assert response.headers.get("HX-Refresh") == "true"
 
-    selected_tag_ids = dbsession.execute(
-        select(models.selected_tags.c.tag_id).where(
-            models.selected_tags.c.user_id == user.id
+    selected_tag_ids = (
+        dbsession.execute(
+            select(models.selected_tags.c.tag_id).where(
+                models.selected_tags.c.user_id == user.id
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert set(selected_tag_ids) == {tag_a.id, tag_b.id}
 
     response = testapp.post(
@@ -496,11 +508,15 @@ def test_select_all_tags_bulk_updates_selected_tags_table(testapp, dbsession):
     )
     assert response.headers.get("HX-Refresh") == "true"
 
-    selected_tag_ids = dbsession.execute(
-        select(models.selected_tags.c.tag_id).where(
-            models.selected_tags.c.user_id == user.id
+    selected_tag_ids = (
+        dbsession.execute(
+            select(models.selected_tags.c.tag_id).where(
+                models.selected_tags.c.user_id == user.id
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert selected_tag_ids == []
 
 
@@ -574,18 +590,26 @@ def test_select_all_project_companies_updates_selected_companies(testapp, dbsess
     )
     assert response.headers.get("HX-Refresh") == "true"
 
-    selected_company_ids = dbsession.execute(
-        select(models.selected_companies.c.company_id).where(
-            models.selected_companies.c.user_id == user.id
+    selected_company_ids = (
+        dbsession.execute(
+            select(models.selected_companies.c.company_id).where(
+                models.selected_companies.c.user_id == user.id
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert set(selected_company_ids) == {company.id}
 
-    selected_project_ids = dbsession.execute(
-        select(models.selected_projects.c.project_id).where(
-            models.selected_projects.c.user_id == user.id
+    selected_project_ids = (
+        dbsession.execute(
+            select(models.selected_projects.c.project_id).where(
+                models.selected_projects.c.user_id == user.id
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert selected_project_ids == []
 
     response = testapp.post(
@@ -596,12 +620,17 @@ def test_select_all_project_companies_updates_selected_companies(testapp, dbsess
     )
     assert response.headers.get("HX-Refresh") == "true"
 
-    selected_company_ids = dbsession.execute(
-        select(models.selected_companies.c.company_id).where(
-            models.selected_companies.c.user_id == user.id
+    selected_company_ids = (
+        dbsession.execute(
+            select(models.selected_companies.c.company_id).where(
+                models.selected_companies.c.user_id == user.id
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert selected_company_ids == []
+
 
 def test_company_website_autofill_supports_developer_descriptors(
     testapp, dbsession, monkeypatch

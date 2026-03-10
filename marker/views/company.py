@@ -1248,9 +1248,13 @@ class CompanyView:
     def delete(self):
         _ = self.request.translate
         company = self.request.context.company
-        contact_ids = self.request.dbsession.execute(
-            select(Contact.id).where(Contact.company_id == company.id)
-        ).scalars().all()
+        contact_ids = (
+            self.request.dbsession.execute(
+                select(Contact.id).where(Contact.company_id == company.id)
+            )
+            .scalars()
+            .all()
+        )
         clear_selected_rows(
             self.request,
             companies_stars,
@@ -1287,9 +1291,13 @@ class CompanyView:
     def del_row(self):
         _ = self.request.translate
         company = self.request.context.company
-        contact_ids = self.request.dbsession.execute(
-            select(Contact.id).where(Contact.company_id == company.id)
-        ).scalars().all()
+        contact_ids = (
+            self.request.dbsession.execute(
+                select(Contact.id).where(Contact.company_id == company.id)
+            )
+            .scalars()
+            .all()
+        )
         clear_selected_rows(
             self.request,
             selected_contacts,

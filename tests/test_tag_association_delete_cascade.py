@@ -143,7 +143,9 @@ def test_delete_tag_removes_association_rows(dbsession):
 
     assert response.status_code == 303
     assert (
-        dbsession.execute(select(models.Tag).where(models.Tag.id == tag_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Tag).where(models.Tag.id == tag_id)
+        ).scalar_one_or_none()
         is None
     )
     _assert_tag_association_rows_removed(dbsession, [tag_id])
@@ -180,7 +182,9 @@ def test_delete_selected_tags_removes_association_rows(dbsession):
 
     assert response.status_code == 303
     assert (
-        dbsession.execute(select(models.Tag).where(models.Tag.id.in_(tag_ids))).scalars().all()
+        dbsession.execute(select(models.Tag).where(models.Tag.id.in_(tag_ids)))
+        .scalars()
+        .all()
         == []
     )
     _assert_tag_association_rows_removed(dbsession, tag_ids)
@@ -209,7 +213,9 @@ def test_raw_tag_delete_cascades_association_rows(dbsession):
     dbsession.flush()
 
     assert (
-        dbsession.execute(select(models.Tag).where(models.Tag.id == tag_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Tag).where(models.Tag.id == tag_id)
+        ).scalar_one_or_none()
         is None
     )
     _assert_tag_association_rows_removed(dbsession, [tag_id])

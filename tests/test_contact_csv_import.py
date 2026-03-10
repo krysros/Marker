@@ -111,7 +111,9 @@ def test_add_row_supports_google_alias_columns(dbsession):
 
     assert added is True
 
-    company = dbsession.execute(select(models.Company).filter_by(name="Acme")).scalar_one()
+    company = dbsession.execute(
+        select(models.Company).filter_by(name="Acme")
+    ).scalar_one()
 
     assert company.street == "ul. Testowa 1"
     assert {tag.name for tag in company.tags} == {"Klienci"}
@@ -163,6 +165,8 @@ def test_add_row_skips_duplicate_contact_for_same_company(
     assert added_first is True
     assert added_second is False
 
-    company = dbsession.execute(select(models.Company).filter_by(name="Acme")).scalar_one()
+    company = dbsession.execute(
+        select(models.Company).filter_by(name="Acme")
+    ).scalar_one()
     assert len(company.contacts) == 1
     assert len(company.comments) == 1

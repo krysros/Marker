@@ -96,11 +96,15 @@ def test_delete_company_removes_assigned_contacts(dbsession):
 
     assert response.status_code == 303
     assert (
-        dbsession.execute(select(models.Company).where(models.Company.id == company_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Company).where(models.Company.id == company_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
-        dbsession.execute(select(models.Contact).where(models.Contact.id == contact_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Contact).where(models.Contact.id == contact_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
@@ -144,7 +148,9 @@ def test_delete_selected_companies_removes_assigned_contacts(dbsession):
     assert response.status_code == 303
     assert (
         dbsession.execute(
-            select(models.Company).where(models.Company.id.in_([company_1_id, company_2_id]))
+            select(models.Company).where(
+                models.Company.id.in_([company_1_id, company_2_id])
+            )
         )
         .scalars()
         .all()
@@ -152,7 +158,9 @@ def test_delete_selected_companies_removes_assigned_contacts(dbsession):
     )
     assert (
         dbsession.execute(
-            select(models.Contact).where(models.Contact.id.in_([contact_1_id, contact_2_id]))
+            select(models.Contact).where(
+                models.Contact.id.in_([contact_1_id, contact_2_id])
+            )
         )
         .scalars()
         .all()

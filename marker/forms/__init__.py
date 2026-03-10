@@ -19,8 +19,8 @@ from .project import ProjectFilterForm  # flake8: noqa
 from .project import ProjectForm  # flake8: noqa
 from .project import ProjectLinkForm  # flake8: noqa
 from .project import ProjectSearchForm  # flake8: noqa
-from .tag import TagForm  # flake8: noqa
 from .tag import TagFilterForm  # flake8: noqa
+from .tag import TagForm  # flake8: noqa
 from .tag import TagLinkForm  # flake8: noqa
 from .tag import TagSearchForm  # flake8: noqa
 from .user import UserFilterForm  # flake8: noqa

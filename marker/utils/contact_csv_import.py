@@ -5,7 +5,6 @@ from sqlalchemy import func, select
 
 from ..models import Comment, Company, Contact, Tag
 
-
 GOOGLE_CONTACTS_REQUIRED_COLUMNS = {
     "Organization Name": ("Organization Name", "Organization 1 - Name"),
     "First Name": ("First Name", "Given Name"),

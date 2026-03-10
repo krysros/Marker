@@ -126,7 +126,8 @@ class Project(Base):
         base_tags = projects_tags.alias("base_tags")
         other_tags = projects_tags.alias("other_tags")
         return object_session(self).scalar(
-            select(func.count(func.distinct(other_tags.c.project_id))).select_from(
+            select(func.count(func.distinct(other_tags.c.project_id)))
+            .select_from(
                 base_tags.join(other_tags, base_tags.c.tag_id == other_tags.c.tag_id)
             )
             .where(

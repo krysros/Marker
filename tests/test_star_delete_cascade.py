@@ -105,7 +105,9 @@ def test_delete_company_removes_stars_rows(dbsession):
 
     assert response.status_code == 303
     assert (
-        dbsession.execute(select(models.Company).where(models.Company.id == company_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Company).where(models.Company.id == company_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
@@ -139,7 +141,9 @@ def test_del_row_company_removes_stars_rows(dbsession):
 
     assert response == ""
     assert (
-        dbsession.execute(select(models.Company).where(models.Company.id == company_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Company).where(models.Company.id == company_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
@@ -173,7 +177,9 @@ def test_delete_project_removes_stars_rows(dbsession):
 
     assert response.status_code == 303
     assert (
-        dbsession.execute(select(models.Project).where(models.Project.id == project_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Project).where(models.Project.id == project_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
@@ -207,7 +213,9 @@ def test_del_row_project_removes_stars_rows(dbsession):
 
     assert response == ""
     assert (
-        dbsession.execute(select(models.Project).where(models.Project.id == project_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Project).where(models.Project.id == project_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (

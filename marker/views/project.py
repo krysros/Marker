@@ -1098,9 +1098,13 @@ class ProjectView:
     def delete(self):
         _ = self.request.translate
         project = self.request.context.project
-        contact_ids = self.request.dbsession.execute(
-            select(Contact.id).where(Contact.project_id == project.id)
-        ).scalars().all()
+        contact_ids = (
+            self.request.dbsession.execute(
+                select(Contact.id).where(Contact.project_id == project.id)
+            )
+            .scalars()
+            .all()
+        )
         clear_selected_rows(
             self.request,
             projects_stars,
@@ -1137,9 +1141,13 @@ class ProjectView:
     def del_row(self):
         _ = self.request.translate
         project = self.request.context.project
-        contact_ids = self.request.dbsession.execute(
-            select(Contact.id).where(Contact.project_id == project.id)
-        ).scalars().all()
+        contact_ids = (
+            self.request.dbsession.execute(
+                select(Contact.id).where(Contact.project_id == project.id)
+            )
+            .scalars()
+            .all()
+        )
         clear_selected_rows(
             self.request,
             selected_contacts,

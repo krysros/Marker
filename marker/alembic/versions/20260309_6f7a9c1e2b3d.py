@@ -17,17 +17,13 @@ depends_on = None
 
 
 def _cleanup_user_item_table(table_name, item_column, item_table):
-    op.execute(
-        sa.text(
-            f"""
+    op.execute(sa.text(f"""
             DELETE FROM {table_name}
             WHERE user_id IS NULL
                OR {item_column} IS NULL
                OR user_id NOT IN (SELECT id FROM users)
                OR {item_column} NOT IN (SELECT id FROM {item_table})
-            """
-        )
-    )
+            """))
 
 
 def upgrade():

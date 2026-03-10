@@ -32,9 +32,7 @@ def _nominatim_search(**kwargs):
         params = {"q": query}
     else:
         params = {
-            key: value
-            for key, value in kwargs.items()
-            if _first_not_empty(value)
+            key: value for key, value in kwargs.items() if _first_not_empty(value)
         }
         if not params:
             return []

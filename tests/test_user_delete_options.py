@@ -161,7 +161,9 @@ def test_delete_user_default_removes_account_only(dbsession):
     assert response.headers.get("HX-Redirect") == "/home"
 
     assert (
-        dbsession.execute(select(models.User).where(models.User.id == target.id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.User).where(models.User.id == target.id)
+        ).scalar_one_or_none()
         is None
     )
 
@@ -171,7 +173,9 @@ def test_delete_user_default_removes_account_only(dbsession):
     project = dbsession.execute(
         select(models.Project).where(models.Project.id == project_id)
     ).scalar_one_or_none()
-    tag = dbsession.execute(select(models.Tag).where(models.Tag.id == tag_id)).scalar_one_or_none()
+    tag = dbsession.execute(
+        select(models.Tag).where(models.Tag.id == tag_id)
+    ).scalar_one_or_none()
     contact = dbsession.execute(
         select(models.Contact).where(models.Contact.id == contact_id)
     ).scalar_one_or_none()
@@ -237,20 +241,28 @@ def test_delete_user_with_data_removes_created_records(dbsession):
     assert response.headers.get("HX-Redirect") == "/home"
 
     assert (
-        dbsession.execute(select(models.User).where(models.User.id == target.id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.User).where(models.User.id == target.id)
+        ).scalar_one_or_none()
         is None
     )
 
     assert (
-        dbsession.execute(select(models.Company).where(models.Company.id == company_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Company).where(models.Company.id == company_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
-        dbsession.execute(select(models.Project).where(models.Project.id == project_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Project).where(models.Project.id == project_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
-        dbsession.execute(select(models.Tag).where(models.Tag.id == tag_id)).scalar_one_or_none()
+        dbsession.execute(
+            select(models.Tag).where(models.Tag.id == tag_id)
+        ).scalar_one_or_none()
         is None
     )
     assert (
@@ -303,7 +315,9 @@ def test_delete_user_with_data_removes_created_records(dbsession):
     )
     assert (
         dbsession.execute(
-            select(models.selected_tags.c.tag_id).where(models.selected_tags.c.tag_id == tag_id)
+            select(models.selected_tags.c.tag_id).where(
+                models.selected_tags.c.tag_id == tag_id
+            )
         )
         .scalars()
         .all()
@@ -356,5 +370,5 @@ def test_user_view_has_delete_with_data_option(testapp, dbsession):
     response = testapp.get(f"/user/{target.name}", status=200)
 
     assert f"/user/{target.name}/delete" in response.text
-    assert 'hx-vals=' in response.text
+    assert "hx-vals=" in response.text
     assert '"delete_with_data": "1"' in response.text
