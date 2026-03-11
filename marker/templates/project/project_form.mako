@@ -62,7 +62,7 @@
       </div>
       <div class="mb-3">
         ${form.website.label(class_="form-label")}
-        % if request.matched_route.name == "project_add":
+        <div class="input-group">
           ${form.website(
             class_="form-control" + (" is-invalid" if form.errors.get("website") else ""),
             **{
@@ -70,10 +70,17 @@
               "data-subdivision-url": request.route_url("subdivision"),
             }
           )}
-          <div class="form-text">${_("After entering a website address, the application will try to fill the remaining fields automatically.")}</div>
-        % else:
-          ${form.website(class_="form-control" + (" is-invalid" if form.errors.get("website") else ""))}
-        % endif
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-website-autofill-trigger="1"
+            title="${_('Refresh form from website')}"
+            aria-label="${_('Refresh form from website')}"
+          >
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <div class="form-text">${_("Click the refresh button to fill the remaining fields from the website address.")}</div>
         % for error in form.errors.get("website", []):
           <div class="invalid-feedback">${error}</div>
         % endfor

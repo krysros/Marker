@@ -1,5 +1,4 @@
 (() => {
-	const DEBOUNCE_MS = 500;
 	const MANAGED_FIELDS = [
 		"name",
 		"street",
@@ -80,10 +79,22 @@
 			return;
 		}
 
-		let timerId = null;
+		const trigger =
+			input
+				.closest(".input-group")
+				?.querySelector("button[data-website-autofill-trigger]") || null;
+		if (!trigger) {
+			return;
+		}
+
 		let requestId = 0;
 
 		const runAutofill = async () => {
+			if (trigger.disabled) {
+				return;
+			}
+
+			trigger.disabled = true;
 			requestId += 1;
 			const currentRequestId = requestId;
 
@@ -91,6 +102,7 @@
 			if (!website) {
 				setManagedFields(form, {});
 				await refreshSubdivision(form, subdivisionUrl, "", "");
+				trigger.disabled = false;
 				return;
 			}
 
@@ -106,14 +118,17 @@
 					},
 				});
 				if (!response.ok) {
+					trigger.disabled = false;
 					return;
 				}
 				payload = await response.json();
 			} catch {
+				trigger.disabled = false;
 				return;
 			}
 
 			if (currentRequestId !== requestId) {
+				trigger.disabled = false;
 				return;
 			}
 
@@ -125,24 +140,10 @@
 				fields.country || "",
 				fields.subdivision || ""
 			);
+			trigger.disabled = false;
 		};
 
-		const scheduleAutofill = () => {
-			if (timerId) {
-				clearTimeout(timerId);
-			}
-			timerId = window.setTimeout(() => {
-				timerId = null;
-				void runAutofill();
-			}, DEBOUNCE_MS);
-		};
-
-		input.addEventListener("input", scheduleAutofill);
-		input.addEventListener("change", () => {
-			if (timerId) {
-				clearTimeout(timerId);
-				timerId = null;
-			}
+		trigger.addEventListener("click", () => {
 			void runAutofill();
 		});
 	}
