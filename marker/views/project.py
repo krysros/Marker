@@ -56,6 +56,7 @@ from . import (
     is_bulk_select_request,
     normalize_ci_expression,
     normalize_ci_value,
+    polish_sort_expression,
     set_select_all_state,
     sort_column,
     toggle_selected_item,
@@ -719,7 +720,7 @@ class ProjectView:
                 select(Activity).join(Company).filter(Activity.project_id == project.id)
             )
             order_column = {
-                "name": Company.name,
+                "name": polish_sort_expression(Company.name),
                 "stage": Activity.stage,
                 "role": Activity.role,
                 "created_at": Company.created_at,

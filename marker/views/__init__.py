@@ -1,6 +1,6 @@
 from urllib.parse import parse_qsl, urlencode
 
-from sqlalchemy import delete, func, insert, literal, select
+from sqlalchemy import String, Text, delete, func, insert, literal, select
 from zope.sqlalchemy import mark_changed
 
 from ..models import (
@@ -49,6 +49,44 @@ _POLISH_UPPER_TO_LOWER = {
     "Ż": "ż",
 }
 
+_POLISH_SORT_ALPHABET = [
+    "a",
+    "ą",
+    "b",
+    "c",
+    "ć",
+    "d",
+    "e",
+    "ę",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "ł",
+    "m",
+    "n",
+    "ń",
+    "o",
+    "ó",
+    "p",
+    "q",
+    "r",
+    "s",
+    "ś",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+    "ź",
+    "ż",
+]
+
 
 class Filter:
     def __init__(self, **entries):
@@ -57,8 +95,8 @@ class Filter:
 
 def sort_column(model, sort_key):
     column = getattr(model, sort_key)
-    if sort_key == "name":
-        return func.lower(column)
+    if isinstance(getattr(column, "type", None), (String, Text)):
+        return polish_sort_expression(column)
     return column
 
 
@@ -67,6 +105,13 @@ def normalize_ci_expression(column):
     for upper, lower in _POLISH_UPPER_TO_LOWER.items():
         expr = func.replace(expr, upper, lower)
     return func.lower(expr)
+
+
+def polish_sort_expression(expression):
+    expr = normalize_ci_expression(expression)
+    for index, letter in enumerate(_POLISH_SORT_ALPHABET, start=1):
+        expr = func.replace(expr, letter, f"{index:02d}")
+    return expr
 
 
 def normalize_ci_value(value):

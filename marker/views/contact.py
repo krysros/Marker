@@ -22,6 +22,7 @@ from . import (
     contains_ci,
     handle_bulk_selection,
     is_bulk_select_request,
+    polish_sort_expression,
     set_select_all_state,
     sort_column,
     toggle_selected_item,
@@ -175,9 +176,13 @@ class ContactView:
                     getattr(Project, _sort), getattr(Company, _sort)
                 )
                 if _order == "asc":
-                    stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
+                    stmt = stmt.order_by(
+                        polish_sort_expression(relation_sort).asc(), Contact.id
+                    )
                 elif _order == "desc":
-                    stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
+                    stmt = stmt.order_by(
+                        polish_sort_expression(relation_sort).desc(), Contact.id
+                    )
         elif _sort == "color":
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)

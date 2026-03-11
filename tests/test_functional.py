@@ -45,6 +45,11 @@ def _extract_hx_csrf_token(page_text):
     return json.loads(hx_headers)["X-CSRF-Token"]
 
 
+def _assert_text_order(page_text, values):
+    positions = [page_text.index(value) for value in values]
+    assert positions == sorted(positions)
+
+
 def test_my_view_success(testapp, dbsession):
     model = models.user.User(
         name="admin",
@@ -243,6 +248,106 @@ def test_city_search_is_case_insensitive_with_polish_letters(testapp, dbsession)
 
     project_res = testapp.get("/project", params={"city": "łódź"}, status=200)
     assert "City Search Project" in project_res.text
+
+
+def test_desc_sort_uses_polish_alphabetical_order_for_names(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="sort-search-user",
+        password="admin",
+        fullname="Sort Search User",
+        email="sort.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company_names = [
+        "Sort Wacek Company",
+        "Sort Zygmunt Company",
+        "Sort Śnieg Company",
+        "Sort Łukasz Company",
+        "Sort Żaba Company",
+    ]
+    project_names = [
+        "Sort Wacek Project",
+        "Sort Zygmunt Project",
+        "Sort Śnieg Project",
+        "Sort Łukasz Project",
+        "Sort Żaba Project",
+    ]
+
+    for company_name in company_names:
+        company = models.company.Company(
+            name=company_name,
+            street="",
+            postcode="",
+            city="",
+            subdivision="",
+            country="",
+            website="",
+            color="",
+            NIP="",
+            REGON="",
+            KRS="",
+            court="",
+        )
+        company.created_by = user
+        dbsession.add(company)
+
+    for project_name in project_names:
+        project = models.project.Project(
+            name=project_name,
+            street="",
+            postcode="",
+            city="",
+            subdivision="",
+            country="",
+            website="",
+            color="",
+            deadline=datetime.datetime.now(),
+            stage="",
+            delivery_method="",
+        )
+        project.created_by = user
+        dbsession.add(project)
+
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "sort-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_res = testapp.get(
+        "/company", params={"sort": "name", "order": "desc"}, status=200
+    )
+    _assert_text_order(
+        company_res.text,
+        [
+            "Sort Żaba Company",
+            "Sort Zygmunt Company",
+            "Sort Wacek Company",
+            "Sort Śnieg Company",
+            "Sort Łukasz Company",
+        ],
+    )
+
+    project_res = testapp.get(
+        "/project", params={"sort": "name", "order": "desc"}, status=200
+    )
+    _assert_text_order(
+        project_res.text,
+        [
+            "Sort Żaba Project",
+            "Sort Zygmunt Project",
+            "Sort Wacek Project",
+            "Sort Śnieg Project",
+            "Sort Łukasz Project",
+        ],
+    )
 
 
 def test_notfound(testapp):
