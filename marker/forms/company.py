@@ -55,7 +55,7 @@ class CompanyForm(Form):
     )
     postcode = StringField(
         _("Post code"),
-        validators=[Length(max=10)],
+        validators=[Length(max=100)],
         filters=[strip_filter, dash_filter, remove_multiple_spaces],
     )
     city = StringField(
