@@ -48,9 +48,12 @@ from ..utils.website_autofill import company_autofill_from_website
 from . import (
     Filter,
     clear_selected_rows,
+    contains_ci,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
+    normalize_ci_expression,
+    normalize_ci_value,
     set_select_all_state,
     sort_column,
     toggle_selected_item,
@@ -68,8 +71,9 @@ class CompanyView:
         tags = []
         for value in self.request.params.getall("tag"):
             name = value.strip()
-            if name and name not in seen:
-                seen.add(name)
+            normalized = name.lower()
+            if name and normalized not in seen:
+                seen.add(normalized)
                 tags.append(name)
         return tags
 
@@ -195,27 +199,31 @@ class CompanyView:
         stmt = select(Company)
 
         if tags:
-            stmt = stmt.filter(Company.tags.any(Tag.name.in_(tags)))
+            normalized_tags = [tag.lower() for tag in tags]
+            stmt = stmt.filter(Company.tags.any(func.lower(Tag.name).in_(normalized_tags)))
             q["tag"] = tags
 
         if name:
-            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Company.name).like("%" + normalized_name + "%")
+            )
             q["name"] = name
 
         if street:
-            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Company.street, street))
             q["street"] = street
 
         if postcode:
-            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Company.postcode, postcode))
             q["postcode"] = postcode
 
         if city:
-            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Company.city, city))
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Company.website, website))
             q["website"] = website
 
         if subdivision:
@@ -512,23 +520,26 @@ class CompanyView:
         stmt = select(Company)
 
         if name:
-            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Company.name).like("%" + normalized_name + "%")
+            )
             q["name"] = name
 
         if street:
-            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Company.street, street))
             q["street"] = street
 
         if postcode:
-            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Company.postcode, postcode))
             q["postcode"] = postcode
 
         if city:
-            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Company.city, city))
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Company.website, website))
             q["website"] = website
 
         if subdivision:
@@ -614,19 +625,22 @@ class CompanyView:
         stmt = select(Company)
 
         if name:
-            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Company.name).like("%" + normalized_name + "%")
+            )
 
         if street:
-            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Company.street, street))
 
         if postcode:
-            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Company.postcode, postcode))
 
         if city:
-            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Company.city, city))
 
         if website:
-            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Company.website, website))
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision == subdivision)
@@ -1369,7 +1383,11 @@ class CompanyView:
         companies = []
         if name:
             companies = self.request.dbsession.execute(
-                select(Company).filter(Company.name.ilike("%" + name + "%"))
+                select(Company).filter(
+                    normalize_ci_expression(Company.name).like(
+                        "%" + normalize_ci_value(name) + "%"
+                    )
+                )
             ).scalars()
         return {"companies": companies}
 
@@ -1564,3 +1582,4 @@ class CompanyView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
+

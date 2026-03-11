@@ -8,7 +8,7 @@ from ..forms import CommentFilterForm, CommentSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA
 from ..models import Comment
 from ..utils.paginator import get_paginator
-from . import Filter
+from . import Filter, contains_ci
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class CommentView:
         stmt = select(Comment)
 
         if comment:
-            stmt = stmt.filter(Comment.comment.ilike("%" + comment + "%"))
+            stmt = stmt.filter(contains_ci(Comment.comment, comment))
             q["comment"] = comment
 
         if category == "companies":
@@ -128,3 +128,4 @@ class CommentView:
                 )
             )
         return {"heading": _("Find a comment"), "form": form}
+

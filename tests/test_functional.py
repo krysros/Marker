@@ -60,6 +60,191 @@ def test_my_view_success(testapp, dbsession):
     assert res.body
 
 
+def test_tag_search_is_case_insensitive_in_project_and_company_lists(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="case-search-user",
+        password="admin",
+        fullname="Case Search User",
+        email="case.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Case Search Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Case Search Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    tag = models.tag.Tag(name="MiXeDcAsEtAg")
+    tag.created_by = user
+    tag.companies.append(company)
+    tag.projects.append(project)
+
+    dbsession.add_all([company, project, tag])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "case-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_res = testapp.get("/company", params={"tag": "mixedcasetag"}, status=200)
+    assert "Case Search Company" in company_res.text
+
+    project_res = testapp.get("/project", params={"tag": "MIXEDCASETAG"}, status=200)
+    assert "Case Search Project" in project_res.text
+
+
+def test_name_search_is_case_insensitive_with_polish_letters(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="lodz-search-user",
+        password="admin",
+        fullname="Lodz Search User",
+        email="lodz.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="ALFA ŁÓDŹ",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="BETA ŁÓDŹ",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    dbsession.add_all([company, project])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "lodz-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_res = testapp.get("/company", params={"name": "łódź"}, status=200)
+    assert "ALFA ŁÓDŹ" in company_res.text
+
+    project_res = testapp.get("/project", params={"name": "łódź"}, status=200)
+    assert "BETA ŁÓDŹ" in project_res.text
+
+
+def test_city_search_is_case_insensitive_with_polish_letters(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="city-search-user",
+        password="admin",
+        fullname="City Search User",
+        email="city.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="City Search Company",
+        street="",
+        postcode="",
+        city="ŁÓDŹ",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="City Search Project",
+        street="",
+        postcode="",
+        city="ŁÓDŹ",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    dbsession.add_all([company, project])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "city-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_res = testapp.get("/company", params={"city": "łódź"}, status=200)
+    assert "City Search Company" in company_res.text
+
+    project_res = testapp.get("/project", params={"city": "łódź"}, status=200)
+    assert "City Search Project" in project_res.text
+
+
 def test_notfound(testapp):
     res = testapp.get("/badurl", status=404)
     assert res.status_code == 404

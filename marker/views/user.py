@@ -49,8 +49,11 @@ from ..utils.paginator import get_paginator
 from . import (
     Filter,
     clear_selected_rows,
+    contains_ci,
     handle_bulk_selection,
     is_bulk_select_request,
+    normalize_ci_expression,
+    normalize_ci_value,
     sort_column,
 )
 
@@ -575,19 +578,19 @@ class UserView:
         stmt = select(User)
 
         if name:
-            stmt = stmt.filter(User.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(User.name, name))
             q["name"] = name
 
         if fullname:
-            stmt = stmt.filter(User.fullname.ilike("%" + fullname + "%"))
+            stmt = stmt.filter(contains_ci(User.fullname, fullname))
             q["fullname"] = fullname
 
         if email:
-            stmt = stmt.filter(User.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(contains_ci(User.email, email))
             q["email"] = email
 
         if role:
-            stmt = stmt.filter(User.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(contains_ci(User.role, role))
             q["role"] = role
 
         q["sort"] = _sort
@@ -887,23 +890,26 @@ class UserView:
         stmt = select(Company).filter(Company.created_by == user)
 
         if name:
-            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Company.name).like("%" + normalized_name + "%")
+            )
             q["name"] = name
 
         if street:
-            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Company.street, street))
             q["street"] = street
 
         if postcode:
-            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Company.postcode, postcode))
             q["postcode"] = postcode
 
         if city:
-            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Company.city, city))
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Company.website, website))
             q["website"] = website
 
         if subdivision:
@@ -1040,19 +1046,22 @@ class UserView:
         stmt = select(Company).filter(Company.created_by == user)
 
         if name:
-            stmt = stmt.filter(Company.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Company.name).like("%" + normalized_name + "%")
+            )
 
         if street:
-            stmt = stmt.filter(Company.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Company.street, street))
 
         if postcode:
-            stmt = stmt.filter(Company.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Company.postcode, postcode))
 
         if city:
-            stmt = stmt.filter(Company.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Company.city, city))
 
         if website:
-            stmt = stmt.filter(Company.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Company.website, website))
 
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
@@ -1165,23 +1174,26 @@ class UserView:
         stmt = select(Project).filter(Project.created_by == user)
 
         if name:
-            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Project.name).like("%" + normalized_name + "%")
+            )
             q["name"] = name
 
         if street:
-            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Project.street, street))
             q["street"] = street
 
         if postcode:
-            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Project.postcode, postcode))
             q["postcode"] = postcode
 
         if city:
-            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Project.city, city))
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Project.website, website))
             q["website"] = website
 
         if subdivision:
@@ -1344,19 +1356,22 @@ class UserView:
         stmt = select(Project).filter(Project.created_by == user)
 
         if name:
-            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Project.name).like("%" + normalized_name + "%")
+            )
 
         if street:
-            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Project.street, street))
 
         if postcode:
-            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Project.postcode, postcode))
 
         if city:
-            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Project.city, city))
 
         if website:
-            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Project.website, website))
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
@@ -1465,19 +1480,19 @@ class UserView:
         stmt = select(Contact).filter(Contact.created_by == user)
 
         if name:
-            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(Contact.name, name))
             q["name"] = name
 
         if role:
-            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(contains_ci(Contact.role, role))
             q["role"] = role
 
         if phone:
-            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
             q["phone"] = phone
 
         if email:
-            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(contains_ci(Contact.email, email))
             q["email"] = email
 
         if category == "companies":
@@ -1634,16 +1649,16 @@ class UserView:
         stmt = select(Contact).filter(Contact.created_by == user)
 
         if name:
-            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(Contact.name, name))
 
         if role:
-            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(contains_ci(Contact.role, role))
 
         if phone:
-            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
 
         if email:
-            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(contains_ci(Contact.email, email))
 
         if category == "projects":
             stmt = stmt.filter(Contact.project)
@@ -2517,19 +2532,19 @@ class UserView:
         )
 
         if name:
-            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(Contact.name, name))
             q["name"] = name
 
         if role:
-            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(contains_ci(Contact.role, role))
             q["role"] = role
 
         if phone:
-            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
             q["phone"] = phone
 
         if email:
-            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(contains_ci(Contact.email, email))
             q["email"] = email
 
         if category == "companies":
@@ -2685,16 +2700,16 @@ class UserView:
         )
 
         if name:
-            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(Contact.name, name))
 
         if role:
-            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(contains_ci(Contact.role, role))
 
         if phone:
-            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
 
         if email:
-            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(contains_ci(Contact.email, email))
 
         if _category == "companies":
             stmt = stmt.filter(Contact.company)
@@ -3615,3 +3630,4 @@ class UserView:
             for project in projects
         ]
         return res
+

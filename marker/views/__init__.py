@@ -37,6 +37,18 @@ _SELECTION_TARGETS = {
     ),
 }
 
+_POLISH_UPPER_TO_LOWER = {
+    "Ą": "ą",
+    "Ć": "ć",
+    "Ę": "ę",
+    "Ł": "ł",
+    "Ń": "ń",
+    "Ó": "ó",
+    "Ś": "ś",
+    "Ź": "ź",
+    "Ż": "ż",
+}
+
 
 class Filter:
     def __init__(self, **entries):
@@ -48,6 +60,24 @@ def sort_column(model, sort_key):
     if sort_key == "name":
         return func.lower(column)
     return column
+
+
+def normalize_ci_expression(column):
+    expr = column
+    for upper, lower in _POLISH_UPPER_TO_LOWER.items():
+        expr = func.replace(expr, upper, lower)
+    return func.lower(expr)
+
+
+def normalize_ci_value(value):
+    normalized = str(value)
+    for upper, lower in _POLISH_UPPER_TO_LOWER.items():
+        normalized = normalized.replace(upper, lower)
+    return normalized.lower()
+
+
+def contains_ci(column, value):
+    return normalize_ci_expression(column).like("%" + normalize_ci_value(value) + "%")
 
 
 def is_bulk_select_request(request):

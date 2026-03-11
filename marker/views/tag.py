@@ -37,6 +37,7 @@ from ..utils.paginator import get_paginator
 from . import (
     Filter,
     clear_selected_rows,
+    contains_ci,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
@@ -110,7 +111,7 @@ class TagView:
         stmt = select(Tag)
 
         if name:
-            stmt = stmt.filter(Tag.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(Tag.name, name))
             q["name"] = name
 
         if category == "companies":
@@ -1031,7 +1032,7 @@ class TagView:
         tags = []
         if name:
             tags = self.request.dbsession.execute(
-                select(Tag).filter(Tag.name.ilike("%" + name + "%"))
+                select(Tag).filter(contains_ci(Tag.name, name))
             ).scalars()
         return {"tags": tags, "list_id": list_id}
 
@@ -1050,3 +1051,4 @@ class TagView:
                 )
             )
         return {"heading": _("Find the tag"), "form": form}
+

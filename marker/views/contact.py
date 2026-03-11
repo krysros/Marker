@@ -19,6 +19,7 @@ from ..utils.paginator import get_paginator
 from . import (
     Filter,
     clear_selected_rows,
+    contains_ci,
     handle_bulk_selection,
     is_bulk_select_request,
     set_select_all_state,
@@ -38,8 +39,9 @@ class ContactView:
         tags = []
         for value in self.request.params.getall("tag"):
             name = value.strip()
-            if name and name not in seen:
-                seen.add(name)
+            normalized = name.lower()
+            if name and normalized not in seen:
+                seen.add(normalized)
                 tags.append(name)
         return tags
 
@@ -51,10 +53,15 @@ class ContactView:
         )
 
         if tags:
+            normalized_tags = [tag.lower() for tag in tags]
             stmt = stmt.filter(
                 or_(
-                    Contact.company.has(Company.tags.any(Tag.name.in_(tags))),
-                    Contact.project.has(Project.tags.any(Tag.name.in_(tags))),
+                    Contact.company.has(
+                        Company.tags.any(func.lower(Tag.name).in_(normalized_tags))
+                    ),
+                    Contact.project.has(
+                        Project.tags.any(func.lower(Tag.name).in_(normalized_tags))
+                    ),
                 )
             )
 
@@ -87,19 +94,19 @@ class ContactView:
         stmt = select(Contact)
 
         if name:
-            stmt = stmt.filter(Contact.name.ilike("%" + name + "%"))
+            stmt = stmt.filter(contains_ci(Contact.name, name))
             q["name"] = name
 
         if role:
-            stmt = stmt.filter(Contact.role.ilike("%" + role + "%"))
+            stmt = stmt.filter(contains_ci(Contact.role, role))
             q["role"] = role
 
         if phone:
-            stmt = stmt.filter(Contact.phone.ilike("%" + phone + "%"))
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
             q["phone"] = phone
 
         if email:
-            stmt = stmt.filter(Contact.email.ilike("%" + email + "%"))
+            stmt = stmt.filter(contains_ci(Contact.email, email))
             q["email"] = email
 
         if category == "companies":
@@ -524,3 +531,4 @@ class ContactView:
             identity=self.request.identity,
             geocode=location,
         )
+

@@ -50,9 +50,12 @@ from ..utils.website_autofill import project_autofill_from_website
 from . import (
     Filter,
     clear_selected_rows,
+    contains_ci,
     handle_bulk_selection,
     htmx_refresh_response,
     is_bulk_select_request,
+    normalize_ci_expression,
+    normalize_ci_value,
     set_select_all_state,
     sort_column,
     toggle_selected_item,
@@ -70,8 +73,9 @@ class ProjectView:
         tags = []
         for value in self.request.params.getall("tag"):
             name = value.strip()
-            if name and name not in seen:
-                seen.add(name)
+            normalized = name.lower()
+            if name and normalized not in seen:
+                seen.add(normalized)
                 tags.append(name)
         return tags
 
@@ -201,27 +205,31 @@ class ProjectView:
         stmt = select(Project)
 
         if tags:
-            stmt = stmt.filter(Project.tags.any(Tag.name.in_(tags)))
+            normalized_tags = [tag.lower() for tag in tags]
+            stmt = stmt.filter(Project.tags.any(func.lower(Tag.name).in_(normalized_tags)))
             q["tag"] = tags
 
         if name:
-            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Project.name).like("%" + normalized_name + "%")
+            )
             q["name"] = name
 
         if street:
-            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Project.street, street))
             q["street"] = street
 
         if postcode:
-            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Project.postcode, postcode))
             q["postcode"] = postcode
 
         if city:
-            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Project.city, city))
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Project.website, website))
             q["website"] = website
 
         if subdivision:
@@ -422,23 +430,26 @@ class ProjectView:
         stmt = select(Project)
 
         if name:
-            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Project.name).like("%" + normalized_name + "%")
+            )
             q["name"] = name
 
         if street:
-            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Project.street, street))
             q["street"] = street
 
         if postcode:
-            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Project.postcode, postcode))
             q["postcode"] = postcode
 
         if city:
-            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Project.city, city))
             q["city"] = city
 
         if website:
-            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Project.website, website))
             q["website"] = website
 
         if subdivision:
@@ -525,19 +536,22 @@ class ProjectView:
         stmt = select(Project)
 
         if name:
-            stmt = stmt.filter(Project.name.ilike("%" + name + "%"))
+            normalized_name = normalize_ci_value(name)
+            stmt = stmt.filter(
+                normalize_ci_expression(Project.name).like("%" + normalized_name + "%")
+            )
 
         if street:
-            stmt = stmt.filter(Project.street.ilike("%" + street + "%"))
+            stmt = stmt.filter(contains_ci(Project.street, street))
 
         if postcode:
-            stmt = stmt.filter(Project.postcode.ilike("%" + postcode + "%"))
+            stmt = stmt.filter(contains_ci(Project.postcode, postcode))
 
         if city:
-            stmt = stmt.filter(Project.city.ilike("%" + city + "%"))
+            stmt = stmt.filter(contains_ci(Project.city, city))
 
         if website:
-            stmt = stmt.filter(Project.website.ilike("%" + website + "%"))
+            stmt = stmt.filter(contains_ci(Project.website, website))
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision == subdivision)
@@ -1358,7 +1372,11 @@ class ProjectView:
         projects = []
         if name:
             projects = self.request.dbsession.execute(
-                select(Project).filter(Project.name.ilike("%" + name + "%"))
+                select(Project).filter(
+                    normalize_ci_expression(Project.name).like(
+                        "%" + normalize_ci_value(name) + "%"
+                    )
+                )
             ).scalars()
         return {"projects": projects}
 
@@ -1562,3 +1580,4 @@ class ProjectView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}
         return ""
+
