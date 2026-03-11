@@ -9,6 +9,7 @@
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
     </button>
+    ${button.a(icon='people', color='secondary', url=request.route_url('user_selected_tags_contacts', username=user.name, _query=q))}
     ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_tags', username=user.name, _query=q))}
   </div>
 </h2>

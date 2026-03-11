@@ -604,6 +604,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_selected_companies_contacts",
+        "/user/{username}/selected_companies/contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_companies_contacts",
+        "/user/{username}/more_selected_companies_contacts",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_selected_projects",
         "/user/{username}/selected_projects",
         factory=user_factory,
@@ -634,6 +644,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_selected_projects_contacts",
+        "/user/{username}/selected_projects/contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_projects_contacts",
+        "/user/{username}/more_selected_projects_contacts",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_selected_tags",
         "/user/{username}/selected_tags",
         factory=user_factory,
@@ -656,6 +676,16 @@ def includeme(config):
     config.add_route(
         "user_merge_selected_tags",
         "/user/{username}/merge_selected_tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_tags_contacts",
+        "/user/{username}/selected_tags/contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_tags_contacts",
+        "/user/{username}/more_selected_tags_contacts",
         factory=user_factory,
     )
     config.add_route(

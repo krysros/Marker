@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import delete, func, or_, select
+from sqlalchemy import delete, false, func, or_, select
 
 from ..forms import (
     CommentFilterForm,
@@ -14,6 +14,7 @@ from ..forms import (
     UserForm,
     UserSearchForm,
 )
+from ..forms.ts import TranslationString as _
 from ..forms.select import (
     CATEGORIES,
     COLORS,
@@ -54,6 +55,7 @@ from . import (
     is_bulk_select_request,
     normalize_ci_expression,
     normalize_ci_value,
+    polish_sort_expression,
     sort_column,
 )
 
@@ -2486,6 +2488,274 @@ class UserView:
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
         )
+        return response
+
+    def _selected_related_contacts(self, scope, more_route):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
+        requested_category = self.request.params.get("category", "")
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS)
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if scope == "companies":
+            category = requested_category
+            effective_category = category or "companies"
+            stmt = (
+                select(Contact)
+                .join(Company, Contact.company_id == Company.id)
+                .join(selected_companies, selected_companies.c.company_id == Company.id)
+                .filter(selected_companies.c.user_id == user.id)
+            )
+            if category == "projects":
+                stmt = stmt.filter(false())
+        elif scope == "projects":
+            category = requested_category
+            effective_category = category or "projects"
+            stmt = (
+                select(Contact)
+                .join(Project, Contact.project_id == Project.id)
+                .join(selected_projects, selected_projects.c.project_id == Project.id)
+                .filter(selected_projects.c.user_id == user.id)
+            )
+            if category == "companies":
+                stmt = stmt.filter(false())
+        else:
+            category = requested_category
+            effective_category = category
+            selected_tag_ids = (
+                select(selected_tags.c.tag_id)
+                .where(selected_tags.c.user_id == user.id)
+                .scalar_subquery()
+            )
+            stmt = select(Contact).distinct().filter(
+                or_(
+                    Contact.company.has(Company.tags.any(Tag.id.in_(selected_tag_ids))),
+                    Contact.project.has(Project.tags.any(Tag.id.in_(selected_tag_ids))),
+                )
+            )
+
+        if category:
+            q["category"] = category
+
+        if name:
+            stmt = stmt.filter(contains_ci(Contact.name, name))
+            q["name"] = name
+
+        if role:
+            stmt = stmt.filter(contains_ci(Contact.role, role))
+            q["role"] = role
+
+        if phone:
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
+            q["phone"] = phone
+
+        if email:
+            stmt = stmt.filter(contains_ci(Contact.email, email))
+            q["email"] = email
+
+        if effective_category == "companies":
+            stmt = stmt.filter(Contact.company)
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(Contact.company.has(Company.subdivision.in_(subdivision)))
+                q["subdivision"] = list(subdivision)
+        elif effective_category == "projects":
+            stmt = stmt.filter(Contact.project)
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(Contact.project.has(Project.subdivision.in_(subdivision)))
+                q["subdivision"] = list(subdivision)
+        else:
+            if country:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.country == country),
+                        Contact.project.has(Project.country == country),
+                    )
+                )
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.subdivision.in_(subdivision)),
+                        Contact.project.has(Project.subdivision.in_(subdivision)),
+                    )
+                )
+                q["subdivision"] = list(subdivision)
+
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
+
+        if _sort in {"country", "subdivision"}:
+            company_relation_sort = (
+                select(getattr(Company, _sort))
+                .where(Company.id == Contact.company_id)
+                .scalar_subquery()
+            )
+            project_relation_sort = (
+                select(getattr(Project, _sort))
+                .where(Project.id == Contact.project_id)
+                .scalar_subquery()
+            )
+            if effective_category == "projects":
+                relation_sort = polish_sort_expression(project_relation_sort)
+                if _order == "asc":
+                    stmt = stmt.order_by(relation_sort.asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(relation_sort.desc(), Contact.id)
+            elif effective_category == "companies":
+                relation_sort = polish_sort_expression(company_relation_sort)
+                if _order == "asc":
+                    stmt = stmt.order_by(relation_sort.asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(relation_sort.desc(), Contact.id)
+            else:
+                relation_sort = polish_sort_expression(
+                    func.coalesce(project_relation_sort, company_relation_sort)
+                )
+                if _order == "asc":
+                    stmt = stmt.order_by(relation_sort.asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(relation_sort.desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_contacts
+            )
+
+        obj = Filter(**q)
+        form = ContactFilterForm(self.request.GET, obj, request=self.request)
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            more_route,
+            username=user.name,
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+            "form": form,
+        }
+
+    @view_config(
+        route_name="user_selected_companies_contacts",
+        renderer="user_selected_related_contacts.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_companies_contacts",
+        renderer="contact_more.mako",
+        permission="view",
+    )
+    def selected_companies_contacts(self):
+        response = self._selected_related_contacts(
+            scope="companies", more_route="user_more_selected_companies_contacts"
+        )
+        if isinstance(response, dict):
+            response["heading"] = self.request.translate(
+                _("Contacts assigned to selected companies")
+            )
+            response["switch_url"] = self.request.route_url(
+                "user_selected_companies", username=response["user"].name
+            )
+            response["switch_icon"] = "buildings"
+        return response
+
+    @view_config(
+        route_name="user_selected_projects_contacts",
+        renderer="user_selected_related_contacts.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_projects_contacts",
+        renderer="contact_more.mako",
+        permission="view",
+    )
+    def selected_projects_contacts(self):
+        response = self._selected_related_contacts(
+            scope="projects", more_route="user_more_selected_projects_contacts"
+        )
+        if isinstance(response, dict):
+            response["heading"] = self.request.translate(
+                _("Contacts assigned to selected projects")
+            )
+            response["switch_url"] = self.request.route_url(
+                "user_selected_projects", username=response["user"].name
+            )
+            response["switch_icon"] = "briefcase"
+        return response
+
+    @view_config(
+        route_name="user_selected_tags_contacts",
+        renderer="user_selected_related_contacts.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_tags_contacts",
+        renderer="contact_more.mako",
+        permission="view",
+    )
+    def selected_tags_contacts(self):
+        response = self._selected_related_contacts(
+            scope="tags", more_route="user_more_selected_tags_contacts"
+        )
+        if isinstance(response, dict):
+            response["heading"] = self.request.translate(
+                _("Contacts assigned to selected tags")
+            )
+            response["switch_url"] = self.request.route_url(
+                "user_selected_tags", username=response["user"].name
+            )
+            response["switch_icon"] = "tags"
         return response
 
     @view_config(

@@ -7,6 +7,7 @@
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_companies', username=user.name, _query=q), confirm_text=_("Delete all selected companies?"))}
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_selected_companies', username=user.name, _query=q))}
+    ${button.a(icon='people', color='secondary', url=request.route_url('user_selected_companies_contacts', username=user.name, _query=q))}
     ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_companies', username=user.name, _query=q))}
   </div>
 </h2>
