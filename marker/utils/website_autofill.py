@@ -63,7 +63,7 @@ _ADDRESS_ONLY_LABEL_RE = re.compile(
 )
 _ADDRESS_PART_SPLIT_RE = re.compile(r"\s*,\s*")
 _STREET_RE = re.compile(
-    r"\b(?:ul\.?|ulica)\s*([^\n,;|]{3,100})",
+    r"\b(?:ulica|ul\.?)\s*([^\n,;|]{3,100})",
     re.IGNORECASE,
 )
 _NIP_RE = re.compile(
@@ -1298,7 +1298,7 @@ def _sanitize_street(value, max_len):
     value = _normalize_whitespace(value)
     if not value:
         return ""
-    value = re.sub(r"^(ul\.?|ulica)\s+", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"^(?:ulica|ul\.)\s*|^ul\s+", "", value, flags=re.IGNORECASE)
     value = value.strip(" ,")
     if len(value) > max_len:
         value = value[:max_len].rstrip()
