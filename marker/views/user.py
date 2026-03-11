@@ -4,6 +4,7 @@ import logging
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import delete, false, func, or_, select
+from sqlalchemy.orm import selectinload
 
 from ..forms import (
     CommentFilterForm,
@@ -2493,6 +2494,7 @@ class UserView:
     def _selected_related_contacts(self, scope, more_route):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
+        per_page = 20
         name = self.request.params.get("name", None)
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
@@ -2520,22 +2522,36 @@ class UserView:
         if scope == "companies":
             category = requested_category
             effective_category = category or "companies"
+            selected_company_ids = (
+                select(selected_companies.c.company_id)
+                .where(selected_companies.c.user_id == user.id)
+                .scalar_subquery()
+            )
             stmt = (
                 select(Contact)
-                .join(Company, Contact.company_id == Company.id)
-                .join(selected_companies, selected_companies.c.company_id == Company.id)
-                .filter(selected_companies.c.user_id == user.id)
+                .options(
+                    selectinload(Contact.company),
+                    selectinload(Contact.project),
+                )
+                .filter(Contact.company_id.in_(selected_company_ids))
             )
             if category == "projects":
                 stmt = stmt.filter(false())
         elif scope == "projects":
             category = requested_category
             effective_category = category or "projects"
+            selected_project_ids = (
+                select(selected_projects.c.project_id)
+                .where(selected_projects.c.user_id == user.id)
+                .scalar_subquery()
+            )
             stmt = (
                 select(Contact)
-                .join(Project, Contact.project_id == Project.id)
-                .join(selected_projects, selected_projects.c.project_id == Project.id)
-                .filter(selected_projects.c.user_id == user.id)
+                .options(
+                    selectinload(Contact.company),
+                    selectinload(Contact.project),
+                )
+                .filter(Contact.project_id.in_(selected_project_ids))
             )
             if category == "companies":
                 stmt = stmt.filter(false())
@@ -2547,10 +2563,27 @@ class UserView:
                 .where(selected_tags.c.user_id == user.id)
                 .scalar_subquery()
             )
-            stmt = select(Contact).distinct().filter(
-                or_(
-                    Contact.company.has(Company.tags.any(Tag.id.in_(selected_tag_ids))),
-                    Contact.project.has(Project.tags.any(Tag.id.in_(selected_tag_ids))),
+            selected_company_ids = (
+                select(companies_tags.c.company_id)
+                .where(companies_tags.c.tag_id.in_(selected_tag_ids))
+                .scalar_subquery()
+            )
+            selected_project_ids = (
+                select(projects_tags.c.project_id)
+                .where(projects_tags.c.tag_id.in_(selected_tag_ids))
+                .scalar_subquery()
+            )
+            stmt = (
+                select(Contact)
+                .options(
+                    selectinload(Contact.company),
+                    selectinload(Contact.project),
+                )
+                .filter(
+                    or_(
+                        Contact.company_id.in_(selected_company_ids),
+                        Contact.project_id.in_(selected_project_ids),
+                    )
                 )
             )
 
@@ -2657,23 +2690,27 @@ class UserView:
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt.subquery())
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            self.request.dbsession.execute(
+                get_paginator(stmt, page=page, per_page=per_page)
+            )
             .scalars()
             .all()
         )
 
-        next_page = self.request.route_url(
-            more_route,
-            username=user.name,
-            _query={
-                **q,
-                "page": page + 1,
-            },
-        )
+        next_page = None
+        if len(paginator) == per_page:
+            next_page = self.request.route_url(
+                more_route,
+                username=user.name,
+                _query={
+                    **q,
+                    "page": page + 1,
+                },
+            )
 
         return {
             "q": q,
