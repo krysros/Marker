@@ -11,24 +11,6 @@
     <form action="${request.current_route_path()}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
-        ${form.website.label(class_="form-label")}
-        % if request.matched_route.name == "project_add":
-          ${form.website(
-            class_="form-control" + (" is-invalid" if form.errors.get("website") else ""),
-            **{
-              "data-website-autofill-url": request.route_url("project_website_autofill"),
-              "data-subdivision-url": request.route_url("subdivision"),
-            }
-          )}
-          <div class="form-text">${_("After entering a website address, the application will try to fill the remaining fields automatically.")}</div>
-        % else:
-          ${form.website(class_="form-control" + (" is-invalid" if form.errors.get("website") else ""))}
-        % endif
-        % for error in form.errors.get("website", []):
-          <div class="invalid-feedback">${error}</div>
-        % endfor
-      </div>
-      <div class="mb-3">
         ${form.name.label(class_="form-label")}
         ${form.name(class_="form-control" + (" is-invalid" if form.errors.get("name") else ""))}
         % for error in form.errors.get("name", []):
@@ -75,6 +57,24 @@
         % endfor
         </select>
         % for error in form.errors.get("subdivision", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      <div class="mb-3">
+        ${form.website.label(class_="form-label")}
+        % if request.matched_route.name == "project_add":
+          ${form.website(
+            class_="form-control" + (" is-invalid" if form.errors.get("website") else ""),
+            **{
+              "data-website-autofill-url": request.route_url("project_website_autofill"),
+              "data-subdivision-url": request.route_url("subdivision"),
+            }
+          )}
+          <div class="form-text">${_("After entering a website address, the application will try to fill the remaining fields automatically.")}</div>
+        % else:
+          ${form.website(class_="form-control" + (" is-invalid" if form.errors.get("website") else ""))}
+        % endif
+        % for error in form.errors.get("website", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
