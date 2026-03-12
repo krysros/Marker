@@ -179,6 +179,17 @@ class ContactView:
                     stmt = stmt.order_by(
                         polish_sort_expression(relation_sort).desc(), Contact.id
                     )
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         elif _sort == "color":
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -493,6 +504,17 @@ class ContactView:
                     stmt = stmt.order_by(
                         polish_sort_expression(relation_sort).desc(), Contact.id
                     )
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         elif _sort == "color":
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
