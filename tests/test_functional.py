@@ -83,6 +83,12 @@ def _extract_selected_sort_value(page_text):
     return None
 
 
+def _set_cookie_headers(response):
+    return [
+        value for key, value in response.headerlist if key.lower() == "set-cookie"
+    ]
+
+
 def test_my_view_success(testapp, dbsession):
     model = models.user.User(
         name="admin",
@@ -592,6 +598,146 @@ def test_desc_sort_uses_polish_alphabetical_order_for_names(testapp, dbsession):
 def test_notfound(testapp):
     res = testapp.get("/badurl", status=404)
     assert res.status_code == 404
+
+
+def test_login_redirect_rejects_external_next_and_allows_local_path(testapp, dbsession):
+    user = models.user.User(
+        name="login-redirect-user",
+        password="admin",
+        fullname="Login Redirect User",
+        email="login.redirect.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get(
+        "/login",
+        params={"next": "https://evil.example/phishing"},
+        status=200,
+    )
+    form = login_page.forms[0]
+    form["username"] = "login-redirect-user"
+    form["password"] = "admin"
+    response_external = form.submit(status=303)
+    assert response_external.headers["Location"] == "http://example.com/"
+
+    testapp.reset()
+
+    login_page = testapp.get("/login", params={"next": "/project"}, status=200)
+    form = login_page.forms[0]
+    form["username"] = "login-redirect-user"
+    form["password"] = "admin"
+    response_local = form.submit(status=303)
+    assert response_local.headers["Location"] == "http://example.com/project"
+
+
+def test_login_sets_httponly_and_samesite_cookies(testapp, dbsession):
+    user = models.user.User(
+        name="cookie-security-user",
+        password="admin",
+        fullname="Cookie Security User",
+        email="cookie.security.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "cookie-security-user"
+    form["password"] = "admin"
+    response = form.submit(status=303)
+
+    cookies = _set_cookie_headers(response)
+    auth_cookies = [cookie for cookie in cookies if cookie.startswith("auth_tkt=")]
+    csrf_cookies = [cookie for cookie in cookies if cookie.startswith("csrf_token=")]
+    session_cookies = [cookie for cookie in cookies if cookie.startswith("session=")]
+
+    assert auth_cookies
+    assert csrf_cookies
+    assert session_cookies
+
+    for cookie in auth_cookies + csrf_cookies + session_cookies:
+        assert "HttpOnly" in cookie
+        assert "SameSite=Lax" in cookie
+
+
+def test_set_locale_rejects_external_referrer(testapp):
+    response = testapp.get(
+        "/locale/pl",
+        headers={"Referer": "https://evil.example/steal"},
+        status=302,
+    )
+    assert response.headers["Location"] == "http://example.com/"
+
+    cookies = _set_cookie_headers(response)
+    locale_cookies = [cookie for cookie in cookies if cookie.startswith("_LOCALE_=")]
+    assert locale_cookies
+    assert "HttpOnly" in locale_cookies[0]
+    assert "SameSite=Lax" in locale_cookies[0]
+
+
+def test_comment_markdown_sanitizes_dangerous_html(testapp, dbsession):
+    user = models.user.User(
+        name="comment-sanitize-user",
+        password="admin",
+        fullname="Comment Sanitize User",
+        email="comment.sanitize.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Comment Sanitizer Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    comment = models.comment.Comment(
+        "**Safe** <script>alert(1)</script> "
+        "<img src=x onerror=alert(2)> "
+        "[malicious](javascript:alert(3))"
+    )
+    comment.created_by = user
+    comment.company = company
+
+    dbsession.add_all([company, comment])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "comment-sanitize-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    comments_page = testapp.get("/comment", status=200)
+
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(comments_page.text, "html.parser")
+    comment_bodies = [body.decode_contents().lower() for body in soup.select(".card .card-body")]
+
+    sanitized_body = next(
+        (body for body in comment_bodies if "<strong>safe</strong>" in body),
+        "",
+    )
+
+    assert sanitized_body
+    assert "<script" not in sanitized_body
+    assert "onerror=" not in sanitized_body
+    assert "javascript:alert(3)" not in sanitized_body
 
 
 def test_plus_shortcut_script_and_single_button(testapp, dbsession):

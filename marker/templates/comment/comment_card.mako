@@ -1,4 +1,33 @@
-<%! import markdown %>
+<%!
+import markdown
+import nh3
+
+_MARKDOWN_ALLOWED_TAGS = {
+  "a",
+  "blockquote",
+  "br",
+  "code",
+  "em",
+  "li",
+  "ol",
+  "p",
+  "pre",
+  "strong",
+  "ul",
+}
+_MARKDOWN_ALLOWED_ATTRIBUTES = {
+  "a": {"href", "title"},
+}
+
+
+def render_comment_markdown(value):
+  rendered = markdown.markdown(value or "")
+  return nh3.clean(
+    rendered,
+    tags=_MARKDOWN_ALLOWED_TAGS,
+    attributes=_MARKDOWN_ALLOWED_ATTRIBUTES,
+  )
+%>
 <%page args="comment"/>
 <%namespace name="button" file="button.mako"/>
 
@@ -18,7 +47,7 @@
     % endif
   </div>
   <div class="card-body">
-    ${markdown.markdown(comment.comment) | n}
+    ${render_comment_markdown(comment.comment) | n}
   </div>
   <div class="card-footer">
     ${comment.created_at.strftime('%Y-%m-%d %H:%M:%S')} ${_("by")} <a href="${request.route_url('user_view', username=comment.created_by.name)}" title="${comment.created_by.fullname}">${comment.created_by.name}</a>

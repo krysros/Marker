@@ -38,6 +38,7 @@ dependencies = [
     "Babel",
     "Unidecode",
     "markdown",
+    "nh3",
     "pycountry",
     "beautifulsoup4",
 ]

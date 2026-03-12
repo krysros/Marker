@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from ..forms import LoginForm
 from ..models import User
+from . import safe_redirect_target
 
 log = logging.getLogger(__name__)
 
@@ -16,9 +17,11 @@ log = logging.getLogger(__name__)
 @view_config(route_name="login", renderer="login.mako")
 def login(request):
     _ = request.translate
-    next_url = request.params.get("next")
-    if not next_url:
-        next_url = request.route_url("home")
+    next_url = safe_redirect_target(
+        request,
+        request.params.get("next"),
+        request.route_url("home"),
+    )
 
     form = LoginForm(request.POST)
 
@@ -61,7 +64,7 @@ def logout(request):
 def forbidden(exc, request):
     _ = request.translate
     if not request.is_authenticated:
-        next_url = request.route_url("login", _query={"next": request.url})
+        next_url = request.route_url("login", _query={"next": request.path_qs})
         request.session.flash(_("warning:No required permissions"))
         return HTTPSeeOther(location=next_url)
     return httpexception_view(exc, request)

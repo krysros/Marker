@@ -4,11 +4,35 @@ from pyramid.csrf import CookieCSRFStoragePolicy
 from pyramid.request import RequestLocalCache
 
 from . import models
+from .security_settings import (
+    get_cookie_samesite,
+    get_cookie_secure,
+    get_int_setting,
+    get_validated_secret,
+)
 
 
 class MySecurityPolicy:
-    def __init__(self, secret):
-        self.authtkt = AuthTktCookieHelper(secret)
+    def __init__(
+        self,
+        secret,
+        *,
+        secure=False,
+        samesite="Lax",
+        timeout=43200,
+        reissue_time=1800,
+        max_age=43200,
+    ):
+        self.authtkt = AuthTktCookieHelper(
+            secret,
+            secure=secure,
+            http_only=True,
+            timeout=timeout,
+            reissue_time=reissue_time,
+            max_age=max_age,
+            samesite=samesite,
+            wild_domain=False,
+        )
         self.identity_cache = RequestLocalCache(self.load_identity)
         self.acl = ACLHelper()
 
@@ -52,7 +76,29 @@ class MySecurityPolicy:
 def includeme(config):
     settings = config.get_settings()
 
-    config.set_csrf_storage_policy(CookieCSRFStoragePolicy())
+    cookie_secure = get_cookie_secure(settings)
+    cookie_samesite = get_cookie_samesite(settings)
+
+    config.set_csrf_storage_policy(
+        CookieCSRFStoragePolicy(
+            secure=cookie_secure,
+            httponly=True,
+            samesite=cookie_samesite,
+        )
+    )
     config.set_default_csrf_options(require_csrf=True)
 
-    config.set_security_policy(MySecurityPolicy(settings["auth.secret"]))
+    config.set_security_policy(
+        MySecurityPolicy(
+            get_validated_secret(
+                settings,
+                setting_key="auth.secret",
+                env_key="MARKER_AUTH_SECRET",
+            ),
+            secure=cookie_secure,
+            samesite=cookie_samesite,
+            timeout=get_int_setting(settings, "auth.timeout", 43200),
+            reissue_time=get_int_setting(settings, "auth.reissue_time", 1800),
+            max_age=get_int_setting(settings, "auth.max_age", 43200),
+        )
+    )

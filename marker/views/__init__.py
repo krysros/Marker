@@ -1,4 +1,4 @@
-from urllib.parse import parse_qsl, urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from sqlalchemy import String, Text, delete, func, insert, literal, select
 from zope.sqlalchemy import mark_changed
@@ -123,6 +123,31 @@ def normalize_ci_value(value):
 
 def contains_ci(column, value):
     return normalize_ci_expression(column).like("%" + normalize_ci_value(value) + "%")
+
+
+def safe_redirect_target(request, target, fallback_url):
+    if not target:
+        return fallback_url
+
+    try:
+        parsed = urlsplit(str(target))
+    except ValueError:
+        return fallback_url
+
+    if parsed.scheme or parsed.netloc:
+        current = urlsplit(request.host_url)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or parsed.scheme != current.scheme
+            or parsed.netloc.lower() != current.netloc.lower()
+        ):
+            return fallback_url
+        return parsed.geturl()
+
+    if not parsed.path.startswith("/") or parsed.path.startswith("//"):
+        return fallback_url
+
+    return parsed.geturl()
 
 
 def is_bulk_select_request(request):
