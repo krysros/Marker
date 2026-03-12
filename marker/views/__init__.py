@@ -296,9 +296,18 @@ def _select_all_state_key(request):
     return f"{path}?{normalized_qs}" if normalized_qs else path
 
 
+_MAX_SELECT_ALL_STATES = 40
+
+
 def set_select_all_state(request, checked):
     states = request.session.setdefault("select_all_states", {})
-    states[_select_all_state_key(request)] = bool(checked)
+    key = _select_all_state_key(request)
+    states.pop(key, None)  # move to end on update
+    states[key] = bool(checked)
+    if len(states) > _MAX_SELECT_ALL_STATES:
+        excess = len(states) - _MAX_SELECT_ALL_STATES
+        for old_key in list(states.keys())[:excess]:
+            del states[old_key]
 
 
 def handle_bulk_selection(request, stmt, selected_items):
