@@ -7,6 +7,7 @@
         <th>${checkbox.select_all()}</th>
         <th>${_("Project")}</th>
         <th>${_("City")}</th>
+        <th>${_("Companies")}</th>
         <th>${_("Stars")}</th>
         <th>${_("Comments")}</th>
         <th>${_("Action")}</th>

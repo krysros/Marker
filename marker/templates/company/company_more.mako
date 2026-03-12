@@ -26,7 +26,12 @@
     <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=company.country), "name", "---")}</small>
   </td>
   <td>
-    <a href="${request.route_url('company_stars', company_id=company.id, slug=company.slug)}">
+    <a href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
+      <span class="badge text-bg-secondary" role="button">${company.count_projects}</span>
+    </a>
+  </td>
+  <td>
+    <a href="${request.route_url('company_stars', company_id=company.id, slug=company.slug)}"
       <div hx-get="${request.route_url('company_count_stars', company_id=company.id, slug=company.slug)}"
            hx-trigger="starCompanyEvent from:body"
            hx-target="#companies-stars-${company.id}"
