@@ -182,7 +182,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -506,7 +506,7 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -1004,7 +1004,7 @@ class CompanyView:
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)

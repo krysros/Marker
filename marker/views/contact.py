@@ -78,7 +78,7 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
@@ -397,7 +397,7 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")

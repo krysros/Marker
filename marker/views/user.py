@@ -862,7 +862,7 @@ class UserView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -1023,7 +1023,7 @@ class UserView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -1138,7 +1138,7 @@ class UserView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -1328,7 +1328,7 @@ class UserView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -1461,7 +1461,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
@@ -1638,7 +1638,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "companies")
@@ -1841,7 +1841,7 @@ class UserView:
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -1938,7 +1938,7 @@ class UserView:
         user = self.request.context.user
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         stmt = (
             select(Company)
             .join(selected_companies)
@@ -1982,7 +1982,7 @@ class UserView:
         user = self.request.context.user
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         q = {}
@@ -2100,7 +2100,7 @@ class UserView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -2216,7 +2216,7 @@ class UserView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         now = datetime.datetime.now()
 
         stmt = (
@@ -2278,7 +2278,7 @@ class UserView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -2521,7 +2521,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         requested_category = self.request.params.get("category", "")
@@ -2845,7 +2845,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
@@ -3022,7 +3022,7 @@ class UserView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         _category = self.request.params.get("category", "companies")
@@ -3391,7 +3391,7 @@ class UserView:
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -3480,7 +3480,7 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         color = self.request.params.get("color", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         country = self.request.params.get("country", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -3613,7 +3613,7 @@ class UserView:
         status = self.request.params.get("status", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -3712,7 +3712,7 @@ class UserView:
         status = self.request.params.get("status", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()

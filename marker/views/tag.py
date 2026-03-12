@@ -223,7 +223,7 @@ class TagView:
         tag = self.request.context.tag
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         q = {}
 
         stmt = select(Company).filter(Company.tags.any(name=tag.name))
@@ -264,7 +264,7 @@ class TagView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         now = datetime.datetime.now()
         q = {}
 
@@ -318,7 +318,7 @@ class TagView:
         tag = self.request.context.tag
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
 
         # Bounding box parameters for lazy loading
         north = self.request.params.get("north", None)
@@ -380,7 +380,7 @@ class TagView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         now = datetime.datetime.now()
 
         # Bounding box parameters for lazy loading
@@ -458,7 +458,7 @@ class TagView:
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
@@ -656,7 +656,7 @@ class TagView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = self.request.params.getall("subdivision")
+        subdivision = [value for value in self.request.params.getall("subdivision") if value]
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
