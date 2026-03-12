@@ -14,9 +14,10 @@ def select_subdivisions(country_code=None):
     first_option = [("", "---")]
     subdivisions = []
     if country_code:
+        country_subdivisions = pycountry.subdivisions.get(country_code=country_code) or []
         subdivisions = [
             (subdivision.code, subdivision.name)
-            for subdivision in pycountry.subdivisions.get(country_code=country_code)
+            for subdivision in country_subdivisions
         ]
         subdivisions = sorted(subdivisions)
     subdivisions = first_option + subdivisions
