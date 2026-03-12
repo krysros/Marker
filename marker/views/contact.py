@@ -47,11 +47,7 @@ class ContactView:
         return tags
 
     def _stmt_contacts_by_tags(self, tags):
-        stmt = (
-            select(Contact)
-            .distinct()
-            .order_by(Contact.created_at.desc(), Contact.id.desc())
-        )
+        stmt = select(Contact).distinct()
 
         if tags:
             normalized_tags = [tag.lower() for tag in tags]
@@ -157,7 +153,7 @@ class ContactView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _sort in {"country", "subdivision"}:
+        if _sort in {"city", "country", "subdivision"}:
             if category == "projects":
                 stmt = stmt.join(Contact.project)
                 if _order == "asc":
@@ -386,12 +382,127 @@ class ContactView:
         _ = self.request.translate
         tags = self._normalized_tags()
         page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        subdivision = self.request.params.getall("subdivision")
+        country = self.request.params.get("country", None)
+        color = self.request.params.get("color", None)
+        category = self.request.params.get("category", "")
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS)
+        order_criteria = dict(ORDER_CRITERIA)
+        categories = dict(CATEGORIES)
         q = {}
 
         if not tags:
             return HTTPSeeOther(location=self.request.route_url("contact_search_tags"))
 
         q["tag"] = tags
+
+        stmt = self._stmt_contacts_by_tags(tags)
+
+        if name:
+            stmt = stmt.filter(contains_ci(Contact.name, name))
+            q["name"] = name
+
+        if role:
+            stmt = stmt.filter(contains_ci(Contact.role, role))
+            q["role"] = role
+
+        if phone:
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
+            q["phone"] = phone
+
+        if email:
+            stmt = stmt.filter(contains_ci(Contact.email, email))
+            q["email"] = email
+
+        if category == "companies":
+            stmt = stmt.filter(Contact.company)
+            q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.company.has(Company.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.company.has(Company.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
+        elif category == "projects":
+            stmt = stmt.filter(Contact.project)
+            q["category"] = category
+            if country:
+                stmt = stmt.filter(Contact.project.has(Project.country == country))
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    Contact.project.has(Project.subdivision.in_(subdivision))
+                )
+                q["subdivision"] = list(subdivision)
+        else:
+            if country:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.country == country),
+                        Contact.project.has(Project.country == country),
+                    )
+                )
+                q["country"] = country
+            if subdivision:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.subdivision.in_(subdivision)),
+                        Contact.project.has(Project.subdivision.in_(subdivision)),
+                    )
+                )
+                q["subdivision"] = list(subdivision)
+
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if _sort in {"city", "country", "subdivision"}:
+            if category == "projects":
+                stmt = stmt.join(Contact.project)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
+            elif category == "companies":
+                stmt = stmt.join(Contact.company)
+                if _order == "asc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+                relation_sort = func.coalesce(
+                    getattr(Project, _sort), getattr(Company, _sort)
+                )
+                if _order == "asc":
+                    stmt = stmt.order_by(
+                        polish_sort_expression(relation_sort).asc(), Contact.id
+                    )
+                elif _order == "desc":
+                    stmt = stmt.order_by(
+                        polish_sort_expression(relation_sort).desc(), Contact.id
+                    )
+        elif _sort == "color":
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
+        else:
+            if _order == "asc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+            elif _order == "desc":
+                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
 
         paginator = []
         counter = 0
@@ -402,8 +513,6 @@ class ContactView:
                 "page": page + 1,
             },
         )
-
-        stmt = self._stmt_contacts_by_tags(tags)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -420,12 +529,19 @@ class ContactView:
             .all()
         )
 
+        obj = Filter(**q)
+        form = ContactFilterForm(self.request.GET, obj, request=self.request)
+
         return {
             "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
             "tags": tags,
+            "categories": categories,
+            "form": form,
             "heading": _("Search contacts"),
         }
 

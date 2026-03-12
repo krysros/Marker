@@ -33,6 +33,7 @@ SORT_CRITERIA = [
 SORT_CRITERIA_CONTACTS = [
     ("name", _("Fullname")),
     ("role", _("Role")),
+    ("city", _("City")),
     ("country", _("Country")),
     ("subdivision", _("Subdivision")),
     ("color", _("Color")),

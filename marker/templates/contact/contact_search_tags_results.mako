@@ -19,4 +19,12 @@
   % endfor
 </div>
 
-<%include file="contact_tags_table.mako"/>
+<div class="hstack gap-2 mb-4">
+  <%include file="contact_filter.mako"/>
+  <div>${button.dropdown_sort(sort_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
+</div>
+
+<%include file="search_criteria.mako"/>
+
+<%include file="contact_table.mako"/>

@@ -130,6 +130,140 @@ def test_tag_search_is_case_insensitive_in_project_and_company_lists(testapp, db
     assert "Case Search Project" in project_res.text
 
 
+def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="contact-tags-user",
+        password="admin",
+        fullname="Contact Tags User",
+        email="contact.tags.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company_a = models.company.Company(
+        name="Alpha Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="DE",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company_a.created_by = user
+
+    company_b = models.company.Company(
+        name="Zulu Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company_b.created_by = user
+
+    project = models.project.Project(
+        name="Tagged Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    tag = models.tag.Tag(name="pipeline")
+    tag.created_by = user
+    tag.companies.extend([company_a, company_b])
+    tag.projects.append(project)
+
+    contact_a = models.contact.Contact(
+        name="Alpha Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_a.company = company_a
+    contact_a.created_by = user
+
+    contact_b = models.contact.Contact(
+        name="Zulu Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_b.company = company_b
+    contact_b.created_by = user
+
+    contact_project = models.contact.Contact(
+        name="Project Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_project.project = project
+    contact_project.created_by = user
+
+    dbsession.add_all(
+        [
+            company_a,
+            company_b,
+            project,
+            tag,
+            contact_a,
+            contact_b,
+            contact_project,
+        ]
+    )
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "contact-tags-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    res_sorted = testapp.get(
+        "/contact/search/tags/results",
+        params={"tag": "pipeline", "sort": "name", "order": "asc"},
+        status=200,
+    )
+    _assert_text_order(
+        res_sorted.text,
+        ["Alpha Contact", "Project Contact", "Zulu Contact"],
+    )
+
+    res_filtered = testapp.get(
+        "/contact/search/tags/results",
+        params={"tag": "pipeline", "category": "companies", "country": "DE"},
+        status=200,
+    )
+    assert "Alpha Contact" in res_filtered.text
+    assert "Zulu Contact" not in res_filtered.text
+    assert "Project Contact" not in res_filtered.text
+
+
 def test_name_search_is_case_insensitive_with_polish_letters(testapp, dbsession):
     import datetime
 
