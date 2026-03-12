@@ -50,6 +50,39 @@ def _assert_text_order(page_text, values):
     assert positions == sorted(positions)
 
 
+def _extract_sort_values_from_dropdown(page_text):
+    from urllib.parse import parse_qs, urlparse
+
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(page_text, "html.parser")
+    sort_values = []
+    for link in soup.select('a.dropdown-item[href*="sort="]'):
+        href = link.get("href")
+        if not href:
+            continue
+        sort_values.extend(parse_qs(urlparse(href).query).get("sort", []))
+    return sort_values
+
+
+def _extract_selected_sort_value(page_text):
+    from urllib.parse import parse_qs, urlparse
+
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(page_text, "html.parser")
+    for link in soup.select('a.dropdown-item[href*="sort="]'):
+        if link.find("strong") is None:
+            continue
+        href = link.get("href")
+        if not href:
+            continue
+        sort_values = parse_qs(urlparse(href).query).get("sort", [])
+        if sort_values:
+            return sort_values[0]
+    return None
+
+
 def test_my_view_success(testapp, dbsession):
     model = models.user.User(
         name="admin",
@@ -262,6 +295,78 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
     assert "Alpha Contact" in res_filtered.text
     assert "Zulu Contact" not in res_filtered.text
     assert "Project Contact" not in res_filtered.text
+
+
+def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
+    user = models.user.User(
+        name="contact-color-sort-user",
+        password="admin",
+        fullname="Contact Color Sort User",
+        email="contact.color.sort.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Color Sort Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    tag = models.tag.Tag(name="pipeline")
+    tag.created_by = user
+    tag.companies.append(company)
+
+    contact = models.contact.Contact(
+        name="Color Sort Contact",
+        role="",
+        phone="",
+        email="",
+        color="warning",
+    )
+    contact.created_by = user
+    contact.company = company
+
+    dbsession.add_all([company, tag, contact])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "contact-color-sort-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    all_contacts = testapp.get("/contact", status=200)
+    assert "color" not in _extract_sort_values_from_dropdown(all_contacts.text)
+
+    all_contacts_with_color_sort = testapp.get(
+        "/contact", params={"sort": "color", "order": "asc"}, status=200
+    )
+    assert "color" not in _extract_sort_values_from_dropdown(
+        all_contacts_with_color_sort.text
+    )
+    assert _extract_selected_sort_value(all_contacts_with_color_sort.text) == "created_at"
+
+    tags_results_with_color_sort = testapp.get(
+        "/contact/search/tags/results",
+        params={"tag": "pipeline", "sort": "color", "order": "asc"},
+        status=200,
+    )
+    assert "color" not in _extract_sort_values_from_dropdown(
+        tags_results_with_color_sort.text
+    )
+    assert _extract_selected_sort_value(tags_results_with_color_sort.text) == "created_at"
 
 
 def test_name_search_is_case_insensitive_with_polish_letters(testapp, dbsession):

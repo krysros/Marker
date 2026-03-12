@@ -38,7 +38,6 @@ SORT_CRITERIA_CONTACTS = [
     ("city", _("City")),
     ("subdivision", _("Subdivision")),
     ("country", _("Country")),
-    ("color", _("Color")),
     ("created_at", _("Date created")),
     ("updated_at", _("Date modified")),
 ]

@@ -90,6 +90,13 @@ class ContactView:
         q = {}
         stmt = select(Contact)
 
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         if name:
             stmt = stmt.filter(contains_ci(Contact.name, name))
             q["name"] = name
@@ -190,11 +197,6 @@ class ContactView:
                 stmt = stmt.order_by(
                     polish_sort_expression(relation_sort).desc(), Contact.id
                 )
-        elif _sort == "color":
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -408,6 +410,13 @@ class ContactView:
         categories = dict(CATEGORIES)
         q = {}
 
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
         if not tags:
             return HTTPSeeOther(location=self.request.route_url("contact_search_tags"))
 
@@ -515,11 +524,6 @@ class ContactView:
                 stmt = stmt.order_by(
                     polish_sort_expression(relation_sort).desc(), Contact.id
                 )
-        elif _sort == "color":
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
