@@ -1569,6 +1569,17 @@ class UserView:
                     stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -1684,7 +1695,7 @@ class UserView:
         if color:
             stmt = stmt.filter(Contact.color == color)
 
-        if _sort in {"country", "subdivision"}:
+        if _sort in {"city", "country", "subdivision"}:
             if category == "projects":
                 stmt = stmt.join(Contact.project)
                 if _order == "asc":
@@ -1697,6 +1708,17 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -2675,6 +2697,17 @@ class UserView:
                     stmt = stmt.order_by(relation_sort.asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(relation_sort.desc(), Contact.id)
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -2920,6 +2953,17 @@ class UserView:
                     stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -3040,7 +3084,7 @@ class UserView:
 
         category = "projects" if _category == "projects" else "companies"
 
-        if _sort in {"country", "subdivision"}:
+        if _sort in {"city", "country", "subdivision"}:
             if category == "projects":
                 stmt = stmt.join(Contact.project)
                 if _order == "asc":
@@ -3053,6 +3097,17 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
