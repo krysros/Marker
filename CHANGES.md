@@ -1,3 +1,19 @@
+2.5
+---
+
+- Added Contractors view with shared filters, company-role filtering and shared search criteria UX
+- Added shared-tags sorting, badges and popovers in similar company and project views
+- Improved Google Contacts CSV import, guidance and duplicate handling
+- Added website autofill/refresh improvements and reorganized website fields in forms
+- Enforced contact cascades on company and project deletion
+- Improved bulk selection performance, selection-state handling and selected/stars related views
+- Added tag category filtering, company/project counters in list views and links from report rows to filtered results
+- Expanded contact-tag search filtering/sorting and improved contact list sorting options
+- Made text search case-insensitive for Polish characters and fixed Polish alphabetical sorting across text columns
+- Hardened auth cookies, markdown sanitization, query counting and ORM helper behavior
+- Added admin user deletion modes with optional data purge
+- Updated Pyramid/SQLAlchemy-related dependencies and performed layout/theme maintenance cleanups
+
 2.3
 ---
 
