@@ -4,6 +4,10 @@
   import pycountry
 %>
 
+<%
+  role_criteria = context.get("role_criteria", {})
+%>
+
 % if form:
   <% tags = q.get("tag", []) if q else [] %>
   % if any(x for x in form.data.values() if x) or tags:
@@ -19,7 +23,13 @@
         % elif k == "category":
           <strong>${categories.get(v)}</strong>;
         % elif k == "role":
-          <strong>${form.data["role"]}</strong>;
+          % if isinstance(v, (list, tuple)):
+            % for role_value in v:
+              <strong>${role_criteria.get(role_value, role_value)}</strong>;
+            % endfor
+          % else:
+            <strong>${role_criteria.get(v, v)}</strong>;
+          % endif
         % elif k == "country":
           <strong>${pycountry.countries.get(alpha_2=v).name}</strong>;
         % elif k == "subdivision":
@@ -36,7 +46,7 @@
       % endif
     % endfor
     % if tags:
-      ${_("Tags")}: <strong>${"; ".join(tags)}</strong>;
+      ${_("Tags")}: <strong>${"; ".join(tags)};</strong>
     % endif
   </div>
   <% add_query = {**form.data} %>

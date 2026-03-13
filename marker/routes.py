@@ -510,6 +510,9 @@ def includeme(config):
     config.add_route("report_view", "/report/{rel}", factory=default_factory)
     config.add_route("report_more", "/report/{rel}/more", factory=default_factory)
 
+    config.add_route("contractor_all", "/contractor", factory=default_factory)
+    config.add_route("contractor_more", "/contractor/more", factory=default_factory)
+
     config.add_route("user_all", "/user", factory=default_factory)
     config.add_route("user_more", "/user/more", factory=default_factory)
     config.add_route("user_add", "/user/add", factory=default_factory)

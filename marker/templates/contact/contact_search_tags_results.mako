@@ -12,13 +12,6 @@
 
 <hr>
 
-<div class="alert alert-info" role="alert">
-  <strong>${_("Tags")}: </strong>
-  % for tag in tags:
-    <span class="badge bg-secondary">${tag}</span>
-  % endfor
-</div>
-
 <div class="hstack gap-2 mb-4">
   <%include file="contact_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>

@@ -13,6 +13,9 @@
           <a class="nav-link" role="button" href="${request.route_url('project_all')}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" role="button" href="${request.route_url('contractor_all')}"><i class="bi bi-diagram-3"></i> ${_("Kontrahenci")}</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
         </li>
         <li class="nav-item">

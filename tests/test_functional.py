@@ -965,6 +965,310 @@ def test_project_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbses
     )
 
 
+def test_contractors_view_default_sort_and_multiselect_tag_and_role_filter(
+    testapp, dbsession
+):
+    import datetime
+
+    user = models.user.User(
+        name="contractor-view-user",
+        password="admin",
+        fullname="Contractor View User",
+        email="contractor.view.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company_alpha = models.company.Company(
+        name="Contractor Alpha Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company_alpha.created_by = user
+
+    company_beta = models.company.Company(
+        name="Contractor Beta Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company_beta.created_by = user
+
+    company_gamma = models.company.Company(
+        name="Contractor Gamma Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company_gamma.created_by = user
+
+    now = datetime.datetime.now()
+    project_one = models.project.Project(
+        name="Contractor Project One",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    project_one.created_by = user
+
+    project_two = models.project.Project(
+        name="Contractor Project Two",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    project_two.created_by = user
+
+    project_three = models.project.Project(
+        name="Contractor Project Three",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    project_three.created_by = user
+
+    company_tag_steel = models.tag.Tag(name="contractor-company-steel")
+    company_tag_steel.created_by = user
+    company_beta.tags.append(company_tag_steel)
+
+    company_tag_concrete = models.tag.Tag(name="contractor-company-concrete")
+    company_tag_concrete.created_by = user
+    company_alpha.tags.append(company_tag_concrete)
+
+    company_tag_electrical = models.tag.Tag(name="contractor-company-electrical")
+    company_tag_electrical.created_by = user
+    company_gamma.tags.append(company_tag_electrical)
+
+    project_tag_bridge = models.tag.Tag(name="contractor-project-bridge")
+    project_tag_bridge.created_by = user
+    project_one.tags.append(project_tag_bridge)
+
+    project_tag_road = models.tag.Tag(name="contractor-project-road")
+    project_tag_road.created_by = user
+    project_two.tags.append(project_tag_road)
+
+    project_tag_tunnel = models.tag.Tag(name="contractor-project-tunnel")
+    project_tag_tunnel.created_by = user
+    project_three.tags.append(project_tag_tunnel)
+
+    activity_alpha_1 = models.Activity(
+        company=company_alpha,
+        project=project_one,
+        stage="",
+        role="designer",
+    )
+    activity_alpha_2 = models.Activity(
+        company=company_alpha,
+        project=project_two,
+        stage="",
+        role="designer",
+    )
+    activity_beta_1 = models.Activity(
+        company=company_beta,
+        project=project_one,
+        stage="",
+        role="supplier",
+    )
+    activity_gamma_1 = models.Activity(
+        company=company_gamma,
+        project=project_one,
+        stage="",
+        role="subcontractor",
+    )
+    activity_gamma_2 = models.Activity(
+        company=company_gamma,
+        project=project_two,
+        stage="",
+        role="subcontractor",
+    )
+    activity_gamma_3 = models.Activity(
+        company=company_gamma,
+        project=project_three,
+        stage="",
+        role="investor",
+    )
+
+    dbsession.add_all(
+        [
+            company_alpha,
+            company_beta,
+            company_gamma,
+            project_one,
+            project_two,
+            project_three,
+            company_tag_steel,
+            company_tag_concrete,
+            company_tag_electrical,
+            project_tag_bridge,
+            project_tag_road,
+            project_tag_tunnel,
+            activity_alpha_1,
+            activity_alpha_2,
+            activity_beta_1,
+            activity_gamma_1,
+            activity_gamma_2,
+            activity_gamma_3,
+        ]
+    )
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "contractor-view-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    res_default = testapp.get("/contractor", status=200)
+
+    sort_values = set(_extract_sort_values_from_dropdown(res_default.text))
+    assert {
+        "name",
+        "city",
+        "subdivision",
+        "country",
+        "created_at",
+        "updated_at",
+        "stars",
+        "comments",
+    }.issubset(sort_values)
+
+    res_name_asc = testapp.get(
+        "/contractor",
+        params={"sort": "name", "order": "asc"},
+        status=200,
+    )
+    _assert_text_order(
+        res_name_asc.text,
+        [
+            "Contractor Alpha Company",
+            "Contractor Beta Company",
+            "Contractor Gamma Company",
+        ],
+    )
+
+    assert "<th>Company</th>" in res_default.text
+    assert "<th>City</th>" in res_default.text
+    assert "<th>Projects</th>" in res_default.text
+    assert "<th>Stars</th>" in res_default.text
+    assert "<th>Comments</th>" in res_default.text
+    assert "<th>Action</th>" in res_default.text
+
+    assert 'option value="contractor-company-steel"' in res_default.text
+    assert 'option value="contractor-company-concrete"' in res_default.text
+    assert 'option value="contractor-company-electrical"' in res_default.text
+    assert 'option value="contractor-project-bridge"' not in res_default.text
+    assert 'option value="contractor-project-road"' not in res_default.text
+    assert 'option value="contractor-project-tunnel"' not in res_default.text
+
+    assert 'option value="designer"' in res_default.text
+    assert 'option value="supplier"' in res_default.text
+    assert 'option value="investor"' in res_default.text
+
+    res_role_filter = testapp.get(
+        "/contractor",
+        params=[("role", "designer")],
+        status=200,
+    )
+    assert "Contractor Alpha Company" in res_role_filter.text
+    assert "Contractor Beta Company" not in res_role_filter.text
+    assert "Contractor Gamma Company" not in res_role_filter.text
+
+    res_multi_role_filter = testapp.get(
+        "/contractor",
+        params=[("role", "supplier"), ("role", "investor")],
+        status=200,
+    )
+    assert "Contractor Beta Company" in res_multi_role_filter.text
+    assert "Contractor Gamma Company" in res_multi_role_filter.text
+    assert "Contractor Alpha Company" not in res_multi_role_filter.text
+
+    res_company_tag_filter = testapp.get(
+        "/contractor",
+        params=[("tag", "contractor-company-steel")],
+        status=200,
+    )
+    assert "Contractor Beta Company" in res_company_tag_filter.text
+    assert "Contractor Alpha Company" not in res_company_tag_filter.text
+    assert "Contractor Gamma Company" not in res_company_tag_filter.text
+
+    res_project_tag_filter = testapp.get(
+        "/contractor",
+        params=[("tag", "contractor-project-tunnel")],
+        status=200,
+    )
+    assert "Contractor Gamma Company" not in res_project_tag_filter.text
+    assert "Contractor Alpha Company" not in res_project_tag_filter.text
+    assert "Contractor Beta Company" not in res_project_tag_filter.text
+
+    res_multi_tag_filter = testapp.get(
+        "/contractor",
+        params=[
+            ("tag", "contractor-company-steel"),
+            ("tag", "contractor-company-concrete"),
+        ],
+        status=200,
+    )
+    assert "Contractor Beta Company" in res_multi_tag_filter.text
+    assert "Contractor Alpha Company" in res_multi_tag_filter.text
+    assert "Contractor Gamma Company" not in res_multi_tag_filter.text
+
+    res_tag_and_role_filter = testapp.get(
+        "/contractor",
+        params=[("tag", "contractor-company-steel"), ("role", "supplier")],
+        status=200,
+    )
+    assert "Contractor Beta Company" in res_tag_and_role_filter.text
+    assert "Contractor Alpha Company" not in res_tag_and_role_filter.text
+    assert "Contractor Gamma Company" not in res_tag_and_role_filter.text
+
+
 def test_notfound(testapp):
     res = testapp.get("/badurl", status=404)
     assert res.status_code == 404
