@@ -1547,7 +1547,7 @@ class UserView:
                 self.request, stmt, self.request.identity.selected_contacts
             )
 
-        if _sort in {"country", "subdivision"}:
+        if _sort in {"city", "country", "subdivision"}:
             if category == "projects":
                 stmt = stmt.join(Contact.project)
                 if _order == "asc":
@@ -2666,7 +2666,7 @@ class UserView:
             stmt = stmt.filter(Contact.color == color)
             q["color"] = color
 
-        if _sort in {"country", "subdivision"}:
+        if _sort in {"city", "country", "subdivision"}:
             company_relation_sort = (
                 select(getattr(Company, _sort))
                 .where(Company.id == Contact.company_id)
@@ -2931,7 +2931,7 @@ class UserView:
             stmt = stmt.filter(Contact.color == color)
             q["color"] = color
 
-        if _sort in {"country", "subdivision"}:
+        if _sort in {"city", "country", "subdivision"}:
             if category == "projects":
                 stmt = stmt.join(Contact.project)
                 if _order == "asc":
