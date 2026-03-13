@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
 from sqlalchemy import ForeignKey, func, select
@@ -7,6 +7,11 @@ from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
 
 from .association import companies_tags, projects_tags
 from .meta import Base
+
+if TYPE_CHECKING:
+    from .company import Company
+    from .project import Project
+    from .user import User
 
 
 class Tag(Base):
@@ -43,14 +48,21 @@ class Tag(Base):
     def slug(self) -> str:
         return slugify(self.name)
 
+    def _scalar_count(self, stmt) -> int:
+        session = object_session(self)
+        if session is None:
+            return 0
+        value = session.scalar(stmt)
+        return int(value or 0)
+
     @property
     def count_companies(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).where(companies_tags.c.tag_id == self.id)
         )
 
     @property
     def count_projects(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).where(projects_tags.c.tag_id == self.id)
         )

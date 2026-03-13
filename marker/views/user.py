@@ -677,10 +677,10 @@ class UserView:
         stmt = select(Comment).filter(Comment.created_by == user)
 
         if category == "companies":
-            stmt = stmt.filter(Comment.company)
+            stmt = stmt.filter(Comment.company_id.is_not(None))
             q["category"] = category
         elif category == "projects":
-            stmt = stmt.filter(Comment.project)
+            stmt = stmt.filter(Comment.project_id.is_not(None))
             q["category"] = category
 
         if _order == "asc":
@@ -692,7 +692,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = user.count_companies
@@ -773,7 +773,7 @@ class UserView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = user.count_companies
@@ -931,7 +931,7 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).asc(), Company.id
                     )
@@ -939,7 +939,7 @@ class UserView:
             elif _order == "desc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
@@ -948,13 +948,13 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).asc(), Company.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).desc(), Company.id)
                 )
         else:
@@ -972,7 +972,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = counter
@@ -1079,7 +1079,7 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).asc(), Company.id
                     )
@@ -1087,7 +1087,7 @@ class UserView:
             elif _order == "desc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
@@ -1096,13 +1096,13 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).asc(), Company.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).desc(), Company.id)
                 )
         else:
@@ -1235,13 +1235,13 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )
@@ -1250,13 +1250,13 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).desc(), Project.id)
                 )
         else:
@@ -1274,7 +1274,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = user.count_companies
@@ -1404,13 +1404,13 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )
@@ -1419,13 +1419,13 @@ class UserView:
             if _order == "asc":
                 stmt = (
                     stmt.join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).desc(), Project.id)
                 )
         else:
@@ -1499,7 +1499,7 @@ class UserView:
             q["email"] = email
 
         if category == "companies":
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
@@ -1510,7 +1510,7 @@ class UserView:
                 )
                 q["subdivision"] = list(subdivision)
         elif category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))
@@ -1590,7 +1590,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = user.count_companies
@@ -1675,7 +1675,7 @@ class UserView:
             stmt = stmt.filter(contains_ci(Contact.email, email))
 
         if category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))
             if subdivision:
@@ -1684,7 +1684,7 @@ class UserView:
                 )
         else:
             category = "companies"
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
             if subdivision:
@@ -1899,7 +1899,7 @@ class UserView:
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -2028,7 +2028,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         url = self.request.route_url(
@@ -2171,7 +2171,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -2340,7 +2340,7 @@ class UserView:
         q["order"] = _order
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         url = self.request.route_url(
@@ -2629,7 +2629,7 @@ class UserView:
             q["email"] = email
 
         if effective_category == "companies":
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
                 q["country"] = country
@@ -2637,7 +2637,7 @@ class UserView:
                 stmt = stmt.filter(Contact.company.has(Company.subdivision.in_(subdivision)))
                 q["subdivision"] = list(subdivision)
         elif effective_category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))
                 q["country"] = country
@@ -2888,7 +2888,7 @@ class UserView:
             q["email"] = email
 
         if category == "companies":
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
@@ -2899,7 +2899,7 @@ class UserView:
                 )
                 q["subdivision"] = list(subdivision)
         elif category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))
@@ -2982,7 +2982,7 @@ class UserView:
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -3063,7 +3063,7 @@ class UserView:
             stmt = stmt.filter(contains_ci(Contact.email, email))
 
         if _category == "companies":
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
             if subdivision:
@@ -3071,7 +3071,7 @@ class UserView:
                     Contact.company.has(Company.subdivision.in_(subdivision))
                 )
         elif _category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))
             if subdivision:
@@ -3445,7 +3445,7 @@ class UserView:
         )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         next_page = self.request.route_url(
@@ -3592,7 +3592,7 @@ class UserView:
             .filter(user.id == companies_stars.c.user_id)
         )
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
         url = self.request.route_url("user_json_companies_stars", username=user.name)
         return {"user": user, "url": url, "counter": counter}
@@ -3675,7 +3675,7 @@ class UserView:
         )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         next_page = self.request.route_url(
@@ -3829,7 +3829,7 @@ class UserView:
             .filter(user.id == projects_stars.c.user_id)
         )
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
         url = self.request.route_url("user_json_projects_stars", username=user.name)
         return {"user": user, "url": url, "counter": counter}

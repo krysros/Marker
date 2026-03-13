@@ -272,13 +272,13 @@ class ProjectView:
             if _order == "asc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )
@@ -287,13 +287,13 @@ class ProjectView:
             if _order == "asc":
                 stmt = (
                     stmt.join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).asc())
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).desc())
                 )
         else:
@@ -308,7 +308,7 @@ class ProjectView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -492,13 +492,13 @@ class ProjectView:
             if _order == "asc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )
@@ -510,7 +510,7 @@ class ProjectView:
                 stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         url = self.request.route_url("project_json", _query=q)

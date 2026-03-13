@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
 from sqlalchemy import ForeignKey, func, select
@@ -10,6 +10,9 @@ from .comment import Comment
 from .contact import Contact
 from .meta import Base
 from .tag import Tag
+
+if TYPE_CHECKING:
+    from .user import User
 
 
 class Company(Base):
@@ -60,20 +63,20 @@ class Company(Base):
 
     def __init__(
         self,
-        name: str,
-        street: str,
-        postcode: str,
-        city: str,
-        subdivision: str,
-        country: str,
-        website: str,
-        color: str,
-        NIP: str,
-        REGON: str,
-        KRS: str,
-        court: str,
+        name: str | None,
+        street: str | None,
+        postcode: str | None,
+        city: str | None,
+        subdivision: str | None,
+        country: str | None,
+        website: str | None,
+        color: str | None,
+        NIP: str | None,
+        REGON: str | None,
+        KRS: str | None,
+        court: str | None,
     ) -> None:
-        self.name = name
+        self.name = name or ""
         self.street = street
         self.postcode = postcode
         self.city = city
@@ -88,23 +91,30 @@ class Company(Base):
 
     @property
     def slug(self) -> str:
-        return slugify(self.name)
+        return slugify(self.name or "")
+
+    def _scalar_count(self, stmt) -> int:
+        session = object_session(self)
+        if session is None:
+            return 0
+        value = session.scalar(stmt)
+        return int(value or 0)
 
     @property
     def count_projects(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).where(Activity.company_id == self.id)
         )
 
     @property
     def count_tags(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).where(companies_tags.c.company_id == self.id)
         )
 
     @property
     def count_contacts(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count())
             .select_from(Contact)
             .where(Contact.company_id == self.id)
@@ -112,7 +122,7 @@ class Company(Base):
 
     @property
     def count_comments(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count())
             .select_from(Comment)
             .where(Comment.company_id == self.id)
@@ -120,7 +130,7 @@ class Company(Base):
 
     @property
     def count_stars(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).where(companies_stars.c.company_id == self.id)
         )
 
@@ -128,7 +138,7 @@ class Company(Base):
     def count_similar(self) -> int:
         base_tags = companies_tags.alias("base_tags")
         other_tags = companies_tags.alias("other_tags")
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count(func.distinct(other_tags.c.company_id)))
             .select_from(
                 base_tags.join(other_tags, base_tags.c.tag_id == other_tags.c.tag_id)

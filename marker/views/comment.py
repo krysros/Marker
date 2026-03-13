@@ -43,10 +43,10 @@ class CommentView:
             q["comment"] = comment
 
         if category == "companies":
-            stmt = stmt.filter(Comment.company)
+            stmt = stmt.filter(Comment.company_id.is_not(None))
             q["category"] = category
         elif category == "projects":
-            stmt = stmt.filter(Comment.project)
+            stmt = stmt.filter(Comment.project_id.is_not(None))
             q["category"] = category
 
         q["sort"] = _sort
@@ -58,7 +58,7 @@ class CommentView:
             stmt = stmt.order_by(Comment.created_at.desc())
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (

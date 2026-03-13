@@ -53,7 +53,7 @@ class ReportView:
                         func.count(companies_tags.c.company_id).label("companies-tags"),
                     )
                     .join(companies_tags)
-                    .group_by(Tag)
+                    .group_by(Tag.id)
                     .order_by(desc("companies-tags"))
                 )
             case "projects-tags":
@@ -63,7 +63,7 @@ class ReportView:
                         func.count(projects_tags.c.project_id).label("projects-tags"),
                     )
                     .join(projects_tags)
-                    .group_by(Tag)
+                    .group_by(Tag.id)
                     .order_by(desc("projects-tags"))
                 )
             case "companies-subdivisions":
@@ -90,7 +90,7 @@ class ReportView:
                         func.count(Comment.company_id).label("companies-comments"),
                     )
                     .join(Comment)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("companies-comments"))
                 )
             case "projects-subdivisions":
@@ -117,7 +117,7 @@ class ReportView:
                         func.count(Comment.project_id).label("projects-comments"),
                     )
                     .join(Comment)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(desc("projects-comments"))
                 )
             case "users-companies":
@@ -147,7 +147,7 @@ class ReportView:
                         func.count(Activity.company_id).label("companies-projects"),
                     )
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("companies-projects"))
                 )
             case "companies-stars":
@@ -159,7 +159,7 @@ class ReportView:
                         ),
                     )
                     .join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("companies-stars"))
                 )
             case "projects-stars":
@@ -169,7 +169,7 @@ class ReportView:
                         func.count(projects_stars.c.project_id).label("projects-stars"),
                     )
                     .join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(desc("projects-stars"))
                 )
             case "companies-announcement":
@@ -180,7 +180,7 @@ class ReportView:
                     )
                     .filter(Activity.stage == "announcement")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("companies-announcement"))
                 )
             case "companies-tenders":
@@ -191,7 +191,7 @@ class ReportView:
                     )
                     .filter(Activity.stage == "tender")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("companies-tenders"))
                 )
             case "companies-constructions":
@@ -202,7 +202,7 @@ class ReportView:
                     )
                     .filter(Activity.stage == "construction")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("companies-constructions"))
                 )
             case "designers":
@@ -213,7 +213,7 @@ class ReportView:
                     )
                     .filter(Activity.role == "designer")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("designers"))
                 )
             case "purchasers":
@@ -224,7 +224,7 @@ class ReportView:
                     )
                     .filter(Activity.role == "purchaser")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("purchasers"))
                 )
             case "investors":
@@ -235,7 +235,7 @@ class ReportView:
                     )
                     .filter(Activity.role == "investor")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("investors"))
                 )
             case "general-contractors":
@@ -246,7 +246,7 @@ class ReportView:
                     )
                     .filter(Activity.role == "general_contractor")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("general-contractors"))
                 )
             case "subcontractors":
@@ -257,7 +257,7 @@ class ReportView:
                     )
                     .filter(Activity.role == "subcontractor")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("subcontractors"))
                 )
             case "suppliers":
@@ -268,7 +268,7 @@ class ReportView:
                     )
                     .filter(Activity.role == "supplier")
                     .join(Activity)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(desc("suppliers"))
                 )
             case "projects-companies":
@@ -278,7 +278,7 @@ class ReportView:
                         func.count(Activity.project).label("projects-companies"),
                     )
                     .join(Activity)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(desc("projects-companies"))
                 )
             case _:

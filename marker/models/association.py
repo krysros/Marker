@@ -1,9 +1,13 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Column, ForeignKey, Index, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .meta import Base
+
+if TYPE_CHECKING:
+    from .company import Company
+    from .project import Project
 
 
 class Activity(Base):

@@ -37,11 +37,11 @@ class User(Base):
     )
 
     @property
-    def password(self) -> None:
+    def password(self) -> str:
         return self._password
 
     @password.setter
-    def password(self, pw: str) -> str:
+    def password(self, pw: str) -> None:
         self._password = ph.hash(pw)
 
     def check_password(self, pw: str) -> bool:
@@ -50,8 +50,15 @@ class User(Base):
             if ph.check_needs_rehash(self.password):
                 self.password = pw
             return True
-        except argon2.exceptions.VerifyMismatchError as error:
+        except argon2.exceptions.VerifyMismatchError:
             return False
+
+    def _scalar_count(self, stmt) -> int:
+        session = object_session(self)
+        if session is None:
+            return 0
+        value = session.scalar(stmt)
+        return int(value or 0)
 
     companies_stars: Mapped[list["Company"]] = relationship(
         secondary=companies_stars,
@@ -91,30 +98,30 @@ class User(Base):
 
     @property
     def count_companies(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).select_from(Company).filter(Company.created_by == self)
         )
 
     @property
     def count_projects(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).select_from(Project).filter(Project.created_by == self)
         )
 
     @property
     def count_tags(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).select_from(Tag).filter(Tag.created_by == self)
         )
 
     @property
     def count_contacts(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).select_from(Contact).filter(Contact.created_by == self)
         )
 
     @property
     def count_comments(self) -> int:
-        return object_session(self).scalar(
+        return self._scalar_count(
             select(func.count()).select_from(Comment).filter(Comment.created_by == self)
         )

@@ -114,7 +114,7 @@ class ContactView:
             q["email"] = email
 
         if category == "companies":
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
@@ -125,7 +125,7 @@ class ContactView:
                 )
                 q["subdivision"] = list(subdivision)
         elif category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))
@@ -209,7 +209,7 @@ class ContactView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -441,7 +441,7 @@ class ContactView:
             q["email"] = email
 
         if category == "companies":
-            stmt = stmt.filter(Contact.company)
+            stmt = stmt.filter(Contact.company_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.company.has(Company.country == country))
@@ -452,7 +452,7 @@ class ContactView:
                 )
                 q["subdivision"] = list(subdivision)
         elif category == "projects":
-            stmt = stmt.filter(Contact.project)
+            stmt = stmt.filter(Contact.project_id.is_not(None))
             q["category"] = category
             if country:
                 stmt = stmt.filter(Contact.project.has(Project.country == country))

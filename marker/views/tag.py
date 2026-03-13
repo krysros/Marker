@@ -241,7 +241,7 @@ class TagView:
             q["subdivision"] = list(subdivision)
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = counter
@@ -298,7 +298,7 @@ class TagView:
             q["delivery_method"] = delivery_method
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = tag.count_companies
@@ -485,7 +485,7 @@ class TagView:
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).asc(), Company.id
                     )
@@ -494,7 +494,7 @@ class TagView:
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
@@ -504,14 +504,14 @@ class TagView:
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).asc())
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).desc())
                 )
         else:
@@ -533,7 +533,7 @@ class TagView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = counter
@@ -591,7 +591,7 @@ class TagView:
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).asc(), Company.id
                     )
@@ -600,7 +600,7 @@ class TagView:
                 stmt = (
                     stmt.filter(Company.tags.any(name=tag.name))
                     .join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
@@ -699,14 +699,14 @@ class TagView:
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )
@@ -716,14 +716,14 @@ class TagView:
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).asc())
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(Project.comments)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(Project.comments).desc())
                 )
         else:
@@ -745,7 +745,7 @@ class TagView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         self.count_companies = tag.count_companies
@@ -806,14 +806,14 @@ class TagView:
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.filter(Project.tags.any(name=tag.name))
                     .join(projects_stars)
-                    .group_by(Project)
+                    .group_by(Project.id)
                     .order_by(
                         func.count(projects_stars.c.project_id).desc(), Project.id
                     )

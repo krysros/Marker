@@ -262,7 +262,7 @@ class CompanyView:
             if _order == "asc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).asc(), Company.id
                     )
@@ -270,7 +270,7 @@ class CompanyView:
             elif _order == "desc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
@@ -279,13 +279,13 @@ class CompanyView:
             if _order == "asc":
                 stmt = (
                     stmt.join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).asc())
                 )
             elif _order == "desc":
                 stmt = (
                     stmt.join(Company.comments)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(func.count(Company.comments).desc())
                 )
         else:
@@ -300,7 +300,7 @@ class CompanyView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -578,7 +578,7 @@ class CompanyView:
             if _order == "asc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).asc(), Company.id
                     )
@@ -586,7 +586,7 @@ class CompanyView:
             elif _order == "desc":
                 stmt = (
                     stmt.join(companies_stars)
-                    .group_by(Company)
+                    .group_by(Company.id)
                     .order_by(
                         func.count(companies_stars.c.company_id).desc(), Company.id
                     )
@@ -598,7 +598,7 @@ class CompanyView:
                 stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt)
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         url = self.request.route_url("company_json", _query=q)

@@ -1,11 +1,16 @@
 import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .meta import Base
+
+if TYPE_CHECKING:
+    from .company import Company
+    from .project import Project
+    from .user import User
 
 
 class Contact(Base):
@@ -44,13 +49,13 @@ class Contact(Base):
 
     def __init__(
         self,
-        name: str,
-        role: str,
-        phone: str,
-        email: str,
-        color: str,
+        name: str | None,
+        role: str | None,
+        phone: str | None,
+        email: str | None,
+        color: str | None,
     ) -> None:
-        self.name = name
+        self.name = name or ""
         self.role = role
         self.phone = phone
         self.email = email
@@ -58,4 +63,4 @@ class Contact(Base):
 
     @property
     def slug(self) -> str:
-        return slugify(self.name)
+        return slugify(self.name or "")

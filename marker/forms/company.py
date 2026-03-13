@@ -114,10 +114,7 @@ class CompanyForm(Form):
         except IndexError:
             self.edited_item = None
 
-        try:
-            country = self.edited_item.country
-        except AttributeError:
-            country = None
+        country = getattr(self.edited_item, "country", None)
 
         self.subdivision.choices = select_subdivisions(country)
 
@@ -212,10 +209,7 @@ class CompanyFilterForm(Form):
         except IndexError:
             self.edited_item = None
 
-        try:
-            country = self.edited_item.country
-        except AttributeError:
-            country = None
+        country = getattr(self.edited_item, "country", None)
 
         self.subdivision.choices = select_subdivisions(country)
         self.subdivision.default = self.request.GET.getall("subdivision")

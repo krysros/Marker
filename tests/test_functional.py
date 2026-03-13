@@ -41,6 +41,8 @@ def _extract_hx_csrf_token(page_text):
 
     hx_headers = select_all_checkbox.get("hx-headers")
     assert hx_headers is not None
+    if not isinstance(hx_headers, str):
+        hx_headers = str(hx_headers)
 
     return json.loads(hx_headers)["X-CSRF-Token"]
 
@@ -59,7 +61,7 @@ def _extract_sort_values_from_dropdown(page_text):
     sort_values = []
     for link in soup.select('a.dropdown-item[href*="sort="]'):
         href = link.get("href")
-        if not href:
+        if not isinstance(href, str) or not href:
             continue
         sort_values.extend(parse_qs(urlparse(href).query).get("sort", []))
     return sort_values
@@ -75,7 +77,7 @@ def _extract_selected_sort_value(page_text):
         if link.find("strong") is None:
             continue
         href = link.get("href")
-        if not href:
+        if not isinstance(href, str) or not href:
             continue
         sort_values = parse_qs(urlparse(href).query).get("sort", [])
         if sort_values:
