@@ -85,6 +85,19 @@ def _extract_selected_sort_value(page_text):
     return None
 
 
+def _extract_info_badge_values(page_text):
+    import re
+
+    return [
+        int(value)
+        for value in re.findall(
+            r'class="badge text-bg-info"[^>]*>\s*(\d+)\s*</span>',
+            page_text,
+            re.S,
+        )
+    ]
+
+
 def _set_cookie_headers(response):
     return [
         value for key, value in response.headerlist if key.lower() == "set-cookie"
@@ -593,6 +606,361 @@ def test_desc_sort_uses_polish_alphabetical_order_for_names(testapp, dbsession):
             "Sort Wacek Project",
             "Sort Śnieg Project",
             "Sort Łukasz Project",
+        ],
+    )
+
+
+def test_company_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbsession):
+    user = models.user.User(
+        name="company-similar-sort-user",
+        password="admin",
+        fullname="Company Similar Sort User",
+        email="company.similar.sort.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    base_company = models.company.Company(
+        name="Base Similar Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    base_company.created_by = user
+
+    most_similar = models.company.Company(
+        name="Zulu Similar Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    most_similar.created_by = user
+
+    medium_similar = models.company.Company(
+        name="Alpha Similar Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    medium_similar.created_by = user
+
+    least_similar = models.company.Company(
+        name="Bravo Similar Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    least_similar.created_by = user
+
+    unrelated_company = models.company.Company(
+        name="Unrelated Similar Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    unrelated_company.created_by = user
+
+    tag1 = models.tag.Tag(name="similar-company-tag-1")
+    tag2 = models.tag.Tag(name="similar-company-tag-2")
+    tag3 = models.tag.Tag(name="similar-company-tag-3")
+    unrelated_tag = models.tag.Tag(name="similar-company-tag-unrelated")
+    for tag in [tag1, tag2, tag3, unrelated_tag]:
+        tag.created_by = user
+
+    base_company.tags.extend([tag1, tag2, tag3])
+    most_similar.tags.extend([tag1, tag2, tag3])
+    medium_similar.tags.extend([tag1, tag2])
+    least_similar.tags.extend([tag1])
+    unrelated_company.tags.extend([unrelated_tag])
+
+    dbsession.add_all(
+        [
+            base_company,
+            most_similar,
+            medium_similar,
+            least_similar,
+            unrelated_company,
+            tag1,
+            tag2,
+            tag3,
+            unrelated_tag,
+        ]
+    )
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-similar-sort-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    similar_url = f"/company/{base_company.id}/{base_company.slug}/similar"
+    res_default = testapp.get(similar_url, status=200)
+
+    assert _extract_selected_sort_value(res_default.text) == "shared_tags"
+    _assert_text_order(
+        res_default.text,
+        [
+            "Zulu Similar Company",
+            "Alpha Similar Company",
+            "Bravo Similar Company",
+        ],
+    )
+
+    assert _extract_info_badge_values(res_default.text) == [3, 2, 1]
+    assert 'data-bs-toggle="popover"' in res_default.text
+    assert (
+        'data-bs-content="similar-company-tag-1, similar-company-tag-2, '
+        'similar-company-tag-3"' in res_default.text
+    )
+    assert (
+        'data-bs-content="similar-company-tag-1, similar-company-tag-2"'
+        in res_default.text
+    )
+    assert 'data-bs-content="similar-company-tag-1"' in res_default.text
+
+    sort_values = set(_extract_sort_values_from_dropdown(res_default.text))
+    assert {
+        "shared_tags",
+        "name",
+        "city",
+        "subdivision",
+        "country",
+        "created_at",
+        "updated_at",
+        "stars",
+        "comments",
+    }.issubset(sort_values)
+
+    res_name_asc = testapp.get(
+        similar_url,
+        params={"sort": "name", "order": "asc"},
+        status=200,
+    )
+    _assert_text_order(
+        res_name_asc.text,
+        [
+            "Alpha Similar Company",
+            "Bravo Similar Company",
+            "Zulu Similar Company",
+        ],
+    )
+
+
+def test_project_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="project-similar-sort-user",
+        password="admin",
+        fullname="Project Similar Sort User",
+        email="project.similar.sort.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    now = datetime.datetime.now()
+
+    base_project = models.project.Project(
+        name="Base Similar Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    base_project.created_by = user
+
+    most_similar = models.project.Project(
+        name="Zulu Similar Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    most_similar.created_by = user
+
+    medium_similar = models.project.Project(
+        name="Alpha Similar Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    medium_similar.created_by = user
+
+    least_similar = models.project.Project(
+        name="Bravo Similar Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    least_similar.created_by = user
+
+    unrelated_project = models.project.Project(
+        name="Unrelated Similar Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=now,
+        stage="",
+        delivery_method="",
+    )
+    unrelated_project.created_by = user
+
+    tag1 = models.tag.Tag(name="similar-project-tag-1")
+    tag2 = models.tag.Tag(name="similar-project-tag-2")
+    tag3 = models.tag.Tag(name="similar-project-tag-3")
+    unrelated_tag = models.tag.Tag(name="similar-project-tag-unrelated")
+    for tag in [tag1, tag2, tag3, unrelated_tag]:
+        tag.created_by = user
+
+    base_project.tags.extend([tag1, tag2, tag3])
+    most_similar.tags.extend([tag1, tag2, tag3])
+    medium_similar.tags.extend([tag1, tag2])
+    least_similar.tags.extend([tag1])
+    unrelated_project.tags.extend([unrelated_tag])
+
+    dbsession.add_all(
+        [
+            base_project,
+            most_similar,
+            medium_similar,
+            least_similar,
+            unrelated_project,
+            tag1,
+            tag2,
+            tag3,
+            unrelated_tag,
+        ]
+    )
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "project-similar-sort-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    similar_url = f"/project/{base_project.id}/{base_project.slug}/similar"
+    res_default = testapp.get(similar_url, status=200)
+
+    assert _extract_selected_sort_value(res_default.text) == "shared_tags"
+    _assert_text_order(
+        res_default.text,
+        [
+            "Zulu Similar Project",
+            "Alpha Similar Project",
+            "Bravo Similar Project",
+        ],
+    )
+
+    assert _extract_info_badge_values(res_default.text) == [3, 2, 1]
+    assert 'data-bs-toggle="popover"' in res_default.text
+    assert (
+        'data-bs-content="similar-project-tag-1, similar-project-tag-2, '
+        'similar-project-tag-3"' in res_default.text
+    )
+    assert (
+        'data-bs-content="similar-project-tag-1, similar-project-tag-2"'
+        in res_default.text
+    )
+    assert 'data-bs-content="similar-project-tag-1"' in res_default.text
+
+    sort_values = set(_extract_sort_values_from_dropdown(res_default.text))
+    assert {
+        "shared_tags",
+        "name",
+        "city",
+        "subdivision",
+        "country",
+        "created_at",
+        "updated_at",
+        "stars",
+        "comments",
+    }.issubset(sort_values)
+
+    res_name_asc = testapp.get(
+        similar_url,
+        params={"sort": "name", "order": "asc"},
+        status=200,
+    )
+    _assert_text_order(
+        res_name_asc.text,
+        [
+            "Alpha Similar Project",
+            "Bravo Similar Project",
+            "Zulu Similar Project",
         ],
     )
 

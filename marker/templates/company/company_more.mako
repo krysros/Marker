@@ -5,6 +5,12 @@
   import pycountry
 %>
 
+<%
+  show_shared_tags = bool(context.get("show_shared_tags", False))
+  shared_tag_counts = context.get("shared_tag_counts", {})
+  shared_tag_labels = context.get("shared_tag_labels", {})
+%>
+
 % for company in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
@@ -25,6 +31,20 @@
     <small class="text-body-secondary">${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</small><br>
     <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=company.country), "name", "---")}</small>
   </td>
+  % if show_shared_tags:
+  <td>
+    <span class="badge text-bg-info"
+          role="button"
+          tabindex="0"
+          data-bs-toggle="popover"
+          data-bs-trigger="hover focus"
+          data-bs-placement="top"
+          data-bs-title="${_("Wspólne tagi")}"
+          data-bs-content="${shared_tag_labels.get(company.id, '')}">
+      ${shared_tag_counts.get(company.id, 0)}
+    </span>
+  </td>
+  % endif
   <td>
     <a href="${request.route_url('company_projects', company_id=company.id, slug=company.slug)}">
       <span class="badge text-bg-secondary" role="button">${company.count_projects}</span>

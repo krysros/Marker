@@ -1000,15 +1000,25 @@ class CompanyView:
         permission="view",
     )
     def similar(self):
+        _ = self.request.translate
         company = self.request.context.company
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = [value for value in self.request.params.getall("subdivision") if value]
-        _sort = self.request.params.get("sort", "created_at")
+        _sort = self.request.params.get("sort", "shared_tags")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = {"shared_tags": _("Tags"), **dict(SORT_CRITERIA_COMPANIES)}
         q = {}
+
+        allowed_sorts = set(sort_criteria.keys())
+        if _sort not in allowed_sorts:
+            _sort = "shared_tags"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
 
         # Compute similar companies through association-table self-join.
         # This avoids correlated subqueries over tags that are expensive on large datasets.
@@ -1030,11 +1040,7 @@ class CompanyView:
             .subquery()
         )
 
-        stmt = (
-            select(Company)
-            .join(similarity, similarity.c.company_id == Company.id)
-            .order_by(similarity.c.shared_tags.desc(), Company.id)
-        )
+        stmt = select(Company).join(similarity, similarity.c.company_id == Company.id)
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -1051,10 +1057,41 @@ class CompanyView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Company, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Company, _sort).desc())
+        if _sort == "shared_tags":
+            if _order == "asc":
+                stmt = stmt.order_by(similarity.c.shared_tags.asc(), Company.id)
+            else:
+                stmt = stmt.order_by(similarity.c.shared_tags.desc(), Company.id)
+        elif _sort == "stars":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(companies_stars)
+                    .group_by(Company.id)
+                    .order_by(func.count(companies_stars.c.company_id).asc(), Company.id)
+                )
+            else:
+                stmt = (
+                    stmt.join(companies_stars)
+                    .group_by(Company.id)
+                    .order_by(func.count(companies_stars.c.company_id).desc(), Company.id)
+                )
+        elif _sort == "comments":
+            if _order == "asc":
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company.id)
+                    .order_by(func.count(Company.comments).asc())
+                )
+            else:
+                stmt = (
+                    stmt.join(Company.comments)
+                    .group_by(Company.id)
+                    .order_by(func.count(Company.comments).desc())
+                )
+        elif _order == "asc":
+            stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
+        else:
+            stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1066,6 +1103,48 @@ class CompanyView:
             .scalars()
             .all()
         )
+
+        shared_tag_counts = {}
+        shared_tag_labels = {}
+        if paginator:
+            similar_ids = [item.id for item in paginator]
+            shared_rows = self.request.dbsession.execute(
+                select(similarity.c.company_id, similarity.c.shared_tags).where(
+                    similarity.c.company_id.in_(similar_ids)
+                )
+            ).all()
+            shared_tag_counts = {
+                company_id: int(shared_tags or 0)
+                for company_id, shared_tags in shared_rows
+            }
+
+            shared_tag_name_rows = self.request.dbsession.execute(
+                select(other_tags.c.company_id, Tag.name)
+                .select_from(
+                    base_tags.join(
+                        other_tags,
+                        base_tags.c.tag_id == other_tags.c.tag_id,
+                    ).join(Tag, Tag.id == base_tags.c.tag_id)
+                )
+                .where(
+                    base_tags.c.company_id == company.id,
+                    other_tags.c.company_id.in_(similar_ids),
+                )
+                .distinct()
+            ).all()
+
+            tag_names_by_company = {}
+            for similar_company_id, tag_name in shared_tag_name_rows:
+                if not tag_name:
+                    continue
+                tag_names_by_company.setdefault(similar_company_id, set()).add(tag_name)
+
+            shared_tag_labels = {
+                similar_company_id: ", ".join(
+                    sorted(names, key=normalize_ci_value)
+                )
+                for similar_company_id, names in tag_names_by_company.items()
+            }
 
         next_page = self.request.route_url(
             "company_more_similar",
@@ -1087,6 +1166,11 @@ class CompanyView:
             "paginator": paginator,
             "next_page": next_page,
             "colors": colors,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "show_shared_tags": True,
+            "shared_tag_counts": shared_tag_counts,
+            "shared_tag_labels": shared_tag_labels,
             "title": company.name,
             "company_pills": self.pills(company),
             "form": form,

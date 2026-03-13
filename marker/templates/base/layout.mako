@@ -38,7 +38,19 @@
     </main>
     <!-- keyboard shortcuts for pages with a single green plus or red trash button -->
     <script>
+    function initPopovers(root) {
+      const scope = root && root.querySelectorAll ? root : document;
+      const popoverTriggers = scope.querySelectorAll('[data-bs-toggle="popover"]');
+      popoverTriggers.forEach(function (el) {
+        if (!bootstrap.Popover.getInstance(el)) {
+          new bootstrap.Popover(el);
+        }
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', function(){
+      initPopovers(document);
+
         /* helper for "add" buttons */
         const plusButtons = document.querySelectorAll('.btn.btn-success i.bi-plus-lg');
         if (plusButtons.length === 1) {
@@ -67,6 +79,10 @@
                 });
             }
         }
+
+            document.body.addEventListener('htmx:afterSwap', function(e){
+              initPopovers(e.target);
+            });
     });
     </script>
   </body>
