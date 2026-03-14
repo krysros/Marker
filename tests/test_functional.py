@@ -299,8 +299,8 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
     form.submit(status=303)
 
     res_sorted = testapp.get(
-        "/contact/search/tags/results",
-        params={"tag": "pipeline", "sort": "name", "order": "asc"},
+        "/search/tags/results",
+        params={"target": "contacts", "tag": "pipeline", "sort": "name", "order": "asc"},
         status=200,
     )
     _assert_text_order(
@@ -309,13 +309,237 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
     )
 
     res_filtered = testapp.get(
-        "/contact/search/tags/results",
-        params={"tag": "pipeline", "category": "companies", "country": "DE"},
+        "/search/tags/results",
+        params={
+            "target": "contacts",
+            "tag": "pipeline",
+            "category": "companies",
+            "country": "DE",
+        },
         status=200,
     )
     assert "Alpha Contact" in res_filtered.text
     assert "Zulu Contact" not in res_filtered.text
     assert "Project Contact" not in res_filtered.text
+
+    legacy_route_res = testapp.get(
+        "/contact/search/tags/results",
+        params={"tag": "pipeline", "sort": "name", "order": "asc"},
+        status=200,
+    )
+    assert "Alpha Contact" in legacy_route_res.text
+
+
+def test_search_tags_handles_polish_letters_in_tag_name(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="polish-tag-search-user",
+        password="admin",
+        fullname="Polish Tag Search User",
+        email="polish.tag.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Polish Tag Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Polish Tag Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    contact_company = models.contact.Contact(
+        name="Polish Company Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_company.company = company
+    contact_company.created_by = user
+
+    contact_project = models.contact.Contact(
+        name="Polish Project Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_project.project = project
+    contact_project.created_by = user
+
+    tag = models.tag.Tag(name="Ślusarka aluminiowa")
+    tag.created_by = user
+    tag.companies.append(company)
+    tag.projects.append(project)
+
+    dbsession.add_all([company, project, contact_company, contact_project, tag])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "polish-tag-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    companies_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "companies", "tag": "ślusarka aluminiowa"},
+        status=303,
+    )
+    companies_page = companies_redirect.follow(status=200)
+    assert "Polish Tag Company" in companies_page.text
+
+    projects_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "projects", "tag": "ślusarka aluminiowa"},
+        status=303,
+    )
+    projects_page = projects_redirect.follow(status=200)
+    assert "Polish Tag Project" in projects_page.text
+
+    contacts_page = testapp.get(
+        "/search/tags/results",
+        params={"target": "contacts", "tag": "ślusarka aluminiowa"},
+        status=200,
+    )
+    assert "Polish Company Contact" in contacts_page.text
+    assert "Polish Project Contact" in contacts_page.text
+
+
+def test_tag_search_redirects_and_supports_contacts_view_for_company_and_project(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="tag-search-switch-user",
+        password="admin",
+        fullname="Tag Search Switch User",
+        email="tag.search.switch.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Switch Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Switch Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    company_contact = models.contact.Contact(
+        name="Company Switch Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    company_contact.company = company
+    company_contact.created_by = user
+
+    project_contact = models.contact.Contact(
+        name="Project Switch Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    project_contact.project = project
+    project_contact.created_by = user
+
+    tag = models.tag.Tag(name="switch-tag")
+    tag.created_by = user
+    tag.companies.append(company)
+    tag.projects.append(project)
+
+    dbsession.add_all([company, project, company_contact, project_contact, tag])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "tag-search-switch-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "companies", "tag": "switch-tag"},
+        status=303,
+    )
+    assert "/company" in company_redirect.location
+
+    project_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "projects", "tag": "switch-tag"},
+        status=303,
+    )
+    assert "/project" in project_redirect.location
+
+    company_contacts_view = testapp.get(
+        "/company",
+        params={"tag": "switch-tag", "view": "contacts"},
+        status=200,
+    )
+    assert "Company Switch Contact" in company_contacts_view.text
+    assert "Switch Company" in company_contacts_view.text
+
+    project_contacts_view = testapp.get(
+        "/project",
+        params={"tag": "switch-tag", "view": "contacts"},
+        status=200,
+    )
+    assert "Project Switch Contact" in project_contacts_view.text
+    assert "Switch Project" in project_contacts_view.text
 
 
 def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
@@ -1802,6 +2026,121 @@ def test_default_all_category_shows_company_and_project_records(testapp, dbsessi
     )
     assert "Company default-all tag" not in tags_projects_page.text
     assert "Project default-all tag" in tags_projects_page.text
+
+
+def test_selected_tags_switch_shows_companies_projects_and_contacts(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="selected-tags-switch-user",
+        password="admin",
+        fullname="Selected Tags Switch User",
+        email="selected.tags.switch.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Selected Tags Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+        court="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Selected Tags Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    company_contact = models.contact.Contact(
+        name="Selected Tags Company Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    company_contact.created_by = user
+    company_contact.company = company
+
+    project_contact = models.contact.Contact(
+        name="Selected Tags Project Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    project_contact.created_by = user
+    project_contact.project = project
+
+    company_tag = models.tag.Tag(name="SelectedTagsCompanyTag")
+    company_tag.created_by = user
+    company_tag.companies.append(company)
+
+    project_tag = models.tag.Tag(name="SelectedTagsProjectTag")
+    project_tag.created_by = user
+    project_tag.projects.append(project)
+
+    dbsession.add_all(
+        [
+            company,
+            project,
+            company_contact,
+            project_contact,
+            company_tag,
+            project_tag,
+        ]
+    )
+    user.selected_tags.append(company_tag)
+    user.selected_tags.append(project_tag)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "selected-tags-switch-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    companies_page = testapp.get(
+        f"/user/{user.name}/selected_tags/companies",
+        status=200,
+    )
+    assert "Selected Tags Company" in companies_page.text
+    assert "Selected Tags Project" not in companies_page.text
+
+    projects_page = testapp.get(
+        f"/user/{user.name}/selected_tags/projects",
+        status=200,
+    )
+    assert "Selected Tags Project" in projects_page.text
+    assert "Selected Tags Company" not in projects_page.text
+
+    contacts_page = testapp.get(
+        f"/user/{user.name}/selected_tags/contacts",
+        params={"category": ""},
+        status=200,
+    )
+    assert "Selected Tags Company Contact" in contacts_page.text
+    assert "Selected Tags Project Contact" in contacts_page.text
 
 
 def test_select_all_tags_bulk_updates_selected_tags_table(testapp, dbsession):

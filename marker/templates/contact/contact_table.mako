@@ -1,4 +1,4 @@
-<%namespace name="checkbox" file="checkbox.mako"/>
+<%namespace name="checkbox" file="/common/checkbox.mako"/>
 
 <div class="table-responsive">
   <table class="table table-striped">

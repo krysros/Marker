@@ -177,9 +177,20 @@ class ProjectView:
         renderer="project_more.mako",
         permission="view",
     )
+    @view_config(
+        route_name="project_more_contacts",
+        renderer="contact_more.mako",
+        permission="view",
+    )
     def all(self):
         page = int(self.request.params.get("page", 1))
         tags = self._normalized_tags()
+        requested_view_mode = self.request.params.get("view", "projects")
+        if requested_view_mode not in {"projects", "contacts"}:
+            requested_view_mode = "projects"
+        # Contact view is available only for tag-based result sets.
+        view_mode = requested_view_mode if tags else "projects"
+        show_contacts_toggle = bool(tags)
         name = self.request.params.get("name", None)
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
@@ -206,8 +217,10 @@ class ProjectView:
         stmt = select(Project)
 
         if tags:
-            normalized_tags = [tag.lower() for tag in tags]
-            stmt = stmt.filter(Project.tags.any(func.lower(Tag.name).in_(normalized_tags)))
+            normalized_tags = [normalize_ci_value(tag) for tag in tags]
+            stmt = stmt.filter(
+                Project.tags.any(normalize_ci_expression(Tag.name).in_(normalized_tags))
+            )
             q["tag"] = tags
 
         if name:
@@ -265,6 +278,9 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
 
+        if view_mode == "contacts":
+            q["view"] = "contacts"
+
         q["sort"] = _sort
         q["order"] = _order
 
@@ -302,9 +318,19 @@ class ProjectView:
             elif _order == "desc":
                 stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
 
+        selected_items = self.request.identity.selected_projects
+        if view_mode == "contacts":
+            project_ids = stmt.order_by(None).with_only_columns(Project.id).subquery()
+            stmt = (
+                select(Contact)
+                .filter(Contact.project_id.in_(select(project_ids.c.id)))
+                .order_by(polish_sort_expression(Contact.name).asc(), Contact.id)
+            )
+            selected_items = self.request.identity.selected_contacts
+
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
-                self.request, stmt, self.request.identity.selected_projects
+                self.request, stmt, selected_items
             )
 
         counter = self.request.dbsession.execute(
@@ -317,8 +343,9 @@ class ProjectView:
             .all()
         )
 
+        next_route = "project_more_contacts" if view_mode == "contacts" else "project_more"
         next_page = self.request.route_url(
-            "project_more",
+            next_route,
             _query={
                 **q,
                 "page": page + 1,
@@ -340,6 +367,9 @@ class ProjectView:
             "stages": stages,
             "project_delivery_methods": project_delivery_methods,
             "form": form,
+            "view_mode": view_mode,
+            "show_contacts_toggle": show_contacts_toggle,
+            "contact_q": {"category": "projects"},
         }
 
     @view_config(

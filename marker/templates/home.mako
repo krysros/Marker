@@ -8,7 +8,7 @@
       ${_("Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting.")}
     </p>
     <div>
-      ${button.a(title=_("Search"), icon='search', color='primary', size='lg', url=request.route_url('contact_search_tags'))}
+      ${button.a(title=_("Search"), icon='search', color='primary', size='lg', url=request.route_url('search_tags'))}
     </div>
   </div>
 </div>

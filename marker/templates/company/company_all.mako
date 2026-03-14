@@ -17,8 +17,22 @@
   <%include file="company_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
+  % if show_contacts_toggle:
+  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+    <a class="btn ${'btn-primary' if view_mode == 'companies' else 'btn-outline-primary'}" href="${request.current_route_url(_query={**q, 'view': 'companies'})}">
+      ${_("Companies")}
+    </a>
+    <a class="btn ${'btn-primary' if view_mode == 'contacts' else 'btn-outline-primary'}" href="${request.current_route_url(_query={**q, 'view': 'contacts'})}">
+      ${_("Contacts")}
+    </a>
+  </div>
+  % endif
 </div>
 
 <%include file="search_criteria.mako"/>
 
-<%include file="company_table.mako"/>
+% if view_mode == "contacts":
+  <%include file="contact/contact_table.mako" args="q=contact_q"/>
+% else:
+  <%include file="company_table.mako"/>
+% endif

@@ -22,6 +22,8 @@ from . import (
     contains_ci,
     handle_bulk_selection,
     is_bulk_select_request,
+    normalize_ci_expression,
+    normalize_ci_value,
     polish_sort_expression,
     set_select_all_state,
     sort_column,
@@ -34,6 +36,12 @@ log = logging.getLogger(__name__)
 class ContactView:
     def __init__(self, request):
         self.request = request
+
+    def _search_target(self):
+        target = (self.request.params.get("target") or "contacts").strip().lower()
+        if target not in {"contacts", "companies", "projects"}:
+            target = "contacts"
+        return target
 
     def _normalized_tags(self):
         seen = set()
@@ -50,14 +58,18 @@ class ContactView:
         stmt = select(Contact).distinct()
 
         if tags:
-            normalized_tags = [tag.lower() for tag in tags]
+            normalized_tags = [normalize_ci_value(tag) for tag in tags]
             stmt = stmt.filter(
                 or_(
                     Contact.company.has(
-                        Company.tags.any(func.lower(Tag.name).in_(normalized_tags))
+                        Company.tags.any(
+                            normalize_ci_expression(Tag.name).in_(normalized_tags)
+                        )
                     ),
                     Contact.project.has(
-                        Project.tags.any(func.lower(Tag.name).in_(normalized_tags))
+                        Project.tags.any(
+                            normalize_ci_expression(Tag.name).in_(normalized_tags)
+                        )
                     ),
                 )
             )
@@ -359,6 +371,11 @@ class ContactView:
         return {"heading": _("Find a contact"), "form": form}
 
     @view_config(
+        route_name="search_tags",
+        renderer="contact_search_tags.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="contact_search_tags",
         renderer="contact_search_tags.mako",
         permission="view",
@@ -366,24 +383,37 @@ class ContactView:
     def search_tags(self):
         _ = self.request.translate
         tags = self._normalized_tags()
+        target = self._search_target()
         q = {}
 
+        q["target"] = target
         if tags:
             q["tag"] = tags
 
         if self.request.method == "POST":
             return HTTPSeeOther(
-                location=self.request.route_url("contact_search_tags_results", _query=q)
+                location=self.request.route_url("search_tags_results", _query=q)
             )
 
         return {
             "tags": tags,
+            "target": target,
             "heading": _("Search contacts"),
         }
 
     @view_config(
+        route_name="search_tags_results",
+        renderer="contact_search_tags_results.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="contact_search_tags_results",
         renderer="contact_search_tags_results.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="search_tags_results_more",
+        renderer="contact_more.mako",
         permission="view",
     )
     @view_config(
@@ -393,7 +423,20 @@ class ContactView:
     )
     def search_tags_results(self):
         _ = self.request.translate
+        target = self._search_target()
         tags = self._normalized_tags()
+
+        if not tags:
+            return HTTPSeeOther(location=self.request.route_url("search_tags"))
+
+        if target == "companies":
+            q = {"tag": tags}
+            return HTTPSeeOther(location=self.request.route_url("company_all", _query=q))
+
+        if target == "projects":
+            q = {"tag": tags}
+            return HTTPSeeOther(location=self.request.route_url("project_all", _query=q))
+
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
         role = self.request.params.get("role", None)
@@ -417,9 +460,7 @@ class ContactView:
         if _order not in {"asc", "desc"}:
             _order = "desc"
 
-        if not tags:
-            return HTTPSeeOther(location=self.request.route_url("contact_search_tags"))
-
+        q["target"] = target
         q["tag"] = tags
 
         stmt = self._stmt_contacts_by_tags(tags)
@@ -533,7 +574,7 @@ class ContactView:
         paginator = []
         counter = 0
         next_page = self.request.route_url(
-            "contact_search_tags_results_more",
+            "search_tags_results_more",
             _query={
                 **q,
                 "page": page + 1,
@@ -572,6 +613,11 @@ class ContactView:
         }
 
     @view_config(
+        route_name="search_tags_input",
+        renderer="contact_tag_input_row.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="contact_search_tags_input",
         renderer="contact_tag_input_row.mako",
         permission="view",
@@ -582,6 +628,11 @@ class ContactView:
             "value": "",
         }
 
+    @view_config(
+        route_name="search_tags_input_remove",
+        renderer="string",
+        permission="view",
+    )
     @view_config(
         route_name="contact_search_tags_input_remove",
         renderer="string",

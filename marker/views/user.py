@@ -2474,6 +2474,253 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_selected_tags_companies",
+        renderer="user_selected_tags_companies.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_tags_companies",
+        renderer="company_more.mako",
+        permission="view",
+    )
+    def selected_tags_companies(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = dict(SORT_CRITERIA_EXT)
+        sort_criteria["name"] = self.request.translate("Company")
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        selected_tag_ids = (
+            select(selected_tags.c.tag_id)
+            .where(selected_tags.c.user_id == user.id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(Company)
+            .join(companies_tags, companies_tags.c.company_id == Company.id)
+            .filter(companies_tags.c.tag_id.in_(selected_tag_ids))
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_companies
+            )
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_more_selected_tags_companies",
+            username=user.name,
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "counter": counter,
+            "form": form,
+        }
+
+    @view_config(
+        route_name="user_selected_tags_projects",
+        renderer="user_selected_tags_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_tags_projects",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def selected_tags_projects(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        sort_criteria["name"] = self.request.translate("Project")
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        statuses = dict(STATUS)
+        stages = dict(STAGES)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        selected_tag_ids = (
+            select(selected_tags.c.tag_id)
+            .where(selected_tags.c.user_id == user.id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(Project)
+            .join(projects_tags, projects_tags.c.project_id == Project.id)
+            .filter(projects_tags.c.tag_id.in_(selected_tag_ids))
+            .distinct()
+        )
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_projects
+            )
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_more_selected_tags_projects",
+            username=user.name,
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+            "colors": colors,
+            "statuses": statuses,
+            "stages": stages,
+            "project_delivery_methods": project_delivery_methods,
+            "form": form,
+        }
+
+    @view_config(
         route_name="user_export_selected_tags",
         permission="view",
     )
@@ -2771,13 +3018,12 @@ class UserView:
             scope="companies", more_route="user_more_selected_companies_contacts"
         )
         if isinstance(response, dict):
-            response["heading"] = self.request.translate(
-                _("Contacts assigned to selected companies")
-            )
+            response["heading"] = self.request.translate(_("Contacts"))
             response["switch_url"] = self.request.route_url(
                 "user_selected_companies", username=response["user"].name
             )
             response["switch_icon"] = "buildings"
+            response["switch_mode"] = "selected_companies"
         return response
 
     @view_config(
@@ -2795,13 +3041,12 @@ class UserView:
             scope="projects", more_route="user_more_selected_projects_contacts"
         )
         if isinstance(response, dict):
-            response["heading"] = self.request.translate(
-                _("Contacts assigned to selected projects")
-            )
+            response["heading"] = self.request.translate(_("Contacts"))
             response["switch_url"] = self.request.route_url(
                 "user_selected_projects", username=response["user"].name
             )
             response["switch_icon"] = "briefcase"
+            response["switch_mode"] = "selected_projects"
         return response
 
     @view_config(
@@ -2819,13 +3064,12 @@ class UserView:
             scope="tags", more_route="user_more_selected_tags_contacts"
         )
         if isinstance(response, dict):
-            response["heading"] = self.request.translate(
-                _("Contacts assigned to selected tags")
-            )
+            response["heading"] = self.request.translate(_("Contacts"))
             response["switch_url"] = self.request.route_url(
                 "user_selected_tags", username=response["user"].name
             )
             response["switch_icon"] = "tags"
+            response["switch_mode"] = "selected_tags"
         return response
 
     @view_config(

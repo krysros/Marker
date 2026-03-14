@@ -175,9 +175,20 @@ class CompanyView:
         renderer="company_more.mako",
         permission="view",
     )
+    @view_config(
+        route_name="company_more_contacts",
+        renderer="contact_more.mako",
+        permission="view",
+    )
     def all(self):
         page = int(self.request.params.get("page", 1))
         tags = self._normalized_tags()
+        requested_view_mode = self.request.params.get("view", "companies")
+        if requested_view_mode not in {"companies", "contacts"}:
+            requested_view_mode = "companies"
+        # Contact view is available only for tag-based result sets.
+        view_mode = requested_view_mode if tags else "companies"
+        show_contacts_toggle = bool(tags)
         name = self.request.params.get("name", None)
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
@@ -200,8 +211,10 @@ class CompanyView:
         stmt = select(Company)
 
         if tags:
-            normalized_tags = [tag.lower() for tag in tags]
-            stmt = stmt.filter(Company.tags.any(func.lower(Tag.name).in_(normalized_tags)))
+            normalized_tags = [normalize_ci_value(tag) for tag in tags]
+            stmt = stmt.filter(
+                Company.tags.any(normalize_ci_expression(Tag.name).in_(normalized_tags))
+            )
             q["tag"] = tags
 
         if name:
@@ -255,6 +268,9 @@ class CompanyView:
             stmt = stmt.filter(Company.court == court)
             q["court"] = court
 
+        if view_mode == "contacts":
+            q["view"] = "contacts"
+
         q["sort"] = _sort
         q["order"] = _order
 
@@ -294,9 +310,19 @@ class CompanyView:
             elif _order == "desc":
                 stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
 
+        selected_items = self.request.identity.selected_companies
+        if view_mode == "contacts":
+            company_ids = stmt.order_by(None).with_only_columns(Company.id).subquery()
+            stmt = (
+                select(Contact)
+                .filter(Contact.company_id.in_(select(company_ids.c.id)))
+                .order_by(polish_sort_expression(Contact.name).asc(), Contact.id)
+            )
+            selected_items = self.request.identity.selected_contacts
+
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
-                self.request, stmt, self.request.identity.selected_companies
+                self.request, stmt, selected_items
             )
 
         counter = self.request.dbsession.execute(
@@ -312,13 +338,16 @@ class CompanyView:
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
+        next_route = "company_more_contacts" if view_mode == "contacts" else "company_more"
         next_page = self.request.route_url(
-            "company_more",
+            next_route,
             _query={
                 **q,
                 "page": page + 1,
             },
         )
+
+        contact_q = {"category": "companies"}
 
         return {
             "q": q,
@@ -329,6 +358,9 @@ class CompanyView:
             "counter": counter,
             "colors": colors,
             "form": form,
+            "view_mode": view_mode,
+            "show_contacts_toggle": show_contacts_toggle,
+            "contact_q": contact_q,
         }
 
     @view_config(

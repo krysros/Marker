@@ -1,5 +1,5 @@
-<%namespace name="button" file="button.mako"/>
-<%namespace name="checkbox" file="checkbox.mako"/>
+<%namespace name="button" file="/common/button.mako"/>
+<%namespace name="checkbox" file="/common/checkbox.mako"/>
 <%page args="paginator, next_page=None"/>
 
 <%!

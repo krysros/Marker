@@ -1,3 +1,12 @@
+2.6
+---
+
+- Ujednolicone ikony widoku w nagłówkach widoków zaznaczonych i oznaczonych gwiazdką (np. firmy, projekty, kontakty, tagi)
+- Dodano ikonę "bi bi-tags" dla widoku wybranych tagów
+- Dodano przełączniki widoku (np. Firmy/Kontakty, Projekty/Kontakty, Tag/Firmy/Projekty/Kontakty) w widokach zaznaczonych i powiązanych, zapewniając spójność nawigacji
+- Poprawiono tłumaczenie "Clear" na "Wyczyść" w polskiej wersji językowej
+- Zaktualizowano i skompilowano pliki tłumaczeń (pl)
+
 2.5
 ---
 

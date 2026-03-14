@@ -15,7 +15,7 @@
          hx-vals='{"list_id": "tags-${row_id}"}'>
   <button type="button"
           class="btn btn-outline-danger"
-          hx-get="${request.route_url('contact_search_tags_input_remove')}"
+        hx-get="${request.route_url('search_tags_input_remove')}"
           hx-target="closest .tag-input-row"
           hx-swap="outerHTML">
     <i class="bi bi-dash-lg"></i>

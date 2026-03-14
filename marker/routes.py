@@ -23,6 +23,11 @@ def includeme(config):
 
     config.add_route("company_all", "/company", factory=default_factory)
     config.add_route("company_more", "/company/more", factory=default_factory)
+    config.add_route(
+        "company_more_contacts",
+        "/company/more/contacts",
+        factory=default_factory,
+    )
     config.add_route("company_json", "/company/json", factory=default_factory)
     config.add_route("company_map", "/company/map", factory=default_factory)
     config.add_route("company_add", "/company/add", factory=default_factory)
@@ -179,6 +184,11 @@ def includeme(config):
 
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
+    config.add_route(
+        "project_more_contacts",
+        "/project/more/contacts",
+        factory=default_factory,
+    )
     config.add_route("project_json", "/project/json", factory=default_factory)
     config.add_route("project_map", "/project/map", factory=default_factory)
     config.add_route("project_add", "/project/add", factory=default_factory)
@@ -438,6 +448,27 @@ def includeme(config):
     config.add_route("contact_all", "/contact", factory=default_factory)
     config.add_route("contact_more", "/contact/more", factory=default_factory)
     config.add_route("contact_search", "/contact/search", factory=default_factory)
+    config.add_route("search_tags", "/search/tags", factory=default_factory)
+    config.add_route(
+        "search_tags_results",
+        "/search/tags/results",
+        factory=default_factory,
+    )
+    config.add_route(
+        "search_tags_results_more",
+        "/search/tags/results/more",
+        factory=default_factory,
+    )
+    config.add_route(
+        "search_tags_input",
+        "/search/tags/input",
+        factory=default_factory,
+    )
+    config.add_route(
+        "search_tags_input_remove",
+        "/search/tags/input/remove",
+        factory=default_factory,
+    )
     config.add_route(
         "contact_search_tags", "/contact/search/tags", factory=default_factory
     )
@@ -664,6 +695,26 @@ def includeme(config):
     config.add_route(
         "user_more_selected_tags",
         "/user/{username}/more_selected_tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_tags_companies",
+        "/user/{username}/selected_tags/companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_tags_companies",
+        "/user/{username}/more_selected_tags_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_tags_projects",
+        "/user/{username}/selected_tags/projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_tags_projects",
+        "/user/{username}/more_selected_tags_projects",
         factory=user_factory,
     )
     config.add_route(

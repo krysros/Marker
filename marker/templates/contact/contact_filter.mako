@@ -6,6 +6,9 @@
     % for tag in q.get("tag", []):
       <input type="hidden" name="tag" value="${tag}">
     % endfor
+    % if q.get("target"):
+      <input type="hidden" name="target" value="${q.get('target')}">
+    % endif
     % if form.name.data:
       ${form.name(class_="form-control")}
     % endif
