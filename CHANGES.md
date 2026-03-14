@@ -1,11 +1,11 @@
 2.6
 ---
 
-- Ujednolicone ikony widoku w nagłówkach widoków zaznaczonych i oznaczonych gwiazdką (np. firmy, projekty, kontakty, tagi)
-- Dodano ikonę "bi bi-tags" dla widoku wybranych tagów
-- Dodano przełączniki widoku (np. Firmy/Kontakty, Projekty/Kontakty, Tag/Firmy/Projekty/Kontakty) w widokach zaznaczonych i powiązanych, zapewniając spójność nawigacji
-- Poprawiono tłumaczenie "Clear" na "Wyczyść" w polskiej wersji językowej
-- Zaktualizowano i skompilowano pliki tłumaczeń (pl)
+- Unified view icons in headers of selected and starred views (e.g. companies, projects, contacts, tags)
+- Added "bi bi-tags" icon for the selected tags view
+- Added view switchers (e.g. Companies/Contacts, Projects/Contacts, Tag/Companies/Projects/Contacts) in selected and related views for consistent navigation
+- Improved Polish translation: "Clear" is now "Wyczyść"
+- Updated and compiled Polish translation files
 
 2.5
 ---
