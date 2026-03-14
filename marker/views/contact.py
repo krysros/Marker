@@ -38,9 +38,9 @@ class ContactView:
         self.request = request
 
     def _search_target(self):
-        target = (self.request.params.get("target") or "contacts").strip().lower()
+        target = (self.request.params.get("target") or "companies").strip().lower()
         if target not in {"contacts", "companies", "projects"}:
-            target = "contacts"
+            target = "companies"
         return target
 
     def _normalized_tags(self):

@@ -8,9 +8,9 @@
       <div class="mb-3">
         <label class="form-label" for="target-select">${_("Search in")}</label>
         <select id="target-select" class="form-control" name="target">
-          <option value="contacts" ${'selected' if target == 'contacts' else ''}>${_("Contacts")}</option>
-          <option value="companies" ${'selected' if target == 'companies' else ''}>${_("Companies")}</option>
+          <option value="companies" ${'selected' if not target or target == 'companies' else ''}>${_("Companies")}</option>
           <option value="projects" ${'selected' if target == 'projects' else ''}>${_("Projects")}</option>
+          <option value="contacts" ${'selected' if target == 'contacts' else ''}>${_("Contacts")}</option>
         </select>
       </div>
       <label class="form-label">${_("Tags")}</label>
