@@ -12,7 +12,7 @@
         <th>${_("Project")}</th>
         <th>${_("City")}</th>
         % if show_shared_tags:
-        <th>${_("Wspólne tagi")}</th>
+        <th>${_("Common tags")}</th>
         % endif
         <th>${_("Companies")}</th>
         <th>${_("Stars")}</th>

@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-diagram-3"></i> ${_("Kontrahenci")}
+  <i class="bi bi-diagram-3"></i> ${_("Contractors")}
   <span class="badge bg-secondary">${counter}</span>
 </h2>
 

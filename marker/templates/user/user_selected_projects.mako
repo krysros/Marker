@@ -4,6 +4,7 @@
 <h2>
   <i class="bi bi-check-square"></i> <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary">${counter}</span>
+  <small class="text-body-secondary ms-2">${_("Selected projects")}</small>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_projects', username=user.name, _query=q), confirm_text=_("Delete all selected projects?"))}
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_selected_projects', username=user.name, _query=q))}

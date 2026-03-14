@@ -40,7 +40,7 @@
           data-bs-toggle="popover"
           data-bs-trigger="hover focus"
           data-bs-placement="top"
-          data-bs-title="${_("Wspólne tagi")}"
+          data-bs-title="${_("Common tags")}" 
           data-bs-content="${shared_tag_labels.get(project.id, '')}">
       ${shared_tag_counts.get(project.id, 0)}
     </span>

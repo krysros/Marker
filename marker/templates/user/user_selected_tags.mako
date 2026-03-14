@@ -4,6 +4,7 @@
 <h2>
   <i class="bi bi-check-square"></i> <i class="bi bi-tags"></i> ${_("Tags")}
   <span class="badge bg-secondary">${counter}</span>
+  <small class="text-body-secondary ms-2">${_("Selected tags")}</small>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">

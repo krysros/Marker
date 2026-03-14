@@ -28,7 +28,7 @@
           <a class="nav-link" role="button" href="${request.route_url('search_tags')}"><i class="bi bi-search"></i> ${_("Search")}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('contractor_all')}"><i class="bi bi-diagram-3"></i> ${_("Kontrahenci")}</a>
+          <a class="nav-link" role="button" href="${request.route_url('contractor_all')}"><i class="bi bi-diagram-3"></i> ${_("Contractors")}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('report_all')}"><i class="bi bi-bar-chart"></i> ${_("Reports")}</a>

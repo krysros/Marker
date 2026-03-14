@@ -4,6 +4,7 @@
 <h2>
   <i class="bi bi-check-square"></i> <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary">${counter}</span>
+  <small class="text-body-secondary ms-2">${_("Selected companies")}</small>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_companies', username=user.name, _query=q), confirm_text=_("Delete all selected companies?"))}
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_selected_companies', username=user.name, _query=q))}

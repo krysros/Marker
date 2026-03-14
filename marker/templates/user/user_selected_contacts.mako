@@ -4,6 +4,7 @@
 <h2>
   <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${_("Contacts")}
   <span class="badge bg-secondary">${counter}</span>
+  <small class="text-body-secondary ms-2">${_("Selected contacts")}</small>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
     ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_contacts', username=user.name, _query=q))}
