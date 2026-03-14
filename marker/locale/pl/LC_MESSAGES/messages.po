@@ -1214,7 +1214,7 @@ msgstr "Znajdź kontakt"
 
 #: marker/views/contact.py:381 marker/views/contact.py:571
 msgid "Search contacts"
-msgstr "Szukaj kontaktów"
+msgstr "Szukaj za pomocą tagów"
 
 #: marker/views/contact.py:635
 msgid ""
