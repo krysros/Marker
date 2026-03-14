@@ -5,9 +5,7 @@
   <i class="bi bi-check-square"></i> <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary">${counter}</span>
   <small class="text-body-secondary ms-2">${_("Companies of selected tags")}</small>
-  <div class="float-end">
-    ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_tags', username=user.name, _query={**q, 'category': 'companies'}))}
-  </div>
+  <!-- export button removed -->
 </h2>
 <hr>
 
