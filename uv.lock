@@ -426,7 +426,7 @@ wheels = [
 
 [[package]]
 name = "marker"
-version = "2.5"
+version = "2.6"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
