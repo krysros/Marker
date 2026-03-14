@@ -946,9 +946,8 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #: marker/templates/contractor/contractor_all.mako:39
-#, fuzzy
 msgid "Clear"
-msgstr "Kolor"
+msgstr "Wyczyść"
 
 #: marker/templates/report/report_table.mako:5
 msgid "Description"

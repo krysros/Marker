@@ -2,14 +2,13 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> ${_("Tags")}
+  <i class="bi bi-check-square"></i> <i class="bi bi-tags"></i> ${_("Tags")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
     </button>
-    ${button.a(icon='people', color='secondary', url=request.route_url('user_selected_tags_contacts', username=user.name, _query=q))}
     ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_tags', username=user.name, _query=q))}
   </div>
 </h2>
@@ -35,7 +34,13 @@
     </form>
   </div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
+  <div>${button.dropdown_order(order_criteria)}</div>
+  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+    <a class="btn btn-primary" href="${request.route_url('user_selected_tags', username=user.name, _query=q)}">${_("Tags")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_companies', username=user.name)}">${_("Companies")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_projects', username=user.name)}">${_("Projects")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_contacts', username=user.name, _query={**q, 'category': ''})}">${_("Contacts")}</a>
+  </div>
 </div>
 
 <%include file="tag_table.mako"/>

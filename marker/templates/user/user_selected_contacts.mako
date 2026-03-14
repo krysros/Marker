@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> ${_("Contacts")}
+  <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${_("Contacts")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
