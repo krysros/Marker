@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from sqlalchemy import select
 
 from marker import models
+from marker.models.user import User
 from marker.views.company import CompanyView
 from marker.views.project import ProjectView
 
@@ -23,13 +24,12 @@ class _Response:
 
 
 def _create_user(dbsession, name):
-    user = models.user.User(
-        name=name,
-        password="admin",
-        fullname="Star Delete Admin",
-        email=f"{name}@example.com",
-        role="admin",
-    )
+    user = User()
+    user.name = name
+    user.fullname = "Star Delete Admin"
+    user.email = f"{name}@example.com"
+    user.role = "admin"
+    user.password = "admin"
     dbsession.add(user)
     dbsession.flush()
     return user

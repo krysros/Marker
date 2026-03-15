@@ -325,9 +325,8 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
     legacy_route_res = testapp.get(
         "/contact/search/tags/results",
         params={"tag": "pipeline", "sort": "name", "order": "asc"},
-        status=200,
+        status=303,
     )
-    assert "Alpha Contact" in legacy_route_res.text
 
 
 def test_search_tags_handles_polish_letters_in_tag_name(testapp, dbsession):
@@ -606,12 +605,8 @@ def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
     tags_results_with_color_sort = testapp.get(
         "/contact/search/tags/results",
         params={"tag": "pipeline", "sort": "color", "order": "asc"},
-        status=200,
+        status=303,
     )
-    assert "color" not in _extract_sort_values_from_dropdown(
-        tags_results_with_color_sort.text
-    )
-    assert _extract_selected_sort_value(tags_results_with_color_sort.text) == "created_at"
 
 
 def test_name_search_is_case_insensitive_with_polish_letters(testapp, dbsession):

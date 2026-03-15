@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from sqlalchemy import delete, select
 
 from marker import models
+from marker.models.user import User
 from marker.views.project import ProjectView
 from marker.views.user import UserView
 
@@ -23,13 +24,13 @@ class _Response:
 
 
 def _create_user(dbsession, name="delete-project-admin"):
-    user = models.user.User(
-        name=name,
-        password="admin",
-        fullname="Delete Project Admin",
-        email=f"{name}@example.com",
-        role="admin",
-    )
+    print(f"DEBUG: User class={User}, module={User.__module__}")
+    user = User()
+    user.name = name
+    user.fullname = "Delete Project Admin"
+    user.email = f"{name}@example.com"
+    user.role = "admin"
+    user.password = "admin"
     dbsession.add(user)
     dbsession.flush()
     return user
