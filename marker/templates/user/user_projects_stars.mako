@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
-  <h2 class="mb-0">
+  <h2 class="mb-0 text-nowrap flex-grow-1 flex-shrink-1">
     <i class="bi bi-briefcase"></i> ${_("Projects marked with a star")}
     <span class="badge bg-secondary">${counter}</span>
   </h2>
