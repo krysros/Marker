@@ -2,9 +2,8 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-buildings"></i> ${_("Companies")}
+  <i class="bi bi-buildings"></i> ${_("Selected companies")}
   <span class="badge bg-secondary">${counter}</span>
-  <small class="text-body-secondary ms-2">${_("Selected companies")}</small>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_companies', username=user.name, _query=q), confirm_text=_("Delete all selected companies?"))}
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_selected_companies', username=user.name, _query=q))}
@@ -13,7 +12,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <%include file="company_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>

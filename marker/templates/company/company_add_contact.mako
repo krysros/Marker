@@ -2,7 +2,7 @@
 
 <%namespace name="pills" file="pills.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(company_pills, active_url=request.route_url('company_contacts', company_id=company.id, slug=company.slug))}</div>
 </div>
 

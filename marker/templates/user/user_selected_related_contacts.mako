@@ -8,28 +8,24 @@
 </span>
 % if switch_mode == "selected_companies":
   <h2>
-    <i class="bi bi-people"></i> ${heading}
+    <i class="bi bi-people"></i> ${_("Contacts of selected companies")}
     <span class="badge bg-secondary">${counter}</span>
-    <small class="text-body-secondary ms-2">${_("Contacts of selected companies")}</small>
   </h2>
 % elif switch_mode == "selected_projects":
   <h2>
-    <i class="bi bi-people"></i> ${heading}
-    <span class="badge bg-secondary">${counter}</span>
-    <small class="text-body-secondary ms-2">${_("Contacts of selected projects")}</small>
+    <i class="bi bi-people"></i> ${_("Contacts of selected projects")}
   </h2>
 % elif switch_mode == "selected_tags":
   <% selected_category = q.get("category", "") %>
   <h2>
-    <i class="bi bi-people"></i> ${heading}
-    <span class="badge bg-secondary">${counter}</span>
     % if selected_category == "companies":
-      <small class="text-body-secondary ms-2">${_("Contacts of companies from selected tags")}</small>
+      <i class="bi bi-people"></i> ${_("Contacts of companies from selected tags")}
     % elif selected_category == "projects":
-      <small class="text-body-secondary ms-2">${_("Contacts of projects from selected tags")}</small>
+      <i class="bi bi-people"></i> ${_("Contacts of projects from selected tags")}
     % else:
-      <small class="text-body-secondary ms-2">${_("Contacts of selected tags")}</small>
+      <i class="bi bi-people"></i> ${_("Contacts of selected tags")}
     % endif
+    <span class="badge bg-secondary">${counter}</span>
   </h2>
 % else:
   <h2>
@@ -40,7 +36,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <%include file="contact_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>

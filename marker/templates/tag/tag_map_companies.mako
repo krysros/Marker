@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(tag_pills, active_url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug))}</div>
   <div>${button.a(icon='table', color='secondary', url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug, _query=q))}</div>
   <div>${button.a(icon='download', color='primary', url=request.route_url('tag_export_companies', tag_id=tag.id, slug=tag.slug, _query=q))}</div>

@@ -11,7 +11,7 @@
 
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <%include file="comment_filter.mako"/>
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>

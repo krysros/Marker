@@ -2,14 +2,13 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-buildings"></i> ${_("Companies")}
+  <i class="bi bi-buildings"></i> ${_("Companies of selected tags")}</small>
   <span class="badge bg-secondary">${counter}</span>
-  <small class="text-body-secondary ms-2">${_("Companies of selected tags")}</small>
   <!-- export button removed -->
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <%include file="company_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>

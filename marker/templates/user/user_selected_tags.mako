@@ -2,9 +2,8 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-tags"></i> ${_("Tags")}
+  <i class="bi bi-tags"></i> ${_("Selected tags")}
   <span class="badge bg-secondary">${counter}</span>
-  <small class="text-body-secondary ms-2">${_("Selected tags")}</small>
   <div class="float-end">
     ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
@@ -15,7 +14,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="dropdown">
     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       <i class="bi bi-filter"></i> ${_("Filter")}

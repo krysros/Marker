@@ -2,9 +2,8 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-buildings"></i> ${_("Companies")}
+  <i class="bi bi-buildings"></i> ${_("Companies marked with a star")}
   <span class="badge bg-secondary">${counter}</span>
-  <small class="text-body-secondary ms-2">${_("Marked with a star")}</small>
   <div class="float-end">
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_companies_stars', username=user.name))}
     ${button.button(icon='star', color='warning', url=request.route_url('user_clear_companies_stars', username=user.name))}
@@ -13,7 +12,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <%include file="company_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
