@@ -12,7 +12,7 @@
 </h2>
 <hr>
 
-<div class="hstack gap-2 mb-4">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
   <%include file="project_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div class="me-auto">${button.dropdown_order(order_criteria)}</div>

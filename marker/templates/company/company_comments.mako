@@ -2,7 +2,7 @@
 <%namespace name="pills" file="pills.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="hstack gap-2 mb-4">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
   <div class="me-auto">${pills.pills(company_pills)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
@@ -15,7 +15,7 @@
 
 <%include file="company_lead.mako"/>
 
-<div class="hstack gap-2 mb-4">
+<div class="hstack gap-2 mb-4 d-flex flex-wrap ">
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>
