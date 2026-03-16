@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${_("Contacts")}
+  <i class="bi bi-people"></i> ${_("Contacts")}
   <span class="badge bg-secondary">${counter}</span>
   <small class="text-body-secondary ms-2">${_("Selected contacts")}</small>
   <div class="float-end">

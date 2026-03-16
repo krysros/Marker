@@ -8,20 +8,20 @@
 </span>
 % if switch_mode == "selected_companies":
   <h2>
-    <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${heading}
+    <i class="bi bi-people"></i> ${heading}
     <span class="badge bg-secondary">${counter}</span>
     <small class="text-body-secondary ms-2">${_("Contacts of selected companies")}</small>
   </h2>
 % elif switch_mode == "selected_projects":
   <h2>
-    <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${heading}
+    <i class="bi bi-people"></i> ${heading}
     <span class="badge bg-secondary">${counter}</span>
     <small class="text-body-secondary ms-2">${_("Contacts of selected projects")}</small>
   </h2>
 % elif switch_mode == "selected_tags":
   <% selected_category = q.get("category", "") %>
   <h2>
-    <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${heading}
+    <i class="bi bi-people"></i> ${heading}
     <span class="badge bg-secondary">${counter}</span>
     % if selected_category == "companies":
       <small class="text-body-secondary ms-2">${_("Contacts of companies from selected tags")}</small>
@@ -33,7 +33,7 @@
   </h2>
 % else:
   <h2>
-    <i class="bi bi-check-square"></i> <i class="bi bi-people"></i> ${heading}
+    <i class="bi bi-people"></i> ${heading}
     <span class="badge bg-secondary">${counter}</span>
   </h2>
 % endif

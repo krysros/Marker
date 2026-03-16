@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> <i class="bi bi-briefcase"></i> ${_("Projects")}
+  <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary">${counter}</span>
   <small class="text-body-secondary ms-2">${_("Projects of selected tags")}</small>
   <!-- export button removed -->

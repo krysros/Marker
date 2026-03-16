@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-check-square"></i> <i class="bi bi-tags"></i> ${_("Tags")}
+  <i class="bi bi-tags"></i> ${_("Tags")}
   <span class="badge bg-secondary">${counter}</span>
   <small class="text-body-secondary ms-2">${_("Selected tags")}</small>
   <div class="float-end">
