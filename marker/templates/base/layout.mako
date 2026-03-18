@@ -78,22 +78,53 @@
 
       <!-- Shortcuts Modal -->
       <div class="modal fade" id="shortcutsModal" tabindex="-1" aria-labelledby="shortcutsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="shortcutsModalLabel">${_("Keyboard Shortcuts")}</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item"><kbd>/</kbd> — ${_("Open search or focus search input")}</li>
-                <li class="list-group-item"><kbd>+</kbd> / <kbd>Insert</kbd> — ${_("Open add menu or add new item")}</li>
-                <li class="list-group-item"><kbd>-</kbd> / <kbd>Delete</kbd> — ${_("Delete selected item (if available)")}</li>
-                <li class="list-group-item"><kbd>Home</kbd> — ${_("Go to homepage")}</li>
-                <li class="list-group-item"><kbd>1</kbd>–<kbd>5</kbd> — ${_("Quick navigation to main sections (on homepage)")}</li>
-                <li class="list-group-item"><kbd>Arrow keys</kbd> / <kbd>Enter</kbd> — ${_("Navigate and select in modals")}</li>
-                <li class="list-group-item"><kbd>Esc</kbd> — ${_("Close modal")}</li>
-              </ul>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col">${_("Shortcut")}</th>
+                      <th scope="col">${_("Action")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><kbd>/</kbd></td>
+                      <td>${_("Open search or focus search input")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>+</kbd> / <kbd>Insert</kbd></td>
+                      <td>${_("Open add menu or add new item")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>-</kbd> / <kbd>Delete</kbd></td>
+                      <td>${_("Delete selected item (if available)")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>Home</kbd></td>
+                      <td>${_("Go to homepage")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>1</kbd>–<kbd>5</kbd></td>
+                      <td>${_("Quick navigation to main sections (on homepage)")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>Arrow keys</kbd> / <kbd>Enter</kbd></td>
+                      <td>${_("Navigate and select in modals")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>Esc</kbd></td>
+                      <td>${_("Close modal")}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
