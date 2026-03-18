@@ -1,3 +1,25 @@
+      <!-- Shortcuts Modal -->
+      <div class="modal fade" id="shortcutsModal" tabindex="-1" aria-labelledby="shortcutsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="shortcutsModalLabel">${_("Keyboard Shortcuts")}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><kbd>/</kbd> — ${_("Open search or focus search input")}</li>
+                <li class="list-group-item"><kbd>+</kbd> / <kbd>Insert</kbd> — ${_("Open add menu or add new item")}</li>
+                <li class="list-group-item"><kbd>-</kbd> / <kbd>Delete</kbd> — ${_("Delete selected item (if available)")}</li>
+                <li class="list-group-item"><kbd>Home</kbd> — ${_("Go to homepage")}</li>
+                <li class="list-group-item"><kbd>1</kbd>–<kbd>5</kbd> — ${_("Quick navigation to main sections (on homepage)")}</li>
+                <li class="list-group-item"><kbd>Arrow keys</kbd> / <kbd>Enter</kbd> — ${_("Navigate and select in modals")}</li>
+                <li class="list-group-item"><kbd>Esc</kbd> — ${_("Close modal")}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 <!doctype html>
 <html lang="${request.locale_name}" data-bs-theme="auto">
   <head>

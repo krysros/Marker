@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-16 19:42+0100\n"
+"POT-Creation-Date: 2026-03-18 16:35+0100\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -310,7 +310,7 @@ msgid "Date modified"
 msgstr "Data modyfikacji"
 
 #: marker/forms/select.py:63 marker/forms/select.py:75
-#: marker/templates/base/navbar.mako:75
+#: marker/templates/base/navbar.mako:80
 #: marker/templates/company/company_table.mako:18
 #: marker/templates/project/project_table.mako:18
 #: marker/templates/user/user_map_companies_stars.mako:5
@@ -320,7 +320,7 @@ msgid "Stars"
 msgstr "Gwiazdki"
 
 #: marker/forms/select.py:64 marker/forms/select.py:76
-#: marker/templates/base/navbar.mako:22
+#: marker/templates/base/layout.mako:75 marker/templates/base/navbar.mako:22
 #: marker/templates/comment/comment_all.mako:5
 #: marker/templates/company/company_table.mako:19 marker/templates/home.mako:73
 #: marker/templates/project/project_table.mako:19 marker/views/company.py:129
@@ -368,11 +368,11 @@ msgstr "Ostrzeżenie"
 msgid "Info"
 msgstr "Informacja"
 
-#: marker/forms/select.py:102 marker/templates/base/navbar.mako:138
+#: marker/forms/select.py:102 marker/templates/base/navbar.mako:143
 msgid "Light"
 msgstr "Jasny"
 
-#: marker/forms/select.py:103 marker/templates/base/navbar.mako:149
+#: marker/forms/select.py:103 marker/templates/base/navbar.mako:154
 msgid "Dark"
 msgstr "Ciemny"
 
@@ -436,15 +436,16 @@ msgstr "Buduj"
 msgid "All"
 msgstr "Wszystkie"
 
-#: marker/forms/select.py:142 marker/templates/base/navbar.mako:10
-#: marker/templates/base/navbar.mako:57 marker/templates/base/navbar.mako:78
+#: marker/forms/select.py:142 marker/templates/base/layout.mako:71
+#: marker/templates/base/navbar.mako:10 marker/templates/base/navbar.mako:62
+#: marker/templates/base/navbar.mako:83
 #: marker/templates/company/company_all.mako:5
 #: marker/templates/company/company_all.mako:23
 #: marker/templates/company/company_map.mako:5
 #: marker/templates/contact/contact_search_tags.mako:11
 #: marker/templates/home.mako:19 marker/templates/project/project_table.mako:17
 #: marker/templates/tag/tag_table.mako:15
-#: marker/templates/user/user_selected_companies.mako:20
+#: marker/templates/user/user_selected_companies.mako:22
 #: marker/templates/user/user_selected_related_contacts.mako:45
 #: marker/templates/user/user_selected_related_contacts.mako:57
 #: marker/templates/user/user_selected_tags.mako:40
@@ -454,8 +455,9 @@ msgstr "Wszystkie"
 msgid "Companies"
 msgstr "Firmy"
 
-#: marker/forms/select.py:143 marker/templates/base/navbar.mako:13
-#: marker/templates/base/navbar.mako:62 marker/templates/base/navbar.mako:83
+#: marker/forms/select.py:143 marker/templates/base/layout.mako:72
+#: marker/templates/base/navbar.mako:13 marker/templates/base/navbar.mako:67
+#: marker/templates/base/navbar.mako:88
 #: marker/templates/company/company_table.mako:17
 #: marker/templates/contact/contact_search_tags.mako:12
 #: marker/templates/home.mako:32 marker/templates/project/project_all.mako:5
@@ -463,7 +465,7 @@ msgstr "Firmy"
 #: marker/templates/project/project_contacts.mako:33
 #: marker/templates/project/project_map.mako:5
 #: marker/templates/tag/tag_table.mako:18
-#: marker/templates/user/user_selected_projects.mako:20
+#: marker/templates/user/user_selected_projects.mako:22
 #: marker/templates/user/user_selected_related_contacts.mako:50
 #: marker/templates/user/user_selected_related_contacts.mako:58
 #: marker/templates/user/user_selected_tags.mako:41
@@ -609,7 +611,8 @@ msgstr "Firmy, korporacje, organizacje."
 msgid "Currently implemented or completed projects."
 msgstr "Aktualnie realizowane lub zakończone projekty."
 
-#: marker/templates/base/navbar.mako:16 marker/templates/base/navbar.mako:67
+#: marker/templates/base/layout.mako:73 marker/templates/base/navbar.mako:16
+#: marker/templates/base/navbar.mako:72
 #: marker/templates/common/search_criteria.mako:49
 #: marker/templates/company/company_form.mako:127
 #: marker/templates/contact/contact_search_tags.mako:16
@@ -631,14 +634,15 @@ msgstr "Tagi"
 msgid "Business profiles of companies and types of projects."
 msgstr "Profile działalności firm i rodzaje projektów."
 
-#: marker/templates/base/navbar.mako:19 marker/templates/base/navbar.mako:72
+#: marker/templates/base/layout.mako:74 marker/templates/base/navbar.mako:19
+#: marker/templates/base/navbar.mako:77
 #: marker/templates/company/company_all.mako:26
 #: marker/templates/contact/contact_all.mako:5
 #: marker/templates/contact/contact_search_tags.mako:13
 #: marker/templates/contact/contact_search_tags_results.mako:5
 #: marker/templates/home.mako:60 marker/templates/project/project_all.mako:26
-#: marker/templates/user/user_selected_companies.mako:21
-#: marker/templates/user/user_selected_projects.mako:21
+#: marker/templates/user/user_selected_companies.mako:23
+#: marker/templates/user/user_selected_projects.mako:23
 #: marker/templates/user/user_selected_related_contacts.mako:46
 #: marker/templates/user/user_selected_related_contacts.mako:51
 #: marker/templates/user/user_selected_related_contacts.mako:59
@@ -671,7 +675,7 @@ msgstr "Podsumowanie zawartości bazy danych."
 
 #: marker/templates/account/account.mako:7
 #: marker/templates/account/password.mako:7
-#: marker/templates/base/navbar.mako:89
+#: marker/templates/base/navbar.mako:94
 msgid "Account"
 msgstr "Konto"
 
@@ -708,7 +712,7 @@ msgstr "Konto"
 msgid "Submit"
 msgstr "Prześlij"
 
-#: marker/templates/account/login.mako:24 marker/templates/base/navbar.mako:46
+#: marker/templates/account/login.mako:24 marker/templates/base/navbar.mako:51
 #: marker/views/auth.py:45
 msgid "Log in"
 msgstr "Zaloguj się"
@@ -716,6 +720,88 @@ msgstr "Zaloguj się"
 #: marker/templates/base/footer.mako:6
 msgid "Up"
 msgstr "W górę"
+
+#: marker/templates/base/layout.mako:6
+msgid "Keyboard Shortcuts"
+msgstr "Skróty klawiszowe"
+
+#: marker/templates/base/layout.mako:11
+msgid "Open search or focus search input"
+msgstr "Otwórz wyszukiwanie lub ustaw fokus na pole wyszukiwania"
+
+#: marker/templates/base/layout.mako:12
+msgid "Open add menu or add new item"
+msgstr "Otwórz menu dodawania lub dodaj nowy element"
+
+#: marker/templates/base/layout.mako:13
+msgid "Delete selected item (if available)"
+msgstr "Usuń zaznaczony element (jeśli dostępny)"
+
+#: marker/templates/base/layout.mako:14
+msgid "Go to homepage"
+msgstr "Przejdź do strony głównej"
+
+#: marker/templates/base/layout.mako:15
+msgid "Quick navigation to main sections (on homepage)"
+msgstr "Szybka nawigacja do głównych sekcji (na stronie głównej)"
+
+#: marker/templates/base/layout.mako:16
+msgid "Navigate and select in modals"
+msgstr "Nawiguj i wybieraj w oknach modalnych"
+
+#: marker/templates/base/layout.mako:17
+msgid "Close modal"
+msgstr "Zamknij okno modalne"
+
+#: marker/templates/base/layout.mako:66
+msgid "Select what to search"
+msgstr "Wybierz, czego szukać"
+
+#: marker/templates/base/layout.mako:87
+msgid "Select what to add"
+msgstr "Wybierz, co dodać"
+
+#: marker/templates/base/layout.mako:92
+#: marker/templates/common/activity_form.mako:9
+#: marker/templates/company/company_contacts.mako:33
+#: marker/templates/company/company_table.mako:12
+#: marker/templates/company/company_view.mako:25
+#: marker/templates/contact/contact_table.mako:13
+#: marker/templates/contact/contact_view.mako:29
+#: marker/templates/project/project_companies.mako:29
+#: marker/utils/export.py:163 marker/views/company.py:85
+#: marker/views/project.py:733
+msgid "Company"
+msgstr "Firma"
+
+#: marker/templates/base/layout.mako:93
+#: marker/templates/common/activity_form.mako:13
+#: marker/templates/company/company_projects.mako:29
+#: marker/templates/contact/contact_table.mako:15
+#: marker/templates/contact/contact_view.mako:34
+#: marker/templates/project/project_table.mako:12 marker/utils/export.py:222
+#: marker/views/company.py:419 marker/views/project.py:87
+msgid "Project"
+msgstr "Projekt"
+
+#: marker/templates/base/layout.mako:94
+#: marker/templates/company/company_form.mako:139
+#: marker/templates/company/company_form.mako:140
+#: marker/templates/company/company_form.mako:144
+#: marker/templates/company/company_tag_input_row.mako:9
+#: marker/templates/company/company_tag_input_row.mako:10
+#: marker/templates/company/company_tags.mako:29
+#: marker/templates/project/project_form.mako:132
+#: marker/templates/project/project_form.mako:133
+#: marker/templates/project/project_form.mako:137
+#: marker/templates/project/project_tag_input_row.mako:9
+#: marker/templates/project/project_tag_input_row.mako:10
+#: marker/templates/project/project_tags.mako:29
+#: marker/templates/tag/tag_table.mako:13 marker/templates/tag/tag_view.mako:14
+#: marker/views/company.py:475 marker/views/project.py:789
+#: marker/views/tag.py:62 marker/views/user.py:313 marker/views/user.py:329
+msgid "Tag"
+msgstr "Tag"
 
 #: marker/templates/base/navbar.mako:31
 #: marker/templates/contractor/contractor_all.mako:5
@@ -726,23 +812,27 @@ msgstr "Kontrahenci"
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: marker/templates/base/navbar.mako:54
+#: marker/templates/base/navbar.mako:44
+msgid "Shortcuts"
+msgstr "Skróty"
+
+#: marker/templates/base/navbar.mako:59
 msgid "Selected"
 msgstr "Wybrane"
 
-#: marker/templates/base/navbar.mako:96
+#: marker/templates/base/navbar.mako:101
 msgid "Log out"
 msgstr "Wyloguj się"
 
-#: marker/templates/base/navbar.mako:104
+#: marker/templates/base/navbar.mako:109
 msgid "Language"
 msgstr "Język"
 
-#: marker/templates/base/navbar.mako:130
+#: marker/templates/base/navbar.mako:135
 msgid "Toggle theme"
 msgstr "Przełącz motyw"
 
-#: marker/templates/base/navbar.mako:160
+#: marker/templates/base/navbar.mako:165
 msgid "Auto"
 msgstr "Auto"
 
@@ -768,27 +858,6 @@ msgstr "przez"
 #: marker/templates/user/user_tags.mako:15
 msgid "Filter"
 msgstr "Filtruj"
-
-#: marker/templates/common/activity_form.mako:9
-#: marker/templates/company/company_contacts.mako:33
-#: marker/templates/company/company_table.mako:12
-#: marker/templates/company/company_view.mako:25
-#: marker/templates/contact/contact_table.mako:13
-#: marker/templates/contact/contact_view.mako:29
-#: marker/templates/project/project_companies.mako:29
-#: marker/utils/export.py:163 marker/views/company.py:85
-#: marker/views/project.py:733
-msgid "Company"
-msgstr "Firma"
-
-#: marker/templates/common/activity_form.mako:13
-#: marker/templates/company/company_projects.mako:29
-#: marker/templates/contact/contact_table.mako:15
-#: marker/templates/contact/contact_view.mako:34
-#: marker/templates/project/project_table.mako:12 marker/utils/export.py:222
-#: marker/views/company.py:419 marker/views/project.py:87
-msgid "Project"
-msgstr "Projekt"
 
 #: marker/templates/common/button.mako:14
 #: marker/templates/common/button.mako:29
@@ -822,8 +891,8 @@ msgstr "Przejdź do formularza i dodaj..."
 
 #: marker/templates/company/company_all.mako:21
 #: marker/templates/project/project_all.mako:21
-#: marker/templates/user/user_selected_companies.mako:19
-#: marker/templates/user/user_selected_projects.mako:19
+#: marker/templates/user/user_selected_companies.mako:21
+#: marker/templates/user/user_selected_projects.mako:21
 #: marker/templates/user/user_selected_related_contacts.mako:44
 #: marker/templates/user/user_selected_related_contacts.mako:49
 #: marker/templates/user/user_selected_related_contacts.mako:55
@@ -831,7 +900,7 @@ msgstr "Przejdź do formularza i dodaj..."
 #: marker/templates/user/user_selected_tags_companies.mako:15
 #: marker/templates/user/user_selected_tags_projects.mako:15
 msgid "View mode"
-msgstr ""
+msgstr "Tryb widoku"
 
 #: marker/templates/company/company_contacts.mako:35
 #: marker/templates/company/company_projects.mako:34
@@ -866,24 +935,6 @@ msgid ""
 msgstr ""
 "Kliknij przycisk odświeżania, aby uzupełnić pozostałe pola z adresu "
 "witryny."
-
-#: marker/templates/company/company_form.mako:139
-#: marker/templates/company/company_form.mako:140
-#: marker/templates/company/company_form.mako:144
-#: marker/templates/company/company_tag_input_row.mako:9
-#: marker/templates/company/company_tag_input_row.mako:10
-#: marker/templates/company/company_tags.mako:29
-#: marker/templates/project/project_form.mako:132
-#: marker/templates/project/project_form.mako:133
-#: marker/templates/project/project_form.mako:137
-#: marker/templates/project/project_tag_input_row.mako:9
-#: marker/templates/project/project_tag_input_row.mako:10
-#: marker/templates/project/project_tags.mako:29
-#: marker/templates/tag/tag_table.mako:13 marker/templates/tag/tag_view.mako:14
-#: marker/views/company.py:475 marker/views/project.py:789
-#: marker/views/tag.py:62 marker/views/user.py:313 marker/views/user.py:329
-msgid "Tag"
-msgstr "Tag"
 
 #: marker/templates/company/company_more.mako:26
 #: marker/templates/company/company_projects.mako:32
@@ -999,37 +1050,37 @@ msgstr "Opis"
 msgid "Number"
 msgstr "Liczba"
 
-#: marker/templates/user/user_companies_stars.mako:5
+#: marker/templates/user/user_companies_stars.mako:6
 msgid "Companies marked with a star"
 msgstr "Firmy oznaczone gwiazdką"
 
 #: marker/templates/user/user_map_selected_companies.mako:5
-#: marker/templates/user/user_selected_companies.mako:5
+#: marker/templates/user/user_selected_companies.mako:6
 msgid "Selected companies"
 msgstr "Wybrane firmy"
 
 #: marker/templates/user/user_map_selected_projects.mako:5
-#: marker/templates/user/user_selected_projects.mako:5
+#: marker/templates/user/user_selected_projects.mako:6
 msgid "Selected projects"
 msgstr "Wybrane projekty"
 
-#: marker/templates/user/user_projects_stars.mako:5
+#: marker/templates/user/user_projects_stars.mako:6
 msgid "Projects marked with a star"
 msgstr "Projekty oznaczone gwiazdką"
 
-#: marker/templates/user/user_selected_companies.mako:8
+#: marker/templates/user/user_selected_companies.mako:10
 msgid "Delete all selected companies?"
 msgstr "Usunąć wszystkie zaznaczone firmy?"
 
-#: marker/templates/user/user_selected_contacts.mako:5
+#: marker/templates/user/user_selected_contacts.mako:6
 msgid "Selected contacts"
 msgstr "Wybrane kontakty"
 
-#: marker/templates/user/user_selected_contacts.mako:8
+#: marker/templates/user/user_selected_contacts.mako:10
 msgid "Delete all selected contacts?"
 msgstr "Usunąć wszystkie wybrane kontakty?"
 
-#: marker/templates/user/user_selected_projects.mako:8
+#: marker/templates/user/user_selected_projects.mako:10
 msgid "Delete all selected projects?"
 msgstr "Usunąć wszystkie wybrane projekty"
 

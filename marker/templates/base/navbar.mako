@@ -39,6 +39,11 @@
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> ${_("Users")}</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#shortcutsModal">
+            <i class="bi bi-keyboard"></i> ${_("Shortcuts")}
+          </a>
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         % if not request.is_authenticated:
