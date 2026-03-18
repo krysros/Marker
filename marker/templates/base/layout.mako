@@ -20,6 +20,7 @@
     <script src="${request.static_url('marker:static/js/marker-select-all-state.js')}"></script>
     <script src="${request.static_url('marker:static/js/marker-website-autofill.js')}"></script>
     <link rel="stylesheet" href="${request.static_url('marker:static/css/style.css')}">
+    <script src="${request.static_url('marker:static/js/shortcuts.js')}"></script>
     % if title:
     <title>Marker - ${title}</title>
     % else:
@@ -50,39 +51,9 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       initPopovers(document);
-
-        /* helper for "add" buttons */
-        const plusButtons = document.querySelectorAll('.btn.btn-success i.bi-plus-lg');
-        if (plusButtons.length === 1) {
-            const btn = plusButtons[0].closest('a,button');
-            if (btn) {
-                btn.setAttribute('accesskey', '+');
-                document.addEventListener('keydown', function(e){
-                    if (e.key === '+' || e.key === 'Insert' || e.code === 'NumpadAdd'){
-                        e.preventDefault();
-                        btn.click();
-                    }
-                });
-            }
-        }
-        /* helper for "delete" buttons */
-        const trashButtons = document.querySelectorAll('.btn.btn-danger i.bi-trash');
-        if (trashButtons.length === 1) {
-            const btn = trashButtons[0].closest('a,button');
-            if (btn) {
-                btn.setAttribute('accesskey', '-');
-                document.addEventListener('keydown', function(e){
-                    if (e.key === '-' || e.key === 'Delete' || e.code === 'NumpadSubtract'){
-                        e.preventDefault();
-                        btn.click();
-                    }
-                });
-            }
-        }
-
-            document.body.addEventListener('htmx:afterSwap', function(e){
-              initPopovers(e.target);
-            });
+      document.body.addEventListener('htmx:afterSwap', function(e){
+      initPopovers(e.target);
+      });
     });
     </script>
   </body>
