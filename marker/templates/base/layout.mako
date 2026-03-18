@@ -46,11 +46,11 @@
             </div>
             <div class="modal-body">
               <ul class="list-group" id="searchSelectList">
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('company_search')}"><i class="bi bi-buildings"></i> ${_("Companies")} <span class="text-muted">[1]</span></li>
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('project_search')}"><i class="bi bi-briefcase"></i> ${_("Projects")} <span class="text-muted">[2]</span></li>
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('tag_search')}"><i class="bi bi-tags"></i> ${_("Tags")} <span class="text-muted">[3]</span></li>
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('contact_search')}"><i class="bi bi-people"></i> ${_("Contacts")} <span class="text-muted">[4]</span></li>
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('comment_search')}"><i class="bi bi-chat-left-text"></i> ${_("Comments")} <span class="text-muted">[5]</span></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('company_search')}"><span><i class="bi bi-buildings"></i> ${_("Companies")}</span><kbd class="ms-auto">1</kbd></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('project_search')}"><span><i class="bi bi-briefcase"></i> ${_("Projects")}</span><kbd class="ms-auto">2</kbd></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('tag_search')}"><span><i class="bi bi-tags"></i> ${_("Tags")}</span><kbd class="ms-auto">3</kbd></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('contact_search')}"><span><i class="bi bi-people"></i> ${_("Contacts")}</span><kbd class="ms-auto">4</kbd></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('comment_search')}"><span><i class="bi bi-chat-left-text"></i> ${_("Comments")}</span><kbd class="ms-auto">5</kbd></li>
               </ul>
             </div>
           </div>
@@ -67,9 +67,9 @@
             </div>
             <div class="modal-body">
               <ul class="list-group" id="addSelectList">
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('company_add')}"><i class="bi bi-buildings"></i> ${_("Company")} <span class="text-muted">[1]</span></li>
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('project_add')}"><i class="bi bi-briefcase"></i> ${_("Project")} <span class="text-muted">[2]</span></li>
-                <li class="list-group-item list-group-item-action" data-url="${request.route_url('tag_add')}"><i class="bi bi-tags"></i> ${_("Tag")} <span class="text-muted">[3]</span></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('company_add')}"><span><i class="bi bi-buildings"></i> ${_("Company")}</span><kbd class="ms-auto">1</kbd></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('project_add')}"><span><i class="bi bi-briefcase"></i> ${_("Project")}</span><kbd class="ms-auto">2</kbd></li>
+                <li class="list-group-item list-group-item-action d-flex align-items-center" data-url="${request.route_url('tag_add')}"><span><i class="bi bi-tags"></i> ${_("Tag")}</span><kbd class="ms-auto">3</kbd></li>
               </ul>
             </div>
           </div>
