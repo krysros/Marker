@@ -12,6 +12,6 @@ def test_404_sets_custom_message(testapp):
 @pytest.mark.usefixtures("testapp")
 def test_forbidden_redirects_to_login(testapp):
     res = testapp.get("/user/panel", status=(302, 404))
-    # Jeśli endpoint istnieje, sprawdź redirect do loginu
+    # If the endpoint exists, check redirect to login
     if res.status_code == 302:
         assert "/login" in res.headers["Location"]
