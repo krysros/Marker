@@ -51,6 +51,7 @@ testing = [
     "WebTest",
     "pytest",
     "pytest-cov",
+    "factory_boy",
 ]
 lint = [
     "pylint",
