@@ -138,6 +138,7 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     # Construct a server response.
     response = Response()
     response.body_file = output
+    response.body = output.getvalue()  # For test access
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -197,6 +198,7 @@ def response_xlsx_contacts_company(rows, default_date_format="yyyy-mm-dd"):
     # Construct a server response.
     response = Response()
     response.body_file = output
+    response.body = output.getvalue()  # For test access
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -256,6 +258,7 @@ def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
     # Construct a server response.
     response = Response()
     response.body_file = output
+    response.body = output.getvalue()  # For test access
     response.content_type = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )

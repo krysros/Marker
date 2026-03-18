@@ -1,13 +1,16 @@
+import factory
 import pytest
 import transaction
-import factory
-from marker.models import company, project, association
+
+from marker.models import association, company, project
+
 
 class CompanyFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = company.Company
-        sqlalchemy_session_persistence = 'flush'
+        sqlalchemy_session_persistence = "flush"
         sqlalchemy_session = None  # will be set in test
+
     name = factory.Sequence(lambda n: f"TestCo{n}")
     street = ""
     postcode = ""
@@ -21,11 +24,13 @@ class CompanyFactory(factory.alchemy.SQLAlchemyModelFactory):
     KRS = ""
     court = ""
 
+
 class ProjectFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = project.Project
-        sqlalchemy_session_persistence = 'flush'
+        sqlalchemy_session_persistence = "flush"
         sqlalchemy_session = None  # will be set in test
+
     name = factory.Sequence(lambda n: f"TestProj{n}")
     street = ""
     postcode = ""
@@ -38,6 +43,7 @@ class ProjectFactory(factory.alchemy.SQLAlchemyModelFactory):
     stage = ""
     delivery_method = ""
 
+
 @pytest.mark.usefixtures("dbsession")
 def test_company_project_activity_cascade(dbsession):
     CompanyFactory._meta.sqlalchemy_session = dbsession
@@ -47,6 +53,6 @@ def test_company_project_activity_cascade(dbsession):
     dbsession.add_all([comp, proj])
     dbsession.flush()
     # create association
-    act = association.Activity(company=comp, project=proj, stage='test', role='main')
+    act = association.Activity(company=comp, project=proj, stage="test", role="main")
     dbsession.add(act)
     transaction.commit()

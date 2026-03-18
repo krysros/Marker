@@ -90,7 +90,9 @@ class ContactView:
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
@@ -431,18 +433,24 @@ class ContactView:
 
         if target == "companies":
             q = {"tag": tags}
-            return HTTPSeeOther(location=self.request.route_url("company_all", _query=q))
+            return HTTPSeeOther(
+                location=self.request.route_url("company_all", _query=q)
+            )
 
         if target == "projects":
             q = {"tag": tags}
-            return HTTPSeeOther(location=self.request.route_url("project_all", _query=q))
+            return HTTPSeeOther(
+                location=self.request.route_url("project_all", _query=q)
+            )
 
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
         role = self.request.params.get("role", None)
         phone = self.request.params.get("phone", None)
         email = self.request.params.get("email", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
@@ -729,4 +737,3 @@ class ContactView:
             identity=self.request.identity,
             geocode=location,
         )
-

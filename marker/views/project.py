@@ -195,7 +195,9 @@ class ProjectView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -329,9 +331,7 @@ class ProjectView:
             selected_items = self.request.identity.selected_contacts
 
         if is_bulk_select_request(self.request):
-            return handle_bulk_selection(
-                self.request, stmt, selected_items
-            )
+            return handle_bulk_selection(self.request, stmt, selected_items)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt.order_by(None).subquery())
@@ -343,7 +343,9 @@ class ProjectView:
             .all()
         )
 
-        next_route = "project_more_contacts" if view_mode == "contacts" else "project_more"
+        next_route = (
+            "project_more_contacts" if view_mode == "contacts" else "project_more"
+        )
         next_page = self.request.route_url(
             next_route,
             _query={
@@ -445,7 +447,9 @@ class ProjectView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -857,7 +861,9 @@ class ProjectView:
         delivery_method = self.request.params.get("delivery_method", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         _sort = self.request.params.get("sort", "shared_tags")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -944,7 +950,9 @@ class ProjectView:
                 stmt = (
                     stmt.join(projects_stars)
                     .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).desc(), Project.id)
+                    .order_by(
+                        func.count(projects_stars.c.project_id).desc(), Project.id
+                    )
                 )
         elif _sort == "comments":
             if _order == "asc":
@@ -1011,9 +1019,7 @@ class ProjectView:
                 tag_names_by_project.setdefault(similar_project_id, set()).add(tag_name)
 
             shared_tag_labels = {
-                similar_project_id: ", ".join(
-                    sorted(names, key=normalize_ci_value)
-                )
+                similar_project_id: ", ".join(sorted(names, key=normalize_ci_value))
                 for similar_project_id, names in tag_names_by_project.items()
             }
 
@@ -1695,4 +1701,3 @@ class ProjectView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}
         return ""
-

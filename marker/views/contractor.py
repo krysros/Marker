@@ -80,14 +80,20 @@ class ContractorView:
         if _order not in {"asc", "desc"}:
             _order = "desc"
 
-        stmt = select(Company).join(Activity, Activity.company_id == Company.id).group_by(Company.id)
+        stmt = (
+            select(Company)
+            .join(Activity, Activity.company_id == Company.id)
+            .group_by(Company.id)
+        )
 
         if tags:
             normalized_tags = [normalize_ci_value(tag) for tag in tags]
 
             company_tag_exists = (
                 select(1)
-                .select_from(companies_tags.join(Tag, Tag.id == companies_tags.c.tag_id))
+                .select_from(
+                    companies_tags.join(Tag, Tag.id == companies_tags.c.tag_id)
+                )
                 .where(
                     companies_tags.c.company_id == Company.id,
                     normalize_ci_expression(Tag.name).in_(normalized_tags),

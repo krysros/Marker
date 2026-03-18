@@ -128,4 +128,3 @@ class CommentView:
                 )
             )
         return {"heading": _("Find a comment"), "form": form}
-

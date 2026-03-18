@@ -193,7 +193,9 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -321,9 +323,7 @@ class CompanyView:
             selected_items = self.request.identity.selected_contacts
 
         if is_bulk_select_request(self.request):
-            return handle_bulk_selection(
-                self.request, stmt, selected_items
-            )
+            return handle_bulk_selection(self.request, stmt, selected_items)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt.order_by(None).subquery())
@@ -338,7 +338,9 @@ class CompanyView:
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
-        next_route = "company_more_contacts" if view_mode == "contacts" else "company_more"
+        next_route = (
+            "company_more_contacts" if view_mode == "contacts" else "company_more"
+        )
         next_page = self.request.route_url(
             next_route,
             _query={
@@ -538,7 +540,9 @@ class CompanyView:
         street = self.request.params.get("street", None)
         postcode = self.request.params.get("postcode", None)
         city = self.request.params.get("city", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         country = self.request.params.get("country", None)
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
@@ -1037,7 +1041,9 @@ class CompanyView:
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
-        subdivision = [value for value in self.request.params.getall("subdivision") if value]
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
         _sort = self.request.params.get("sort", "shared_tags")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
@@ -1099,13 +1105,17 @@ class CompanyView:
                 stmt = (
                     stmt.join(companies_stars)
                     .group_by(Company.id)
-                    .order_by(func.count(companies_stars.c.company_id).asc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).asc(), Company.id
+                    )
                 )
             else:
                 stmt = (
                     stmt.join(companies_stars)
                     .group_by(Company.id)
-                    .order_by(func.count(companies_stars.c.company_id).desc(), Company.id)
+                    .order_by(
+                        func.count(companies_stars.c.company_id).desc(), Company.id
+                    )
                 )
         elif _sort == "comments":
             if _order == "asc":
@@ -1172,9 +1182,7 @@ class CompanyView:
                 tag_names_by_company.setdefault(similar_company_id, set()).add(tag_name)
 
             shared_tag_labels = {
-                similar_company_id: ", ".join(
-                    sorted(names, key=normalize_ci_value)
-                )
+                similar_company_id: ", ".join(sorted(names, key=normalize_ci_value))
                 for similar_company_id, names in tag_names_by_company.items()
             }
 
@@ -1699,4 +1707,3 @@ class CompanyView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
-

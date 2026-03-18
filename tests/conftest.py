@@ -1,3 +1,22 @@
+class DummyRequestWithIdentity:
+    def __init__(self, *args, **kwargs):
+        from pyramid.testing import DummyRequest
+
+        self._request = DummyRequest(*args, **kwargs)
+        self._identity = None
+
+    def __getattr__(self, name):
+        return getattr(self._request, name)
+
+    @property
+    def identity(self):
+        return self._identity
+
+    @identity.setter
+    def identity(self, value):
+        self._identity = value
+
+
 import os
 
 import alembic

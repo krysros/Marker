@@ -99,9 +99,7 @@ def _extract_info_badge_values(page_text):
 
 
 def _set_cookie_headers(response):
-    return [
-        value for key, value in response.headerlist if key.lower() == "set-cookie"
-    ]
+    return [value for key, value in response.headerlist if key.lower() == "set-cookie"]
 
 
 def test_my_view_success(testapp, dbsession):
@@ -119,7 +117,9 @@ def test_my_view_success(testapp, dbsession):
     assert res.body
 
 
-def test_tag_search_is_case_insensitive_in_project_and_company_lists(testapp, dbsession):
+def test_tag_search_is_case_insensitive_in_project_and_company_lists(
+    testapp, dbsession
+):
     import datetime
 
     user = models.user.User(
@@ -300,7 +300,12 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
 
     res_sorted = testapp.get(
         "/search/tags/results",
-        params={"target": "contacts", "tag": "pipeline", "sort": "name", "order": "asc"},
+        params={
+            "target": "contacts",
+            "tag": "pipeline",
+            "sort": "name",
+            "order": "asc",
+        },
         status=200,
     )
     _assert_text_order(
@@ -432,7 +437,9 @@ def test_search_tags_handles_polish_letters_in_tag_name(testapp, dbsession):
     assert "Polish Project Contact" in contacts_page.text
 
 
-def test_tag_search_redirects_and_supports_contacts_view_for_company_and_project(testapp, dbsession):
+def test_tag_search_redirects_and_supports_contacts_view_for_company_and_project(
+    testapp, dbsession
+):
     import datetime
 
     user = models.user.User(
@@ -600,7 +607,9 @@ def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
     assert "color" not in _extract_sort_values_from_dropdown(
         all_contacts_with_color_sort.text
     )
-    assert _extract_selected_sort_value(all_contacts_with_color_sort.text) == "created_at"
+    assert (
+        _extract_selected_sort_value(all_contacts_with_color_sort.text) == "created_at"
+    )
 
     tags_results_with_color_sort = testapp.get(
         "/contact/search/tags/results",
@@ -1620,7 +1629,9 @@ def test_comment_markdown_sanitizes_dangerous_html(testapp, dbsession):
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(comments_page.text, "html.parser")
-    comment_bodies = [body.decode_contents().lower() for body in soup.select(".card .card-body")]
+    comment_bodies = [
+        body.decode_contents().lower() for body in soup.select(".card .card-body")
+    ]
 
     sanitized_body = next(
         (body for body in comment_bodies if "<strong>safe</strong>" in body),

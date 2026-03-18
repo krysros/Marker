@@ -1,25 +1,43 @@
-import pytest
 import io
-from marker.utils.contact_csv_import import parse_google_contacts_csv, missing_google_contacts_columns, normalize_csv_header, csv_row_value
 
-@pytest.mark.parametrize("header,expected", [
-    ("\ufeffOrganization Name", "Organization Name"),
-    ("  First Name  ", "First Name"),
-    (None, ""),
-])
+import pytest
+
+from marker.utils.contact_csv_import import (
+    csv_row_value,
+    missing_google_contacts_columns,
+    normalize_csv_header,
+    parse_google_contacts_csv,
+)
+
+
+@pytest.mark.parametrize(
+    "header,expected",
+    [
+        ("\ufeffOrganization Name", "Organization Name"),
+        ("  First Name  ", "First Name"),
+        (None, ""),
+    ],
+)
 def test_normalize_csv_header(header, expected):
     assert normalize_csv_header(header) == expected
 
-@pytest.mark.parametrize("row,columns,expected", [
-    ({"A": "foo", "B": "bar"}, ["A", "B"], "foo"),
-    ({"A": "", "B": "bar"}, ["A", "B"], "bar"),
-    ({"A": "", "B": ""}, ["A", "B"], ""),
-])
+
+@pytest.mark.parametrize(
+    "row,columns,expected",
+    [
+        ({"A": "foo", "B": "bar"}, ["A", "B"], "foo"),
+        ({"A": "", "B": "bar"}, ["A", "B"], "bar"),
+        ({"A": "", "B": ""}, ["A", "B"], ""),
+    ],
+)
 def test_csv_row_value(row, columns, expected):
     assert csv_row_value(row, *columns) == expected
 
+
 def test_parse_google_contacts_csv_valid():
-    csv_data = "Organization Name,First Name,E-mail 1 - Value\nTestOrg,John,john@example.com\n"
+    csv_data = (
+        "Organization Name,First Name,E-mail 1 - Value\nTestOrg,John,john@example.com\n"
+    )
     file = io.StringIO(csv_data)
     reader, headers = parse_google_contacts_csv(file)
     assert reader is not None
@@ -30,15 +48,25 @@ def test_parse_google_contacts_csv_valid():
     assert rows[0]["First Name"] == "John"
     assert rows[0]["E-mail 1 - Value"] == "john@example.com"
 
+
 def test_parse_google_contacts_csv_invalid_delimiter():
-    csv_data = "Organization Name;First Name;E-mail 1 - Value\nTestOrg;John;john@example.com\n"
+    csv_data = (
+        "Organization Name;First Name;E-mail 1 - Value\nTestOrg;John;john@example.com\n"
+    )
     file = io.StringIO(csv_data)
     reader, headers = parse_google_contacts_csv(file)
     assert reader is None
     assert headers == set()
 
+
 def test_missing_google_contacts_columns():
-    headers = ["Organization Name", "First Name", "E-mail 1 - Value", "Phone 1 - Value", "Labels"]
+    headers = [
+        "Organization Name",
+        "First Name",
+        "E-mail 1 - Value",
+        "Phone 1 - Value",
+        "Labels",
+    ]
     missing = missing_google_contacts_columns(headers)
     assert missing == []
     headers = ["First Name", "E-mail 1 - Value"]
