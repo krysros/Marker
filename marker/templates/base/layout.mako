@@ -36,6 +36,45 @@
         ${self.body()}
         <%include file="footer.mako"/>
       </div>
+      <!-- Search Selection Modal -->
+      <div class="modal fade" id="searchSelectModal" tabindex="-1" aria-labelledby="searchSelectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="searchSelectModalLabel">${_("Select what to search")}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <ul class="list-group" id="searchSelectList">
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('company_search')}"><i class="bi bi-buildings"></i> ${_("Companies")} <span class="text-muted">[1]</span></li>
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('project_search')}"><i class="bi bi-briefcase"></i> ${_("Projects")} <span class="text-muted">[2]</span></li>
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('tag_search')}"><i class="bi bi-tags"></i> ${_("Tags")} <span class="text-muted">[3]</span></li>
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('contact_search')}"><i class="bi bi-people"></i> ${_("Contacts")} <span class="text-muted">[4]</span></li>
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('comment_search')}"><i class="bi bi-chat-left-text"></i> ${_("Comments")} <span class="text-muted">[5]</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Selection Modal -->
+      <div class="modal fade" id="addSelectModal" tabindex="-1" aria-labelledby="addSelectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addSelectModalLabel">${_("Select what to add")}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <ul class="list-group" id="addSelectList">
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('company_add')}"><i class="bi bi-buildings"></i> ${_("Company")} <span class="text-muted">[1]</span></li>
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('project_add')}"><i class="bi bi-briefcase"></i> ${_("Project")} <span class="text-muted">[2]</span></li>
+                <li class="list-group-item list-group-item-action" data-url="${request.route_url('tag_add')}"><i class="bi bi-tags"></i> ${_("Tag")} <span class="text-muted">[3]</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     <!-- keyboard shortcuts for pages with a single green plus or red trash button -->
     <script>
