@@ -115,6 +115,10 @@
                       <td>${_("Quick navigation to main sections (on homepage)")}</td>
                     </tr>
                     <tr>
+                      <td><kbd>*</kbd></td>
+                      <td>${_("Toggle star for company/project")}</td>
+                    </tr>
+                    <tr>
                       <td><kbd>Arrow keys</kbd> / <kbd>Enter</kbd></td>
                       <td>${_("Navigate and select in modals")}</td>
                     </tr>

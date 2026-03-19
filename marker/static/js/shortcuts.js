@@ -171,6 +171,14 @@ function handleShortcuts(event) {
             return;
         }
     }
+    // '*' toggles star in company/project star views
+    if ((event.key === '*' || event.key === 'NumpadMultiply') && !event.ctrlKey && !event.altKey && !event.metaKey) {
+        // Try to click the single visible star button
+        if (clickSingleButton('.btn.btn-primary i.bi-star, .btn.btn-primary i.bi-star-fill')) {
+            event.preventDefault();
+            return;
+        }
+    }
     // Home key redirects to homepage
     if (event.key === 'Home' && !event.ctrlKey && !event.altKey && !event.metaKey) {
         // The homepage is always at '/'
@@ -212,6 +220,7 @@ let shortcutsInitialized = false;
 function setupShortcuts() {
     setAccessKeyForSingle('.btn.btn-success i.bi-plus-lg', '+');
     setAccessKeyForSingle('.btn.btn-danger i.bi-trash', '-');
+    setAccessKeyForSingle('.btn.btn-primary i.bi-star, .btn.btn-primary i.bi-star-fill', '*');
     if (!shortcutsInitialized) {
         document.addEventListener('keydown', handleShortcuts);
         shortcutsInitialized = true;
