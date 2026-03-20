@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="${request.static_url('marker:static/css/style.css')}">
     <script src="${request.static_url('marker:static/js/shortcuts.js')}"></script>
     <script src="${request.static_url('marker:static/js/marker-focus-first-input.js')}"></script>
+    <script src="${request.static_url('marker:static/js/marker-blur-on-esc.js')}"></script>
     % if title:
     <title>Marker - ${title}</title>
     % else:
