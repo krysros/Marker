@@ -198,8 +198,13 @@ function handleShortcuts(event) {
     // '/' opens search modal or focuses search input from any page
     if (event.key === '/' && !event.ctrlKey && !event.altKey && !event.metaKey) {
         if (!modalOpen) {
-            openSearchSelectModal();
-            event.preventDefault();
+            // If there is only one visible search button, trigger it directly
+            if (clickSingleButton('.btn.btn-primary i.bi-search')) {
+                event.preventDefault();
+            } else {
+                openSearchSelectModal();
+                event.preventDefault();
+            }
         } else {
             if (focusFirstSearch()) {
                 event.preventDefault();
@@ -209,8 +214,13 @@ function handleShortcuts(event) {
     // '+' or Insert or NumpadAdd opens add modal or triggers add button from any page
     if ((event.key === '+' || event.key === 'Insert' || event.code === 'NumpadAdd')) {
         if (!modalOpen) {
-            openAddSelectModal();
-            event.preventDefault();
+            // If there is only one visible add button, trigger it directly
+            if (clickSingleButton('.btn.btn-success i.bi-plus-lg')) {
+                event.preventDefault();
+            } else {
+                openAddSelectModal();
+                event.preventDefault();
+            }
         } else {
             if (clickSingleButton('.btn.btn-success i.bi-plus-lg')) {
                 event.preventDefault();
