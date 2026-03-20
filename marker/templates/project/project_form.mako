@@ -91,7 +91,7 @@
           <div class="form-check mt-2">
             ${form.shorten_website(class_="form-check-input")}
             <label class="form-check-label" for="shorten_website">
-              ${_("Shorten the address to the main domain (e.g. https://example.com)")}
+              ${form.shorten_website.label(class_="form-label")}
             </label>
           </div>
         % endif

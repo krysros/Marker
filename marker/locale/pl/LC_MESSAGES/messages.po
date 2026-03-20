@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-20 12:47+0100\n"
+"POT-Creation-Date: 2026-03-20 19:24+0100\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -141,10 +141,8 @@ msgid "Post code"
 msgstr "Kod pocztowy"
 
 #: marker/forms/company.py:68 marker/forms/project.py:47
-#: marker/templates/company/company_form.mako:94
-#: marker/templates/project/project_form.mako:94
-msgid "Shorten the address to the main domain (e.g. https://example.com)"
-msgstr "Skróć adres do domeny głównej (np. https://example.com)"
+msgid "Shorten the address to the main domain"
+msgstr "Skróć adres do domeny głównej"
 
 #: marker/forms/company.py:70 marker/forms/company.py:182
 #: marker/forms/company.py:199 marker/forms/project.py:49
@@ -1719,13 +1717,4 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 #, python-format
 msgid "The user %s cleared projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
-
-#~ msgid "Wspólne tagi"
-#~ msgstr "Wspólne tagi"
-
-#~ msgid "Kontrahenci"
-#~ msgstr "Kontrahenci"
-
-#~ msgid "Skróć adres do domeny głównej"
-#~ msgstr ""
 
