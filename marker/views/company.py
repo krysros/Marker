@@ -44,7 +44,10 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import company_autofill_from_website
+from ..utils.website_autofill import (
+    company_autofill_from_website,
+    shorten_url_to_hostname,
+)
 from . import (
     Filter,
     clear_selected_rows,
@@ -1226,6 +1229,9 @@ class CompanyView:
         tags = self._normalized_tags()
 
         if self.request.method == "POST" and form.validate():
+            website = form.website.data
+            if form.shorten_website.data:
+                website = shorten_url_to_hostname(website)
             company = Company(
                 name=form.name.data,
                 street=form.street.data,
@@ -1233,7 +1239,7 @@ class CompanyView:
                 city=form.city.data,
                 subdivision=form.subdivision.data,
                 country=form.country.data,
-                website=form.website.data,
+                website=website,
                 color=form.color.data,
                 NIP=form.NIP.data,
                 REGON=form.REGON.data,
@@ -1357,7 +1363,11 @@ class CompanyView:
         countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
+            from ..utils.website_autofill import shorten_url_to_hostname
+
             form.populate_obj(company)
+            if form.shorten_website.data:
+                company.website = shorten_url_to_hostname(form.website.data)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,

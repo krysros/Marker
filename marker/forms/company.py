@@ -1,7 +1,14 @@
 from operator import mul
 
 from sqlalchemy import select
-from wtforms import Form, HiddenField, SelectField, SelectMultipleField, StringField
+from wtforms import (
+    BooleanField,
+    Form,
+    HiddenField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+)
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
@@ -58,6 +65,7 @@ class CompanyForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter, dash_filter, remove_multiple_spaces],
     )
+    shorten_website = BooleanField(_("Shorten the address to the main domain (e.g. https://example.com)"), default=True)
     city = StringField(
         _("City"),
         validators=[Length(max=100)],

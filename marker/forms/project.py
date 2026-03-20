@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from wtforms import (
+    BooleanField,
     DateTimeLocalField,
     Form,
     HiddenField,
@@ -43,6 +44,7 @@ class ProjectForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter, dash_filter, remove_multiple_spaces],
     )
+    shorten_website = BooleanField(_("Shorten the address to the main domain (e.g. https://example.com)"), default=True)
     city = StringField(
         _("City"),
         validators=[Length(max=100)],

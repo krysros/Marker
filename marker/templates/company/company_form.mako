@@ -84,6 +84,17 @@
         % for error in form.errors.get("website", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
+        % for error in form.errors.get("website", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+        % if hasattr(form, 'shorten_website'):
+          <div class="form-check mt-2">
+            ${form.shorten_website(class_="form-check-input")}
+            <label class="form-check-label" for="shorten_website">
+              ${_("Shorten the address to the main domain (e.g. https://example.com)")}
+            </label>
+          </div>
+        % endif
       </div>
       <div class="mb-3">
         ${form.color.label(class_="form-label")}

@@ -21,6 +21,27 @@ _MAX_PROJECT_NAME_LEN = 200
 _MAX_STREET_LEN = 100
 _MAX_POSTCODE_LEN = 10
 _MAX_CITY_LEN = 100
+
+
+def shorten_url_to_hostname(url):
+    """Returns a shortened URL in the form https://hostname (without path, query, or fragment)."""
+    if not url:
+        return url
+    try:
+        parsed = urllib.parse.urlparse(url)
+        if not parsed.scheme:
+            # Add default scheme if missing
+            url = "https://" + url
+            parsed = urllib.parse.urlparse(url)
+        hostname = parsed.hostname
+        if not hostname:
+            return url
+        scheme = parsed.scheme or "https"
+        return f"{scheme}://{hostname}"
+    except Exception:
+        return url
+
+
 _NAME_SEPARATORS = (" | ", " - ", " – ", " — ", " • ")
 _ORG_TYPES = {
     "organization",

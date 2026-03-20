@@ -46,7 +46,10 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import project_autofill_from_website
+from ..utils.website_autofill import (
+    project_autofill_from_website,
+    shorten_url_to_hostname,
+)
 from . import (
     Filter,
     clear_selected_rows,
@@ -1066,6 +1069,9 @@ class ProjectView:
         tags = self._normalized_tags()
 
         if self.request.method == "POST" and form.validate():
+            website = form.website.data
+            if form.shorten_website.data:
+                website = shorten_url_to_hostname(website)
             project = Project(
                 name=form.name.data,
                 street=form.street.data,
@@ -1073,7 +1079,7 @@ class ProjectView:
                 city=form.city.data,
                 subdivision=form.subdivision.data,
                 country=form.country.data,
-                website=form.website.data,
+                website=website,
                 color=form.color.data,
                 deadline=form.deadline.data,
                 stage=form.stage.data,
@@ -1198,6 +1204,8 @@ class ProjectView:
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
+            if form.shorten_website.data:
+                project.website = shorten_url_to_hostname(form.website.data)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
