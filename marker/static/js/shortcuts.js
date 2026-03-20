@@ -155,8 +155,12 @@ function handleSearchSelectModalKeys(e) {
 
 function handleShortcuts(event) {
     if (isInputActive()) return;
-    // 1-5 on homepage: go to main list views
-    if (isHomePage() && !event.ctrlKey && !event.altKey && !event.metaKey && event.key >= '1' && event.key <= '5') {
+    // 1-5 on homepage: quick navigation to main sections (company, project, tag, contact, comment)
+    // Only trigger if neither search nor add modal is open
+    const searchModal = document.getElementById('searchSelectModal');
+    const addModal = document.getElementById('addSelectModal');
+    const modalOpen = (searchModal && searchModal.classList.contains('show')) || (addModal && addModal.classList.contains('show'));
+    if (isHomePage() && !modalOpen && !event.ctrlKey && !event.altKey && !event.metaKey && event.key >= '1' && event.key <= '5') {
         const urls = [
             '/company',  // company_all
             '/project',  // project_all
@@ -186,7 +190,7 @@ function handleShortcuts(event) {
         event.preventDefault();
         return;
     }
-    // '/' focuses search or opens modal on homepage
+    // '/' opens search modal or focuses search input
     if (event.key === '/' && !event.ctrlKey && !event.altKey && !event.metaKey) {
         if (isHomePage()) {
             openSearchSelectModal();
@@ -197,7 +201,7 @@ function handleShortcuts(event) {
             }
         }
     }
-    // '+' or Insert or NumpadAdd triggers add modal on homepage
+    // '+' or Insert or NumpadAdd opens add modal or triggers add button
     if ((event.key === '+' || event.key === 'Insert' || event.code === 'NumpadAdd')) {
         if (isHomePage()) {
             openAddSelectModal();
