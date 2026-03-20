@@ -71,6 +71,10 @@ _POSTCODE_RE = re.compile(r"\b\d{2}[\-–—]?\d{3}\b")
 _POSTCODE_CITY_LINE_RE = re.compile(
     r"\b(?P<postcode>\d{2}[\-–—]?\d{3})\s+(?P<city>[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż][A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż\-\s]{1,80})$"
 )
+# Also match 'XX - XXX City' and 'XX – XXX City' (with spaces around dash)
+_POSTCODE_CITY_LINE_WRONGSEP_RE = re.compile(
+    r"\b(?P<postcode>\d{2})\s*[\-–]\s*(?P<postcode2>\d{3})\s+(?P<city>[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż][A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż\-\s]{1,80})$"
+)
 _CITY_POSTCODE_LINE_RE = re.compile(
     r"^(?P<city>[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż][A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż\-\s]{1,80})\s+(?P<postcode>\d{2}[\-–—]?\d{3})\b"
 )
@@ -1093,12 +1097,15 @@ def _is_name_block_candidate(value):
     return bool(re.search(r"[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż]{2,}", value))
 
 
+from ..forms.filters import dash_filter, remove_multiple_spaces
+
 def _extract_postcode_city_from_lines(lines):
     patterns = (_POSTCODE_CITY_LINE_RE, _CITY_POSTCODE_LINE_RE)
     normalized_lines = [
         _normalize_whitespace(line) for line in lines if _normalize_whitespace(line)
     ]
 
+    # Try normal patterns first
     for pattern in patterns:
         for line in normalized_lines:
             match = pattern.search(line)
@@ -1108,6 +1115,20 @@ def _extract_postcode_city_from_lines(lines):
                 match.group("postcode"), max_len=_MAX_POSTCODE_LEN
             )
             city = _sanitize_city(match.group("city"), max_len=_MAX_CITY_LEN)
+            if postcode and city:
+                return postcode, city
+
+    # Try wrong-separator pattern (e.g. '12 - 345 City')
+    for line in normalized_lines:
+        match = _POSTCODE_CITY_LINE_WRONGSEP_RE.search(line)
+        if match:
+            postcode = f"{match.group('postcode')}-{match.group('postcode2')}"
+            city = match.group('city')
+            # Apply dash_filter and remove_multiple_spaces
+            postcode = dash_filter(remove_multiple_spaces(postcode))
+            city = dash_filter(remove_multiple_spaces(city))
+            postcode = _sanitize_postcode(postcode, max_len=_MAX_POSTCODE_LEN)
+            city = _sanitize_city(city, max_len=_MAX_CITY_LEN)
             if postcode and city:
                 return postcode, city
 
