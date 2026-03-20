@@ -1,3 +1,17 @@
+import os
+import alembic
+import alembic.command
+import alembic.config
+import pytest
+import transaction
+import webtest
+from pyramid.paster import get_appsettings
+from pyramid.scripting import prepare
+from pyramid.testing import DummyRequest, testConfig
+from marker import main, models
+from marker.models.meta import Base
+
+
 class DummyRequestWithIdentity:
     def __init__(self, *args, **kwargs):
         from pyramid.testing import DummyRequest
@@ -15,22 +29,6 @@ class DummyRequestWithIdentity:
     @identity.setter
     def identity(self, value):
         self._identity = value
-
-
-import os
-
-import alembic
-import alembic.command
-import alembic.config
-import pytest
-import transaction
-import webtest
-from pyramid.paster import get_appsettings
-from pyramid.scripting import prepare
-from pyramid.testing import DummyRequest, testConfig
-
-from marker import main, models
-from marker.models.meta import Base
 
 
 def pytest_addoption(parser):

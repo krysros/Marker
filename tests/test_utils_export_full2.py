@@ -1,8 +1,6 @@
 import io
 import types
-
 import pytest
-
 import marker.forms.ts
 from marker.utils import export
 
