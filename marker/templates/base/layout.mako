@@ -109,16 +109,20 @@
                       <td>${_("Delete selected item (if available)")}</td>
                     </tr>
                     <tr>
+                      <td><kbd>*</kbd></td>
+                      <td>${_("Toggle star for company/project")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>E</kbd></td>
+                      <td>${_("Edit")}</td>
+                    </tr>
+                    <tr>
                       <td><kbd>Home</kbd></td>
                       <td>${_("Go to homepage")}</td>
                     </tr>
                     <tr>
                       <td><kbd>1</kbd>–<kbd>5</kbd></td>
                       <td>${_("Quick navigation to main sections (on homepage)")}</td>
-                    </tr>
-                    <tr>
-                      <td><kbd>*</kbd></td>
-                      <td>${_("Toggle star for company/project")}</td>
                     </tr>
                     <tr>
                       <td><kbd>Arrow keys</kbd> / <kbd>Enter</kbd></td>

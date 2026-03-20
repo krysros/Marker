@@ -158,6 +158,13 @@ function handleSearchSelectModalKeys(e) {
 }
 
 function handleShortcuts(event) {
+        // 'E' triggers single Edit button if present and not in a form field
+        if (event.key === 'e' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+            if (clickSingleButton('.btn i.bi-pencil-square, a.btn i.bi-pencil-square')) {
+                event.preventDefault();
+                return;
+            }
+        }
     // Only apply global shortcuts if focus is NOT on a form field
     if (isInputActive()) return;
     // 1-5: quick navigation to main sections (company, project, tag, contact, comment) from any page

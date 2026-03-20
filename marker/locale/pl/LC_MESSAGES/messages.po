@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-20 09:55+0100\n"
+"POT-Creation-Date: 2026-03-20 12:47+0100\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -316,7 +316,7 @@ msgid "Date modified"
 msgstr "Data modyfikacji"
 
 #: marker/forms/select.py:64 marker/forms/select.py:76
-#: marker/templates/base/navbar.mako:80
+#: marker/templates/base/navbar.mako:76
 #: marker/templates/company/company_table.mako:18
 #: marker/templates/project/project_table.mako:18
 #: marker/templates/user/user_map_companies_stars.mako:5
@@ -326,7 +326,7 @@ msgid "Stars"
 msgstr "Gwiazdki"
 
 #: marker/forms/select.py:65 marker/forms/select.py:77
-#: marker/templates/base/layout.mako:53 marker/templates/base/navbar.mako:22
+#: marker/templates/base/layout.mako:55 marker/templates/base/navbar.mako:22
 #: marker/templates/comment/comment_all.mako:5
 #: marker/templates/company/company_table.mako:19 marker/templates/home.mako:73
 #: marker/templates/project/project_table.mako:19 marker/views/company.py:132
@@ -374,11 +374,11 @@ msgstr "Ostrzeżenie"
 msgid "Info"
 msgstr "Informacja"
 
-#: marker/forms/select.py:103 marker/templates/base/navbar.mako:143
+#: marker/forms/select.py:103 marker/templates/base/navbar.mako:144
 msgid "Light"
 msgstr "Jasny"
 
-#: marker/forms/select.py:104 marker/templates/base/navbar.mako:154
+#: marker/forms/select.py:104 marker/templates/base/navbar.mako:155
 msgid "Dark"
 msgstr "Ciemny"
 
@@ -442,9 +442,9 @@ msgstr "Buduj"
 msgid "All"
 msgstr "Wszystkie"
 
-#: marker/forms/select.py:143 marker/templates/base/layout.mako:49
-#: marker/templates/base/navbar.mako:10 marker/templates/base/navbar.mako:62
-#: marker/templates/base/navbar.mako:83
+#: marker/forms/select.py:143 marker/templates/base/layout.mako:51
+#: marker/templates/base/navbar.mako:10 marker/templates/base/navbar.mako:58
+#: marker/templates/base/navbar.mako:79
 #: marker/templates/company/company_all.mako:5
 #: marker/templates/company/company_all.mako:23
 #: marker/templates/company/company_map.mako:5
@@ -461,9 +461,9 @@ msgstr "Wszystkie"
 msgid "Companies"
 msgstr "Firmy"
 
-#: marker/forms/select.py:144 marker/templates/base/layout.mako:50
-#: marker/templates/base/navbar.mako:13 marker/templates/base/navbar.mako:67
-#: marker/templates/base/navbar.mako:88
+#: marker/forms/select.py:144 marker/templates/base/layout.mako:52
+#: marker/templates/base/navbar.mako:13 marker/templates/base/navbar.mako:63
+#: marker/templates/base/navbar.mako:84
 #: marker/templates/company/company_table.mako:17
 #: marker/templates/contact/contact_search_tags.mako:12
 #: marker/templates/home.mako:32 marker/templates/project/project_all.mako:5
@@ -617,8 +617,8 @@ msgstr "Firmy, korporacje, organizacje."
 msgid "Currently implemented or completed projects."
 msgstr "Aktualnie realizowane lub zakończone projekty."
 
-#: marker/templates/base/layout.mako:51 marker/templates/base/navbar.mako:16
-#: marker/templates/base/navbar.mako:72
+#: marker/templates/base/layout.mako:53 marker/templates/base/navbar.mako:16
+#: marker/templates/base/navbar.mako:68
 #: marker/templates/common/search_criteria.mako:49
 #: marker/templates/company/company_form.mako:138
 #: marker/templates/contact/contact_search_tags.mako:16
@@ -640,8 +640,8 @@ msgstr "Tagi"
 msgid "Business profiles of companies and types of projects."
 msgstr "Profile działalności firm i rodzaje projektów."
 
-#: marker/templates/base/layout.mako:52 marker/templates/base/navbar.mako:19
-#: marker/templates/base/navbar.mako:77
+#: marker/templates/base/layout.mako:54 marker/templates/base/navbar.mako:19
+#: marker/templates/base/navbar.mako:73
 #: marker/templates/company/company_all.mako:26
 #: marker/templates/contact/contact_all.mako:5
 #: marker/templates/contact/contact_search_tags.mako:13
@@ -681,7 +681,7 @@ msgstr "Podsumowanie zawartości bazy danych."
 
 #: marker/templates/account/account.mako:7
 #: marker/templates/account/password.mako:7
-#: marker/templates/base/navbar.mako:94
+#: marker/templates/base/navbar.mako:95
 msgid "Account"
 msgstr "Konto"
 
@@ -718,7 +718,7 @@ msgstr "Konto"
 msgid "Submit"
 msgstr "Prześlij"
 
-#: marker/templates/account/login.mako:24 marker/templates/base/navbar.mako:51
+#: marker/templates/account/login.mako:24 marker/templates/base/navbar.mako:47
 #: marker/views/auth.py:45
 msgid "Log in"
 msgstr "Zaloguj się"
@@ -727,15 +727,15 @@ msgstr "Zaloguj się"
 msgid "Up"
 msgstr "W górę"
 
-#: marker/templates/base/layout.mako:44
+#: marker/templates/base/layout.mako:46
 msgid "Select what to search"
 msgstr "Wybierz, czego szukać"
 
-#: marker/templates/base/layout.mako:65
+#: marker/templates/base/layout.mako:67
 msgid "Select what to add"
 msgstr "Wybierz, co dodać"
 
-#: marker/templates/base/layout.mako:70
+#: marker/templates/base/layout.mako:72
 #: marker/templates/common/activity_form.mako:9
 #: marker/templates/company/company_contacts.mako:33
 #: marker/templates/company/company_table.mako:12
@@ -748,7 +748,7 @@ msgstr "Wybierz, co dodać"
 msgid "Company"
 msgstr "Firma"
 
-#: marker/templates/base/layout.mako:71
+#: marker/templates/base/layout.mako:73
 #: marker/templates/common/activity_form.mako:13
 #: marker/templates/company/company_projects.mako:29
 #: marker/templates/contact/contact_table.mako:15
@@ -758,7 +758,7 @@ msgstr "Firma"
 msgid "Project"
 msgstr "Projekt"
 
-#: marker/templates/base/layout.mako:72
+#: marker/templates/base/layout.mako:74
 #: marker/templates/company/company_form.mako:150
 #: marker/templates/company/company_form.mako:151
 #: marker/templates/company/company_form.mako:155
@@ -777,15 +777,15 @@ msgstr "Projekt"
 msgid "Tag"
 msgstr "Tag"
 
-#: marker/templates/base/layout.mako:84
+#: marker/templates/base/layout.mako:86
 msgid "Keyboard Shortcuts"
 msgstr "Skróty klawiszowe"
 
-#: marker/templates/base/layout.mako:92
+#: marker/templates/base/layout.mako:94
 msgid "Shortcut"
 msgstr "Skrót"
 
-#: marker/templates/base/layout.mako:93
+#: marker/templates/base/layout.mako:95
 #: marker/templates/company/company_contacts.mako:35
 #: marker/templates/company/company_projects.mako:34
 #: marker/templates/company/company_table.mako:20
@@ -804,35 +804,39 @@ msgstr "Skrót"
 msgid "Action"
 msgstr "Akcja"
 
-#: marker/templates/base/layout.mako:99
+#: marker/templates/base/layout.mako:101
 msgid "Open search or focus search input"
 msgstr "Otwórz wyszukiwanie lub ustaw fokus na pole wyszukiwania"
 
-#: marker/templates/base/layout.mako:103
+#: marker/templates/base/layout.mako:105
 msgid "Open add menu or add new item"
 msgstr "Otwórz menu dodawania lub dodaj nowy element"
 
-#: marker/templates/base/layout.mako:107
+#: marker/templates/base/layout.mako:109
 msgid "Delete selected item (if available)"
 msgstr "Usuń zaznaczony element (jeśli dostępny)"
 
-#: marker/templates/base/layout.mako:111
-msgid "Go to homepage"
-msgstr "Przejdź do strony głównej"
-
-#: marker/templates/base/layout.mako:115
-msgid "Quick navigation to main sections (on homepage)"
-msgstr "Szybka nawigacja do głównych sekcji (na stronie głównej)"
-
-#: marker/templates/base/layout.mako:119
+#: marker/templates/base/layout.mako:113
 msgid "Toggle star for company/project"
 msgstr "Oznacz lub usuń gwiazdkę dla firmy/projektu"
 
-#: marker/templates/base/layout.mako:123
+#: marker/templates/base/layout.mako:117
+msgid "Edit"
+msgstr "Edytuj"
+
+#: marker/templates/base/layout.mako:121
+msgid "Go to homepage"
+msgstr "Przejdź do strony głównej"
+
+#: marker/templates/base/layout.mako:125
+msgid "Quick navigation to main sections (on homepage)"
+msgstr "Szybka nawigacja do głównych sekcji (na stronie głównej)"
+
+#: marker/templates/base/layout.mako:129
 msgid "Navigate and select in modals"
 msgstr "Nawiguj i wybieraj w oknach modalnych"
 
-#: marker/templates/base/layout.mako:127
+#: marker/templates/base/layout.mako:133
 msgid "Close modal"
 msgstr "Zamknij okno modalne"
 
@@ -845,27 +849,27 @@ msgstr "Kontrahenci"
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: marker/templates/base/navbar.mako:44
-msgid "Shortcuts"
-msgstr "Skróty"
-
-#: marker/templates/base/navbar.mako:59
+#: marker/templates/base/navbar.mako:55
 msgid "Selected"
 msgstr "Wybrane"
 
-#: marker/templates/base/navbar.mako:101
+#: marker/templates/base/navbar.mako:90
+msgid "Shortcuts"
+msgstr "Skróty"
+
+#: marker/templates/base/navbar.mako:102
 msgid "Log out"
 msgstr "Wyloguj się"
 
-#: marker/templates/base/navbar.mako:109
+#: marker/templates/base/navbar.mako:110
 msgid "Language"
 msgstr "Język"
 
-#: marker/templates/base/navbar.mako:135
+#: marker/templates/base/navbar.mako:136
 msgid "Toggle theme"
 msgstr "Przełącz motyw"
 
-#: marker/templates/base/navbar.mako:165
+#: marker/templates/base/navbar.mako:166
 msgid "Auto"
 msgstr "Auto"
 
