@@ -48,9 +48,9 @@
         </li>
         % else:
         <li class="nav-item dropdown color-modes">
-          <a class="nav-link dropdown-toggle" role="button" id="dropdown-account" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="nav-link dropdown-toggle" id="dropdown-account" data-bs-toggle="dropdown" aria-expanded="false" type="button">
             <i class="bi bi-gear"></i> ${request.identity.name}
-          </a>
+          </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><h6 class="dropdown-header">${_("Selected")}</h6></li>
             <li>
@@ -86,9 +86,9 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item" role="button" data-bs-toggle="modal" data-bs-target="#shortcutsModal">
+              <button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#shortcutsModal">
                 <i class="bi bi-keyboard"></i> ${_("Shortcuts")}
-              </a>
+              </button>
             </li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('account', username=request.identity.name)}">
