@@ -3,7 +3,11 @@
 
 function isInputActive() {
     const active = document.activeElement;
-    return active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+    if (!active) return false;
+    const tag = active.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    if (active.isContentEditable) return true;
+    return false;
 }
 
 function focusFirstSearch() {
@@ -154,13 +158,14 @@ function handleSearchSelectModalKeys(e) {
 }
 
 function handleShortcuts(event) {
+    // Only apply global shortcuts if focus is NOT on a form field
     if (isInputActive()) return;
-    // 1-5 on homepage: quick navigation to main sections (company, project, tag, contact, comment)
-    // Only trigger if neither search nor add modal is open
+    // 1-5: quick navigation to main sections (company, project, tag, contact, comment) from any page
+    // Only trigger if neither search nor add modal is open and not in a form field
     const searchModal = document.getElementById('searchSelectModal');
     const addModal = document.getElementById('addSelectModal');
     const modalOpen = (searchModal && searchModal.classList.contains('show')) || (addModal && addModal.classList.contains('show'));
-    if (isHomePage() && !modalOpen && !event.ctrlKey && !event.altKey && !event.metaKey && event.key >= '1' && event.key <= '5') {
+    if (!modalOpen && !event.ctrlKey && !event.altKey && !event.metaKey && event.key >= '1' && event.key <= '5') {
         const urls = [
             '/company',  // company_all
             '/project',  // project_all
@@ -190,9 +195,9 @@ function handleShortcuts(event) {
         event.preventDefault();
         return;
     }
-    // '/' opens search modal or focuses search input
+    // '/' opens search modal or focuses search input from any page
     if (event.key === '/' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        if (isHomePage()) {
+        if (!modalOpen) {
             openSearchSelectModal();
             event.preventDefault();
         } else {
@@ -201,9 +206,9 @@ function handleShortcuts(event) {
             }
         }
     }
-    // '+' or Insert or NumpadAdd opens add modal or triggers add button
+    // '+' or Insert or NumpadAdd opens add modal or triggers add button from any page
     if ((event.key === '+' || event.key === 'Insert' || event.code === 'NumpadAdd')) {
-        if (isHomePage()) {
+        if (!modalOpen) {
             openAddSelectModal();
             event.preventDefault();
         } else {
