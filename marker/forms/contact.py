@@ -9,7 +9,7 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, InputRequired, Length
 
-from .filters import strip_filter
+from .filters import strip_filter, remove_mailto
 from .select import CATEGORIES, COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
@@ -42,7 +42,7 @@ class ContactForm(Form):
         validators=[
             Length(max=50),
         ],
-        filters=[strip_filter],
+        filters=[strip_filter, remove_mailto],
     )
     color = SelectField(_("Color"), choices=COLORS, default="")
 
