@@ -30,10 +30,10 @@
     % endif
   </head>
   <body>
+    <%include file="navbar.mako"/>
     <main role="main">
       <div class="container">
         <%include file="svg_icons.mako"/>
-        <%include file="navbar.mako"/>
         <%include file="flash_messages.mako"/>
         ${self.body()}
         <%include file="footer.mako"/>
