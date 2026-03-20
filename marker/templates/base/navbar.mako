@@ -39,11 +39,7 @@
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> ${_("Users")}</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#shortcutsModal">
-            <i class="bi bi-keyboard"></i> ${_("Shortcuts")}
-          </a>
-        </li>
+        <!-- Shortcuts moved to user/account dropdown below -->
       </ul>
       <ul class="navbar-nav ms-auto">
         % if not request.is_authenticated:
@@ -90,8 +86,13 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
+              <a class="dropdown-item" role="button" data-bs-toggle="modal" data-bs-target="#shortcutsModal">
+                <i class="bi bi-keyboard"></i> ${_("Shortcuts")}
+              </a>
+            </li>
+            <li>
               <a class="dropdown-item" role="button" href="${request.route_url('account', username=request.identity.name)}">
-                ${_("Account")}
+                <i class="bi bi-person-circle"></i> ${_("Account")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
