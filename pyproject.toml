@@ -36,7 +36,6 @@ dependencies = [
     "alembic",
     "zxcvbn",
     "Babel",
-    "Unidecode",
     "markdown",
     "nh3",
     "pycountry",

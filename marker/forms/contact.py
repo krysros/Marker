@@ -9,7 +9,7 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, InputRequired, Length
 
-from .filters import strip_filter, remove_mailto
+from .filters import remove_mailto, strip_filter
 from .select import CATEGORIES, COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 

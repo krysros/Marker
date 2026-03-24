@@ -1,4 +1,5 @@
 import os
+
 import alembic
 import alembic.command
 import alembic.config
@@ -8,6 +9,7 @@ import webtest
 from pyramid.paster import get_appsettings
 from pyramid.scripting import prepare
 from pyramid.testing import DummyRequest, testConfig
+
 from marker import main, models
 from marker.models.meta import Base
 

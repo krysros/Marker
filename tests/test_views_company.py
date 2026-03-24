@@ -1,9 +1,12 @@
 from unittest.mock import MagicMock
+
 from webob.multidict import MultiDict
-from marker.models.user import User
+
 from marker.models.company import Company
+from marker.models.user import User
 from marker.views.company import CompanyView
 from tests.conftest import DummyRequestWithIdentity
+
 
 def test_company_all_route_coverage(dbsession):
     user = User(
@@ -11,10 +14,11 @@ def test_company_all_route_coverage(dbsession):
         fullname="Test User",
         email="test@example.com",
         role="user",
-        password="testpass"
+        password="testpass",
     )
     dbsession.add(user)
     import transaction
+
     transaction.commit()
 
     company = Company(

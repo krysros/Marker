@@ -1,5 +1,6 @@
 import datetime
 import io
+import unicodedata
 from urllib.parse import quote
 
 import pycountry
@@ -7,10 +8,14 @@ import xlsxwriter
 from mako.template import Template
 from pyramid.path import AssetResolver
 from pyramid.response import Response
-from unidecode import unidecode
-
 from ..forms.select import COURTS, PROJECT_DELIVERY_METHODS, STAGES
 from ..forms.ts import TranslationString as _
+from ..forms.select import COURTS, PROJECT_DELIVERY_METHODS, STAGES
+from ..forms.ts import TranslationString as _
+
+
+def ascii_slug(text):
+    return unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
 
 
 def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors=None):
@@ -279,5 +284,5 @@ def response_vcard(contact):
     response.text = template.render(contact=contact)
     response.charset = "utf-8"
     response.content_type = "text/vcard"
-    response.content_disposition = f"attachment; filename={unidecode(contact.name)}.vcf; filename*=UTF-8''{quote(contact.name)}.vcf"
+    response.content_disposition = f"attachment; filename={ascii_slug(contact.name)}.vcf; filename*=UTF-8''{quote(contact.name)}.vcf"
     return response

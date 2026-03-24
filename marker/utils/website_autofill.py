@@ -1099,6 +1099,7 @@ def _is_name_block_candidate(value):
 
 from ..forms.filters import dash_filter, remove_multiple_spaces
 
+
 def _extract_postcode_city_from_lines(lines):
     patterns = (_POSTCODE_CITY_LINE_RE, _CITY_POSTCODE_LINE_RE)
     normalized_lines = [
@@ -1123,7 +1124,7 @@ def _extract_postcode_city_from_lines(lines):
         match = _POSTCODE_CITY_LINE_WRONGSEP_RE.search(line)
         if match:
             postcode = f"{match.group('postcode')}-{match.group('postcode2')}"
-            city = match.group('city')
+            city = match.group("city")
             # Apply dash_filter and remove_multiple_spaces
             postcode = dash_filter(remove_multiple_spaces(postcode))
             city = dash_filter(remove_multiple_spaces(city))
