@@ -98,23 +98,23 @@
                   <tbody>
                     <tr>
                       <td><kbd>/</kbd></td>
-                      <td>${_("Open search or focus search input")}</td>
+                      <td>${_("Search")}</td>
                     </tr>
                     <tr>
                       <td><kbd>+</kbd> / <kbd>Insert</kbd></td>
-                      <td>${_("Open add menu or add new item")}</td>
+                      <td>${_("Add")}</td>
                     </tr>
                     <tr>
                       <td><kbd>-</kbd> / <kbd>Delete</kbd></td>
-                      <td>${_("Delete selected item (if available)")}</td>
-                    </tr>
-                    <tr>
-                      <td><kbd>*</kbd></td>
-                      <td>${_("Toggle star for company/project")}</td>
+                      <td>${_("Delete")}</td>
                     </tr>
                     <tr>
                       <td><kbd>E</kbd></td>
                       <td>${_("Edit")}</td>
+                    </tr>
+                    <tr>
+                      <td><kbd>*</kbd></td>
+                      <td>${_("Toggle star for company/project")}</td>
                     </tr>
                     <tr>
                       <td><kbd>Home</kbd></td>
@@ -122,7 +122,7 @@
                     </tr>
                     <tr>
                       <td><kbd>1</kbd>–<kbd>5</kbd></td>
-                      <td>${_("Quick navigation to main sections (on homepage)")}</td>
+                      <td>${_("Quick navigation to main sections")}</td>
                     </tr>
                     <tr>
                       <td><kbd>Arrow keys</kbd> / <kbd>Enter</kbd></td>
