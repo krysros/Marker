@@ -365,19 +365,47 @@ def _extract_autofill_data(website, max_name_length, prefer_legal_name=True):
     if not subdivision_code and country_code:
         subdivision_code = _subdivision_code_from_text(country_code, folded_text)
 
+
+
+    # Robust: scan all visible lines, collect all candidates with legal form/prefix/descriptor, pick the best by score
+    def _extract_name_from_main_content(visible_lines):
+        candidates = []
+        for line in visible_lines:
+            candidate = line.strip()
+            if not candidate:
+                continue
+            if _contains_legal_form(candidate) or _contains_company_descriptor(candidate) or _contains_company_prefix(candidate):
+                candidates.append(candidate)
+        if candidates:
+            def score(c):
+                s = 0
+                if _contains_legal_form(c):
+                    s += 10
+                if c.isupper():
+                    s += 3
+                s += len(c) / 50.0
+                return s
+            return max(candidates, key=score)
+        return ""
+
+    name_value = ""
     if prefer_legal_name:
-        name_value = _select_preferred_name(
-            candidates=[
-                _organization_name(json_ld),
-                address_block.get("name"),
-                *_visible_legal_name_candidates(parsed["visible_lines"], hostname),
-                parsed["meta"].get("og:site_name"),
-                parsed["meta"].get("application-name"),
-                parsed["title"],
-                _hostname_name(hostname),
-            ],
-            hostname=hostname,
-        )
+        # 1. Spróbuj z głównej zawartości strony
+        name_value = _extract_name_from_main_content(parsed["visible_lines"])
+        # 2. Jeśli nie znaleziono, użyj dotychczasowej logiki
+        if not name_value:
+            name_value = _select_preferred_name(
+                candidates=[
+                    _organization_name(json_ld),
+                    address_block.get("name"),
+                    *_visible_legal_name_candidates(parsed["visible_lines"], hostname),
+                    parsed["meta"].get("og:site_name"),
+                    parsed["meta"].get("application-name"),
+                    parsed["title"],
+                    _hostname_name(hostname),
+                ],
+                hostname=hostname,
+            )
     else:
         name_value = _first_not_empty(
             parsed["title"],
