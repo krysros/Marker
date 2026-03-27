@@ -110,8 +110,10 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     ]
 
     # Write rows.
+    # Write header row with underscores instead of spaces
     for j, elem in enumerate(header_row):
-        worksheet.write(0, j, _safe_cell_value(elem), cell_format)
+        header = str(elem).replace(" ", "_")
+        worksheet.write(0, j, _safe_cell_value(header), cell_format)
 
     for i, row in enumerate(rows, start=1):
         row_color = None
@@ -172,9 +174,10 @@ def response_xlsx_contacts_company(rows, default_date_format="yyyy-mm-dd"):
         _("Country"),
     ]
 
-    # Write rows.
+    # Write header row with underscores instead of spaces
     for j, elem in enumerate(header_row):
-        worksheet.write(0, j, str(elem), cell_format)
+        header = str(elem).replace(" ", "_")
+        worksheet.write(0, j, header, cell_format)
 
     for i, row in enumerate(rows, start=1):
         worksheet.write(i, 0, row.name)
@@ -232,9 +235,10 @@ def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
         _("Country"),
     ]
 
-    # Write rows.
+    # Write header row with underscores instead of spaces
     for j, elem in enumerate(header_row):
-        worksheet.write(0, j, str(elem), cell_format)
+        header = str(elem).replace(" ", "_")
+        worksheet.write(0, j, header, cell_format)
 
     for i, row in enumerate(rows, start=1):
         worksheet.write(i, 0, row.name)
