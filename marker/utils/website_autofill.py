@@ -934,10 +934,24 @@ def _extract_address(
                 if city and not address["city"]:
                     address["city"] = city
 
+
     if not address["street"]:
-        address["street"] = _extract_by_regex(
-            _STREET_RE, text_with_lines or visible_text
-        )
+        # Try to extract street from explicit label
+        street_candidate = _extract_by_regex(_STREET_RE, text_with_lines or visible_text)
+        if street_candidate:
+            address["street"] = street_candidate
+        else:
+            # If still not found, look for street name before postcode in lines with postcode
+            for line in visible_lines:
+                postcode_match = _POSTCODE_RE.search(line)
+                if postcode_match:
+                    before_postcode = line[:postcode_match.start()].strip(' ,;:-|')
+                    # Only consider if not empty and not a company name
+                    if before_postcode and not (_contains_legal_form(before_postcode) or _contains_company_descriptor(before_postcode) or _contains_company_prefix(before_postcode)):
+                        # Heuristic: must contain at least one digit (street number) and at least one letter
+                        if re.search(r"\d", before_postcode) and re.search(r"[A-Za-zÀ-ÖØ-öø-ÿĄąĆćĘęŁłŃńÓóŚśŹźŻż]", before_postcode):
+                            address["street"] = _sanitize_street(before_postcode, max_len=_MAX_STREET_LEN)
+                            break
 
     if not (address["postcode"] and address["city"]):
         postcode, city = _extract_postcode_city_from_lines(visible_lines)
