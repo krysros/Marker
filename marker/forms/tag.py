@@ -16,6 +16,7 @@ class TagForm(Form):
             Length(min=3, max=50),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
 
     def __init__(self, *args, request, **kwargs):
@@ -39,7 +40,7 @@ class TagForm(Form):
 
 
 class TagSearchForm(Form):
-    name = StringField(_("Name"), filters=[strip_filter])
+    name = StringField(_("Name"), filters=[strip_filter], render_kw={"autofocus": True})
 
 
 class TagFilterForm(Form):
@@ -55,4 +56,5 @@ class TagLinkForm(Form):
             Length(min=3, max=50),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )

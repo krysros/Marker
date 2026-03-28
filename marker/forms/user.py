@@ -24,6 +24,7 @@ class UserForm(Form):
             Length(min=3, max=30),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
     fullname = StringField(
         _("Fullname"),
@@ -69,7 +70,7 @@ class UserForm(Form):
 
 
 class UserSearchForm(Form):
-    name = StringField(_("Name"), filters=[strip_filter])
+    name = StringField(_("Name"), filters=[strip_filter], render_kw={"autofocus": True})
     fullname = StringField(_("Fullname"), filters=[strip_filter])
     email = StringField(_("Email"), filters=[strip_filter])
     role = SelectField(_("Role"), choices=USER_ROLES)

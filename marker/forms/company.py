@@ -54,6 +54,7 @@ class CompanyForm(Form):
             Length(max=100),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
     street = StringField(
         _("Street"),
@@ -174,7 +175,7 @@ class CompanyForm(Form):
 
 
 class CompanySearchForm(Form):
-    name = StringField(_("Name"), filters=[strip_filter])
+    name = StringField(_("Name"), filters=[strip_filter], render_kw={"autofocus": True})
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
@@ -220,7 +221,7 @@ class CompanyFilterForm(Form):
 
 
 class CompanyActivityForm(ActivityForm):
-    name = StringField(_("Name"), validators=[InputRequired()])
+    name = StringField(_("Name"), validators=[InputRequired()], render_kw={"autofocus": True})
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -250,6 +251,7 @@ class CompanyLinkForm(Form):
             Length(min=1, max=200),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
 
     def __init__(self, *args, request, **kwargs):
