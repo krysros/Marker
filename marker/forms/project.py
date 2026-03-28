@@ -152,7 +152,9 @@ class ProjectFilterForm(Form):
 
 
 class ProjectActivityForm(ActivityForm):
-    name = StringField(_("Name"), validators=[InputRequired()], render_kw={"autofocus": True})
+    name = StringField(
+        _("Name"), validators=[InputRequired()], render_kw={"autofocus": True}
+    )
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
