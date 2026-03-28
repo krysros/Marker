@@ -37,14 +37,6 @@ def includeme(config):
         factory=default_factory,
     )
     config.add_route(
-        "company_add_tag_input", "/company/add/tag_input", factory=default_factory
-    )
-    config.add_route(
-        "company_add_tag_input_remove",
-        "/company/add/tag_input/remove",
-        factory=default_factory,
-    )
-    config.add_route(
         "company_search_tag_input",
         "/company/search/tag_input",
         factory=default_factory,
@@ -195,14 +187,6 @@ def includeme(config):
     config.add_route(
         "project_website_autofill",
         "/project/add/website_autofill",
-        factory=default_factory,
-    )
-    config.add_route(
-        "project_add_tag_input", "/project/add/tag_input", factory=default_factory
-    )
-    config.add_route(
-        "project_add_tag_input_remove",
-        "/project/add/tag_input/remove",
         factory=default_factory,
     )
     config.add_route(

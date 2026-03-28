@@ -1,6 +1,5 @@
 import datetime
 import logging
-from uuid import uuid4
 
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
@@ -1157,41 +1156,6 @@ class ProjectView:
         website = self.request.params.get("website", "")
         return {"fields": project_autofill_from_website(website)}
 
-    @view_config(
-        route_name="project_add_tag_input",
-        renderer="project_tag_input_row.mako",
-        permission="edit",
-    )
-    @view_config(
-        route_name="project_search_tag_input",
-        renderer="project_tag_input_row.mako",
-        permission="view",
-    )
-    def add_tag_input(self):
-        route_name = self.request.matched_route.name
-        remove_route = (
-            "project_search_tag_input_remove"
-            if route_name == "project_search_tag_input"
-            else "project_add_tag_input_remove"
-        )
-        return {
-            "row_id": uuid4().hex,
-            "value": "",
-            "remove_route": remove_route,
-        }
-
-    @view_config(
-        route_name="project_add_tag_input_remove",
-        renderer="string",
-        permission="edit",
-    )
-    @view_config(
-        route_name="project_search_tag_input_remove",
-        renderer="string",
-        permission="view",
-    )
-    def add_tag_input_remove(self):
-        return ""
 
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"

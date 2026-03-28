@@ -1,5 +1,4 @@
 import logging
-from uuid import uuid4
 
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
@@ -1317,41 +1316,6 @@ class CompanyView:
         website = self.request.params.get("website", "")
         return {"fields": company_autofill_from_website(website)}
 
-    @view_config(
-        route_name="company_add_tag_input",
-        renderer="company_tag_input_row.mako",
-        permission="edit",
-    )
-    @view_config(
-        route_name="company_search_tag_input",
-        renderer="company_tag_input_row.mako",
-        permission="view",
-    )
-    def add_tag_input(self):
-        route_name = self.request.matched_route.name
-        remove_route = (
-            "company_search_tag_input_remove"
-            if route_name == "company_search_tag_input"
-            else "company_add_tag_input_remove"
-        )
-        return {
-            "row_id": uuid4().hex,
-            "value": "",
-            "remove_route": remove_route,
-        }
-
-    @view_config(
-        route_name="company_add_tag_input_remove",
-        renderer="string",
-        permission="edit",
-    )
-    @view_config(
-        route_name="company_search_tag_input_remove",
-        renderer="string",
-        permission="view",
-    )
-    def add_tag_input_remove(self):
-        return ""
 
     @view_config(
         route_name="company_edit", renderer="company_form.mako", permission="edit"

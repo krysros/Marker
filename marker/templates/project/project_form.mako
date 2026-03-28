@@ -124,31 +124,6 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
-      % if request.matched_route.name in ("project_add", "project_search"):
-      <% tag_input_route = 'project_search_tag_input' if request.matched_route.name == 'project_search' else 'project_add_tag_input' %>
-      <% tag_remove_route = 'project_search_tag_input_remove' if request.matched_route.name == 'project_search' else 'project_add_tag_input_remove' %>
-      <div class="mb-3">
-        <label class="form-label">${_("Tags")}</label>
-        <div id="project-tag-inputs" class="vstack gap-2">
-          % if tags:
-            % for index, value in enumerate(tags, start=1):
-              <%include file="project_tag_input_row.mako" args="row_id='project-tag-' + str(index), value=value, remove_route=tag_remove_route"/>
-            % endfor
-          % else:
-            <%include file="project_tag_input_row.mako" args="row_id='project-tag-1', value='', remove_route=tag_remove_route"/>
-          % endif
-        </div>
-        <button type="button"
-                class="btn btn-outline-secondary btn-sm mt-2"
-                title="${_('Tag')}"
-                aria-label="${_('Tag')}"
-                hx-get="${request.route_url(tag_input_route)}"
-                hx-target="#project-tag-inputs"
-                hx-swap="beforeend">
-          <i class="bi bi-plus-lg me-1"></i>${_('Tag')}
-        </button>
-      </div>
-      % endif
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>
       </div>
