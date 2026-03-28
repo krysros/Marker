@@ -39,7 +39,7 @@ dependencies = [
     "markdown",
     "nh3",
     "pycountry",
-    "beautifulsoup4",
+    "google-genai",
 ]
 
 [dependency-groups]
