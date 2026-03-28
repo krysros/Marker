@@ -18,7 +18,9 @@ class CommentForm(Form):
 
 
 class CommentSearchForm(Form):
-    comment = TextAreaField(_("Comment"), filters=[strip_filter], render_kw={"autofocus": True})
+    comment = TextAreaField(
+        _("Comment"), filters=[strip_filter], render_kw={"autofocus": True}
+    )
 
 
 class CommentFilterForm(Form):
