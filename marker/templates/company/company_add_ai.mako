@@ -1,0 +1,20 @@
+<%inherit file="../base/layout.mako"/>
+
+<div class="card mt-4 mb-4">
+  <div class="card-header">${heading}</div>
+  <div class="card-body">
+    <form method="post" action="${request.route_url('company_add_ai')}">
+      <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
+      <div class="mb-3">
+        ${form.website.label(class_="form-label")}
+        ${form.website(class_="form-control")}
+        % for error in form.errors.get("website", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      <div class="mb-3">
+        <button type="submit" class="btn btn-primary">${_("Submit")}</button>
+      </div>
+    </form>
+  </div>
+</div>  
