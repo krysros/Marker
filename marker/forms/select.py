@@ -179,5 +179,3 @@ REPORTS = [
     ("suppliers", _("The most active suppliers")),
     ("projects-companies", _("Projects with the greatest interest")),
 ]
-
-

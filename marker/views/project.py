@@ -45,10 +45,7 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import (
-    project_autofill_from_website,
-    shorten_url_to_hostname,
-)
+from ..utils.website_autofill import project_autofill_from_website
 from . import (
     Filter,
     clear_selected_rows,
@@ -1069,8 +1066,6 @@ class ProjectView:
 
         if self.request.method == "POST" and form.validate():
             website = form.website.data
-            if form.shorten_website.data:
-                website = shorten_url_to_hostname(website)
             project = Project(
                 name=form.name.data,
                 street=form.street.data,
@@ -1156,7 +1151,6 @@ class ProjectView:
         website = self.request.params.get("website", "")
         return {"fields": project_autofill_from_website(website)}
 
-
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"
     )
@@ -1168,8 +1162,6 @@ class ProjectView:
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(project)
-            if form.shorten_website.data:
-                project.website = shorten_url_to_hostname(form.website.data)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,

@@ -19,7 +19,7 @@ def extract_fields_llm(html: str, api_key: str = None) -> dict:
     client = genai.Client(api_key=api_key)
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-flash-lite-latest",
             contents=prompt,
             config={"response_mime_type": "application/json"},
         )

@@ -42,10 +42,7 @@ from ..models import (
 )
 from ..utils.geo import location
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import (
-    company_autofill_from_website,
-    shorten_url_to_hostname,
-)
+from ..utils.website_autofill import company_autofill_from_website
 from . import (
     Filter,
     clear_selected_rows,
@@ -265,7 +262,6 @@ class CompanyView:
         if KRS:
             stmt = stmt.filter(Company.KRS == KRS)
             q["KRS"] = KRS
-
 
         if view_mode == "contacts":
             q["view"] = "contacts"
@@ -1213,8 +1209,6 @@ class CompanyView:
 
         if self.request.method == "POST" and form.validate():
             website = form.website.data
-            if form.shorten_website.data:
-                website = shorten_url_to_hostname(website)
             company = Company(
                 name=form.name.data,
                 street=form.street.data,
@@ -1299,7 +1293,6 @@ class CompanyView:
         website = self.request.params.get("website", "")
         return {"fields": company_autofill_from_website(website)}
 
-
     @view_config(
         route_name="company_edit", renderer="company_form.mako", permission="edit"
     )
@@ -1311,8 +1304,6 @@ class CompanyView:
 
         if self.request.method == "POST" and form.validate():
             form.populate_obj(company)
-            if form.shorten_website.data:
-                company.website = shorten_url_to_hostname(form.website.data)
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
@@ -1662,3 +1653,82 @@ class CompanyView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "assocEvent"}
         return ""
+
+    @view_config(
+        route_name="company_add_ai",
+        renderer="company/company_add_ai.mako",
+        permission="edit",
+    )
+    def add_ai(self):
+        _ = self.request.translate
+        from marker.forms import CompanyAddAIForm
+
+        form = CompanyAddAIForm(
+            self.request.POST if self.request.method == "POST" else None
+        )
+        if self.request.method == "POST" and form.validate():
+            website = form.website.data.strip()
+            try:
+                autofill = company_autofill_from_website(website)
+            except Exception as e:
+                # Truncate or summarize error to avoid cookie overflow
+                error_msg = str(e)
+                if len(error_msg) > 200:
+                    error_msg = error_msg[:200] + "..."
+                self.request.session.flash(_(f"Autofill error: {error_msg}"), "error")
+                return {"heading": _("Add a company using AI autofill"), "form": form}
+            autofill = dict(autofill)
+            autofill["website"] = website
+            from webob.multidict import MultiDict
+
+            from marker.forms.company import CompanyForm
+
+            company_form = CompanyForm(MultiDict(autofill), request=self.request)
+            name = company_form.name.data or ""
+            if name:
+                existing = self.request.dbsession.execute(
+                    select(Company).where(func.lower(Company.name) == func.lower(name))
+                ).scalar_one_or_none()
+                if existing:
+                    self.request.session.flash(
+                        _(
+                            "warning:A company with the name obtained from the provided website address already exists in the database."
+                        )
+                    )
+                    next_url = self.request.route_url(
+                        "company_view", company_id=existing.id, slug=existing.slug
+                    )
+                    return HTTPSeeOther(location=next_url)
+            from marker.utils.geo import location_details
+
+            geo = location_details(
+                street=company_form.street.data,
+                city=company_form.city.data,
+                country=company_form.country.data,
+                postalcode=company_form.postcode.data,
+            )
+            company = Company(
+                name=company_form.name.data,
+                street=company_form.street.data,
+                postcode=company_form.postcode.data,
+                city=company_form.city.data,
+                subdivision=company_form.subdivision.data,
+                country=company_form.country.data,
+                website=company_form.website.data,
+                color=company_form.color.data,
+                NIP=company_form.NIP.data,
+                REGON=company_form.REGON.data,
+                KRS=company_form.KRS.data,
+            )
+            if geo:
+                company.latitude = geo.get("lat")
+                company.longitude = geo.get("lon")
+            company.created_by = self.request.identity
+            self.request.dbsession.add(company)
+            self.request.dbsession.flush()
+            self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "company_view", company_id=company.id, slug=company.slug
+            )
+            return HTTPSeeOther(location=next_url)
+        return {"heading": _("Add a company using AI autofill"), "form": form}

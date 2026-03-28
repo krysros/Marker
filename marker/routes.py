@@ -875,3 +875,9 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/project/{project_id:\d+}/unlink",
         factory=default_factory,
     )
+
+    config.add_route(
+        "company_add_ai",
+        "/company/add/ai",
+        factory=default_factory,
+    )

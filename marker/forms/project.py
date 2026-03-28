@@ -44,9 +44,6 @@ class ProjectForm(Form):
         validators=[Length(max=100)],
         filters=[strip_filter, dash_filter, remove_multiple_spaces],
     )
-    shorten_website = BooleanField(
-        _("Shorten the address to the main domain"), default=True
-    )
     city = StringField(
         _("City"),
         validators=[Length(max=100)],

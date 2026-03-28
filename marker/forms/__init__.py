@@ -9,6 +9,7 @@ from .company import CompanyFilterForm  # flake8: noqa
 from .company import CompanyForm  # flake8: noqa
 from .company import CompanyLinkForm  # flake8: noqa
 from .company import CompanySearchForm  # flake8: noqa
+from .company_add_ai import CompanyAddAIForm  # flake8: noqa
 from .contact import ContactFilterForm  # flake8: noqa
 from .contact import ContactForm  # flaske8: noqa
 from .contact import ContactImportForm  # flake8: noqa

@@ -5,31 +5,12 @@ ssl._create_default_https_context = ssl._create_unverified_context
 import os
 import re
 import unicodedata
-import urllib.parse
 import urllib.request
 
 import pycountry
 
 from .geo import location_details
 from .llm_extract import extract_fields_llm
-
-
-def shorten_url_to_hostname(url):
-    """
-    Given a URL, return its hostname (domain) only, without scheme or path.
-    If the input is already a hostname, return as is.
-    """
-    if not url:
-        return ""
-    url = url.strip()
-    # Add scheme if missing for urlparse
-    if not re.match(r"^[a-zA-Z][a-zA-Z0-9+\-.]*://", url):
-        url = f"https://{url}"
-    try:
-        parsed = urllib.parse.urlparse(url)
-        return parsed.hostname or url
-    except Exception:
-        return url
 
 
 def _autofill_from_website(website, fields):
