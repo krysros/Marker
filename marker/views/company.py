@@ -1363,8 +1363,6 @@ class CompanyView:
         countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
-            from ..utils.website_autofill import shorten_url_to_hostname
-
             form.populate_obj(company)
             if form.shorten_website.data:
                 company.website = shorten_url_to_hostname(form.website.data)
