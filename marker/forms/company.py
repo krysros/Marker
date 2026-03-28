@@ -20,7 +20,7 @@ from .filters import (
     strip_filter,
     title,
 )
-from .select import COLORS, COURTS, select_countries, select_subdivisions
+from .select import COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
 
 
@@ -113,7 +113,6 @@ class CompanyForm(Form):
             remove_dashes_and_spaces,
         ],
     )
-    court = SelectField(_("Court"), choices=COURTS)
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -191,7 +190,6 @@ class CompanySearchForm(Form):
     NIP = StringField(_("NIP"), filters=[strip_filter])
     REGON = StringField(_("REGON"), filters=[strip_filter])
     KRS = StringField(_("KRS"), filters=[strip_filter])
-    court = SelectField(_("Court"), choices=COURTS)
 
 
 class CompanyFilterForm(Form):
@@ -208,7 +206,6 @@ class CompanyFilterForm(Form):
     NIP = StringField(_("NIP"), filters=[strip_filter])
     REGON = StringField(_("REGON"), filters=[strip_filter])
     KRS = StringField(_("KRS"), filters=[strip_filter])
-    court = SelectField(_("Court"), choices=COURTS)
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

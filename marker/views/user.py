@@ -301,7 +301,6 @@ class UserView:
             _("Company NIP"),
             _("Company REGON"),
             _("Company KRS"),
-            _("Company court"),
             _("Tags"),
         ]
 
@@ -354,7 +353,6 @@ class UserView:
             _("Company NIP"),
             _("Company REGON"),
             _("Company KRS"),
-            _("Company court"),
             _("Tags"),
         ]
 
@@ -397,7 +395,6 @@ class UserView:
             company.NIP,
             company.REGON,
             company.KRS,
-            company.court,
         ]
 
     def _project_row_values(self, project):

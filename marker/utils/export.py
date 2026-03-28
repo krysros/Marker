@@ -9,7 +9,7 @@ from mako.template import Template
 from pyramid.path import AssetResolver
 from pyramid.response import Response
 
-from ..forms.select import COURTS, PROJECT_DELIVERY_METHODS, STAGES
+from ..forms.select import PROJECT_DELIVERY_METHODS, STAGES
 from ..forms.ts import TranslationString as _
 
 
@@ -26,7 +26,6 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     )
     worksheet = workbook.add_worksheet()
     cell_format = workbook.add_format({"bold": True})
-    courts_map = dict(COURTS)
     stages_map = dict(STAGES)
     delivery_methods_map = dict(PROJECT_DELIVERY_METHODS)
     bootstrap_palette = {
@@ -74,11 +73,6 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
         "country",
         "kraj",
     }
-    court_markers = {
-        _normalized(_("Court")),
-        "court",
-        "sąd",
-    }
     stage_markers = {
         _normalized(_("Stage")),
         _normalized(_("Project stage")),
@@ -100,7 +94,6 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
             country_markers,
             lambda value: getattr(pycountry.countries.get(alpha_2=value), "name", ""),
         ),
-        (court_markers, lambda value: courts_map.get(value, value or "")),
         (stage_markers, lambda value: stages_map.get(value, value or "")),
         (
             delivery_method_markers,

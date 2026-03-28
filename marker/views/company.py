@@ -18,7 +18,6 @@ from ..forms import (
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
-    COURTS,
     ORDER_CRITERIA,
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
@@ -204,7 +203,6 @@ class CompanyView:
         NIP = self.request.params.get("NIP", None)
         REGON = self.request.params.get("REGON", None)
         KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
@@ -268,9 +266,6 @@ class CompanyView:
             stmt = stmt.filter(Company.KRS == KRS)
             q["KRS"] = KRS
 
-        if court:
-            stmt = stmt.filter(Company.court == court)
-            q["court"] = court
 
         if view_mode == "contacts":
             q["view"] = "contacts"
@@ -408,7 +403,6 @@ class CompanyView:
         sort_criteria = dict(SORT_CRITERIA)
         order_criteria = dict(ORDER_CRITERIA)
         q = {"sort": _sort, "order": _order}
-        courts = dict(COURTS)
         countries = dict(select_countries())
         stages = dict(STAGES)
         company_roles = dict(COMPANY_ROLES)
@@ -518,7 +512,6 @@ class CompanyView:
         return {
             "company": company,
             "is_company_selected": is_company_selected,
-            "courts": courts,
             "countries": countries,
             "stages": stages,
             "company_roles": company_roles,
@@ -551,7 +544,6 @@ class CompanyView:
         NIP = self.request.params.get("NIP", None)
         REGON = self.request.params.get("REGON", None)
         KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         q = {}
@@ -605,10 +597,6 @@ class CompanyView:
             stmt = stmt.filter(Company.KRS == KRS)
             q["KRS"] = KRS
 
-        if court:
-            stmt = stmt.filter(Company.court == court)
-            q["court"] = court
-
         q["sort"] = _sort
         q["order"] = _order
 
@@ -659,7 +647,6 @@ class CompanyView:
         NIP = self.request.params.get("NIP", None)
         REGON = self.request.params.get("REGON", None)
         KRS = self.request.params.get("KRS", None)
-        court = self.request.params.get("court", None)
 
         stmt = select(Company)
 
@@ -698,9 +685,6 @@ class CompanyView:
 
         if KRS:
             stmt = stmt.filter(Company.KRS == KRS)
-
-        if court:
-            stmt = stmt.filter(Company.court == court)
 
         companies = self.request.dbsession.execute(stmt).scalars()
 
@@ -1243,7 +1227,6 @@ class CompanyView:
                 NIP=form.NIP.data,
                 REGON=form.REGON.data,
                 KRS=form.KRS.data,
-                court=form.court.data,
             )
             loc = location(
                 street=form.street.data,
