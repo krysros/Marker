@@ -8,8 +8,7 @@ import xlsxwriter
 from mako.template import Template
 from pyramid.path import AssetResolver
 from pyramid.response import Response
-from ..forms.select import COURTS, PROJECT_DELIVERY_METHODS, STAGES
-from ..forms.ts import TranslationString as _
+
 from ..forms.select import COURTS, PROJECT_DELIVERY_METHODS, STAGES
 from ..forms.ts import TranslationString as _
 
