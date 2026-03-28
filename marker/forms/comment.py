@@ -13,11 +13,12 @@ class CommentForm(Form):
             InputRequired(),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
 
 
 class CommentSearchForm(Form):
-    comment = TextAreaField(_("Comment"), filters=[strip_filter])
+    comment = TextAreaField(_("Comment"), filters=[strip_filter], render_kw={"autofocus": True})
 
 
 class CommentFilterForm(Form):

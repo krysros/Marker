@@ -33,6 +33,7 @@ class ProjectForm(Form):
             Length(max=200),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
     street = StringField(
         _("Street"),
@@ -95,7 +96,7 @@ class ProjectForm(Form):
 
 
 class ProjectSearchForm(Form):
-    name = StringField(_("Name"), filters=[strip_filter])
+    name = StringField(_("Name"), filters=[strip_filter], render_kw={"autofocus": True})
     street = StringField(_("Street"), filters=[strip_filter])
     postcode = StringField(_("Post code"), filters=[strip_filter])
     city = StringField(_("City"), filters=[strip_filter])
@@ -151,7 +152,7 @@ class ProjectFilterForm(Form):
 
 
 class ProjectActivityForm(ActivityForm):
-    name = StringField(_("Name"), validators=[InputRequired()])
+    name = StringField(_("Name"), validators=[InputRequired()], render_kw={"autofocus": True})
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)
@@ -181,6 +182,7 @@ class ProjectLinkForm(Form):
             Length(min=1, max=200),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
 
     def __init__(self, *args, request, **kwargs):

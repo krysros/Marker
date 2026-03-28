@@ -22,6 +22,7 @@ class ContactForm(Form):
             Length(max=100),
         ],
         filters=[strip_filter],
+        render_kw={"autofocus": True},
     )
     role = StringField(
         _("Role"),
@@ -48,7 +49,7 @@ class ContactForm(Form):
 
 
 class ContactSearchForm(Form):
-    name = StringField(_("Name"), filters=[strip_filter])
+    name = StringField(_("Name"), filters=[strip_filter], render_kw={"autofocus": True})
     role = StringField(_("Role"), filters=[strip_filter])
     phone = StringField(_("Phone"), filters=[strip_filter])
     email = StringField(_("Email"), filters=[strip_filter])
