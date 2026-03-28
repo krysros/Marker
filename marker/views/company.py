@@ -4,7 +4,7 @@ from uuid import uuid4
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import delete, func, select
+from sqlalchemy import func, select
 
 from ..forms import (
     ActivityForm,
