@@ -13,7 +13,7 @@ def extract_fields_llm(html: str, api_key: str = None) -> dict:
         raise RuntimeError("GEMINI_API_KEY is missing")
     prompt = (
         "Extract the following form fields from the HTML below: "
-        "name, street, postcode, city, subdivision, country, NIP, REGON, KRS, court. "
+        "name, street, postcode, city, subdivision, country, NIP, REGON, KRS. "
         "Return the result as JSON.\nHTML:\n" + html
     )
     client = genai.Client(api_key=api_key)

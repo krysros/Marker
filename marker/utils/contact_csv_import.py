@@ -156,7 +156,6 @@ class GoogleContactsCsvImporter:
                 NIP="",
                 REGON="",
                 KRS="",
-                court="",
             )
             loc = self.geocode(
                 street=street,

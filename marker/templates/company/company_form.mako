@@ -125,13 +125,6 @@
         % endfor
       </div>
       <div class="mb-3">
-        ${form.court.label(class_="form-label")}
-        ${form.court(class_="form-control" + (" is-invalid" if form.errors.get("court") else ""))}
-        % for error in form.errors.get("court", []):
-          <div class="invalid-feedback">${error}</div>
-        % endfor
-      </div>
-      <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>
       </div>
     </form>

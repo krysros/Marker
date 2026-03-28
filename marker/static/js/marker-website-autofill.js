@@ -9,7 +9,6 @@
 		"NIP",
 		"REGON",
 		"KRS",
-		"court",
 	];
 
 	function getField(form, name) {

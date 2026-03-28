@@ -89,7 +89,6 @@ def company_autofill_from_website(website):
         "NIP",
         "REGON",
         "KRS",
-        "court",
     )
     return _autofill_from_website(website, fields)
 

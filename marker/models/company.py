@@ -31,7 +31,6 @@ class Company(Base):
     NIP: Mapped[Optional[str]]
     REGON: Mapped[Optional[str]]
     KRS: Mapped[Optional[str]]
-    court: Mapped[Optional[str]]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
@@ -74,7 +73,6 @@ class Company(Base):
         NIP: str | None,
         REGON: str | None,
         KRS: str | None,
-        court: str | None,
     ) -> None:
         self.name = name or ""
         self.street = street
@@ -87,7 +85,6 @@ class Company(Base):
         self.NIP = NIP
         self.REGON = REGON
         self.KRS = KRS
-        self.court = court
 
     @property
     def slug(self) -> str:
