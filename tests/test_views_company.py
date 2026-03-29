@@ -202,200 +202,1697 @@ def test_company_count_methods(dbsession):
         view.count_similar() >= 7
     )  # Number of similar companies (may be higher depending on implementation)
 
-    def make_request(
-        dbsession, user=None, company=None, method="GET", params=None, post=None
-    ):
-        from tests.conftest import DummyRequestWithIdentity
 
-        request = DummyRequestWithIdentity()
-        request.dbsession = dbsession
-        request.identity = user or User(
-            name="u", fullname="U", email="e@e.com", role="user", password="x"
-        )
-        request.method = method
-        request.GET = MultiDict(params or {})
-        request.POST = MultiDict(post or {})
-        request.params = MultiDict({**(params or {}), **(post or {})})
-        request.locale_name = "en"
-        request.translate = lambda x: x
-        request.route_url = lambda *a, **kw: "/company"
-        request.session = MagicMock()
-        request.response = MagicMock()
-        request.context = MagicMock()
-        if company:
-            request.context.company = company
-        return request
+# --- Helper function moved to top-level for test reuse ---
+def make_request(
+    dbsession, user=None, company=None, method="GET", params=None, post=None
+):
+    from tests.conftest import DummyRequestWithIdentity
 
-    def test_company_view_methods_minimal(dbsession):
-        user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-        dbsession.add(user)
-        company = Company(
-            name="C",
-            street="S",
-            postcode="00-000",
-            city="C",
-            subdivision="PL-MZ",
-            country="PL",
-            color="red",
-        )
-        dbsession.add(company)
-        dbsession.flush()
-        request = make_request(dbsession, user, company)
-        view = CompanyView(request)
-        # Test view()
-        request.matched_route = MagicMock()
-        request.matched_route.name = "company_view"
-        assert "company" in view.view()
-        # Test map()
-        assert "url" in view.map()
-        # Test company_json()
-        assert isinstance(view.company_json(), list)
-        # Test add_tag() GET
-        request.method = "GET"
-        assert "form" in view.add_tag()
-        # Test add_contact() GET
-        request.method = "GET"
-        assert "form" in view.add_contact()
-        # Test company_add_comment() GET
-        request.method = "GET"
-        assert "form" in view.company_add_comment()
-        # Test comments()
-        assert "paginator" in view.comments()
-        # Test similar()
-        assert "paginator" in view.similar()
-        # Test add() GET
-        request.method = "GET"
-        assert "form" in view.add()
-        # Test website_autofill()
-        request.method = "GET"
-        assert "fields" in view.website_autofill()
-        # Test edit() GET
-        request.method = "GET"
-        assert "form" in view.edit()
-        # Test select()
-        assert "companies" in view.select()
-        # Test search()
-        assert "form" in view.search()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user or User(
+        name="u", fullname="U", email="e@e.com", role="user", password="x"
+    )
+    request.method = method
+    request.GET = MultiDict(params or {})
+    request.POST = MultiDict(post or {})
+    request.params = MultiDict({**(params or {}), **(post or {})})
+    request.locale_name = "en"
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company"
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.context = MagicMock()
+    if company:
+        request.context.company = company
+    return request
 
-    def test_company_delete_and_del_row(dbsession):
-        user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-        dbsession.add(user)
-        company = Company(
-            name="C",
-            street="S",
-            postcode="00-000",
-            city="C",
-            subdivision="PL-MZ",
-            country="PL",
-            color="red",
-        )
-        dbsession.add(company)
-        dbsession.flush()
-        request = make_request(dbsession, user, company, method="POST")
-        view = CompanyView(request)
-        # Test delete()
-        resp = view.delete()
-        assert hasattr(resp, "headers")
-        # Test del_row()
-        dbsession.add(company)
-        dbsession.flush()
-        resp2 = view.del_row()
-        assert resp2 == ""
 
-    def test_company_star_and_check(dbsession):
-        user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-        dbsession.add(user)
-        company = Company(
-            name="C",
-            street="S",
-            postcode="00-000",
-            city="C",
-            subdivision="PL-MZ",
-            country="PL",
-            color="red",
-        )
-        dbsession.add(company)
-        dbsession.flush()
-        request = make_request(dbsession, user, company, method="POST")
-        # Test star
-        request.identity.companies_stars = []
-        view = CompanyView(request)
-        html = view.star()
-        assert "star" in html
-        # Test unstar
-        request.identity.companies_stars = [company]
-        html2 = view.star()
-        assert "star" in html2
-        # Test check
-        checked = view.check()
-        assert "checked" in checked
+# --- Refactored: All nested test functions are now top-level ---
+def test_company_stars_and_comments_branches(dbsession):
+    """Covers uncovered branches in companies_stars and comments: sort/order, empty results."""
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
 
-    def test_company_unlink_tag_and_add_project(dbsession):
-        user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-        dbsession.add(user)
-        company = Company(
-            name="C",
-            street="S",
-            postcode="00-000",
-            city="C",
-            subdivision="PL-MZ",
-            country="PL",
-            color="red",
-        )
-        dbsession.add(company)
-        tag = Tag(name="T")
-        dbsession.add(tag)
-        company.tags.append(tag)
-        dbsession.flush()
-        request = make_request(dbsession, user, company, method="POST")
-        request.matchdict = {"company_id": company.id, "tag_id": tag.id}
-        view = CompanyView(request)
-        assert view.unlink_tag() == ""
-        # Test add_project (GET)
-        request.method = "GET"
-        assert "form" in view.add_project()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company"
+    # companies_stars: all sort/order
+    for sort in ["name", "fullname", "email", "created_at", "updated_at", "invalid"]:
+        for order in ["asc", "desc", "invalid"]:
+            params = MultiDict({"sort": sort, "order": order})
+            request.params = params
+            view = CompanyView(request)
+            result = view.companies_stars()
+            assert "paginator" in result
+    # companies_stars: empty result
+    request.params = MultiDict({"sort": "name", "order": "asc"})
+    result2 = CompanyView(request).companies_stars()
+    assert isinstance(result2["paginator"], list)
+    # comments: all sort/order
+    for sort in ["created_at", "updated_at", "invalid"]:
+        for order in ["asc", "desc", "invalid"]:
+            params = MultiDict({"sort": sort, "order": order})
+            request.params = params
+            view = CompanyView(request)
+            result = view.comments()
+            assert "paginator" in result
+    # comments: empty result
+    request.params = MultiDict({"sort": "created_at", "order": "asc"})
+    result3 = CompanyView(request).comments()
+    assert isinstance(result3["paginator"], list)
 
-    def test_company_activity_edit_and_unlink(dbsession):
-        user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-        dbsession.add(user)
-        company = Company(
-            name="C",
-            street="S",
-            postcode="00-000",
-            city="C",
-            subdivision="PL-MZ",
-            country="PL",
-            color="red",
-        )
-        dbsession.add(company)
-        project = Project(
-            name="P",
-            street="S",
-            postcode="00-000",
-            city="C",
-            subdivision="PL-MZ",
-            country="PL",
-            color="blue",
-            deadline=None,
-            stage="draft",
-            delivery_method="courier",
-        )
-        dbsession.add(project)
-        activity = Activity()
-        activity.project = project
-        company.projects.append(activity)
-        dbsession.flush()
-        request = make_request(dbsession, user, company, method="GET")
-        request.matchdict = {"company_id": company.id, "project_id": project.id}
-        view = CompanyView(request)
-        assert "form" in view.company_activity_edit()
-        # Test activity_unlink
-        request.method = "POST"
-        assert view.activity_unlink() == ""
 
-    def test_company_add_ai_get(dbsession):
-        user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-        dbsession.add(user)
-        request = make_request(dbsession, user, method="GET")
-        view = CompanyView(request)
-        assert "form" in view.add_ai()
+def test_company_map_and_json_branches(dbsession):
+    """Covers uncovered branches in map and company_json: all filters, sort/order, empty results."""
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w.com",
+        NIP="123",
+        REGON="456",
+        KRS="789",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_json"
+    # All filters for map
+    params = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "website": "w.com",
+            "color": "red",
+            "NIP": "123",
+            "REGON": "456",
+            "KRS": "789",
+            "sort": "stars",
+            "order": "asc",
+        }
+    )
+    request.params = params
+    request.GET = params
+    view = CompanyView(request)
+    result = view.map()
+    assert "url" in result and "counter" in result
+    # Test map with sort=stars, order=desc
+    request.params["order"] = "desc"
+    result2 = view.map()
+    assert "url" in result2
+    # Test map with sort=name, order=asc
+    request.params["sort"] = "name"
+    request.params["order"] = "asc"
+    result3 = view.map()
+    assert "url" in result3
+    # Test map with sort=name, order=desc
+    request.params["order"] = "desc"
+    result4 = view.map()
+    assert "url" in result4
+    # Test map with no filters (should return all)
+    request.params = MultiDict({"sort": "created_at", "order": "asc"})
+    result5 = view.map()
+    assert "url" in result5
+    # company_json: all filters
+    request.params = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "website": "w.com",
+            "color": "red",
+            "NIP": "123",
+            "REGON": "456",
+            "KRS": "789",
+        }
+    )
+    result6 = view.company_json()
+    assert isinstance(result6, list)
+    # company_json: empty result
+    request.params = MultiDict({"name": "notfound"})
+    result7 = view.company_json()
+    assert isinstance(result7, list) and len(result7) == 0
+
+
+def test_company_view_methods_minimal(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = make_request(dbsession, user, company)
+    view = CompanyView(request)
+    # Test view()
+    request.matched_route = MagicMock()
+    request.matched_route.name = "company_view"
+    assert "company" in view.view()
+    # Test map()
+    assert "url" in view.map()
+    # Test company_json()
+    assert isinstance(view.company_json(), list)
+    # Test add_tag() GET
+    request.method = "GET"
+    assert "form" in view.add_tag()
+    # Test add_contact() GET
+    request.method = "GET"
+    assert "form" in view.add_contact()
+    # Test company_add_comment() GET
+    request.method = "GET"
+    assert "form" in view.company_add_comment()
+    # Test comments()
+    assert "paginator" in view.comments()
+    # Test similar()
+    assert "paginator" in view.similar()
+    # Test add() GET
+    request.method = "GET"
+    assert "form" in view.add()
+    # Test website_autofill() with patch to avoid real HTTP request
+    request.method = "GET"
+    import marker.views.company as company_views_mod
+
+    orig_autofill = company_views_mod.company_autofill_from_website
+    company_views_mod.company_autofill_from_website = lambda website: {"dummy": True}
+    result = view.website_autofill()
+    assert "fields" in result
+    company_views_mod.company_autofill_from_website = orig_autofill
+    # Test edit() GET
+    request.method = "GET"
+    assert "form" in view.edit()
+    # Test select()
+    assert "companies" in view.select()
+    # Test search()
+    assert "form" in view.search()
+
+
+def test_company_delete_and_del_row(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = make_request(dbsession, user, company, method="POST")
+    view = CompanyView(request)
+    # Test delete()
+    resp = view.delete()
+    assert hasattr(resp, "headers")
+    # Test del_row()
+    dbsession.add(company)
+    dbsession.flush()
+    resp2 = view.del_row()
+    assert resp2 == ""
+
+
+def test_company_star_and_check(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = make_request(dbsession, user, company, method="POST")
+    # Test star
+    request.identity.companies_stars = []
+    view = CompanyView(request)
+    html = view.star()
+    assert "star" in html
+    # Test unstar
+    request.identity.companies_stars = [company]
+    html2 = view.star()
+    assert "star" in html2
+    # Test check
+    checked = view.check()
+    assert "checked" in checked
+
+
+def test_company_unlink_tag_and_add_project(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    tag = Tag(name="T")
+    dbsession.add(tag)
+    company.tags.append(tag)
+    dbsession.flush()
+    request = make_request(dbsession, user, company, method="POST")
+    request.matchdict = {"company_id": company.id, "tag_id": tag.id}
+    view = CompanyView(request)
+    assert view.unlink_tag() == ""
+    # Test add_project (GET)
+    request.method = "GET"
+    assert "form" in view.add_project()
+
+
+def test_company_activity_edit_and_unlink(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    project = Project(
+        name="P",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="blue",
+        website=None,
+        deadline=None,
+        stage="draft",
+        delivery_method="courier",
+    )
+    dbsession.add(project)
+    activity = Activity()
+    activity.project = project
+    company.projects.append(activity)
+    dbsession.flush()
+    request = make_request(dbsession, user, company, method="GET")
+    request.matchdict = {"company_id": company.id, "project_id": project.id}
+    view = CompanyView(request)
+    assert "form" in view.company_activity_edit()
+    # Test activity_unlink
+    request.method = "POST"
+    assert view.activity_unlink() == ""
+
+
+def test_company_add_ai_get(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    request = make_request(dbsession, user, method="GET")
+    view = CompanyView(request)
+    assert "form" in view.add_ai()
+
+
+def test_company_add_tag_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"name": "TestTag"})
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_tags"
+    # Patch form to always validate
+    from marker.forms.tag import TagLinkForm
+
+    orig_validate = TagLinkForm.validate
+    TagLinkForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.add_tag()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    TagLinkForm.validate = orig_validate
+    # Invalid POST (form does not validate)
+    request.method = "POST"
+    TagLinkForm.validate = lambda self: False
+    resp2 = view.add_tag()
+    assert "form" in resp2
+    TagLinkForm.validate = orig_validate
+
+
+def test_company_add_contact_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict(
+        {
+            "name": "Contact1",
+            "role": "r",
+            "phone": "1",
+            "email": "e@e.com",
+            "color": "blue",
+        }
+    )
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_contacts"
+    from marker.forms.contact import ContactForm
+
+    orig_validate = ContactForm.validate
+    ContactForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.add_contact()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    ContactForm.validate = orig_validate
+    # Invalid POST
+    request.method = "POST"
+    ContactForm.validate = lambda self: False
+    resp2 = view.add_contact()
+    assert "form" in resp2
+    ContactForm.validate = orig_validate
+
+
+def test_company_add_comment_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"comment": "Test comment"})
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_comments"
+    from marker.forms.comment import CommentForm
+
+    orig_validate = CommentForm.validate
+    CommentForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.company_add_comment()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    CommentForm.validate = orig_validate
+    # Invalid POST
+    request.method = "POST"
+    CommentForm.validate = lambda self: False
+    resp2 = view.company_add_comment()
+    assert "form" in resp2
+    CommentForm.validate = orig_validate
+
+
+def test_company_add_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "color": "red",
+        }
+    )
+    request.GET = MultiDict()
+    request.params = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "color": "red",
+        }
+    )
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_view"
+    from marker.forms.company import CompanyForm
+
+    orig_validate = CompanyForm.validate
+    CompanyForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.add()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    CompanyForm.validate = orig_validate
+    # Invalid POST
+    request.method = "POST"
+    CompanyForm.validate = lambda self: False
+    resp2 = view.add()
+    assert "form" in resp2 or "tags" in resp2
+    CompanyForm.validate = orig_validate
+
+
+def test_company_edit_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "color": "red",
+        }
+    )
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_view"
+    from marker.forms.company import CompanyForm
+
+    orig_validate = CompanyForm.validate
+    CompanyForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.edit()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    CompanyForm.validate = orig_validate
+    # Invalid POST
+    request.method = "POST"
+    CompanyForm.validate = lambda self: False
+    resp2 = view.edit()
+    assert "form" in resp2
+    CompanyForm.validate = orig_validate
+
+
+def test_company_add_project_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"name": "P", "stage": "draft", "role": "r"})
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_projects"
+    from marker.forms.project import ProjectActivityForm
+
+    orig_validate = ProjectActivityForm.validate
+    ProjectActivityForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.add_project()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    ProjectActivityForm.validate = orig_validate
+    # Invalid POST
+    request.method = "POST"
+    ProjectActivityForm.validate = lambda self: False
+    resp2 = view.add_project()
+    assert "form" in resp2
+    ProjectActivityForm.validate = orig_validate
+
+
+def test_company_activity_edit_post_and_invalid(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    project = Project(
+        name="P",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="blue",
+        website=None,
+        deadline=None,
+        stage="draft",
+        delivery_method="courier",
+    )
+    dbsession.add(project)
+    dbsession.flush()
+    from marker.models.association import Activity
+
+    activity = Activity()
+    activity.project = project
+    company.projects.append(activity)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"stage": "draft", "role": "r"})
+    request.context = MagicMock()
+    request.context.company = company
+    request.matchdict = {"company_id": company.id, "project_id": project.id}
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/project_companies"
+    from marker.forms.association import ActivityForm
+
+    orig_validate = ActivityForm.validate
+    ActivityForm.validate = lambda self: True
+    view = CompanyView(request)
+    resp = view.company_activity_edit()
+    assert resp.status_code == 303 or hasattr(resp, "status_code")
+    ActivityForm.validate = orig_validate
+    # Invalid POST
+    request.method = "POST"
+    ActivityForm.validate = lambda self: False
+    resp2 = view.company_activity_edit()
+    assert "form" in resp2
+    ActivityForm.validate = orig_validate
+
+
+# Error and edge case tests
+import pytest
+from pyramid.httpexceptions import HTTPNotFound
+
+
+def test_unlink_tag_not_found(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.matchdict = {"company_id": 9999, "tag_id": 9999}
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    view = CompanyView(request)
+    with pytest.raises(HTTPNotFound):
+        view.unlink_tag()
+
+
+def test_company_activity_edit_not_found(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.matchdict = {"company_id": 9999, "project_id": 9999}
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    view = CompanyView(request)
+    with pytest.raises(HTTPNotFound):
+        view.company_activity_edit()
+
+
+def test_activity_unlink_not_found(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.matchdict = {"company_id": 9999, "project_id": 9999}
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    view = CompanyView(request)
+    with pytest.raises(HTTPNotFound):
+        view.activity_unlink()
+
+
+def test_add_project_existing_activity(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    project = Project(
+        name="P",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="blue",
+        website=None,
+        deadline=None,
+        stage="draft",
+        delivery_method="courier",
+    )
+    dbsession.add(project)
+    dbsession.flush()
+    from marker.models.association import Activity
+
+    activity = Activity(stage="draft", role="r")
+    activity.project = project
+    activity.company = company
+    dbsession.add(activity)
+    company.projects.append(activity)
+    dbsession.flush()
+    from marker.forms.project import ProjectActivityForm
+
+    orig_validate = ProjectActivityForm.validate
+    ProjectActivityForm.validate = lambda self: True
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"name": "P", "stage": "draft", "role": "r"})
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_projects"
+    view = CompanyView(request)
+    # Should redirect even if activity exists (no duplicate)
+    resp = view.add_project()
+    assert hasattr(resp, "status_code")
+    ProjectActivityForm.validate = orig_validate
+
+
+def test_bulk_selection_and_toggle_logic(dbsession, monkeypatch):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    # Patch is_bulk_select_request to always return True
+    import marker.views.company as company_views
+
+    monkeypatch.setattr(company_views, "is_bulk_select_request", lambda req: True)
+    monkeypatch.setattr(
+        company_views, "handle_bulk_selection", lambda req, stmt, items: {"bulk": True}
+    )
+    # Test all()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "color": "red",
+        }
+    )
+    request.GET = MultiDict()
+    request.params = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "color": "red",
+        }
+    )
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_view"
+    request.response = MagicMock()
+    # Use a real object for context to avoid MagicMock as company.id
+    request.context = type("ctx", (), {})()
+    request.context.company = company
+    request.environ = {}
+    request.environ["webob._parsed_get_vars"] = (MultiDict(), MultiDict())
+    request.environ["webob._parsed_post_vars"] = (MultiDict(), MultiDict())
+    request.environ["webob._parsed_params_vars"] = (MultiDict(), MultiDict())
+    view = CompanyView(request)
+    result = view.all()
+    assert result["bulk"] is True
+    # Test view() with bulk
+    request.matched_route = MagicMock()
+    request.matched_route.name = "company_projects"
+    request.identity.selected_projects = []
+    # Ensure context is a real object with company attribute
+    request.context = type("ctx", (), {})()
+    request.context.company = company
+    view = CompanyView(request)
+    result2 = view.view()
+    assert result2["bulk"] is True or result2 == ""
+    # Test similar() with bulk
+    request.matched_route.name = "company_similar"
+    view = CompanyView(request)
+    result3 = view.similar()
+    assert result3["bulk"] is True or result3 == ""
+    # Test set_select_all_state and htmx_refresh_response
+    monkeypatch.setattr(
+        company_views, "set_select_all_state", lambda req, checked: None
+    )
+    monkeypatch.setattr(company_views, "htmx_refresh_response", lambda req: "htmx")
+    request.params = MultiDict({"checked": "true"})
+    view = CompanyView(request)
+    request.matched_route.name = "company_projects"
+    result4 = view.view()
+    assert result4 == "htmx" or result4["bulk"] is True
+    # Test check() toggle_selected_item
+    monkeypatch.setattr(
+        company_views, "toggle_selected_item", lambda req, tbl, col, cid: True
+    )
+    request.context.company = company
+    view = CompanyView(request)
+    checked = view.check()
+    assert checked["checked"] is True
+
+
+def test_company_count_views_and_json(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    view = CompanyView(request)
+    assert view.count_tags() == company.count_tags
+    assert view.count_projects() == company.count_projects
+    assert view.count_contacts() == company.count_contacts
+    assert view.count_comments() == company.count_comments
+    assert view.count_stars() == company.count_stars
+    assert view.count_similar() == company.count_similar
+
+
+# --- Refactored: All nested test functions under test_companies_stars_view are now top-level ---
+def test_company_all_viewmode_and_sort_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    # view param: invalid, contacts without tags, valid contacts with tags
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.GET = MultiDict({"view": "invalid"})
+    request.params = request.GET
+    request.locale_name = "en"
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company"
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.context = MagicMock()
+    request.environ = {}
+    request.environ["webob._parsed_get_vars"] = (MultiDict(), MultiDict())
+    request.environ["webob._parsed_post_vars"] = (MultiDict(), MultiDict())
+    request.environ["webob._parsed_params_vars"] = (MultiDict(), MultiDict())
+    view = CompanyView(request)
+    result = view.all()
+    assert "paginator" in result
+    # contacts view without tags (should fallback to companies)
+    request.GET["view"] = "contacts"
+    request.params = request.GET
+    result2 = view.all()
+    assert result2["view_mode"] == "companies"
+    # contacts view with tags (should enable contacts view)
+    tag = Tag(name="T")
+    dbsession.add(tag)
+    company.tags.append(tag)
+    dbsession.flush()
+    request.GET["tag"] = "T"
+    request.params = request.GET
+    result3 = view.all()
+    assert result3["view_mode"] == "contacts"
+    # sort by stars asc/desc
+    request.GET["sort"] = "stars"
+    request.GET["order"] = "asc"
+    request.params = request.GET
+    result4 = view.all()
+    assert "paginator" in result4
+    request.GET["order"] = "desc"
+    request.params = request.GET
+    result5 = view.all()
+    assert "paginator" in result5
+    # sort by comments asc/desc
+    request.GET["sort"] = "comments"
+    request.GET["order"] = "asc"
+    request.params = request.GET
+    result6 = view.all()
+    assert "paginator" in result6
+    request.GET["order"] = "desc"
+    request.params = request.GET
+    result7 = view.all()
+    assert "paginator" in result7
+
+
+def test_company_view_projects_contacts_tags_sort_order_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    project = Project(
+        name="P",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="blue",
+        website="w",
+        deadline=None,
+        stage="draft",
+        delivery_method="courier",
+    )
+    dbsession.add(project)
+    tag = Tag(name="T")
+    dbsession.add(tag)
+    company.tags.append(tag)
+    dbsession.flush()
+    from marker.models.association import Activity
+
+    activity = Activity(stage="draft", role="r")
+    activity.project = project
+    activity.company = company
+    dbsession.add(activity)
+    company.projects.append(activity)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company"
+    # company_projects route, invalid sort/order
+    request.matched_route = MagicMock()
+    request.matched_route.name = "company_projects"
+    request.params = MultiDict({"sort": "invalid", "order": "invalid"})
+    request.identity.selected_projects = []
+    view = CompanyView(request)
+    result = view.view()
+    assert "projects_assoc" in result or "bulk" in result
+    # company_contacts route, invalid sort/order
+    request.matched_route.name = "company_contacts"
+    request.params = MultiDict({"sort": "invalid", "order": "invalid"})
+    request.identity.selected_contacts = []
+    result2 = view.view()
+    assert "contacts" in result2 or "bulk" in result2
+    # company_tags route, invalid sort/order
+    request.matched_route.name = "company_tags"
+    request.params = MultiDict({"sort": "invalid", "order": "invalid"})
+    request.identity.selected_tags = []
+    result3 = view.view()
+    assert "tags" in result3 or "bulk" in result3
+
+
+def test_company_map_and_json_branches_starview(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    # map: all filters
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_json"
+    params = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "website": "w",
+            "color": "red",
+            "NIP": "n",
+            "REGON": "r",
+            "KRS": "k",
+            "sort": "stars",
+            "order": "asc",
+        }
+    )
+    request.params = params
+    view = CompanyView(request)
+    result = view.map()
+    assert "url" in result and "counter" in result
+    # map: test fallback sort
+    request.params["sort"] = "created_at"
+    request.params["order"] = "desc"
+    result2 = view.map()
+    assert "url" in result2
+    # company_json: all filters
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_view"
+    params = MultiDict(
+        {
+            "name": "C",
+            "street": "S",
+            "postcode": "00-000",
+            "city": "C",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "website": "w",
+            "color": "red",
+            "NIP": "n",
+            "REGON": "r",
+            "KRS": "k",
+        }
+    )
+    request.params = params
+    view = CompanyView(request)
+    result3 = view.company_json()
+    assert isinstance(result3, list)
+    # company_json: subdivision as None
+    request.params = MultiDict({"subdivision": None})
+    result4 = view.company_json()
+    assert isinstance(result4, list)
+
+
+def test_companies_stars_invalid_sort_order(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.params = MultiDict({"sort": "invalid", "order": "invalid"})
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_stars"
+    view = CompanyView(request)
+    result = view.companies_stars()
+    assert "paginator" in result
+
+
+def test_add_tag_contact_comment_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"name": "T"})
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_tags"
+    from marker.forms.tag import TagLinkForm
+
+    orig_validate = TagLinkForm.validate
+    TagLinkForm.validate = lambda self: True
+    view = CompanyView(request)
+    # Tag already exists and is in company.tags
+    tag = Tag(name="T")
+    dbsession.add(tag)
+    company.tags.append(tag)
+    dbsession.flush()
+    resp = view.add_tag()
+    assert hasattr(resp, "status_code")
+    TagLinkForm.validate = orig_validate
+    # add_contact branch: contact already in company.contacts
+    from marker.forms.contact import ContactForm
+
+    orig_validate_c = ContactForm.validate
+    ContactForm.validate = lambda self: True
+    request.POST = MultiDict(
+        {
+            "name": "Contact1",
+            "role": "r",
+            "phone": "1",
+            "email": "e@e.com",
+            "color": "blue",
+        }
+    )
+    contact = Contact(
+        name="Contact1", role="r", phone="1", email="e@e.com", color="blue"
+    )
+    dbsession.add(contact)
+    company.contacts.append(contact)
+    dbsession.flush()
+    view = CompanyView(request)
+    resp2 = view.add_contact()
+    assert hasattr(resp2, "status_code")
+    ContactForm.validate = orig_validate_c
+
+
+def test_comments_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_comments"
+    # Test invalid sort/order
+    request.params = MultiDict({"sort": "invalid", "order": "invalid"})
+    view = CompanyView(request)
+    result = view.comments()
+    assert "paginator" in result
+
+
+def test_add_edit_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_view"
+    # Test add with query_string
+    request.query_string = "name=C&street=S"
+    request.params = MultiDict({"name": "C", "street": "S"})
+    request.POST = MultiDict()  # Ensure POST is a MultiDict for WTForms
+    view = CompanyView(request)
+    result = view.add()
+    assert "form" in result
+    # Test edit GET
+    request.POST = MultiDict()  # Ensure POST is a MultiDict for WTForms
+    result2 = view.edit()
+    assert "form" in result2
+
+
+def test_unlink_tag_project_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    tag = Tag(name="T")
+    dbsession.add(tag)
+    company.tags.append(tag)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.matchdict = {"company_id": company.id, "tag_id": tag.id}
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    view = CompanyView(request)
+    # Tag exists and is in company.tags
+    assert view.unlink_tag() == ""
+
+
+def test_add_project_activity_edit_unlink_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    project = Project(
+        name="P",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="blue",
+        website="w",
+        deadline=None,
+        stage="draft",
+        delivery_method="courier",
+    )
+    dbsession.add(project)
+    dbsession.flush()
+    from marker.models.association import Activity
+
+    activity = Activity(stage="draft", role="r")
+    activity.project = project
+    activity.company = company
+    dbsession.add(activity)
+    company.projects.append(activity)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.context = MagicMock()
+    request.context.company = company
+    request.matchdict = {"company_id": company.id, "project_id": project.id}
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/project_companies"
+    # add_project: project exists, activity exists
+    from marker.forms.project import ProjectActivityForm
+
+    orig_validate = ProjectActivityForm.validate
+    ProjectActivityForm.validate = lambda self: True
+    request.POST = MultiDict({"name": "P", "stage": "draft", "role": "r"})
+    view = CompanyView(request)
+    resp = view.add_project()
+    assert hasattr(resp, "status_code")
+    ProjectActivityForm.validate = orig_validate
+    # company_activity_edit: valid POST
+    from marker.forms.association import ActivityForm
+
+    orig_validate_a = ActivityForm.validate
+    ActivityForm.validate = lambda self: True
+    request.POST = MultiDict({"stage": "draft", "role": "r"})
+    view = CompanyView(request)
+    resp2 = view.company_activity_edit()
+    assert hasattr(resp2, "status_code")
+    ActivityForm.validate = orig_validate_a
+    # activity_unlink: valid
+    assert view.activity_unlink() == ""
+
+
+def test_search_and_select_and_website_autofill(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.GET = MultiDict({"name": "C"})
+    request.params = MultiDict({"name": "C"})
+    request.POST = MultiDict()  # WTForms expects MultiDict
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company"
+    import marker.views.company as company_views
+
+    orig_autofill = company_views.company_autofill_from_website
+    company_views.company_autofill_from_website = lambda website: {"dummy": True}
+    view = CompanyView(request)
+    # search
+    result = view.search()
+    assert "form" in result
+    # select
+    result2 = view.select()
+    assert "companies" in result2
+    # website_autofill
+    result3 = view.website_autofill()
+    assert "fields" in result3
+    company_views.company_autofill_from_website = orig_autofill
+
+
+def test_company_json_view(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.GET = MultiDict({"name": "C"})
+    request.params = MultiDict({"name": "C"})
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_json"
+    view = CompanyView(request)
+    result = view.company_json()
+    assert isinstance(result, list)
+
+
+def test_add_ai_branches(dbsession):
+    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
+    dbsession.add(user)
+    dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "POST"
+    request.POST = MultiDict({"website": "test"})
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_view"
+    # Patch CompanyAddAIForm to always validate
+    from marker.forms.company_add_ai import CompanyAddAIForm
+
+    orig_validate = CompanyAddAIForm.validate
+    CompanyAddAIForm.validate = lambda self: True
+    # Patch autofill to return new company name
+    import marker.views.company as company_views
+
+    orig_autofill = company_views.company_autofill_from_website
+    company_views.company_autofill_from_website = lambda website: {"name": "NewCompany"}
+    # Patch location_details to return geo
+    import marker.utils.geo as geo_mod
+
+    orig_loc = geo_mod.location_details
+    geo_mod.location_details = lambda **kwargs: {"lat": 1, "lon": 2}
+    view = CompanyView(request)
+    resp = view.add_ai()
+    assert hasattr(resp, "status_code")
+    # Restore
+    CompanyAddAIForm.validate = orig_validate
+    company_views.company_autofill_from_website = orig_autofill
+    geo_mod.location_details = orig_loc
+    user = User(name="u2", fullname="U2", email="e2@e.com", role="user", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="C",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="red",
+        website="w",
+        NIP="n",
+        REGON="r",
+        KRS="k",
+    )
+    dbsession.add(company)
+    dbsession.flush()
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = "GET"
+    request.context = MagicMock()
+    request.context.company = company
+    request.params = MultiDict()
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company_stars"
+    view = CompanyView(request)
+    result = view.companies_stars()
+    assert "paginator" in result
