@@ -28,6 +28,12 @@ Run your project.
 
     uv run pserve development.ini --reload
 
+Set environment variable
+------------------------
+
+    MARKER_SESSION_SECRET
+    MARKER_AUTH_SECRET
+    GEMINI_API_KEY (for AI)
 
 
 Log in
