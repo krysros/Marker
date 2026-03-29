@@ -1671,11 +1671,15 @@ class CompanyView:
             try:
                 autofill = company_autofill_from_website(website)
             except Exception as e:
-                # Truncate or summarize error to avoid cookie overflow
                 error_msg = str(e)
-                if len(error_msg) > 200:
-                    error_msg = error_msg[:200] + "..."
-                self.request.session.flash(_(f"Autofill error: {error_msg}"), "error")
+                # If the error message contains a long API response, only show a summary
+                if "Response:" in error_msg and len(error_msg) > 300:
+                    error_msg = error_msg.split("Response:")[0].strip() + " (details omitted)"
+                flash_msg = f"Autofill error: {error_msg}"
+                max_len = 500
+                if len(flash_msg.encode("utf-8")) > max_len:
+                    flash_msg = flash_msg.encode("utf-8")[:max_len].decode("utf-8", errors="ignore") + "..."
+                self.request.session.flash(_(flash_msg), "error")
                 return {"heading": _("Add a company using AI autofill"), "form": form}
             autofill = dict(autofill)
             autofill["website"] = website
