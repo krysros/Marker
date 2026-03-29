@@ -2,12 +2,6 @@
 
 Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting.
 
-## Screenshots
-
-![companies_table](screenshots/companies_table.png)
-
-![companies_map](screenshots/companies_map.png)
-
 ## Model diagram
 
 ![my_data_model_diagram](my_data_model_diagram.svg)
