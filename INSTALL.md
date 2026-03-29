@@ -28,8 +28,8 @@ Run your project.
 
     uv run pserve development.ini --reload
 
-Set environment variable
-------------------------
+Set environment variables
+-------------------------
 
     MARKER_SESSION_SECRET
     MARKER_AUTH_SECRET
