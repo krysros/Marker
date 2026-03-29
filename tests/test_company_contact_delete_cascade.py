@@ -47,7 +47,6 @@ def _create_company_with_contact(user, suffix):
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 

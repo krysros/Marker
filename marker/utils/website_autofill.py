@@ -12,14 +12,39 @@ import pycountry
 from .geo import location_details
 from .llm_extract import extract_fields_llm
 
+_STREET_RE = re.compile(
+    r"^(ulica|ul\.|ul)\s*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż]+\s*\d+", re.IGNORECASE
+)
+_POSTCODE_RE = re.compile(r"\d{2}-\d{3}")
+
+__all__ = [
+    "_STREET_RE",
+    "_POSTCODE_RE",
+    # ...existing code...
+]
+
+
+def _download_html(url, timeout=10):
+    """
+    Download HTML content from the given URL with a timeout.
+    Returns a tuple: (html_content, final_url)
+    """
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as resp:
+            html = resp.read().decode("utf-8", errors="replace")
+            final_url = resp.geturl()
+            return html, final_url
+    except Exception as e:
+        raise RuntimeError(f"Error fetching website: {e}")
+
 
 def _autofill_from_website(website, fields):
     """
     Shared logic for autofilling company or project data from a website.
     """
+
     try:
-        with urllib.request.urlopen(website, timeout=10) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
+        html, _ = _download_html(website, timeout=10)
     except Exception as e:
         raise RuntimeError(f"Error fetching website: {e}")
 

@@ -8,7 +8,6 @@ from marker.utils.contact_csv_import import (
 )
 from marker.utils.export import response_xlsx
 from marker.utils.geo import location, location_details
-from marker.utils.website_autofill import _POSTCODE_RE, _STREET_RE
 
 
 @pytest.mark.integration
@@ -65,6 +64,8 @@ def test_location_details_integration():
 
 @pytest.mark.integration
 def test_website_autofill_regex_integration():
+    from marker.utils.website_autofill import _POSTCODE_RE, _STREET_RE
+
     text = "ul. Kwiatowa 12, 00-123 Warszawa"
     assert _STREET_RE.search(text)
     assert _POSTCODE_RE.search(text)

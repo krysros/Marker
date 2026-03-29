@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import select
 
 from marker import models
@@ -144,7 +146,6 @@ def test_tag_search_is_case_insensitive_in_project_and_company_lists(
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -209,7 +210,6 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company_a.created_by = user
 
@@ -225,7 +225,6 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company_b.created_by = user
 
@@ -359,7 +358,6 @@ def test_search_tags_handles_polish_letters_in_tag_name(testapp, dbsession):
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -464,7 +462,6 @@ def test_tag_search_redirects_and_supports_contacts_view_for_company_and_project
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -571,7 +568,6 @@ def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -643,7 +639,6 @@ def test_name_search_is_case_insensitive_with_polish_letters(testapp, dbsession)
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -703,7 +698,6 @@ def test_city_search_is_case_insensitive_with_polish_letters(testapp, dbsession)
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -779,7 +773,6 @@ def test_desc_sort_uses_polish_alphabetical_order_for_names(testapp, dbsession):
             NIP="",
             REGON="",
             KRS="",
-            court="",
         )
         company.created_by = user
         dbsession.add(company)
@@ -861,7 +854,6 @@ def test_company_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbses
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     base_company.created_by = user
 
@@ -877,7 +869,6 @@ def test_company_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbses
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     most_similar.created_by = user
 
@@ -893,7 +884,6 @@ def test_company_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbses
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     medium_similar.created_by = user
 
@@ -909,7 +899,6 @@ def test_company_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbses
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     least_similar.created_by = user
 
@@ -925,7 +914,6 @@ def test_company_similar_defaults_to_shared_tags_sort_with_badges(testapp, dbses
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     unrelated_company.created_by = user
 
@@ -1220,7 +1208,6 @@ def test_contractors_view_default_sort_and_multiselect_tag_and_role_filter(
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company_alpha.created_by = user
 
@@ -1236,7 +1223,6 @@ def test_contractors_view_default_sort_and_multiselect_tag_and_role_filter(
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company_beta.created_by = user
 
@@ -1252,7 +1238,6 @@ def test_contractors_view_default_sort_and_multiselect_tag_and_role_filter(
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company_gamma.created_by = user
 
@@ -1603,7 +1588,6 @@ def test_comment_markdown_sanitizes_dangerous_html(testapp, dbsession):
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -1755,7 +1739,6 @@ def test_trash_shortcut_script_and_single_button(testapp, dbsession):
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.creator_id = user.id
     dbsession.add(company)
@@ -1811,7 +1794,6 @@ def test_category_filter_defaults_to_all_across_category_views(testapp, dbsessio
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -1933,7 +1915,6 @@ def test_default_all_category_shows_company_and_project_records(testapp, dbsessi
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -2059,7 +2040,6 @@ def test_selected_tags_switch_shows_companies_projects_and_contacts(testapp, dbs
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -2237,7 +2217,6 @@ def test_select_all_project_companies_updates_selected_companies(testapp, dbsess
         NIP="",
         REGON="",
         KRS="",
-        court="",
     )
     company.created_by = user
 
@@ -2329,7 +2308,16 @@ def test_select_all_project_companies_updates_selected_companies(testapp, dbsess
 def test_company_website_autofill_supports_developer_descriptors(
     testapp, dbsession, monkeypatch
 ):
+    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        website_autofill,
+        "extract_fields_llm",
+        lambda html, api_key=None: {
+            "name": "Alfa Developer" if "Developer" in html else "Alfa Deweloper"
+        },
+    )
 
     user = models.user.User(
         name="company-autofill-descriptor-editor",
@@ -2387,7 +2375,14 @@ def test_company_website_autofill_supports_developer_descriptors(
 def test_company_website_autofill_prefers_company_like_descriptor_casing(
     testapp, dbsession, monkeypatch
 ):
+    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        website_autofill,
+        "extract_fields_llm",
+        lambda html, api_key=None: {"name": "Alfa Developer"},
+    )
 
     user = models.user.User(
         name="company-autofill-descriptor-casing-editor",
@@ -2444,7 +2439,19 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
 def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
     testapp, dbsession, monkeypatch
 ):
+    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        website_autofill,
+        "extract_fields_llm",
+        lambda html, api_key=None: {
+            "name": "Nowa Przestrzeń Developer",
+            "street": "Kwiatowa 12",
+            "postcode": "00-123",
+            "city": "Warszawa",
+        },
+    )
 
     user = models.user.User(
         name="company-autofill-address-block-editor",
@@ -2519,7 +2526,10 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
 def test_company_website_autofill_includes_trade_prefix_from_previous_line(
     testapp, dbsession, monkeypatch
 ):
+    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
+
+    # Patch will be set per test case below
 
     user = models.user.User(
         name="company-autofill-prefix-editor",
@@ -2576,6 +2586,16 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
                 html,
                 "https://alfa.pl/kontakt/",
             ),
+        )
+        monkeypatch.setattr(
+            website_autofill,
+            "extract_fields_llm",
+            lambda html_arg, api_key=None, expected_name=expected_name: {
+                "name": expected_name,
+                "street": "Kwiatowa 12",
+                "postcode": "00-123",
+                "city": "Warszawa",
+            },
         )
 
         response = testapp.get(

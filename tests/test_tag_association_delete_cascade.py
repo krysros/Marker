@@ -48,7 +48,7 @@ def _create_company(user, suffix):
         NIP="",
         REGON="",
         KRS="",
-        court="",
+        # court removed
     )
     company.created_by = user
     return company

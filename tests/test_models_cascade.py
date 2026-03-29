@@ -22,7 +22,7 @@ class CompanyFactory(factory.alchemy.SQLAlchemyModelFactory):
     NIP = ""
     REGON = ""
     KRS = ""
-    court = ""
+    # court removed
 
 
 class ProjectFactory(factory.alchemy.SQLAlchemyModelFactory):

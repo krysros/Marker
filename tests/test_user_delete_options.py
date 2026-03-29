@@ -47,7 +47,7 @@ def _create_user_dataset(dbsession, creator, suffix):
         NIP="",
         REGON="",
         KRS="",
-        court="",
+        # court removed
     )
     company.created_by = creator
 
@@ -217,7 +217,7 @@ def test_delete_user_with_data_removes_created_records(dbsession):
         NIP="",
         REGON="",
         KRS="",
-        court="",
+        # court removed
     )
     watcher_company.created_by = watcher
     dbsession.add(watcher_company)

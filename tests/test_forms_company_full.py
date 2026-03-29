@@ -30,21 +30,15 @@ def test_company_form_valid():
             "NIP": "",
             "REGON": "",
             "KRS": "",
-            "court": "Białystok XII",  # valid court from COURTS
         }
     )
     form = CompanyForm(request=DummyRequest(), formdata=data)
-    from marker.forms.select import (
-        COLORS,
-        COURTS,
-        select_countries,
-        select_subdivisions,
-    )
+    from marker.forms.select import COLORS, select_countries, select_subdivisions
 
     form.subdivision.choices = select_subdivisions("PL")
     form.country.choices = select_countries()
     form.color.choices = COLORS
-    form.court.choices = COURTS
+
     form.process(data=data)
     valid = form.validate()
     if not valid:
@@ -84,17 +78,12 @@ def test_company_form_missing_name():
         }
     )
     form = CompanyForm(request=DummyRequest(), formdata=data)
-    from marker.forms.select import (
-        COLORS,
-        COURTS,
-        select_countries,
-        select_subdivisions,
-    )
+    from marker.forms.select import COLORS, select_countries, select_subdivisions
 
     form.subdivision.choices = select_subdivisions("PL")
     form.country.choices = select_countries()
     form.color.choices = COLORS
-    form.court.choices = COURTS
+
     form.process(data=data)
     assert not form.validate()
     assert "name" in form.errors
@@ -133,17 +122,12 @@ def test_company_form_long_name():
         }
     )
     form = CompanyForm(request=DummyRequest(), formdata=data)
-    from marker.forms.select import (
-        COLORS,
-        COURTS,
-        select_countries,
-        select_subdivisions,
-    )
+    from marker.forms.select import COLORS, select_countries, select_subdivisions
 
     form.subdivision.choices = select_subdivisions("PL")
     form.country.choices = select_countries()
     form.color.choices = COLORS
-    form.court.choices = COURTS
+
     form.process(data=data)
     assert not form.validate()
     assert "name" in form.errors
@@ -182,17 +166,12 @@ def test_company_form_postcode_filters():
         }
     )
     form = CompanyForm(request=DummyRequest(), formdata=data)
-    from marker.forms.select import (
-        COLORS,
-        COURTS,
-        select_countries,
-        select_subdivisions,
-    )
+    from marker.forms.select import COLORS, select_countries, select_subdivisions
 
     form.subdivision.choices = select_subdivisions("PL")
     form.country.choices = select_countries()
     form.color.choices = COLORS
-    form.court.choices = COURTS
+
     form.process(data=data)
     form.validate()
     assert form.postcode.data == "00-001"
