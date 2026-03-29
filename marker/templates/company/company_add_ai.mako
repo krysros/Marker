@@ -1,5 +1,7 @@
 <%inherit file="../base/layout.mako"/>
 
+<%include file="../base/flash_messages.mako"/>
+
 <div class="card mt-4 mb-4">
   <div class="card-header">${heading}</div>
   <div class="card-body">
