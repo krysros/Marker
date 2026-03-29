@@ -33,7 +33,7 @@ def test_company_all_route_coverage(dbsession):
         NIP=None,
         REGON=None,
         KRS=None,
-        court=None,
+        # court removed
     )
     dbsession.add(company)
     transaction.commit()

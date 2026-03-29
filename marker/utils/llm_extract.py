@@ -25,8 +25,12 @@ def extract_fields_llm(html: str, api_key: str = None) -> dict:
         )
     except Exception as e:
         # Handle HTTP 429 Too Many Requests (rate limit exceeded)
-        if hasattr(e, "args") and e.args and any(
-            "429" in str(arg) or "Too Many Requests" in str(arg) for arg in e.args
+        if (
+            hasattr(e, "args")
+            and e.args
+            and any(
+                "429" in str(arg) or "Too Many Requests" in str(arg) for arg in e.args
+            )
         ):
             raise RuntimeError(
                 "Gemini API rate limit reached (HTTP 429 Too Many Requests). Please wait and try again. "
