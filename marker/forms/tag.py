@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy import select
 from wtforms import Form, HiddenField, SelectField, StringField
 from wtforms.validators import InputRequired, Length, ValidationError
@@ -29,6 +31,8 @@ class TagForm(Form):
             self.edited_item = None
 
     def validate_name(self, field):
+        if not re.match(r"^[A-Za-z0-9]", field.data or ""):
+            raise ValidationError(_("Name must start with a letter or digit."))
         if self.edited_item:
             if self.edited_item.name == field.data:
                 return

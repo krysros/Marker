@@ -1,14 +1,8 @@
+import re
 from operator import mul
 
 from sqlalchemy import select
-from wtforms import (
-    BooleanField,
-    Form,
-    HiddenField,
-    SelectField,
-    SelectMultipleField,
-    StringField,
-)
+from wtforms import Form, HiddenField, SelectField, SelectMultipleField, StringField
 from wtforms.validators import InputRequired, Length, ValidationError
 
 from ..models import Company
@@ -126,6 +120,8 @@ class CompanyForm(Form):
         self.subdivision.choices = select_subdivisions(country)
 
     def validate_name(self, field):
+        if not re.match(r"^[A-Za-z0-9]", field.data or ""):
+            raise ValidationError(_("Name must start with a letter or digit."))
         if self.edited_item:
             if self.edited_item.name == field.data:
                 return
