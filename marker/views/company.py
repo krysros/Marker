@@ -4,10 +4,12 @@ import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
+from webob.multidict import MultiDict
 
 from ..forms import (
     ActivityForm,
     CommentForm,
+    CompanyAddAIForm,
     CompanyFilterForm,
     CompanyForm,
     CompanySearchForm,
@@ -15,6 +17,7 @@ from ..forms import (
     ProjectActivityForm,
     TagLinkForm,
 )
+from ..forms.company import CompanyForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -40,7 +43,7 @@ from ..models import (
     selected_contacts,
     selected_tags,
 )
-from ..utils.geo import location
+from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
 from ..utils.website_autofill import company_autofill_from_website
 from . import (
@@ -1661,7 +1664,6 @@ class CompanyView:
     )
     def add_ai(self):
         _ = self.request.translate
-        from marker.forms import CompanyAddAIForm
 
         form = CompanyAddAIForm(
             self.request.POST if self.request.method == "POST" else None
@@ -1687,12 +1689,17 @@ class CompanyView:
                         + "..."
                     )
                 self.request.session.flash(_(flash_msg), "error")
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    # Redirect to the same form page to force a full reload and avoid card-in-card
+                    response.headers = {
+                        "HX-Redirect": self.request.route_url("company_add_ai")
+                    }
+                    response.status_code = getattr(e, "status_code", 200)
+                    return response
                 return {"heading": _("Add a company using AI autofill"), "form": form}
             autofill = dict(autofill)
             autofill["website"] = website
-            from webob.multidict import MultiDict
-
-            from marker.forms.company import CompanyForm
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
             name = company_form.name.data or ""
@@ -1709,8 +1716,12 @@ class CompanyView:
                     next_url = self.request.route_url(
                         "company_view", company_id=existing.id, slug=existing.slug
                     )
+                    if self.request.headers.get("HX-Request"):
+                        response = self.request.response
+                        response.headers["HX-Redirect"] = next_url
+                        response.status_code = 200
+                        return response
                     return HTTPSeeOther(location=next_url)
-            from marker.utils.geo import location_details
 
             geo = location_details(
                 street=company_form.street.data,
@@ -1741,5 +1752,10 @@ class CompanyView:
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 200
+                return response
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Add a company using AI autofill"), "form": form}
