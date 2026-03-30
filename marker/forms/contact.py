@@ -1,3 +1,5 @@
+import re
+
 from wtforms import (
     EmailField,
     FileField,
@@ -6,6 +8,7 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     StringField,
+    ValidationError,
 )
 from wtforms.validators import DataRequired, InputRequired, Length
 
@@ -46,6 +49,10 @@ class ContactForm(Form):
         filters=[strip_filter, remove_mailto],
     )
     color = SelectField(_("Color"), choices=COLORS, default="")
+
+    def validate_name(self, field):
+        if not re.match(r"^[A-Za-z0-9]", field.data or ""):
+            raise ValidationError(_("Name must start with a letter or digit."))
 
 
 class ContactSearchForm(Form):

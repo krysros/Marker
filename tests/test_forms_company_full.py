@@ -15,7 +15,7 @@ def test_company_form_valid():
             self.translate = lambda x: x
             self.dbsession = DummyDBSession()
 
-    from werkzeug.datastructures import MultiDict
+    from webob.multidict import MultiDict
 
     data = MultiDict(
         {
@@ -60,7 +60,7 @@ def test_company_form_missing_name():
             self.translate = lambda x: x
             self.dbsession = DummyDBSession()
 
-    from werkzeug.datastructures import MultiDict
+    from webob.multidict import MultiDict
 
     data = MultiDict(
         {
@@ -103,7 +103,7 @@ def test_company_form_long_name():
             self.translate = lambda x: x
             self.dbsession = DummyDBSession()
 
-    from werkzeug.datastructures import MultiDict
+    from webob.multidict import MultiDict
 
     data = MultiDict(
         {
@@ -147,7 +147,7 @@ def test_company_form_postcode_filters():
             self.translate = lambda x: x
             self.dbsession = DummyDBSession()
 
-    from werkzeug.datastructures import MultiDict
+    from webob.multidict import MultiDict
 
     data = MultiDict(
         {
