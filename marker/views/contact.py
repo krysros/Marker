@@ -261,7 +261,7 @@ class ContactView:
     )
     def count(self):
         return self.request.dbsession.execute(
-            select(func.count()).select_from(select(Contact))
+            select(func.count()).select_from(select(Contact).subquery())
         ).scalar()
 
     @view_config(

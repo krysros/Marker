@@ -929,7 +929,8 @@ def test_company_activity_edit_post_and_invalid(dbsession):
 
     activity = Activity()
     activity.project = project
-    company.projects.append(activity)
+    activity.company = company
+    dbsession.add(activity)
     dbsession.flush()
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession

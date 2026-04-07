@@ -182,7 +182,7 @@ class TagView:
     )
     def count(self):
         return self.request.dbsession.execute(
-            select(func.count()).select_from(select(Tag))
+            select(func.count()).select_from(select(Tag).subquery())
         ).scalar()
 
     @view_config(

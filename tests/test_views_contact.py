@@ -474,6 +474,7 @@ def test_contact_search_tags_results_contacts(dbsession):
     company = _make_company(dbsession, user)
     tag = Tag(name="ContSTRTag")
     tag.created_by = user
+    dbsession.add(tag)
     company.tags.append(tag)
     _make_contact(dbsession, user, "STRContact", company=company)
     transaction.commit()
@@ -499,6 +500,7 @@ def test_contact_search_tags_results_sort_city(dbsession):
     company = _make_company(dbsession, user)
     tag = Tag(name="CitySTRTag")
     tag.created_by = user
+    dbsession.add(tag)
     company.tags.append(tag)
     _make_contact(dbsession, user, "CitySTRCont", company=company)
     transaction.commit()
@@ -637,6 +639,7 @@ def test_contact_search_tags_results_invalid_sort_order(dbsession):
     user = _make_user(dbsession, "contstaginvsrt")
     tag = Tag(name="InvSortTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "InvSortCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "InvSortCont", company=co)
@@ -661,6 +664,7 @@ def test_contact_search_tags_results_sort_city_projects(dbsession):
     user = _make_user(dbsession, "contstcityp")
     tag = Tag(name="CityPTag")
     tag.created_by = user
+    dbsession.add(tag)
     proj = _make_project(dbsession, user, "CityPProj")
     tag.projects.append(proj)
     _make_contact(dbsession, user, "CityPCont", project=proj)
@@ -686,6 +690,7 @@ def test_contact_search_tags_results_sort_city_companies(dbsession):
     user = _make_user(dbsession, "contstcityco")
     tag = Tag(name="CityCTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CityCCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CityCC", company=co)
@@ -711,6 +716,7 @@ def test_contact_search_tags_results_sort_city_no_category(dbsession):
     user = _make_user(dbsession, "contstcitync")
     tag = Tag(name="CityNCTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CityNCCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CityNCCont", company=co)
@@ -735,6 +741,7 @@ def test_contact_search_tags_results_sort_category_name(dbsession):
     user = _make_user(dbsession, "contstcatnm")
     tag = Tag(name="CatNmTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CatNmCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CatNmCont", company=co)
@@ -759,6 +766,7 @@ def test_contact_search_tags_results_cat_companies_country(dbsession):
     user = _make_user(dbsession, "contstrccountry")
     tag = Tag(name="CoCntryTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CoCntryCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CoCntryCont", company=co)
@@ -784,6 +792,7 @@ def test_contact_search_tags_results_cat_companies_subdivision(dbsession):
     user = _make_user(dbsession, "contstrccsub")
     tag = Tag(name="CoSubTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CoSubCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CoSubCont", company=co)
@@ -808,6 +817,7 @@ def test_contact_search_tags_results_cat_projects_country(dbsession):
     user = _make_user(dbsession, "contstrpjcntry")
     tag = Tag(name="PjCntryTag")
     tag.created_by = user
+    dbsession.add(tag)
     proj = _make_project(dbsession, user, "PjCntryProj")
     tag.projects.append(proj)
     _make_contact(dbsession, user, "PjCntryCont", project=proj)
@@ -833,6 +843,7 @@ def test_contact_search_tags_results_cat_projects_subdivision(dbsession):
     user = _make_user(dbsession, "contstrpjsub")
     tag = Tag(name="PjSubTag")
     tag.created_by = user
+    dbsession.add(tag)
     proj = _make_project(dbsession, user, "PjSubProj")
     tag.projects.append(proj)
     _make_contact(dbsession, user, "PjSubCont", project=proj)
@@ -857,6 +868,7 @@ def test_contact_search_tags_results_no_cat_country(dbsession):
     user = _make_user(dbsession, "contstrnccntry")
     tag = Tag(name="NcCntryTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "NcCntryCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "NcCntryCont", company=co)
@@ -880,6 +892,7 @@ def test_contact_search_tags_results_no_cat_subdivision(dbsession):
     user = _make_user(dbsession, "contstrncsub")
     tag = Tag(name="NcSubTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "NcSubCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "NcSubCont", company=co)
@@ -903,6 +916,7 @@ def test_contact_search_tags_results_color_filter(dbsession):
     user = _make_user(dbsession, "contstrcolor")
     tag = Tag(name="ColorFTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "ColorFCo")
     tag.companies.append(co)
     c = _make_contact(dbsession, user, "ColorFCont", company=co)
@@ -927,6 +941,7 @@ def test_contact_search_tags_results_name_role_phone_email(dbsession):
     user = _make_user(dbsession, "contstrnrpe")
     tag = Tag(name="NRPETag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "NRPECo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "NRPECont", company=co)
@@ -953,6 +968,7 @@ def test_contact_search_tags_results_city_desc_companies(dbsession):
     user = _make_user(dbsession, "contstrcdesc")
     tag = Tag(name="CDescTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CDescCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CDescCont", company=co)
@@ -979,6 +995,7 @@ def test_contact_search_tags_results_city_no_category_desc(dbsession):
     user = _make_user(dbsession, "contstrcncd")
     tag = Tag(name="CNcdTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CNcdCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CNcdCont", company=co)
@@ -1003,6 +1020,7 @@ def test_contact_search_tags_results_category_name_desc(dbsession):
     user = _make_user(dbsession, "contstrcnmd")
     tag = Tag(name="CNmdTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CNmdCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CNmdCont", company=co)
@@ -1028,6 +1046,7 @@ def test_contact_search_tags_results_default_sort(dbsession):
     user = _make_user(dbsession, "contstrdefsrt")
     tag = Tag(name="DefSrtTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "DefSrtCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "DefSrtCont", company=co)
@@ -1127,6 +1146,7 @@ def test_contact_search_tags_results_bulk_select(dbsession):
     user = _make_user(dbsession, "contstrbulk")
     tag = Tag(name="BulkSelTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "BulkSelCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "BulkSelCont", company=co)
@@ -1180,6 +1200,7 @@ def test_contact_search_target_invalid(dbsession):
     user = _make_user(dbsession, "conttarginv")
     tag = Tag(name="TargInvTag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "TargInvCo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "TargInvCont", company=co)
@@ -1326,6 +1347,7 @@ def test_contact_search_tags_sort_city_projects_desc(dbsession):
     user = _make_user(dbsession, "contstcitypd")
     tag = Tag(name="CityPDTag")
     tag.created_by = user
+    dbsession.add(tag)
     proj = _make_project(dbsession, user, "CityPDProj")
     tag.projects.append(proj)
     _make_contact(dbsession, user, "CityPDCont", project=proj)
@@ -1352,6 +1374,7 @@ def test_contact_search_tags_sort_city_companies_asc(dbsession):
     user = _make_user(dbsession, "contstcityca")
     tag = Tag(name="CityCATag")
     tag.created_by = user
+    dbsession.add(tag)
     co = _make_company(dbsession, user, "CityCACo")
     tag.companies.append(co)
     _make_contact(dbsession, user, "CityCACont", company=co)
