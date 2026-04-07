@@ -516,16 +516,6 @@ class UserView:
                             self._resolve_row_color(project.color, contact.color)
                         )
 
-                if not tag.projects:
-                    rows.append(
-                        [
-                            *empty_contact,
-                            tag.name,
-                            *([""] * 10),
-                            "",
-                        ]
-                    )
-                    row_colors.append("")
                 continue
 
             for company in tag.companies:
@@ -1734,17 +1724,6 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
-        elif _sort == "category_name":
-            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
-            relation_sort = func.coalesce(Project.name, Company.name)
-            if _order == "asc":
-                stmt = stmt.order_by(
-                    polish_sort_expression(relation_sort).asc(), Contact.id
-                )
-            elif _order == "desc":
-                stmt = stmt.order_by(
-                    polish_sort_expression(relation_sort).desc(), Contact.id
-                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
@@ -3389,17 +3368,6 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
-        elif _sort == "category_name":
-            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
-            relation_sort = func.coalesce(Project.name, Company.name)
-            if _order == "asc":
-                stmt = stmt.order_by(
-                    polish_sort_expression(relation_sort).asc(), Contact.id
-                )
-            elif _order == "desc":
-                stmt = stmt.order_by(
-                    polish_sort_expression(relation_sort).desc(), Contact.id
-                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)

@@ -246,9 +246,5 @@ class GoogleContactsCsvImporter:
             color="",
         )
         contact.created_by = self.identity
-
-        if contact not in company.contacts:
-            company.contacts.append(contact)
-            return True
-
-        return False
+        company.contacts.append(contact)
+        return True
