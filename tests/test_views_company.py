@@ -1,9 +1,11 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 import transaction
+from pyramid.httpexceptions import HTTPSeeOther
 from webob.multidict import MultiDict
 
+import marker.forms.ts
 from marker.models.association import Activity
 from marker.models.comment import Comment
 from marker.models.company import Company
@@ -14,6 +16,14 @@ from marker.models.user import User
 from marker.models.user import User as MarkerUser
 from marker.views.company import CompanyView
 from tests.conftest import DummyRequestWithIdentity
+
+
+@pytest.fixture(autouse=True)
+def patch_translationstring_str(monkeypatch):
+    monkeypatch.setattr(
+        marker.forms.ts.TranslationString, "__str__", lambda self: self.msg
+    )
+    yield
 
 
 def test_company_all_route_coverage(dbsession):
@@ -1896,3 +1906,1000 @@ def test_add_ai_branches(dbsession):
     view = CompanyView(request)
     result = view.companies_stars()
     assert "paginator" in result
+
+
+# ===========================================================================
+# Extended coverage tests for remaining uncovered lines
+# ===========================================================================
+
+
+def _co_request(dbsession, user, company=None, method="GET", params=None, post=None):
+    """Helper to create a properly configured request for company view tests."""
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = user
+    request.method = method
+    request.GET = MultiDict(params or {})
+    request.POST = MultiDict(post or {})
+    request.params = MultiDict(params or {})
+    request.locale_name = "en"
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/company"
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.response.headers = {}
+    request.context = MagicMock()
+    if company:
+        request.context.company = company
+    request.matchdict = {}
+    request.matched_route = MagicMock()
+    request.matched_route.name = "company_view"
+    request.environ = {}
+    request.environ["webob._parsed_get_vars"] = (MultiDict(params or {}), MultiDict())
+    request.environ["webob._parsed_post_vars"] = (MultiDict(post or {}), MultiDict())
+    request.environ["webob._parsed_params_vars"] = (
+        MultiDict(params or {}),
+        MultiDict(),
+    )
+    request.path_qs = "/company"
+    request.query_string = ""
+    request.referrer = "/home"
+    request.headers = {}
+    return request
+
+
+def _co_user(dbsession, name="couser"):
+    user = User(
+        name=name, fullname="U", email=f"{name}@e.com", role="admin", password="pw"
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    return user
+
+
+def _co_company(dbsession, user, name="TestCo"):
+    company = Company(
+        name=name,
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="http://x.com",
+        color="",
+        NIP="1234",
+        REGON="5678",
+        KRS="9012",
+    )
+    company.created_by = user
+    dbsession.add(company)
+    dbsession.flush()
+    return company
+
+
+# --- all() NIP/REGON/KRS filters ---
+
+
+def test_company_all_nip_regon_krs_filters(dbsession):
+    user = _co_user(dbsession, "conipfilter")
+    _co_company(dbsession, user, "NIPCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, params={"NIP": "1234", "REGON": "5678", "KRS": "9012"}
+    )
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["NIP"] == "1234"
+    assert result["q"]["REGON"] == "5678"
+    assert result["q"]["KRS"] == "9012"
+
+
+def test_company_all_comments_desc(dbsession):
+    user = _co_user(dbsession, "cocmtdesc")
+    company = _co_company(dbsession, user, "CmtDescCo")
+    comment = Comment(comment="c")
+    comment.created_by = user
+    company.comments.append(comment)
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"sort": "comments", "order": "desc"})
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["sort"] == "comments"
+
+
+def test_company_all_sort_name_desc(dbsession):
+    user = _co_user(dbsession, "conamedesc")
+    _co_company(dbsession, user, "NameDescCo")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"sort": "name", "order": "desc"})
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["order"] == "desc"
+
+
+# --- view() tag/contact desc ordering ---
+
+
+def test_company_view_tags_desc(dbsession):
+    user = _co_user(dbsession, "coviewtagdesc")
+    company = _co_company(dbsession, user, "ViewTagDescCo")
+    tag = Tag(name="CoViewTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        params={"sort": "name", "order": "desc"},
+    )
+    request.matched_route.name = "company_tags"
+    view = CompanyView(request)
+    result = view.view()
+    assert "tags" in result
+
+
+def test_company_view_contacts_desc(dbsession):
+    user = _co_user(dbsession, "coviewcontdesc")
+    company = _co_company(dbsession, user, "ViewContDescCo")
+    contact = Contact(name="CoViewContact", role="", phone="", email="", color="")
+    contact.created_by = user
+    contact.company = company
+    dbsession.add(contact)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        params={"sort": "name", "order": "desc"},
+    )
+    request.matched_route.name = "company_contacts"
+    view = CompanyView(request)
+    result = view.view()
+    assert "contacts" in result
+
+
+# --- similar() sort branches ---
+
+
+def test_company_similar_sort_stars(dbsession):
+    user = _co_user(dbsession, "cosimstars")
+    company = _co_company(dbsession, user, "SimStarsCo")
+    tag = Tag(name="CoSimStarTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    c2 = _co_company(dbsession, user, "SimStarsCo2")
+    c2.tags.append(tag)
+    user.companies_stars.append(c2)
+    transaction.commit()
+    for order in ("asc", "desc"):
+        request = _co_request(
+            dbsession,
+            user,
+            company=company,
+            params={"sort": "stars", "order": order},
+        )
+        view = CompanyView(request)
+        result = view.similar()
+        assert result["q"]["sort"] == "stars"
+
+
+def test_company_similar_sort_comments(dbsession):
+    user = _co_user(dbsession, "cosimcmts")
+    company = _co_company(dbsession, user, "SimCmtsCo")
+    tag = Tag(name="CoSimCmtTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    c2 = _co_company(dbsession, user, "SimCmtsCo2")
+    c2.tags.append(tag)
+    comment = Comment(comment="c")
+    comment.created_by = user
+    c2.comments.append(comment)
+    transaction.commit()
+    for order in ("asc", "desc"):
+        request = _co_request(
+            dbsession,
+            user,
+            company=company,
+            params={"sort": "comments", "order": order},
+        )
+        view = CompanyView(request)
+        result = view.similar()
+        assert result["q"]["sort"] == "comments"
+
+
+def test_company_similar_sort_generic(dbsession):
+    user = _co_user(dbsession, "cosimgen")
+    company = _co_company(dbsession, user, "SimGenCo")
+    tag = Tag(name="CoSimGenTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    c2 = _co_company(dbsession, user, "SimGenCo2")
+    c2.tags.append(tag)
+    transaction.commit()
+    for order in ("asc", "desc"):
+        request = _co_request(
+            dbsession,
+            user,
+            company=company,
+            params={"sort": "created_at", "order": order},
+        )
+        view = CompanyView(request)
+        result = view.similar()
+        assert result["q"]["sort"] == "created_at"
+
+
+def test_company_similar_invalid_sort_order(dbsession):
+    user = _co_user(dbsession, "cosimimv")
+    company = _co_company(dbsession, user, "SimInvCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        params={"sort": "invalid", "order": "invalid"},
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert result["q"]["sort"] == "shared_tags"
+    assert result["q"]["order"] == "desc"
+
+
+def test_company_similar_with_results(dbsession):
+    user = _co_user(dbsession, "cosimres")
+    company = _co_company(dbsession, user, "SimResCo")
+    tag = Tag(name="CoSimResTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    c2 = _co_company(dbsession, user, "SimResCo2")
+    c2.tags.append(tag)
+    transaction.commit()
+    request = _co_request(dbsession, user, company=company)
+    view = CompanyView(request)
+    result = view.similar()
+    assert "shared_tag_counts" in result
+
+
+# --- add() query string pre-population and location ---
+
+
+@patch("marker.views.company.location", return_value=None)
+def test_company_add_get_query_string(mock_loc, dbsession):
+    user = _co_user(dbsession, "coaddqs")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="GET",
+        post={},
+        params={"name": "PrePop", "city": "W", "country": "PL"},
+    )
+    request.query_string = "name=PrePop"
+    view = CompanyView(request)
+    result = view.add()
+    assert "form" in result
+    assert result["form"].name.data == "PrePop"
+
+
+@patch("marker.views.company.location", return_value={"lat": 50.0, "lon": 20.0})
+def test_company_add_post_with_location(mock_loc, dbsession):
+    user = _co_user(dbsession, "coaddloc")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="POST",
+        post={
+            "name": "LocAddCo",
+            "street": "S",
+            "postcode": "",
+            "city": "C",
+            "subdivision": "",
+            "country": "",
+            "website": "",
+            "color": "",
+            "NIP": "",
+            "REGON": "",
+            "KRS": "",
+        },
+    )
+    view = CompanyView(request)
+    result = view.add()
+    assert isinstance(result, HTTPSeeOther)
+
+
+# --- edit() with location ---
+
+
+@patch("marker.views.company.location", return_value={"lat": 50.0, "lon": 20.0})
+def test_company_edit_post_with_location(mock_loc, dbsession):
+    user = _co_user(dbsession, "coeditloc")
+    company = _co_company(dbsession, user, "EditLocCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        method="POST",
+        post={
+            "name": "EditLocCo",
+            "street": "New St",
+            "postcode": "",
+            "city": "Krakow",
+            "subdivision": "",
+            "country": "PL",
+            "website": "",
+            "color": "",
+            "NIP": "",
+            "REGON": "",
+            "KRS": "",
+        },
+    )
+    view = CompanyView(request)
+    result = view.edit()
+    assert isinstance(result, HTTPSeeOther)
+
+
+# --- search() POST ---
+
+
+def test_company_search_post(dbsession):
+    user = _co_user(dbsession, "cosearchpost")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="POST",
+        post={
+            "name": "SearchCo",
+            "subdivision": "",
+            "country": "",
+            "color": "",
+        },
+    )
+    view = CompanyView(request)
+    result = view.search()
+    assert isinstance(result, HTTPSeeOther)
+
+
+# --- add_project POST success ---
+
+
+def test_company_add_project_post_success(dbsession):
+    user = _co_user(dbsession, "coaddprojsuc")
+    company = _co_company(dbsession, user, "AddProjSucCo")
+    project = Project(
+        name="AddProjSucProject",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+    dbsession.add(project)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        method="POST",
+        post={
+            "name": "AddProjSucProject",
+            "stage": "",
+            "role": "",
+        },
+    )
+    view = CompanyView(request)
+    result = view.add_project()
+    assert isinstance(result, HTTPSeeOther)
+
+
+# --- activity_edit POST success ---
+
+
+def test_company_activity_edit_post_success(dbsession):
+    user = _co_user(dbsession, "coacteditsuc")
+    company = _co_company(dbsession, user, "ActEditSucCo")
+    project = Project(
+        name="ActEditSucProj",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+    dbsession.add(project)
+    dbsession.flush()
+    activity = Activity(role="investor", stage="")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        method="POST",
+        post={
+            "stage": "",
+            "role": "",
+        },
+    )
+    request.matchdict = {"company_id": str(company.id), "project_id": str(project.id)}
+    view = CompanyView(request)
+    result = view.company_activity_edit()
+    assert isinstance(result, HTTPSeeOther)
+
+
+# --- activity_unlink success ---
+
+
+def test_company_activity_unlink_success(dbsession):
+    user = _co_user(dbsession, "coactunlnksuc")
+    company = _co_company(dbsession, user, "ActUnlnkSucCo")
+    project = Project(
+        name="ActUnlnkSucProj",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+    dbsession.add(project)
+    dbsession.flush()
+    activity = Activity(role="investor", stage="")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+    co_id = company.id
+    proj_id = project.id
+    transaction.commit()
+    request = _co_request(dbsession, user, company=company, method="POST")
+    request.matchdict = {"company_id": str(co_id), "project_id": str(proj_id)}
+    view = CompanyView(request)
+    result = view.activity_unlink()
+    assert result == ""
+
+
+# --- add_ai() POST branches ---
+
+
+@patch("marker.views.company.location_details", return_value={"lat": 1, "lon": 2})
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "NewAICo"},
+)
+def test_company_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
+    user = _co_user(dbsession, "coaddaihtmx")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert result.status_code == 200
+
+
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    side_effect=Exception("Error Response: " + "x" * 300),
+)
+def test_company_add_ai_post_error_long(mock_autofill, dbsession):
+    user = _co_user(dbsession, "coaddaierr")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://fail.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert result.status_code is not None
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "ExistingAICo"},
+)
+def test_company_add_ai_existing_company(mock_autofill, mock_geo, dbsession):
+    user = _co_user(dbsession, "coaddaiexist")
+    _co_company(dbsession, user, "ExistingAICo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://existing.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "ExistHTMXCo"},
+)
+def test_company_add_ai_existing_company_htmx(mock_autofill, mock_geo, dbsession):
+    user = _co_user(dbsession, "coaddaiexhtmx")
+    _co_company(dbsession, user, "ExistHTMXCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://existhtmx.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert result.status_code == 200
+
+
+# ===========================================================================
+# Phase 2 – remaining company.py coverage gaps
+# ===========================================================================
+
+
+def test_company_all_invalid_view_mode(dbsession):
+    user = _co_user(dbsession, "coinvvm")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"view": "INVALID"})
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["view_mode"] == "companies"
+
+
+def test_company_all_filter_tags(dbsession):
+    user = _co_user(dbsession, "cofilttag")
+    co = _co_company(dbsession, user, "CoFiltTagCo")
+    tag = Tag(name="CoFiltTag")
+    tag.created_by = user
+    co.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"tag": "CoFiltTag"})
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert "CoFiltTag" in result["q"]["tag"]
+
+
+def test_company_all_filter_website(dbsession):
+    user = _co_user(dbsession, "cofiltws")
+    _co_company(dbsession, user, "CoFiltWsCo")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"website": "http://x"})
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["website"] == "http://x"
+
+
+def test_company_all_contacts_view_mode(dbsession):
+    user = _co_user(dbsession, "cocontvm")
+    co = _co_company(dbsession, user, "CoContVmCo")
+    tag = Tag(name="CoContVmTag")
+    tag.created_by = user
+    co.tags.append(tag)
+    dbsession.add(tag)
+    c = Contact(name="CoContVmCont", role="r", phone="1", email="x@e.com", color="")
+    c.created_by = user
+    c.company = co
+    dbsession.add(c)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        params={
+            "tag": "CoContVmTag",
+            "view": "contacts",
+        },
+    )
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["view_mode"] == "contacts"
+
+
+def test_company_all_sort_comments_asc(dbsession):
+    user = _co_user(dbsession, "cocmtasc")
+    co = _co_company(dbsession, user, "CoCmtAscCo")
+    cmt = Comment(comment="test")
+    cmt.created_by = user
+    cmt.company_id = co.id
+    dbsession.add(cmt)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        params={
+            "sort": "comments",
+            "order": "asc",
+        },
+    )
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["sort"] == "comments"
+
+
+def test_company_all_bulk_select(dbsession):
+    user = _co_user(dbsession, "cobulksel")
+    _co_company(dbsession, user, "CoBulkSelCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", params={"_select_all": "1", "checked": "1"}
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result is request.response
+
+
+def test_company_view_projects_route(dbsession):
+    user = _co_user(dbsession, "coviewpj")
+    co = _co_company(dbsession, user, "CoViewPjCo")
+    co_id = co.id
+    transaction.commit()
+    co = dbsession.get(Company, co_id)
+    request = _co_request(dbsession, user, company=co)
+    request.matched_route.name = "company_projects"
+    view = CompanyView(request)
+    result = view.view()
+    assert "company" in result
+
+
+def test_company_view_bulk_select(dbsession):
+    user = _co_user(dbsession, "coviewbulk")
+    co = _co_company(dbsession, user, "CoViewBulkCo")
+    co_id = co.id
+    transaction.commit()
+    co = dbsession.get(Company, co_id)
+    request = _co_request(
+        dbsession,
+        user,
+        company=co,
+        method="POST",
+        params={"_select_all": "1", "checked": "1"},
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    request.matched_route.name = "company_tags"
+    view = CompanyView(request)
+    result = view.view()
+    assert result is request.response
+
+
+def test_company_map(dbsession):
+    user = _co_user(dbsession, "comap")
+    co = _co_company(dbsession, user, "CoMapCo")
+    co.latitude = 50.0
+    co.longitude = 20.0
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        params={
+            "color": "red",
+            "country": "PL",
+        },
+    )
+    request.matched_route.name = "company_map"
+    view = CompanyView(request)
+    result = view.map()
+    assert "url" in result
+
+
+# --- Cover line 307: all() desc ordering for standard sort ---
+
+
+def test_company_all_name_asc(dbsession):
+    user = _co_user(dbsession, "conmasc")
+    _co_company(dbsession, user, "CoNmAscCo")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"sort": "name", "order": "asc"})
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["order"] == "asc"
+
+
+# --- Cover line 464: view() contacts asc ordering ---
+
+
+def test_company_view_contacts_asc(dbsession):
+    user = _co_user(dbsession, "covcasc")
+    co = _co_company(dbsession, user, "CoVcAscCo")
+    c = Contact(name="CoVcAscCont", role="r", phone="1", email="x@e.com", color="")
+    c.created_by = user
+    c.company = co
+    dbsession.add(c)
+    transaction.commit()
+    request = _co_request(dbsession, user, company=co, params={"order": "asc"})
+    request.matched_route.name = "company_contacts"
+    view = CompanyView(request)
+    result = view.view()
+    assert "contacts" in result
+
+
+# --- Cover lines 508-509: view() bulk select on default route (no bulk_stmt) ---
+
+
+def test_company_view_default_route_bulk_select(dbsession):
+    """Cover lines 508-509: set_select_all_state + htmx_refresh when bulk_stmt is None."""
+    user = _co_user(dbsession, "covdefbs")
+    co = _co_company(dbsession, user, "CoVDefBsCo")
+    co_id = co.id
+    transaction.commit()
+    co = dbsession.get(Company, co_id)
+    request = _co_request(
+        dbsession,
+        user,
+        company=co,
+        method="POST",
+        params={"_select_all": "1", "checked": "true"},
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "true"})
+    request.matched_route.name = "company_view"
+    view = CompanyView(request)
+    result = view.view()
+    assert result is request.response
+
+
+# --- Cover lines 508-509 via handle_bulk_selection on contacts route ---
+
+
+def test_company_view_contacts_bulk_select(dbsession):
+    user = _co_user(dbsession, "covcbs")
+    co = _co_company(dbsession, user, "CoVcBsCo")
+    c = Contact(name="CoVcBsCont", role="r", phone="1", email="x@e.com", color="")
+    c.created_by = user
+    c.company = co
+    dbsession.add(c)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=co,
+        method="POST",
+        params={"_select_all": "1", "checked": "1"},
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    request.matched_route.name = "company_contacts"
+    view = CompanyView(request)
+    result = view.view()
+    assert result is request.response
+
+
+# --- Cover line 1085: similar() shared_tags desc ---
+
+
+def test_company_similar_shared_tags_desc(dbsession):
+    user = _co_user(dbsession, "cosimstd")
+    co1 = _co_company(dbsession, user, "CoSimStdCo1")
+    co2 = _co_company(dbsession, user, "CoSimStdCo2")
+    tag = Tag(name="CoSimStdTag")
+    tag.created_by = user
+    co1.tags.append(tag)
+    co2.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=co1,
+        params={
+            "sort": "shared_tags",
+            "order": "desc",
+        },
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert "paginator" in result
+
+
+# --- Cover line 1483: search POST ---
+
+
+def test_company_search_post(dbsession):
+    user = _co_user(dbsession, "cosrchpost")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="POST",
+        post={
+            "name": "Test",
+            "country": "",
+            "color": "",
+            "subdivision": "",
+        },
+    )
+    request.params["tag"] = "SomeTag"
+    view = CompanyView(request)
+    result = view.search()
+    assert isinstance(result, HTTPSeeOther)
+
+
+def test_company_similar_shared_tags_asc(dbsession):
+    """Cover line 1085: similar() shared_tags asc."""
+    user = _co_user(dbsession, "cosimsta")
+    co1 = _co_company(dbsession, user, "CoSimStaCo1")
+    co2 = _co_company(dbsession, user, "CoSimStaCo2")
+    tag = Tag(name="CoSimStaTag")
+    tag.created_by = user
+    co1.tags.append(tag)
+    co2.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=co1,
+        params={
+            "sort": "shared_tags",
+            "order": "asc",
+        },
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert "paginator" in result
+
+
+def test_company_similar_empty_tag_name(dbsession):
+    """Cover line 1166: skip tags with empty name in similar tag display."""
+    user = _co_user(dbsession, "cosimemptytag")
+    co1 = _co_company(dbsession, user, "CoSimEmptyTagCo1")
+    co2 = _co_company(dbsession, user, "CoSimEmptyTagCo2")
+    empty_tag = Tag(name="")
+    empty_tag.created_by = user
+    co1.tags.append(empty_tag)
+    co2.tags.append(empty_tag)
+    dbsession.add(empty_tag)
+    valid_tag = Tag(name="CoSimValidTag")
+    valid_tag.created_by = user
+    co1.tags.append(valid_tag)
+    co2.tags.append(valid_tag)
+    dbsession.add(valid_tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=co1,
+        params={
+            "sort": "shared_tags",
+            "order": "desc",
+        },
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert "paginator" in result
+
+
+def test_company_unlink_tag_not_found(dbsession):
+    """Cover line 1515: unlink_tag with non-existent tag."""
+    user = _co_user(dbsession, "counlinktagnf")
+    co = _co_company(dbsession, user, "CoUnlinkTagNfCo")
+    co_id = co.id
+    transaction.commit()
+    request = _co_request(dbsession, user, company=co, method="POST")
+    request.matchdict = {"company_id": str(co_id), "tag_id": "999999"}
+    view = CompanyView(request)
+    with pytest.raises(HTTPNotFound):
+        view.unlink_tag()
+
+
+def test_company_activity_edit_project_not_found(dbsession):
+    """Cover line 1593: activity_edit with non-existent project."""
+    user = _co_user(dbsession, "coacteditnf")
+    co = _co_company(dbsession, user, "CoActEditNfCo")
+    co_id = co.id
+    transaction.commit()
+    request = _co_request(dbsession, user, company=co)
+    request.matchdict = {"company_id": str(co_id), "project_id": "999999"}
+    view = CompanyView(request)
+    with pytest.raises(HTTPNotFound):
+        view.company_activity_edit()
+
+
+def test_company_activity_unlink_project_not_found(dbsession):
+    """Cover line 1644: activity_unlink with non-existent project."""
+    user = _co_user(dbsession, "coactunlinknf")
+    co = _co_company(dbsession, user, "CoActUnlinkNfCo")
+    co_id = co.id
+    transaction.commit()
+    request = _co_request(dbsession, user, company=co, method="POST")
+    request.matchdict = {"company_id": str(co_id), "project_id": "999999"}
+    view = CompanyView(request)
+    with pytest.raises(HTTPNotFound):
+        view.activity_unlink()
+
+
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    side_effect=Exception("API failure"),
+)
+def test_company_add_ai_error_no_htmx(mock_autofill, dbsession):
+    """Cover line 1700: add_ai error without HX-Request header."""
+    user = _co_user(dbsession, "coaddaierr")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="POST",
+        post={
+            "website": "http://example.com",
+        },
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert "form" in result
+
+
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    side_effect=Exception("A" * 600),
+)
+def test_company_add_ai_error_htmx(mock_autofill, dbsession):
+    """Cover line 1685: add_ai error with long message + HX-Request header."""
+    user = _co_user(dbsession, "coaddaihtmx")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="POST",
+        post={
+            "website": "http://example.com",
+        },
+    )
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert result is request.response
+
+
+@patch("marker.views.company.location", return_value={"lat": 50.0, "lon": 20.0})
+def test_company_add_post_with_tags(mock_loc, dbsession):
+    """Cover lines 1258-1265: add() POST with tags."""
+    user = _co_user(dbsession, "coaddtags")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        method="POST",
+        post={
+            "name": "CoAddTagsCo",
+            "street": "S",
+            "postcode": "",
+            "city": "C",
+            "subdivision": "",
+            "country": "",
+            "website": "",
+            "color": "",
+            "NIP": "",
+            "REGON": "",
+            "KRS": "",
+        },
+    )
+    request.params["tag"] = "NewTestTag"
+    view = CompanyView(request)
+    result = view.add()
+    assert isinstance(result, HTTPSeeOther)

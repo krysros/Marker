@@ -98,6 +98,167 @@ def test_count_view_returns_int(dummy_request):
     assert isinstance(result, int)
 
 
+# ===========================================================================
+# Database-backed tests for uncovered branches
+# ===========================================================================
+
+import transaction
+
+import marker.forms.ts
+from marker.models.company import Company
+from marker.models.project import Project
+from marker.models.user import User
+from tests.conftest import DummyRequestWithIdentity
+
+
+@pytest.fixture(autouse=True)
+def patch_ts(monkeypatch):
+    monkeypatch.setattr(
+        marker.forms.ts.TranslationString, "__str__", lambda self: self.msg
+    )
+    yield
+
+
+def _req(dbsession, user, params=None):
+    request = DummyRequestWithIdentity()
+    request.dbsession = dbsession
+    request.identity = MagicMock(name="tester")
+    request.method = "GET"
+    request.GET = MultiDict(params or {})
+    request.POST = MultiDict()
+    request.params = MultiDict(params or {})
+    request.locale_name = "en"
+    request.translate = lambda x: x
+    request.route_url = lambda *a, **kw: "/comment"
+    request.session = MagicMock()
+    request.response = MagicMock()
+    request.context = MagicMock()
+    request.matchdict = {}
+    request.matched_route = MagicMock()
+    request.matched_route.name = "comment_all"
+    request.environ = {}
+    request.environ["webob._parsed_get_vars"] = (MultiDict(params or {}), MultiDict())
+    request.environ["webob._parsed_post_vars"] = (MultiDict(), MultiDict())
+    request.environ["webob._parsed_params_vars"] = (
+        MultiDict(params or {}),
+        MultiDict(),
+    )
+    request.path_qs = "/comment"
+    request.query_string = ""
+    request.referrer = "/home"
+    request.headers = {}
+    return request
+
+
+def _user(dbsession, name="cmtuser"):
+    user = User(
+        name=name,
+        fullname="Test User",
+        email=f"{name}@e.com",
+        role="admin",
+        password="pw",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    return user
+
+
+def test_comment_all_filter_text(dbsession):
+    user = _user(dbsession)
+    co = Company(
+        name="CmtCo",
+        street="S",
+        postcode="00",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    co.created_by = user
+    dbsession.add(co)
+    dbsession.flush()
+    c = Comment(comment="findme_text")
+    c.created_by = user
+    c.company_id = co.id
+    dbsession.add(c)
+    transaction.commit()
+    request = _req(dbsession, user, params={"comment": "findme"})
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["comment"] == "findme"
+
+
+def test_comment_all_category_companies(dbsession):
+    user = _user(dbsession, "cmtcatco")
+    co = Company(
+        name="CmtCatCo",
+        street="S",
+        postcode="00",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    co.created_by = user
+    dbsession.add(co)
+    dbsession.flush()
+    c = Comment(comment="co comment")
+    c.created_by = user
+    c.company_id = co.id
+    dbsession.add(c)
+    transaction.commit()
+    request = _req(dbsession, user, params={"category": "companies"})
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["category"] == "companies"
+
+
+def test_comment_all_category_projects(dbsession):
+    user = _user(dbsession, "cmtcatp")
+    proj = Project(
+        name="CmtCatP",
+        street="S",
+        postcode="00",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    proj.created_by = user
+    dbsession.add(proj)
+    dbsession.flush()
+    c = Comment(comment="proj comment")
+    c.created_by = user
+    c.project_id = proj.id
+    dbsession.add(c)
+    transaction.commit()
+    request = _req(dbsession, user, params={"category": "projects"})
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["category"] == "projects"
+
+
+def test_comment_all_order_asc(dbsession):
+    user = _user(dbsession, "cmtasc")
+    transaction.commit()
+    request = _req(dbsession, user, params={"order": "asc"})
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["order"] == "asc"
+
+
 def test_delete_view_modifies_db_and_sets_header(dummy_request):
     view = CommentView(dummy_request)
     dummy_request.identity = DummyIdentity("user1")
