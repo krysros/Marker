@@ -158,7 +158,7 @@ def test_project_all_filter_stage(dbsession):
     assert result["q"]["stage"] == "started"
 
 
-def test_project_all_filter_delivery_method(dbsession):
+def test_project_all_filter_delivery_method_design_build(dbsession):
     user = _make_user(dbsession, "projdmuser")
     transaction.commit()
     request = _make_request(dbsession, user, params={"delivery_method": "design_build"})
@@ -185,7 +185,7 @@ def test_project_all_filter_status_completed(dbsession):
     assert result["q"]["status"] == "completed"
 
 
-def test_project_all_sort_stars(dbsession):
+def test_project_all_sort_stars_desc(dbsession):
     user = _make_user(dbsession, "projstaruser")
     project = _make_project(dbsession, user, "StarProj")
     user.projects_stars.append(project)
@@ -196,7 +196,7 @@ def test_project_all_sort_stars(dbsession):
     assert result["q"]["sort"] == "stars"
 
 
-def test_project_all_sort_comments(dbsession):
+def test_project_all_sort_comments_basic(dbsession):
     user = _make_user(dbsession, "projcmtalluser")
     project = _make_project(dbsession, user, "CmtAllProj")
     comment = Comment(comment="test")
@@ -224,7 +224,7 @@ def test_project_all_with_tags(dbsession):
     assert "tag" in result["q"]
 
 
-def test_project_all_contacts_view_mode(dbsession):
+def test_project_all_contacts_view_mode_minimal(dbsession):
     user = _make_user(dbsession, "projcontactviewuser")
     project = _make_project(dbsession, user, "ContactViewProj")
     tag = Tag(name="ProjContactTag")
@@ -291,7 +291,7 @@ def test_project_json(dbsession):
 # --- count_* ---
 
 
-def test_project_count_companies(dbsession):
+def test_project_count_companies_basic(dbsession):
     user = _make_user(dbsession, "projcntcouser")
     project = _make_project(dbsession, user, "CntCoProj")
     transaction.commit()
@@ -494,7 +494,7 @@ def test_project_search_get(dbsession):
     assert "form" in result
 
 
-def test_project_search_post(dbsession):
+def test_project_search_post_basic(dbsession):
     user = _make_user(dbsession, "projsearchpostuser")
     transaction.commit()
     post_data = {
@@ -883,7 +883,7 @@ def test_project_json_filters(dbsession):
     assert isinstance(result, list)
 
 
-def test_project_json_deadline(dbsession):
+def test_project_json_deadline_fixed(dbsession):
     user = _make_user(dbsession, "projjsondl")
     project = _make_project(dbsession, user, "JsonDlProj")
     project.deadline = datetime.datetime(2030, 1, 1)
@@ -1019,7 +1019,7 @@ def test_project_view_tags_invalid_sort(dbsession):
 # --- similar() edge cases ---
 
 
-def test_project_similar_status_completed(dbsession):
+def test_project_similar_status_completed_basic(dbsession):
     """Lines 879, 882: status=completed filter."""
     user = _make_user(dbsession, "projsimcomp")
     project = _make_project(dbsession, user, "SimCompProj")
@@ -1492,7 +1492,7 @@ def test_project_all_filter_name(dbsession):
     assert result["q"]["name"] == "ProjFiltName"
 
 
-def test_project_all_filter_delivery_method(dbsession):
+def test_project_all_filter_delivery_method_general_contractor(dbsession):
     user = _make_user(dbsession, "projfltdm")
     proj = _make_project(dbsession, user, "ProjFltDmP")
     proj.delivery_method = "general_contractor"
@@ -1520,7 +1520,7 @@ def test_project_all_filter_deadline(dbsession):
     assert result["q"]["deadline"] == deadline_str
 
 
-def test_project_all_sort_stars(dbsession):
+def test_project_all_sort_stars_asc(dbsession):
     user = _make_user(dbsession, "projsrtstars")
     proj = _make_project(dbsession, user, "ProjSrtStarsP")
     user.projects_stars.append(proj)
@@ -1538,7 +1538,7 @@ def test_project_all_sort_stars(dbsession):
     assert result["q"]["sort"] == "stars"
 
 
-def test_project_all_sort_comments(dbsession):
+def test_project_all_sort_comments_with_project_id(dbsession):
     from marker.models.comment import Comment
 
     user = _make_user(dbsession, "projsrtcmts")
@@ -1561,7 +1561,7 @@ def test_project_all_sort_comments(dbsession):
     assert result["q"]["sort"] == "comments"
 
 
-def test_project_all_contacts_view_mode(dbsession):
+def test_project_all_contacts_view_mode_full_attrs(dbsession):
     from marker.models.contact import Contact
 
     user = _make_user(dbsession, "projcontvm")
@@ -1653,7 +1653,7 @@ def test_project_view_bulk_select_default_route(dbsession):
 # --- Cover lines 879, 882: similar() status=completed ---
 
 
-def test_project_similar_status_completed(dbsession):
+def test_project_similar_status_completed_with_paginator(dbsession):
     import datetime
 
     user = _make_user(dbsession, "projsimcomp")
@@ -1973,7 +1973,7 @@ def test_project_similar_empty_tag_name(dbsession):
     assert "paginator" in result
 
 
-def test_project_search_post(dbsession):
+def test_project_search_post_with_tag(dbsession):
     user = _make_user(dbsession, "projsrchpost")
     transaction.commit()
     request = _make_request(
@@ -2041,7 +2041,7 @@ def test_project_json_stage_delivery(dbsession):
     assert isinstance(result, list)
 
 
-def test_project_json_deadline(dbsession):
+def test_project_json_deadline_relative(dbsession):
     import datetime
 
     user = _make_user(dbsession, "projjsondl")
@@ -2056,7 +2056,7 @@ def test_project_json_deadline(dbsession):
     assert isinstance(result, list)
 
 
-def test_project_count_companies(dbsession):
+def test_project_count_companies_with_data(dbsession):
     user = _make_user(dbsession, "projcntco")
     proj = _make_project(dbsession, user, "ProjCntCoP")
     co = Company(
@@ -2107,7 +2107,7 @@ def test_project_all_stars_desc(dbsession):
     assert result["q"]["order"] == "desc"
 
 
-def test_project_all_contacts_view_mode(dbsession):
+def test_project_all_contacts_view_mode_alt_tag(dbsession):
     user = _make_user(dbsession, "projcontvm")
     proj = _make_project(dbsession, user, "ProjContVmP")
     tag = Tag(name="ContVmTag")
