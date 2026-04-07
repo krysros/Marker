@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 from webob.multidict import MultiDict
 
-import marker.forms.ts
 from marker.views.subdivision import subdivision_view
 
 

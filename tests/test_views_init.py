@@ -9,12 +9,10 @@ from marker.views import (
     Filter,
     _coerce_bulk_checked,
     _select_all_state_key,
-    contains_ci,
     htmx_refresh_response,
     normalize_ci_value,
     safe_redirect_target,
     set_select_all_state,
-    sort_column,
     update_selected_items,
 )
 

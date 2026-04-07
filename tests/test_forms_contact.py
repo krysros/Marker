@@ -1,4 +1,3 @@
-import pytest
 from webob.multidict import MultiDict
 
 from marker.forms.contact import ContactForm

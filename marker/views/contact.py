@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import delete, func, or_, select
+from sqlalchemy import func, or_, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS

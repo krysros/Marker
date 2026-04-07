@@ -110,7 +110,6 @@ def test_parse_google_contacts_csv_exception():
 def test_importer_add_row_no_company_name(dbsession):
     from marker.models.user import User
     from marker.utils.contact_csv_import import GoogleContactsCsvImporter
-    from tests.conftest import DummyRequestWithIdentity
 
     user = User(
         name="csvnoco", fullname="U", email="csvnoco@e.com", role="admin", password="pw"
@@ -145,7 +144,6 @@ def test_importer_add_row_no_name(dbsession):
 
 
 def test_importer_add_row_success(dbsession):
-    import transaction
 
     from marker.models.user import User
     from marker.utils.contact_csv_import import GoogleContactsCsvImporter

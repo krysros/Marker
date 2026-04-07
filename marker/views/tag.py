@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import delete, func, select
+from sqlalchemy import func, select
 
 from ..forms import (
     CompanyFilterForm,
@@ -39,7 +39,6 @@ from . import (
     clear_selected_rows,
     contains_ci,
     handle_bulk_selection,
-    htmx_refresh_response,
     is_bulk_select_request,
     set_select_all_state,
     sort_column,
