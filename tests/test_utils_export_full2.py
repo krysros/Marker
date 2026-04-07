@@ -81,3 +81,30 @@ def test_response_vcard(monkeypatch):
     assert response.content_type == "text/vcard"
     assert response.charset.lower() == "utf-8"
     assert "attachment; filename=" in response.content_disposition
+
+
+def test_response_xlsx_with_row_color_and_datetime():
+    """Test row_color formatting with datetime value (covers line 127)."""
+    import datetime
+
+    headers = ["Name", "Date"]
+    rows = [["TestCo", datetime.datetime(2024, 1, 15, 10, 30)]]
+    row_colors = ["red"]
+    response = export.response_xlsx(rows, headers, row_colors=row_colors)
+    assert hasattr(response, "body_file")
+    assert len(response.body) > 0
+
+
+def test_response_xlsx_safe_cell_value_custom_type():
+    """Test _safe_cell_value with a custom type (covers line 64)."""
+
+    class CustomObj:
+        def __str__(self):
+            return "custom_value"
+
+    headers = ["Name"]
+    rows = [[CustomObj()]]
+    row_colors = [""]
+    response = export.response_xlsx(rows, headers, row_colors=row_colors)
+    assert hasattr(response, "body_file")
+    assert len(response.body) > 0

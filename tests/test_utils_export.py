@@ -36,3 +36,15 @@ def test_response_xlsx_basic(rows, header_row):
             "application/vnd.openxmlformats-officedocument"
         )
         assert "attachment" in response.content_disposition
+
+
+def test_response_xlsx_datetime_with_row_color():
+    """Cover line 127: datetime cell with a colored row format."""
+    import datetime
+
+    rows = [[datetime.datetime(2024, 1, 15, 12, 0), "text"]]
+    header_row = ["Date", "Name"]
+    row_colors = ["primary"]
+    with patch.object(export, "_", dummy_):
+        response = export.response_xlsx(rows, header_row, row_colors=row_colors)
+        assert response.body
