@@ -55,7 +55,6 @@ def dbengine(app_settings, ini_file):
     alembic_cfg = alembic.config.Config(ini_file)
     Base.metadata.drop_all(bind=engine)
     alembic.command.stamp(alembic_cfg, "base", purge=True)
-    engine.dispose()  # Ensure all connections are closed after tests
 
     # run migrations to initialize the database
     # depending on how we want to initialize the database from scratch
@@ -72,7 +71,9 @@ def dbengine(app_settings, ini_file):
 
 @pytest.fixture(scope="session")
 def app(app_settings, dbengine):
-    return main({}, dbengine=dbengine, **app_settings)
+    app = main({}, dbengine=dbengine, **app_settings)
+
+    yield app
 
 
 @pytest.fixture
@@ -89,7 +90,9 @@ def tm():
 @pytest.fixture
 def dbsession(app, tm):
     session_factory = app.registry["dbsession_factory"]
-    return models.get_tm_session(session_factory, tm)
+    session = models.get_tm_session(session_factory, tm)
+
+    return session
 
 
 @pytest.fixture
