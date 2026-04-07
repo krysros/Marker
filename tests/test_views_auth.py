@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, patch
 
 import transaction
 from pyramid.httpexceptions import (
-    HTTPException,
     HTTPForbidden,
     HTTPNotFound,
     HTTPSeeOther,

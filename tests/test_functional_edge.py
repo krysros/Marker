@@ -1,7 +1,5 @@
 import pytest
-from webtest import TestApp
 
-from marker import main
 
 
 @pytest.mark.usefixtures("testapp")

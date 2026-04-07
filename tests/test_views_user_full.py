@@ -1,7 +1,5 @@
-import pytest
 from pyramid.testing import DummyRequest
 
-from marker.models.user import User
 from marker.views import user as user_views
 
 

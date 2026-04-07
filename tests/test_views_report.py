@@ -5,8 +5,6 @@ from unittest.mock import MagicMock
 import transaction
 from webob.multidict import MultiDict
 
-from marker.models.association import Activity
-from marker.models.comment import Comment
 from marker.models.company import Company
 from marker.models.project import Project
 from marker.models.tag import Tag

@@ -19,7 +19,7 @@ from marker.forms.project import (
     ProjectLinkForm,
 )
 from marker.forms.tag import TagFilterForm, TagForm
-from marker.forms.user import UserFilterForm, UserForm
+from marker.forms.user import UserForm
 
 
 class DummyDBSession:

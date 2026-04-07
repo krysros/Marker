@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import transaction
-from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
+from pyramid.httpexceptions import HTTPSeeOther
 from webob.multidict import MultiDict
 
 import marker.forms.ts

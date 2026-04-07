@@ -3,7 +3,6 @@ import io
 import pytest
 
 from marker.utils.contact_csv_import import (
-    GoogleContactsCsvImporter,
     parse_google_contacts_csv,
 )
 from marker.utils.export import response_xlsx
@@ -27,7 +26,6 @@ def test_parse_google_contacts_csv_integration():
 
 @pytest.mark.integration
 def test_response_xlsx_integration():
-    import types
 
     # Patch Pyramid translation context
     class DummyRequest:

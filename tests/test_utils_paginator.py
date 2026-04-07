@@ -1,4 +1,3 @@
-import pytest
 from sqlalchemy import column, select, table
 
 from marker.utils.paginator import get_paginator
