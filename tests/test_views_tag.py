@@ -124,7 +124,7 @@ def test_tag_all_default(dbsession):
     assert "form" in result
 
 
-def test_tag_all_filter_name(dbsession):
+def test_tag_all_filter_name_unique(dbsession):
     user = _make_user(dbsession, "tagnameuser")
     _make_tag(dbsession, user, "UniqueTagName")
     transaction.commit()
@@ -170,7 +170,7 @@ def test_tag_all_sort_asc(dbsession):
 # --- count() ---
 
 
-def test_tag_count(dbsession):
+def test_tag_count_empty(dbsession):
     user = _make_user(dbsession, "tagcntuser")
     transaction.commit()
     request = _make_request(dbsession, user)
@@ -208,7 +208,7 @@ def test_tag_map_companies(dbsession):
     assert "url" in result
 
 
-def test_tag_map_companies_filters(dbsession):
+def test_tag_map_companies_filters_empty(dbsession):
     user = _make_user(dbsession, "tagmapcofl")
     tag = _make_tag(dbsession, user, "MapCoFlTag")
     transaction.commit()
@@ -283,7 +283,7 @@ def test_tag_json_companies(dbsession):
     assert len(result) >= 1
 
 
-def test_tag_json_companies_bbox(dbsession):
+def test_tag_json_companies_bbox_empty(dbsession):
     user = _make_user(dbsession, "tagjsoncobbox")
     tag = _make_tag(dbsession, user, "JsonCoBboxTag")
     transaction.commit()
@@ -788,7 +788,7 @@ def test_tag_add_project_post(dbsession):
 # ===========================================================================
 
 
-def test_tag_all_filter_name(dbsession):
+def test_tag_all_filter_name_with_data(dbsession):
     user = _make_user(dbsession, "tagfiltname")
     _make_tag(dbsession, user, "TagFiltNameTag")
     transaction.commit()
@@ -845,7 +845,7 @@ def test_tag_all_bulk_select(dbsession):
     assert result is request.response
 
 
-def test_tag_count(dbsession):
+def test_tag_count_with_tag(dbsession):
     user = _make_user(dbsession, "tagcount")
     _make_tag(dbsession, user, "TagCountTag")
     transaction.commit()
@@ -875,7 +875,7 @@ def test_tag_view_with_selection(dbsession):
     assert "tag_pills" in result
 
 
-def test_tag_map_companies_filters(dbsession):
+def test_tag_map_companies_filters_with_data(dbsession):
     user = _make_user(dbsession, "tagmapcofl")
     tag = _make_tag(dbsession, user, "TagMapCoFlTag")
     co = _make_company(dbsession, user, "TagMapCoFlCo")
@@ -984,7 +984,7 @@ def test_tag_json_companies_country(dbsession):
     assert isinstance(result, list)
 
 
-def test_tag_json_companies_bbox(dbsession):
+def test_tag_json_companies_bbox_with_location(dbsession):
     user = _make_user(dbsession, "tagjcbbox")
     tag = _make_tag(dbsession, user, "TagJcBboxTag")
     co = _make_company(dbsession, user, "TagJcBboxCo")
@@ -1242,7 +1242,7 @@ def test_tag_map_projects_stage_delivery(dbsession):
     assert result["q"]["delivery_method"] == "general_contractor"
 
 
-def test_tag_json_companies_bbox(dbsession):
+def test_tag_json_companies_bbox_with_company(dbsession):
     user = _make_user(dbsession, "tagjsoncobbox")
     tag = _make_tag(dbsession, user, "TagJsonCoBboxTag")
     co = _make_company(dbsession, user, "TagJsonCoBboxCo")

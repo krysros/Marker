@@ -2243,7 +2243,7 @@ def test_company_edit_post_with_location(mock_loc, dbsession):
 # --- search() POST ---
 
 
-def test_company_search_post(dbsession):
+def test_company_search_post_basic(dbsession):
     user = _co_user(dbsession, "cosearchpost")
     transaction.commit()
     request = _co_request(
@@ -2718,7 +2718,7 @@ def test_company_similar_shared_tags_desc(dbsession):
 # --- Cover line 1483: search POST ---
 
 
-def test_company_search_post(dbsession):
+def test_company_search_post_with_tag(dbsession):
     user = _co_user(dbsession, "cosrchpost")
     transaction.commit()
     request = _co_request(

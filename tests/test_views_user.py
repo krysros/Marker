@@ -1266,7 +1266,7 @@ def test_user_export_contacts_sort_city(dbsession):
         assert result is not None
 
 
-def test_user_export_contacts_sort_category_name(dbsession):
+def test_user_export_contacts_sort_category_name_companies(dbsession):
     user = _user(dbsession, "expcontcatnam")
     co = _company(dbsession, user, "ExpCatNameCo")
     _contact(dbsession, user, "ExpCatNameCont", company=co)
@@ -2786,7 +2786,7 @@ def test_user_selected_projects_contacts_country_subdivision(dbsession):
     assert isinstance(result, dict)
 
 
-def test_user_selected_projects_contacts_sort_city(dbsession):
+def test_user_selected_projects_contacts_sort_city_related(dbsession):
     """Cover lines 2974: _selected_related_contacts city sort projects."""
     user = _user(dbsession, "tsccityp")
     proj = _project(dbsession, user, "TScCityProj")
@@ -3296,7 +3296,7 @@ def test_user_export_contacts_sort_city_no_category(dbsession):
     assert result is not None
 
 
-def test_user_export_contacts_sort_category_name(dbsession):
+def test_user_export_contacts_sort_category_name_asc(dbsession):
     user = _user(dbsession, "econtcatname")
     co = _company(dbsession, user, "ECCatNmCo")
     _contact(dbsession, user, "ECCatNmCont", company=co)
@@ -3974,7 +3974,7 @@ def test_user_selected_companies_contacts_sort_city(dbsession):
     assert "paginator" in result
 
 
-def test_user_selected_projects_contacts_sort_city(dbsession):
+def test_user_selected_projects_contacts_sort_city_paginator(dbsession):
     """Sort by city for projects scope."""
     user = _user(dbsession, "selpjcontcity")
     proj = _project(dbsession, user, "SelPjContCityP")

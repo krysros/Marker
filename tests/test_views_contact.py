@@ -1082,7 +1082,7 @@ def test_contact_search_tags_results_city_companies_desc(dbsession):
 
 @patch("marker.views.contact.location")
 @patch("marker.views.contact.parse_google_contacts_csv")
-def test_contact_import_csv_success(mock_parse, mock_loc, dbsession):
+def test_contact_import_csv_success_with_location(mock_parse, mock_loc, dbsession):
     mock_loc.return_value = {"lat": 50, "lon": 20}
     user = _make_user(dbsession, "contcsvimp")
     transaction.commit()
@@ -1113,7 +1113,7 @@ def test_contact_import_csv_success(mock_parse, mock_loc, dbsession):
 # --- Cover line 735: contact_import_csv GET ---
 
 
-def test_contact_import_csv_get(dbsession):
+def test_contact_import_csv_get_heading_and_form(dbsession):
     user = _make_user(dbsession, "contcsvget")
     transaction.commit()
     request = _make_request(dbsession, user)
@@ -1232,7 +1232,7 @@ def test_contact_check(dbsession):
 # --- contact_import_csv() ---
 
 
-def test_contact_import_csv_get(dbsession):
+def test_contact_import_csv_get_form(dbsession):
     user = _make_user(dbsession, "contimportget")
     transaction.commit()
     request = _make_request(dbsession, user, method="GET", post={})
@@ -1270,7 +1270,7 @@ def test_contact_import_csv_bad_file(mock_parse, dbsession):
     "marker.views.contact.missing_google_contacts_columns", return_value=["First Name"]
 )
 @patch("marker.views.contact.parse_google_contacts_csv", return_value=([], ["Name"]))
-def test_contact_import_csv_missing_columns(mock_parse, mock_missing, dbsession):
+def test_contact_import_csv_missing_columns_minimal(mock_parse, mock_missing, dbsession):
     user = _make_user(dbsession, "contimportmisscol")
     transaction.commit()
     request = _make_request(dbsession, user, method="POST", post={})
@@ -1284,7 +1284,7 @@ def test_contact_import_csv_missing_columns(mock_parse, mock_missing, dbsession)
 
 @patch("marker.views.contact.missing_google_contacts_columns", return_value=[])
 @patch("marker.views.contact.parse_google_contacts_csv")
-def test_contact_import_csv_success(mock_parse, mock_missing, dbsession):
+def test_contact_import_csv_success_redirect(mock_parse, mock_missing, dbsession):
     rows = [{"First Name": "John", "Last Name": "Doe"}]
     mock_parse.return_value = (iter(rows), ["First Name", "Last Name"])
     user = _make_user(dbsession, "contimportsuccess")
@@ -1375,7 +1375,7 @@ def test_contact_search_tags_sort_city_companies_asc(dbsession):
 
 @patch("marker.views.contact.missing_google_contacts_columns")
 @patch("marker.views.contact.parse_google_contacts_csv")
-def test_contact_import_csv_missing_columns(mock_parse, mock_missing, dbsession):
+def test_contact_import_csv_missing_columns_mocked(mock_parse, mock_missing, dbsession):
     """Cover lines 701-708: CSV import with missing Google Contacts columns."""
     mock_parse.return_value = (iter([{"col": "val"}]), ["col"])
     mock_missing.return_value = ["First Name", "Organization 1 - Name"]
