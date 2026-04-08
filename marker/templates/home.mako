@@ -25,6 +25,7 @@
           ${button.a(icon='folder', color='secondary', url=request.route_url('company_all'))}
           ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
           ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+          ${button.a(icon='robot', color='success', url=request.route_url('company_add_ai'))}
         </div>
       </p>
     </div>
