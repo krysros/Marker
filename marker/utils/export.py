@@ -42,13 +42,14 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     row_formats = {}
     row_date_formats = {}
     for color_key, palette in bootstrap_palette.items():
-        row_formats[color_key] = workbook.add_format(
-            {"bg_color": palette["bg"], "font_color": palette["font"]}
-        )
+        base_row_format = {
+            "bg_color": palette["bg"],
+            "border": 0,
+        }
+        row_formats[color_key] = workbook.add_format(base_row_format)
         row_date_formats[color_key] = workbook.add_format(
             {
-                "bg_color": palette["bg"],
-                "font_color": palette["font"],
+                **base_row_format,
                 "num_format": default_date_format,
             }
         )
