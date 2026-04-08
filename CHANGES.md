@@ -1,3 +1,13 @@
+2.7
+---
+
+- Added a keyboard shortcuts modal and expanded global shortcuts for navigation, search, add/edit/delete actions, starring and homepage access
+- Added AI-assisted company creation from a website address with Gemini-based autofill, duplicate detection, clearer error handling and loading feedback
+- Simplified company and project forms, removed the obsolete company court field and improved related mobile/header layouts
+- Improved website autofill and field extraction quality, including better company name and street detection
+- Refined exports, search/view behavior and record-name validation across core forms
+- Updated Polish translations, refreshed dependencies and installation notes, and expanded automated test coverage
+
 2.6
 ---
 
