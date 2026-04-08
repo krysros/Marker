@@ -31,9 +31,15 @@ Run your project.
 Set environment variables
 -------------------------
 
-    MARKER_SESSION_SECRET
-    MARKER_AUTH_SECRET
-    GEMINI_API_KEY (for AI)
+    MARKER_SESSION_SECRET  (required; at least 32 characters)
+    MARKER_AUTH_SECRET     (required; at least 32 characters)
+    GEMINI_API_KEY         (required for AI; no application-level minimum length is enforced)
+
+For `MARKER_SESSION_SECRET` and `MARKER_AUTH_SECRET`, use long random values. In production, weak/default values and secrets shorter than 32 characters are rejected.
+
+Example secret generation:
+
+    uv run python -c "import secrets; print(secrets.token_urlsafe(32))"
 
 
 Log in
