@@ -77,7 +77,10 @@
             title="${_('Refresh form from website')}"
             aria-label="${_('Refresh form from website')}"
           >
-            <i class="bi bi-arrow-clockwise"></i>
+            <span data-website-autofill-icon>
+              <i class="bi bi-robot"></i>
+            </span>
+            <span class="spinner-grow spinner-grow-sm d-none" data-website-autofill-spinner role="status" aria-hidden="true"></span>
           </button>
         </div>
         <div class="form-text">${_("Click the refresh button to fill the remaining fields from the website address.")}</div>
