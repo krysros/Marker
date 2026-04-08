@@ -46,3 +46,47 @@ def test_response_xlsx_datetime_with_row_color():
     with patch.object(export, "_", dummy_):
         response = export.response_xlsx(rows, header_row, row_colors=row_colors)
         assert response.body
+
+
+def test_response_xlsx_row_color_formats_use_fill_without_borders():
+    captured_formats = []
+
+    class DummyWorksheet:
+        def write(self, *args, **kwargs):
+            return None
+
+    class DummyWorkbook:
+        def __init__(self, output, options):
+            self.output = output
+            self.options = options
+
+        def add_worksheet(self):
+            return DummyWorksheet()
+
+        def add_format(self, options=None):
+            captured_formats.append(options or {})
+            return options or {}
+
+        def close(self):
+            return None
+
+    with patch.object(export, "_", dummy_), patch.object(
+        export.xlsxwriter, "Workbook", DummyWorkbook
+    ):
+        export.response_xlsx([["A"]], ["Name"], row_colors=["primary"])
+
+    color_formats = [
+        fmt
+        for fmt in captured_formats
+        if fmt.get("bg_color") == "#DCEBFF"
+    ]
+
+    assert color_formats
+    for fmt in color_formats:
+        assert fmt.get("border") == 0
+        assert "font_color" not in fmt
+        assert "border_color" not in fmt
+        assert "top_color" not in fmt
+        assert "right_color" not in fmt
+        assert "bottom_color" not in fmt
+        assert "left_color" not in fmt

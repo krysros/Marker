@@ -6,6 +6,7 @@
 - Simplified company and project forms, removed the obsolete company court field and improved related mobile/header layouts
 - Improved website autofill and field extraction quality, including better company name and street detection
 - Replaced website autofill refresh icons in company and project forms with AI icons and added a growing spinner during autofill requests
+- Changed XLSX row coloring to use cell fills only, without colored borders or forced font colors
 - Refined exports, search/view behavior and record-name validation across core forms
 - Updated Polish translations, refreshed dependencies and installation notes, and expanded automated test coverage
 
