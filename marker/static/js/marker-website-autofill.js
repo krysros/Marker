@@ -66,6 +66,17 @@
 		}
 	}
 
+	function setLoadingState(trigger, isLoading) {
+		const icon = trigger?.querySelector("[data-website-autofill-icon]");
+		const spinner = trigger?.querySelector("[data-website-autofill-spinner]");
+		if (icon) {
+			icon.classList.toggle("d-none", isLoading);
+		}
+		if (spinner) {
+			spinner.classList.toggle("d-none", !isLoading);
+		}
+	}
+
 	async function setupInput(input) {
 		const form = input.form;
 		if (!form) {
@@ -94,6 +105,7 @@
 			}
 
 			trigger.disabled = true;
+			setLoadingState(trigger, true);
 			requestId += 1;
 			const currentRequestId = requestId;
 
@@ -102,6 +114,7 @@
 				setManagedFields(form, {});
 				await refreshSubdivision(form, subdivisionUrl, "", "");
 				trigger.disabled = false;
+				setLoadingState(trigger, false);
 				return;
 			}
 
@@ -118,16 +131,19 @@
 				});
 				if (!response.ok) {
 					trigger.disabled = false;
+					setLoadingState(trigger, false);
 					return;
 				}
 				payload = await response.json();
 			} catch {
 				trigger.disabled = false;
+				setLoadingState(trigger, false);
 				return;
 			}
 
 			if (currentRequestId !== requestId) {
 				trigger.disabled = false;
+				setLoadingState(trigger, false);
 				return;
 			}
 
@@ -140,6 +156,7 @@
 				fields.subdivision || ""
 			);
 			trigger.disabled = false;
+			setLoadingState(trigger, false);
 		};
 
 		trigger.addEventListener("click", () => {
