@@ -2292,3 +2292,105 @@ def test_project_unlink_tag_not_found_tag(dbsession):
 
     with pytest.raises(HTTPNotFound):
         view.unlink_tag()
+
+
+# --- uptime() and uptime_check() ---
+
+
+def test_project_uptime(dbsession):
+    user = _make_user(dbsession, "projuptime")
+    _make_project(dbsession, user, "UptimeProj1")
+    # Project without website
+    p2 = Project(
+        name="UptimeProj2",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website=None,
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    p2.created_by = user
+    dbsession.add(p2)
+    transaction.commit()
+    request = _make_request(dbsession, user)
+    view = ProjectView(request)
+    result = view.uptime()
+    assert "items" in result
+    names = [item["name"] for item in result["items"]]
+    assert "UptimeProj1" in names
+    assert "UptimeProj2" not in names
+
+
+def test_project_uptime_check_no_url(dbsession):
+    user = _make_user(dbsession, "projupchk1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={})
+    view = ProjectView(request)
+    result = view.uptime_check()
+    assert result == {"status_code": None, "error": "No URL"}
+
+
+def test_project_uptime_check_success(dbsession):
+    user = _make_user(dbsession, "projupchk2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"url": "https://example.com"})
+    view = ProjectView(request)
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    mock_resp.__enter__ = lambda s: s
+    mock_resp.__exit__ = MagicMock(return_value=False)
+    with patch("urllib.request.urlopen", return_value=mock_resp):
+        result = view.uptime_check()
+    assert result == {"status_code": 200}
+
+
+def test_project_uptime_check_prepends_https(dbsession):
+    user = _make_user(dbsession, "projupchk3")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"url": "example.com"})
+    view = ProjectView(request)
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    mock_resp.__enter__ = lambda s: s
+    mock_resp.__exit__ = MagicMock(return_value=False)
+    with patch("urllib.request.urlopen", return_value=mock_resp) as mock_open:
+        result = view.uptime_check()
+    assert result == {"status_code": 200}
+    called_req = mock_open.call_args[0][0]
+    assert called_req.full_url.startswith("https://")
+
+
+def test_project_uptime_check_http_error(dbsession):
+    import urllib.error
+
+    user = _make_user(dbsession, "projupchk4")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"url": "https://example.com/404"})
+    view = ProjectView(request)
+    with patch(
+        "urllib.request.urlopen",
+        side_effect=urllib.error.HTTPError(
+            "https://example.com/404", 404, "Not Found", {}, None
+        ),
+    ):
+        result = view.uptime_check()
+    assert result == {"status_code": 404}
+
+
+def test_project_uptime_check_generic_error(dbsession):
+    user = _make_user(dbsession, "projupchk5")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"url": "https://bad.invalid"})
+    view = ProjectView(request)
+    with patch(
+        "urllib.request.urlopen",
+        side_effect=OSError("Connection refused"),
+    ):
+        result = view.uptime_check()
+    assert result["status_code"] is None
+    assert "Connection refused" in result["error"]

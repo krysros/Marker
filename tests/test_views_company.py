@@ -2904,3 +2904,105 @@ def test_company_add_post_with_tags(mock_loc, dbsession):
     view = CompanyView(request)
     result = view.add()
     assert isinstance(result, HTTPSeeOther)
+
+
+# --- uptime() and uptime_check() ---
+
+
+def test_company_uptime(dbsession):
+    user = _co_user(dbsession, "couptime")
+    # Company with website
+    c1 = _co_company(dbsession, user, "UptimeCo1")
+    # Company without website
+    Company(
+        name="UptimeCo2",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website=None,
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    dbsession.add(c1)
+    transaction.commit()
+    request = _co_request(dbsession, user)
+    view = CompanyView(request)
+    result = view.uptime()
+    assert "items" in result
+    names = [item["name"] for item in result["items"]]
+    assert "UptimeCo1" in names
+    assert "UptimeCo2" not in names
+
+
+def test_company_uptime_check_no_url(dbsession):
+    user = _co_user(dbsession, "coupchk1")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={})
+    view = CompanyView(request)
+    result = view.uptime_check()
+    assert result == {"status_code": None, "error": "No URL"}
+
+
+def test_company_uptime_check_success(dbsession):
+    user = _co_user(dbsession, "coupchk2")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"url": "https://example.com"})
+    view = CompanyView(request)
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    mock_resp.__enter__ = lambda s: s
+    mock_resp.__exit__ = MagicMock(return_value=False)
+    with patch("urllib.request.urlopen", return_value=mock_resp):
+        result = view.uptime_check()
+    assert result == {"status_code": 200}
+
+
+def test_company_uptime_check_prepends_https(dbsession):
+    user = _co_user(dbsession, "coupchk3")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"url": "example.com"})
+    view = CompanyView(request)
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    mock_resp.__enter__ = lambda s: s
+    mock_resp.__exit__ = MagicMock(return_value=False)
+    with patch("urllib.request.urlopen", return_value=mock_resp) as mock_open:
+        result = view.uptime_check()
+    assert result == {"status_code": 200}
+    called_req = mock_open.call_args[0][0]
+    assert called_req.full_url.startswith("https://")
+
+
+def test_company_uptime_check_http_error(dbsession):
+    import urllib.error
+
+    user = _co_user(dbsession, "coupchk4")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"url": "https://example.com/404"})
+    view = CompanyView(request)
+    with patch(
+        "urllib.request.urlopen",
+        side_effect=urllib.error.HTTPError(
+            "https://example.com/404", 404, "Not Found", {}, None
+        ),
+    ):
+        result = view.uptime_check()
+    assert result == {"status_code": 404}
+
+
+def test_company_uptime_check_generic_error(dbsession):
+    user = _co_user(dbsession, "coupchk5")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"url": "https://bad.invalid"})
+    view = CompanyView(request)
+    with patch(
+        "urllib.request.urlopen",
+        side_effect=OSError("Connection refused"),
+    ):
+        result = view.uptime_check()
+    assert result["status_code"] is None
+    assert "Connection refused" in result["error"]

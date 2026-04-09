@@ -5,6 +5,7 @@
   <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
+    ${button.a(icon='globe', color='secondary', url=request.route_url('company_uptime'))}
     ${button.a(icon='map', color='secondary', url=request.route_url('company_map', _query=q))}
     ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}

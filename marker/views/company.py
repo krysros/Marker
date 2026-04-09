@@ -706,6 +706,47 @@ class CompanyView:
         return res
 
     @view_config(
+        route_name="company_uptime",
+        renderer="company_uptime.mako",
+        permission="view",
+    )
+    def uptime(self):
+        stmt = select(Company).filter(Company.website.isnot(None), Company.website != "")
+        companies = self.request.dbsession.execute(stmt).scalars()
+        items = [
+            {
+                "name": company.name,
+                "website": company.website,
+            }
+            for company in companies
+        ]
+        return {"items": items}
+
+    @view_config(
+        route_name="company_uptime_check",
+        renderer="json",
+        permission="view",
+    )
+    def uptime_check(self):
+        import urllib.error
+        import urllib.request
+
+        url = self.request.params.get("url", "")
+        if not url:
+            return {"status_code": None, "error": "No URL"}
+        if not url.startswith(("http://", "https://")):
+            url = "https://" + url
+        try:
+            req = urllib.request.Request(url, method="HEAD")
+            req.add_header("User-Agent", "Marker/1.0")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return {"status_code": resp.status}
+        except urllib.error.HTTPError as exc:
+            return {"status_code": exc.code}
+        except Exception as exc:
+            return {"status_code": None, "error": str(exc)}
+
+    @view_config(
         route_name="company_count_tags",
         renderer="json",
         permission="view",
