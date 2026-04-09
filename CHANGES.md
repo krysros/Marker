@@ -1,3 +1,8 @@
+2.8
+---
+
+- Added website uptime check views for companies and projects with Start/Stop control and color-coded HTTP response badges
+
 2.7
 ---
 
