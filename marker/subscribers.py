@@ -1,3 +1,5 @@
+import os
+
 from pyramid.i18n import TranslationStringFactory, get_localizer
 from sqlalchemy import select
 
@@ -59,6 +61,7 @@ def add_renderer_globals(event):
     event["_"] = request.translate
     event["localizer"] = request.localizer
     event["selected_ids"] = _selected_ids_loader(request)
+    event["gemini_api_key_set"] = bool(os.environ.get("GEMINI_API_KEY"))
 
 
 tsf = TranslationStringFactory("Marker")

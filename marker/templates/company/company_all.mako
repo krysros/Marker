@@ -8,7 +8,9 @@
     ${button.a(icon='map', color='secondary', url=request.route_url('company_map', _query=q))}
     ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+    % if gemini_api_key_set:
     ${button.a(icon='robot', color='success', url=request.route_url('company_add_ai'))}
+    % endif
   </div>
 </h2>
 
