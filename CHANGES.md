@@ -8,6 +8,7 @@
 - Replaced website autofill refresh icons in company and project forms with AI icons and added a growing spinner during autofill requests
 - Changed XLSX row coloring to use cell fills only, without colored borders or forced font colors
 - Refined exports, search/view behavior and record-name validation across core forms
+- AI buttons (company add via AI, website autofill) are now only displayed when the GEMINI_API_KEY environment variable is set
 - Updated Polish translations, refreshed dependencies and installation notes, and expanded automated test coverage
 
 2.6

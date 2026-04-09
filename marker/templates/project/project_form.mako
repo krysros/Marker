@@ -70,6 +70,7 @@
               "data-subdivision-url": request.route_url("subdivision"),
             }
           )}
+          % if gemini_api_key_set:
           <button
             type="button"
             class="btn btn-outline-secondary"
@@ -82,8 +83,11 @@
             </span>
             <span class="spinner-grow spinner-grow-sm d-none" data-website-autofill-spinner role="status" aria-hidden="true"></span>
           </button>
+          % endif
         </div>
+        % if gemini_api_key_set:
         <div class="form-text">${_("Click the refresh button to fill the remaining fields from the website address.")}</div>
+        % endif
         % for error in form.errors.get("website", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
