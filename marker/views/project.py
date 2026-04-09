@@ -627,6 +627,47 @@ class ProjectView:
         return res
 
     @view_config(
+        route_name="project_uptime",
+        renderer="project_uptime.mako",
+        permission="view",
+    )
+    def uptime(self):
+        stmt = select(Project).filter(Project.website.isnot(None), Project.website != "")
+        projects = self.request.dbsession.execute(stmt).scalars()
+        items = [
+            {
+                "name": project.name,
+                "website": project.website,
+            }
+            for project in projects
+        ]
+        return {"items": items}
+
+    @view_config(
+        route_name="project_uptime_check",
+        renderer="json",
+        permission="view",
+    )
+    def uptime_check(self):
+        import urllib.error
+        import urllib.request
+
+        url = self.request.params.get("url", "")
+        if not url:
+            return {"status_code": None, "error": "No URL"}
+        if not url.startswith(("http://", "https://")):
+            url = "https://" + url
+        try:
+            req = urllib.request.Request(url, method="HEAD")
+            req.add_header("User-Agent", "Marker/1.0")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return {"status_code": resp.status}
+        except urllib.error.HTTPError as exc:
+            return {"status_code": exc.code}
+        except Exception as exc:
+            return {"status_code": None, "error": str(exc)}
+
+    @view_config(
         route_name="project_count_companies",
         renderer="json",
         permission="view",
