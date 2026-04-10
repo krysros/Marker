@@ -1291,7 +1291,9 @@ def test_contact_import_csv_bad_file(mock_parse, dbsession):
     "marker.views.contact.missing_google_contacts_columns", return_value=["First Name"]
 )
 @patch("marker.views.contact.parse_google_contacts_csv", return_value=([], ["Name"]))
-def test_contact_import_csv_missing_columns_minimal(mock_parse, mock_missing, dbsession):
+def test_contact_import_csv_missing_columns_minimal(
+    mock_parse, mock_missing, dbsession
+):
     user = _make_user(dbsession, "contimportmisscol")
     transaction.commit()
     request = _make_request(dbsession, user, method="POST", post={})

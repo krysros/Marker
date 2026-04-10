@@ -2,9 +2,7 @@ import io
 
 import pytest
 
-from marker.utils.contact_csv_import import (
-    parse_google_contacts_csv,
-)
+from marker.utils.contact_csv_import import parse_google_contacts_csv
 from marker.utils.export import response_xlsx
 from marker.utils.geo import location, location_details
 
