@@ -632,7 +632,9 @@ class ProjectView:
         permission="view",
     )
     def uptime(self):
-        stmt = select(Project).filter(Project.website.isnot(None), Project.website != "")
+        stmt = select(Project).filter(
+            Project.website.isnot(None), Project.website != ""
+        )
         projects = self.request.dbsession.execute(stmt).scalars()
         items = [
             {

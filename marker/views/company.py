@@ -711,7 +711,9 @@ class CompanyView:
         permission="view",
     )
     def uptime(self):
-        stmt = select(Company).filter(Company.website.isnot(None), Company.website != "")
+        stmt = select(Company).filter(
+            Company.website.isnot(None), Company.website != ""
+        )
         companies = self.request.dbsession.execute(stmt).scalars()
         items = [
             {

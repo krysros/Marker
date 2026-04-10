@@ -70,15 +70,14 @@ def test_response_xlsx_row_color_formats_use_fill_without_borders():
         def close(self):
             return None
 
-    with patch.object(export, "_", dummy_), patch.object(
-        export.xlsxwriter, "Workbook", DummyWorkbook
+    with (
+        patch.object(export, "_", dummy_),
+        patch.object(export.xlsxwriter, "Workbook", DummyWorkbook),
     ):
         export.response_xlsx([["A"]], ["Name"], row_colors=["primary"])
 
     color_formats = [
-        fmt
-        for fmt in captured_formats
-        if fmt.get("bg_color") == "#DCEBFF"
+        fmt for fmt in captured_formats if fmt.get("bg_color") == "#DCEBFF"
     ]
 
     assert color_formats

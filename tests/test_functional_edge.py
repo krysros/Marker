@@ -1,7 +1,6 @@
 import pytest
 
 
-
 @pytest.mark.usefixtures("testapp")
 def test_404_sets_custom_message(testapp):
     res = testapp.get("/nieistniejacy-url", status=404)

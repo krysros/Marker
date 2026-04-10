@@ -4,11 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import transaction
-from pyramid.httpexceptions import (
-    HTTPForbidden,
-    HTTPNotFound,
-    HTTPSeeOther,
-)
+from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPSeeOther
 from webob.multidict import MultiDict
 
 from marker.models.user import User

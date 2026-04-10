@@ -1,4 +1,3 @@
-
 from marker.utils.geo import _first_not_empty
 
 
