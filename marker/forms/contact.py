@@ -1,6 +1,7 @@
 import re
 
 from wtforms import (
+    DateTimeLocalField,
     EmailField,
     FileField,
     Form,
@@ -10,7 +11,8 @@ from wtforms import (
     StringField,
     ValidationError,
 )
-from wtforms.validators import DataRequired, InputRequired, Length
+from wtforms.validators import DataRequired, InputRequired, Length, Optional
+from wtforms.widgets import DateTimeLocalInput
 
 from .filters import remove_mailto, strip_filter
 from .select import CATEGORIES, COLORS, select_countries, select_subdivisions
@@ -74,6 +76,18 @@ class ContactFilterForm(Form):
     )
     country = SelectField(_("Country"), choices=select_countries())
     color = SelectField(_("Color"), choices=COLORS)
+    date_from = DateTimeLocalField(
+        _("Date from"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+    date_to = DateTimeLocalField(
+        _("Date to"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

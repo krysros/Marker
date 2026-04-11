@@ -10,6 +10,14 @@
       ${form.category.label(class_="form-label")}
       ${form.category(class_="form-control")}
     </div>
+    <div class="mb-3">
+      ${form.date_from.label(class_="form-label")}
+      ${form.date_from(class_="form-control")}
+    </div>
+    <div class="mb-3">
+      ${form.date_to.label(class_="form-label")}
+      ${form.date_to(class_="form-control")}
+    </div>
     <button type="submit" class="btn btn-primary">${_("Submit")}</button>
   </form>
 </div>

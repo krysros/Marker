@@ -1445,3 +1445,92 @@ def test_contact_get_csv_importer(dbsession):
     view = ContactView(request)
     importer = view._get_csv_importer()
     assert isinstance(importer, GoogleContactsCsvImporter)
+
+
+# ===========================================================================
+# Date range filtering tests
+# ===========================================================================
+
+
+def test_contact_all_date_from(dbsession):
+    user = _make_user(dbsession, "contdtf1")
+    _make_contact(dbsession, user, "DtFromCont")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"date_from": "2020-01-01T00:00"})
+    view = ContactView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_contact_all_date_to(dbsession):
+    user = _make_user(dbsession, "contdtt1")
+    _make_contact(dbsession, user, "DtToCont")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"date_to": "2030-01-01T00:00"})
+    view = ContactView(request)
+    result = view.all()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_contact_all_date_range(dbsession):
+    user = _make_user(dbsession, "contdtr1")
+    _make_contact(dbsession, user, "DtRangeCont")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        params={"date_from": "2020-01-01T00:00", "date_to": "2030-01-01T00:00"},
+    )
+    view = ContactView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_contact_search_tags_date_from(dbsession):
+    user = _make_user(dbsession, "contstrdf")
+    company = _make_company(dbsession, user)
+    tag = Tag(name="ContSTRDfTag")
+    tag.created_by = user
+    dbsession.add(tag)
+    company.tags.append(tag)
+    _make_contact(dbsession, user, "STRDfCont", company=company)
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        params={
+            "target": "contacts",
+            "tag": "ContSTRDfTag",
+            "date_from": "2020-01-01T00:00",
+        },
+    )
+    view = ContactView(request)
+    result = view.search_tags_results()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+
+
+def test_contact_search_tags_date_to(dbsession):
+    user = _make_user(dbsession, "contstrdt")
+    company = _make_company(dbsession, user)
+    tag = Tag(name="ContSTRDtTag")
+    tag.created_by = user
+    dbsession.add(tag)
+    company.tags.append(tag)
+    _make_contact(dbsession, user, "STRDtCont", company=company)
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        params={
+            "target": "contacts",
+            "tag": "ContSTRDtTag",
+            "date_to": "2030-01-01T00:00",
+        },
+    )
+    view = ContactView(request)
+    result = view.search_tags_results()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"

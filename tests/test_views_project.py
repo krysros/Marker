@@ -2394,3 +2394,80 @@ def test_project_uptime_check_generic_error(dbsession):
         result = view.uptime_check()
     assert result["status_code"] is None
     assert "Connection refused" in result["error"]
+
+
+# ===========================================================================
+# Date range filtering tests
+# ===========================================================================
+
+
+def test_project_all_date_from(dbsession):
+    user = _make_user(dbsession, "projdtf1")
+    _make_project(dbsession, user, "DtFromProj")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"date_from": "2020-01-01T00:00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_project_all_date_to(dbsession):
+    user = _make_user(dbsession, "projdtt1")
+    _make_project(dbsession, user, "DtToProj")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"date_to": "2030-01-01T00:00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_project_all_date_range(dbsession):
+    user = _make_user(dbsession, "projdtr1")
+    _make_project(dbsession, user, "DtRangeProj")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        params={"date_from": "2020-01-01T00:00", "date_to": "2030-01-01T00:00"},
+    )
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_project_similar_date_from(dbsession):
+    user = _make_user(dbsession, "projsimdf")
+    project = _make_project(dbsession, user, "SimDfProj")
+    tag = Tag(name="ProjSimDfTag")
+    tag.created_by = user
+    project.tags.append(tag)
+    p2 = _make_project(dbsession, user, "SimDfProj2")
+    p2.tags.append(tag)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"date_from": "2020-01-01T00:00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+
+
+def test_project_similar_date_to(dbsession):
+    user = _make_user(dbsession, "projsimdt")
+    project = _make_project(dbsession, user, "SimDtProj")
+    tag = Tag(name="ProjSimDtTag")
+    tag.created_by = user
+    project.tags.append(tag)
+    p2 = _make_project(dbsession, user, "SimDtProj2")
+    p2.tags.append(tag)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"date_to": "2030-01-01T00:00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"

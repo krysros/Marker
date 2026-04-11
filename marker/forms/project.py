@@ -138,6 +138,18 @@ class ProjectFilterForm(Form):
     )
     status = SelectField(_("Status"), choices=STATUS)
     color = SelectField(_("Color"), choices=COLORS)
+    date_from = DateTimeLocalField(
+        _("Date from"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+    date_to = DateTimeLocalField(
+        _("Date to"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

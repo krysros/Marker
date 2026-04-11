@@ -2,6 +2,8 @@
 ---
 
 - Added website uptime check views for companies and projects with Start/Stop control and color-coded HTTP response badges
+- Added date-time range filtering (date_from / date_to) for companies, projects, tags, contacts and comments across all list and related views
+- Updated Polish translations
 
 2.7
 ---

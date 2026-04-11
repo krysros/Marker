@@ -1523,3 +1523,102 @@ def test_tag_export_projects_name_asc(dbsession):
     view = TagView(request)
     result = view.export_projects()
     assert result is not None
+
+
+# ===========================================================================
+# Date range filtering tests
+# ===========================================================================
+
+
+def test_tag_all_date_from(dbsession):
+    user = _make_user(dbsession, "tagdtf1")
+    _make_tag(dbsession, user, "DtFromTag")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"date_from": "2020-01-01T00:00"})
+    view = TagView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_tag_all_date_to(dbsession):
+    user = _make_user(dbsession, "tagdtt1")
+    _make_tag(dbsession, user, "DtToTag")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"date_to": "2030-01-01T00:00"})
+    view = TagView(request)
+    result = view.all()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_tag_all_date_range(dbsession):
+    user = _make_user(dbsession, "tagdtr1")
+    _make_tag(dbsession, user, "DtRangeTag")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        params={"date_from": "2020-01-01T00:00", "date_to": "2030-01-01T00:00"},
+    )
+    view = TagView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_tag_companies_date_from(dbsession):
+    user = _make_user(dbsession, "tagcodf")
+    tag = _make_tag(dbsession, user, "CoDfTag")
+    company = _make_company(dbsession, user, "CoDfCo")
+    tag.companies.append(company)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, tag=tag, params={"date_from": "2020-01-01T00:00"}
+    )
+    view = TagView(request)
+    result = view.companies()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+
+
+def test_tag_companies_date_to(dbsession):
+    user = _make_user(dbsession, "tagcodt")
+    tag = _make_tag(dbsession, user, "CoDtTag")
+    company = _make_company(dbsession, user, "CoDtCo")
+    tag.companies.append(company)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, tag=tag, params={"date_to": "2030-01-01T00:00"}
+    )
+    view = TagView(request)
+    result = view.companies()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+
+
+def test_tag_projects_date_from(dbsession):
+    user = _make_user(dbsession, "tagprdf")
+    tag = _make_tag(dbsession, user, "PrDfTag")
+    proj = _make_project(dbsession, user, "PrDfProj")
+    tag.projects.append(proj)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, tag=tag, params={"date_from": "2020-01-01T00:00"}
+    )
+    view = TagView(request)
+    result = view.projects()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+
+
+def test_tag_projects_date_to(dbsession):
+    user = _make_user(dbsession, "tagprdt")
+    tag = _make_tag(dbsession, user, "PrDtTag")
+    proj = _make_project(dbsession, user, "PrDtProj")
+    tag.projects.append(proj)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, tag=tag, params={"date_to": "2030-01-01T00:00"}
+    )
+    view = TagView(request)
+    result = view.projects()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"

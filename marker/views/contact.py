@@ -1,3 +1,4 @@
+import datetime
 import logging
 from uuid import uuid4
 
@@ -96,6 +97,8 @@ class ContactView:
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -110,6 +113,16 @@ class ContactView:
 
         if _order not in {"asc", "desc"}:
             _order = "desc"
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Contact.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Contact.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         if name:
             stmt = stmt.filter(contains_ci(Contact.name, name))
@@ -454,6 +467,8 @@ class ContactView:
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
         category = self.request.params.get("category", "")
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_CONTACTS)
@@ -472,6 +487,16 @@ class ContactView:
         q["tag"] = tags
 
         stmt = self._stmt_contacts_by_tags(tags)
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Contact.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Contact.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         if name:
             stmt = stmt.filter(contains_ci(Contact.name, name))
