@@ -296,3 +296,103 @@ def test_search_view_post_invalid(monkeypatch, dummy_request):
     result = view.search()
     assert "form" in result
     assert result["heading"] == "Find a comment"
+
+
+# ===========================================================================
+# Date range filtering tests
+# ===========================================================================
+
+
+def test_comment_all_date_from(dbsession):
+    user = _user(dbsession, "cmtdtf1")
+    co = Company(
+        name="CmtDfCo",
+        street="S",
+        postcode="00",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    co.created_by = user
+    dbsession.add(co)
+    dbsession.flush()
+    c = Comment(comment="datefrom_comment")
+    c.created_by = user
+    c.company_id = co.id
+    dbsession.add(c)
+    transaction.commit()
+    request = _req(dbsession, user, params={"date_from": "2020-01-01T00:00"})
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_comment_all_date_to(dbsession):
+    user = _user(dbsession, "cmtdtt1")
+    co = Company(
+        name="CmtDtCo",
+        street="S",
+        postcode="00",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    co.created_by = user
+    dbsession.add(co)
+    dbsession.flush()
+    c = Comment(comment="dateto_comment")
+    c.created_by = user
+    c.company_id = co.id
+    dbsession.add(c)
+    transaction.commit()
+    request = _req(dbsession, user, params={"date_to": "2030-01-01T00:00"})
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_comment_all_date_range(dbsession):
+    user = _user(dbsession, "cmtdtr1")
+    co = Company(
+        name="CmtDrCo",
+        street="S",
+        postcode="00",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    co.created_by = user
+    dbsession.add(co)
+    dbsession.flush()
+    c = Comment(comment="daterange_comment")
+    c.created_by = user
+    c.company_id = co.id
+    dbsession.add(c)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={"date_from": "2020-01-01T00:00", "date_to": "2030-01-01T00:00"},
+    )
+    view = CommentView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1

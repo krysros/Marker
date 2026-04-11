@@ -3006,3 +3006,80 @@ def test_company_uptime_check_generic_error(dbsession):
         result = view.uptime_check()
     assert result["status_code"] is None
     assert "Connection refused" in result["error"]
+
+
+# ===========================================================================
+# Date range filtering tests
+# ===========================================================================
+
+
+def test_company_all_date_from(dbsession):
+    user = _co_user(dbsession, "codtf1")
+    _co_company(dbsession, user, "DtFromCo")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"date_from": "2020-01-01T00:00"})
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_company_all_date_to(dbsession):
+    user = _co_user(dbsession, "codtt1")
+    _co_company(dbsession, user, "DtToCo")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"date_to": "2030-01-01T00:00"})
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_company_all_date_range(dbsession):
+    user = _co_user(dbsession, "codtr1")
+    _co_company(dbsession, user, "DtRangeCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        params={"date_from": "2020-01-01T00:00", "date_to": "2030-01-01T00:00"},
+    )
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+    assert result["counter"] >= 1
+
+
+def test_company_similar_date_from(dbsession):
+    user = _co_user(dbsession, "cosimdf")
+    company = _co_company(dbsession, user, "SimDfCo")
+    tag = Tag(name="CoSimDfTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    c2 = _co_company(dbsession, user, "SimDfCo2")
+    c2.tags.append(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, params={"date_from": "2020-01-01T00:00"}
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+
+
+def test_company_similar_date_to(dbsession):
+    user = _co_user(dbsession, "cosimdt")
+    company = _co_company(dbsession, user, "SimDtCo")
+    tag = Tag(name="CoSimDtTag")
+    tag.created_by = user
+    company.tags.append(tag)
+    c2 = _co_company(dbsession, user, "SimDtCo2")
+    c2.tags.append(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, params={"date_to": "2030-01-01T00:00"}
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"

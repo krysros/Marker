@@ -2,8 +2,16 @@ import re
 from operator import mul
 
 from sqlalchemy import select
-from wtforms import Form, HiddenField, SelectField, SelectMultipleField, StringField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms import (
+    DateTimeLocalField,
+    Form,
+    HiddenField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+)
+from wtforms.validators import InputRequired, Length, Optional, ValidationError
+from wtforms.widgets import DateTimeLocalInput
 
 from ..models import Company
 from .association import ActivityForm
@@ -200,6 +208,18 @@ class CompanyFilterForm(Form):
     NIP = StringField(_("NIP"), filters=[strip_filter])
     REGON = StringField(_("REGON"), filters=[strip_filter])
     KRS = StringField(_("KRS"), filters=[strip_filter])
+    date_from = DateTimeLocalField(
+        _("Date from"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+    date_to = DateTimeLocalField(
+        _("Date to"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
 
     def __init__(self, *args, request, **kwargs):
         super().__init__(*args, **kwargs)

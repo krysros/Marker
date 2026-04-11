@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from pyramid.httpexceptions import HTTPSeeOther
@@ -31,6 +32,8 @@ class CommentView:
         page = int(self.request.params.get("page", 1))
         comment = self.request.params.get("comment", None)
         category = self.request.params.get("category", "")
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
@@ -48,6 +51,16 @@ class CommentView:
         elif category == "projects":
             stmt = stmt.filter(Comment.project_id.is_not(None))
             q["category"] = category
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Comment.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Comment.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         q["sort"] = _sort
         q["order"] = _order

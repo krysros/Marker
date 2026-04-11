@@ -204,6 +204,8 @@ class ProjectView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -278,6 +280,16 @@ class ProjectView:
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         if view_mode == "contacts":
             q["view"] = "contacts"
@@ -906,6 +918,8 @@ class ProjectView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "shared_tags")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -972,6 +986,16 @@ class ProjectView:
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         q["sort"] = _sort
         q["order"] = _order

@@ -1,5 +1,6 @@
-from wtforms import Form, HiddenField, SelectField, TextAreaField
-from wtforms.validators import InputRequired
+from wtforms import DateTimeLocalField, Form, HiddenField, SelectField, TextAreaField
+from wtforms.validators import InputRequired, Optional
+from wtforms.widgets import DateTimeLocalInput
 
 from .filters import strip_filter
 from .select import CATEGORIES
@@ -26,3 +27,15 @@ class CommentSearchForm(Form):
 class CommentFilterForm(Form):
     comment = HiddenField(_("Comment"), filters=[strip_filter])
     category = SelectField(_("Category"), choices=CATEGORIES)
+    date_from = DateTimeLocalField(
+        _("Date from"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+    date_to = DateTimeLocalField(
+        _("Date to"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )

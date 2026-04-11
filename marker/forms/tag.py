@@ -1,8 +1,9 @@
 import re
 
 from sqlalchemy import select
-from wtforms import Form, HiddenField, SelectField, StringField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms import DateTimeLocalField, Form, HiddenField, SelectField, StringField
+from wtforms.validators import InputRequired, Length, Optional, ValidationError
+from wtforms.widgets import DateTimeLocalInput
 
 from ..models import Tag
 from .filters import strip_filter
@@ -50,6 +51,18 @@ class TagSearchForm(Form):
 class TagFilterForm(Form):
     name = HiddenField(_("Name"), filters=[strip_filter])
     category = SelectField(_("Category"), choices=CATEGORIES)
+    date_from = DateTimeLocalField(
+        _("Date from"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+    date_to = DateTimeLocalField(
+        _("Date to"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
 
 
 class TagLinkForm(Form):

@@ -99,6 +99,8 @@ class TagView:
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
         category = self.request.params.get("category", "")
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -129,6 +131,16 @@ class TagView:
             )
             stmt = stmt.where(project_link_exists)
             q["category"] = category
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Tag.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Tag.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         q["sort"] = _sort
         q["order"] = _order
@@ -468,6 +480,8 @@ class TagView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         colors = dict(COLORS)
@@ -488,6 +502,16 @@ class TagView:
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Company.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Company.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         if _sort == "stars":
             if _order == "asc":
@@ -668,6 +692,8 @@ class TagView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -704,6 +730,16 @@ class TagView:
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at <= date_to_dt)
+            q["date_to"] = date_to
 
         if _sort == "stars":
             if _order == "asc":
