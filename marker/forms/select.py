@@ -25,6 +25,17 @@ def select_subdivisions(country_code=None):
     return subdivisions
 
 
+def select_currencies():
+    first_option = [("", "---")]
+    currencies = [
+        (currency.alpha_3, f"{currency.alpha_3} - {currency.name}")
+        for currency in pycountry.currencies
+    ]
+    currencies = sorted(currencies)
+    currencies = first_option + currencies
+    return currencies
+
+
 SORT_CRITERIA = [
     ("name", _("Name")),
     ("created_at", _("Date created")),

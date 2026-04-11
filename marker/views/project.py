@@ -1,5 +1,6 @@
 import datetime
 import logging
+from decimal import Decimal, InvalidOperation
 
 import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
@@ -28,6 +29,7 @@ from ..forms.select import (
     STATUS,
     USER_ROLES,
     select_countries,
+    select_currencies,
 )
 from ..models import (
     Activity,
@@ -201,9 +203,20 @@ class ProjectView:
         website = self.request.params.get("website", None)
         color = self.request.params.get("color", None)
         deadline = self.request.params.get("deadline", None)
+        deadline_from = self.request.params.get("deadline_from", None)
+        deadline_to = self.request.params.get("deadline_to", None)
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        usable_area_from = self.request.params.get("usable_area_from", None)
+        usable_area_to = self.request.params.get("usable_area_to", None)
+        cubic_volume_from = self.request.params.get("cubic_volume_from", None)
+        cubic_volume_to = self.request.params.get("cubic_volume_to", None)
+        currency = self.request.params.get("currency", None)
+        value_net_from = self.request.params.get("value_net_from", None)
+        value_net_to = self.request.params.get("value_net_to", None)
+        value_gross_from = self.request.params.get("value_gross_from", None)
+        value_gross_to = self.request.params.get("value_gross_to", None)
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
@@ -274,12 +287,84 @@ class ProjectView:
             stmt = stmt.filter(Project.deadline <= deadline_dt)
             q["deadline"] = deadline
 
+        if deadline_from:
+            deadline_from_dt = datetime.datetime.strptime(
+                deadline_from, "%Y-%m-%dT%H:%M"
+            )
+            stmt = stmt.filter(Project.deadline >= deadline_from_dt)
+            q["deadline_from"] = deadline_from
+
+        if deadline_to:
+            deadline_to_dt = datetime.datetime.strptime(deadline_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.deadline <= deadline_to_dt)
+            q["deadline_to"] = deadline_to
+
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
             q["status"] = status
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
+
+        if usable_area_from:
+            try:
+                stmt = stmt.filter(Project.usable_area >= Decimal(usable_area_from))
+                q["usable_area_from"] = usable_area_from
+            except InvalidOperation:
+                pass
+
+        if usable_area_to:
+            try:
+                stmt = stmt.filter(Project.usable_area <= Decimal(usable_area_to))
+                q["usable_area_to"] = usable_area_to
+            except InvalidOperation:
+                pass
+
+        if cubic_volume_from:
+            try:
+                stmt = stmt.filter(Project.cubic_volume >= Decimal(cubic_volume_from))
+                q["cubic_volume_from"] = cubic_volume_from
+            except InvalidOperation:
+                pass
+
+        if cubic_volume_to:
+            try:
+                stmt = stmt.filter(Project.cubic_volume <= Decimal(cubic_volume_to))
+                q["cubic_volume_to"] = cubic_volume_to
+            except InvalidOperation:
+                pass
+
+        if currency:
+            stmt = stmt.filter(Project.currency == currency)
+            q["currency"] = currency
+
+        if value_net_from:
+            try:
+                stmt = stmt.filter(Project.value_net >= Decimal(value_net_from))
+                q["value_net_from"] = value_net_from
+            except InvalidOperation:
+                pass
+
+        if value_net_to:
+            try:
+                stmt = stmt.filter(Project.value_net <= Decimal(value_net_to))
+                q["value_net_to"] = value_net_to
+            except InvalidOperation:
+                pass
+
+        if value_gross_from:
+            try:
+                stmt = stmt.filter(Project.value_gross >= Decimal(value_gross_from))
+                q["value_gross_from"] = value_gross_from
+            except InvalidOperation:
+                pass
+
+        if value_gross_to:
+            try:
+                stmt = stmt.filter(Project.value_gross <= Decimal(value_gross_to))
+                q["value_gross_to"] = value_gross_to
+            except InvalidOperation:
+                pass
 
         if date_from:
             date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
@@ -379,6 +464,7 @@ class ProjectView:
             "statuses": statuses,
             "stages": stages,
             "project_delivery_methods": project_delivery_methods,
+            "currencies": dict(select_currencies()),
             "form": form,
             "view_mode": view_mode,
             "show_contacts_toggle": show_contacts_toggle,
@@ -884,6 +970,7 @@ class ProjectView:
             "is_project_selected": is_project_selected,
             "stages": stages,
             "countries": countries,
+            "currencies": dict(select_currencies()),
             "company_roles": company_roles,
             "delivery_methods": delivery_methods,
             "companies_assoc": companies_assoc,
@@ -918,6 +1005,17 @@ class ProjectView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        deadline_from = self.request.params.get("deadline_from", None)
+        deadline_to = self.request.params.get("deadline_to", None)
+        usable_area_from = self.request.params.get("usable_area_from", None)
+        usable_area_to = self.request.params.get("usable_area_to", None)
+        cubic_volume_from = self.request.params.get("cubic_volume_from", None)
+        cubic_volume_to = self.request.params.get("cubic_volume_to", None)
+        currency = self.request.params.get("currency", None)
+        value_net_from = self.request.params.get("value_net_from", None)
+        value_net_to = self.request.params.get("value_net_to", None)
+        value_gross_from = self.request.params.get("value_gross_from", None)
+        value_gross_to = self.request.params.get("value_gross_to", None)
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "shared_tags")
@@ -987,6 +1085,18 @@ class ProjectView:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
 
+        if deadline_from:
+            deadline_from_dt = datetime.datetime.strptime(
+                deadline_from, "%Y-%m-%dT%H:%M"
+            )
+            stmt = stmt.filter(Project.deadline >= deadline_from_dt)
+            q["deadline_from"] = deadline_from
+
+        if deadline_to:
+            deadline_to_dt = datetime.datetime.strptime(deadline_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.deadline <= deadline_to_dt)
+            q["deadline_to"] = deadline_to
+
         if date_from:
             date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
             stmt = stmt.filter(Project.created_at >= date_from_dt)
@@ -996,6 +1106,66 @@ class ProjectView:
             date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
             stmt = stmt.filter(Project.created_at <= date_to_dt)
             q["date_to"] = date_to
+
+        if usable_area_from:
+            try:
+                stmt = stmt.filter(Project.usable_area >= Decimal(usable_area_from))
+                q["usable_area_from"] = usable_area_from
+            except InvalidOperation:
+                pass
+
+        if usable_area_to:
+            try:
+                stmt = stmt.filter(Project.usable_area <= Decimal(usable_area_to))
+                q["usable_area_to"] = usable_area_to
+            except InvalidOperation:
+                pass
+
+        if cubic_volume_from:
+            try:
+                stmt = stmt.filter(Project.cubic_volume >= Decimal(cubic_volume_from))
+                q["cubic_volume_from"] = cubic_volume_from
+            except InvalidOperation:
+                pass
+
+        if cubic_volume_to:
+            try:
+                stmt = stmt.filter(Project.cubic_volume <= Decimal(cubic_volume_to))
+                q["cubic_volume_to"] = cubic_volume_to
+            except InvalidOperation:
+                pass
+
+        if currency:
+            stmt = stmt.filter(Project.currency == currency)
+            q["currency"] = currency
+
+        if value_net_from:
+            try:
+                stmt = stmt.filter(Project.value_net >= Decimal(value_net_from))
+                q["value_net_from"] = value_net_from
+            except InvalidOperation:
+                pass
+
+        if value_net_to:
+            try:
+                stmt = stmt.filter(Project.value_net <= Decimal(value_net_to))
+                q["value_net_to"] = value_net_to
+            except InvalidOperation:
+                pass
+
+        if value_gross_from:
+            try:
+                stmt = stmt.filter(Project.value_gross >= Decimal(value_gross_from))
+                q["value_gross_from"] = value_gross_from
+            except InvalidOperation:
+                pass
+
+        if value_gross_to:
+            try:
+                stmt = stmt.filter(Project.value_gross <= Decimal(value_gross_to))
+                q["value_gross_to"] = value_gross_to
+            except InvalidOperation:
+                pass
 
         q["sort"] = _sort
         q["order"] = _order
@@ -1112,6 +1282,7 @@ class ProjectView:
             "statuses": statuses,
             "stages": stages,
             "project_delivery_methods": project_delivery_methods,
+            "currencies": dict(select_currencies()),
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
             "show_shared_tags": True,
@@ -1145,6 +1316,11 @@ class ProjectView:
                 deadline=form.deadline.data,
                 stage=form.stage.data,
                 delivery_method=form.delivery_method.data,
+                usable_area=form.usable_area.data,
+                cubic_volume=form.cubic_volume.data,
+                currency=form.currency.data,
+                value_net=form.value_net.data,
+                value_gross=form.value_gross.data,
             )
             loc = location(
                 street=form.street.data,

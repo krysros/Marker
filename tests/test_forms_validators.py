@@ -403,6 +403,7 @@ def test_project_form_valid():
             "color": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         }
     )
     assert form.validate() or "name" not in form.errors
@@ -420,6 +421,7 @@ def test_project_name_taken():
             "color": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         }
     )
     form = ProjectForm(data, request=req)
@@ -437,6 +439,7 @@ def test_project_name_editing_same():
             "color": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         },
         edited_item=existing,
     )
@@ -453,6 +456,7 @@ def test_project_name_starts_with_dash():
             "color": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         }
     )
     form.validate()

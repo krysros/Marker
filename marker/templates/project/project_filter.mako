@@ -37,12 +37,64 @@
       ${form.deadline(class_="form-control")}
     % endif
     <div class="mb-3">
+      ${form.deadline_from.label(class_="form-label")}
+      ${form.deadline_from(class_="form-control")}
+    </div>
+    <div class="mb-3">
+      ${form.deadline_to.label(class_="form-label")}
+      ${form.deadline_to(class_="form-control")}
+    </div>
+    <div class="mb-3">
       ${form.stage.label(class_="form-label")}
       ${form.stage(class_="form-control")}
     </div>
     <div class="mb-3">
       ${form.delivery_method.label(class_="form-label")}
       ${form.delivery_method(class_="form-control")}
+    </div>
+    <div class="mb-3">
+      ${form.currency.label(class_="form-label")}
+      ${form.currency(class_="form-control")}
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        ${form.usable_area_from.label(class_="form-label")}
+        ${form.usable_area_from(class_="form-control")}
+      </div>
+      <div class="col">
+        ${form.usable_area_to.label(class_="form-label")}
+        ${form.usable_area_to(class_="form-control")}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        ${form.cubic_volume_from.label(class_="form-label")}
+        ${form.cubic_volume_from(class_="form-control")}
+      </div>
+      <div class="col">
+        ${form.cubic_volume_to.label(class_="form-label")}
+        ${form.cubic_volume_to(class_="form-control")}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        ${form.value_net_from.label(class_="form-label")}
+        ${form.value_net_from(class_="form-control")}
+      </div>
+      <div class="col">
+        ${form.value_net_to.label(class_="form-label")}
+        ${form.value_net_to(class_="form-control")}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        ${form.value_gross_from.label(class_="form-label")}
+        ${form.value_gross_from(class_="form-control")}
+      </div>
+      <div class="col">
+        ${form.value_gross_to.label(class_="form-label")}
+        ${form.value_gross_to(class_="form-control")}
+      </div>
     </div>
     <div class="mb-3">
       ${form.color.label(class_="form-label")}

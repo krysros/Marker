@@ -406,6 +406,7 @@ def test_project_add_post(mock_loc, dbsession):
             "deadline": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         },
     )
     view = ProjectView(request)
@@ -449,6 +450,7 @@ def test_project_edit_post(mock_loc, dbsession):
             "deadline": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         },
     )
     view = ProjectView(request)
@@ -504,6 +506,7 @@ def test_project_search_post_basic(dbsession):
         "stage": "",
         "delivery_method": "",
         "color": "",
+        "currency": "",
     }
     request = _make_request(dbsession, user, method="POST", post=post_data)
     # Search form reads from request.POST
@@ -1181,6 +1184,7 @@ def test_project_add_post_with_tags(mock_loc, dbsession):
             "deadline": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         },
     )
     request.params = MultiDict(
@@ -1251,6 +1255,7 @@ def test_project_edit_post_location_success(mock_loc, dbsession):
             "deadline": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         },
     )
     view = ProjectView(request)
@@ -1987,6 +1992,7 @@ def test_project_search_post_with_tag(dbsession):
             "subdivision": "",
             "stage": "",
             "delivery_method": "",
+            "currency": "",
         },
     )
     request.params["tag"] = "SomeTag"
@@ -2471,3 +2477,408 @@ def test_project_similar_date_to(dbsession):
     view = ProjectView(request)
     result = view.similar()
     assert result["q"]["date_to"] == "2030-01-01T00:00"
+
+
+# --- all() numeric / date range filters ---
+
+
+def test_project_all_deadline_from(dbsession):
+    user = _make_user(dbsession, "projalldf")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, params={"deadline_from": "2020-01-01T00:00"}
+    )
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["deadline_from"] == "2020-01-01T00:00"
+
+
+def test_project_all_deadline_to(dbsession):
+    user = _make_user(dbsession, "projalldt")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"deadline_to": "2030-01-01T00:00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["deadline_to"] == "2030-01-01T00:00"
+
+
+def test_project_all_usable_area_from(dbsession):
+    user = _make_user(dbsession, "projallua1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"usable_area_from": "100.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["usable_area_from"] == "100.00"
+
+
+def test_project_all_usable_area_to(dbsession):
+    user = _make_user(dbsession, "projallua2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"usable_area_to": "500.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["usable_area_to"] == "500.00"
+
+
+def test_project_all_cubic_volume_from(dbsession):
+    user = _make_user(dbsession, "projallcv1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"cubic_volume_from": "200.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["cubic_volume_from"] == "200.00"
+
+
+def test_project_all_cubic_volume_to(dbsession):
+    user = _make_user(dbsession, "projallcv2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"cubic_volume_to": "999.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["cubic_volume_to"] == "999.00"
+
+
+def test_project_all_currency(dbsession):
+    user = _make_user(dbsession, "projallcur")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"currency": "PLN"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["currency"] == "PLN"
+
+
+def test_project_all_value_net_from(dbsession):
+    user = _make_user(dbsession, "projallvn1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_net_from": "1000.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["value_net_from"] == "1000.00"
+
+
+def test_project_all_value_net_to(dbsession):
+    user = _make_user(dbsession, "projallvn2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_net_to": "5000.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["value_net_to"] == "5000.00"
+
+
+def test_project_all_value_gross_from(dbsession):
+    user = _make_user(dbsession, "projallvg1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_gross_from": "1230.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["value_gross_from"] == "1230.00"
+
+
+def test_project_all_value_gross_to(dbsession):
+    user = _make_user(dbsession, "projallvg2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_gross_to": "6150.00"})
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["value_gross_to"] == "6150.00"
+
+
+# --- similar() numeric / date range filters ---
+
+
+def _make_similar_pair(dbsession, prefix):
+    user = _make_user(dbsession, prefix)
+    project = _make_project(dbsession, user, f"{prefix}Proj")
+    tag = Tag(name=f"{prefix}Tag")
+    tag.created_by = user
+    project.tags.append(tag)
+    p2 = _make_project(dbsession, user, f"{prefix}Proj2")
+    p2.tags.append(tag)
+    return user, project
+
+
+def test_project_similar_deadline_from(dbsession):
+    user, project = _make_similar_pair(dbsession, "simdf2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"deadline_from": "2020-01-01T00:00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["deadline_from"] == "2020-01-01T00:00"
+
+
+def test_project_similar_deadline_to(dbsession):
+    user, project = _make_similar_pair(dbsession, "simdt2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"deadline_to": "2030-01-01T00:00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["deadline_to"] == "2030-01-01T00:00"
+
+
+def test_project_similar_usable_area_from(dbsession):
+    user, project = _make_similar_pair(dbsession, "simua1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"usable_area_from": "100.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["usable_area_from"] == "100.00"
+
+
+def test_project_similar_usable_area_to(dbsession):
+    user, project = _make_similar_pair(dbsession, "simua2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"usable_area_to": "500.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["usable_area_to"] == "500.00"
+
+
+def test_project_similar_cubic_volume_from(dbsession):
+    user, project = _make_similar_pair(dbsession, "simcv1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"cubic_volume_from": "200.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["cubic_volume_from"] == "200.00"
+
+
+def test_project_similar_cubic_volume_to(dbsession):
+    user, project = _make_similar_pair(dbsession, "simcv2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"cubic_volume_to": "999.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["cubic_volume_to"] == "999.00"
+
+
+def test_project_similar_currency(dbsession):
+    user, project = _make_similar_pair(dbsession, "simcur")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"currency": "PLN"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["currency"] == "PLN"
+
+
+def test_project_similar_value_net_from(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvn1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_net_from": "1000.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["value_net_from"] == "1000.00"
+
+
+def test_project_similar_value_net_to(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvn2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_net_to": "5000.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["value_net_to"] == "5000.00"
+
+
+def test_project_similar_value_gross_from(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvg1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_gross_from": "1230.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["value_gross_from"] == "1230.00"
+
+
+def test_project_similar_value_gross_to(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvg2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_gross_to": "6150.00"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["value_gross_to"] == "6150.00"
+
+
+# --- InvalidOperation branches for all() ---
+
+
+def test_project_all_usable_area_from_invalid(dbsession):
+    user = _make_user(dbsession, "alluainv1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"usable_area_from": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "usable_area_from" not in result["q"]
+
+
+def test_project_all_usable_area_to_invalid(dbsession):
+    user = _make_user(dbsession, "alluainv2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"usable_area_to": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "usable_area_to" not in result["q"]
+
+
+def test_project_all_cubic_volume_from_invalid(dbsession):
+    user = _make_user(dbsession, "allcvinv1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"cubic_volume_from": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "cubic_volume_from" not in result["q"]
+
+
+def test_project_all_cubic_volume_to_invalid(dbsession):
+    user = _make_user(dbsession, "allcvinv2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"cubic_volume_to": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "cubic_volume_to" not in result["q"]
+
+
+def test_project_all_value_net_from_invalid(dbsession):
+    user = _make_user(dbsession, "allvninv1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_net_from": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "value_net_from" not in result["q"]
+
+
+def test_project_all_value_net_to_invalid(dbsession):
+    user = _make_user(dbsession, "allvninv2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_net_to": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "value_net_to" not in result["q"]
+
+
+def test_project_all_value_gross_from_invalid(dbsession):
+    user = _make_user(dbsession, "allvginv1")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_gross_from": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "value_gross_from" not in result["q"]
+
+
+def test_project_all_value_gross_to_invalid(dbsession):
+    user = _make_user(dbsession, "allvginv2")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"value_gross_to": "abc"})
+    view = ProjectView(request)
+    result = view.all()
+    assert "value_gross_to" not in result["q"]
+
+
+# --- InvalidOperation branches for similar() ---
+
+
+def test_project_similar_usable_area_from_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simuainv1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"usable_area_from": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "usable_area_from" not in result["q"]
+
+
+def test_project_similar_usable_area_to_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simuainv2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"usable_area_to": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "usable_area_to" not in result["q"]
+
+
+def test_project_similar_cubic_volume_from_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simcvinv1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"cubic_volume_from": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "cubic_volume_from" not in result["q"]
+
+
+def test_project_similar_cubic_volume_to_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simcvinv2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"cubic_volume_to": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "cubic_volume_to" not in result["q"]
+
+
+def test_project_similar_value_net_from_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvninv1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_net_from": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "value_net_from" not in result["q"]
+
+
+def test_project_similar_value_net_to_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvninv2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_net_to": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "value_net_to" not in result["q"]
+
+
+def test_project_similar_value_gross_from_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvginv1")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_gross_from": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "value_gross_from" not in result["q"]
+
+
+def test_project_similar_value_gross_to_invalid(dbsession):
+    user, project = _make_similar_pair(dbsession, "simvginv2")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=project, params={"value_gross_to": "abc"}
+    )
+    view = ProjectView(request)
+    result = view.similar()
+    assert "value_gross_to" not in result["q"]
