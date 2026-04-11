@@ -5,6 +5,13 @@
 <%!
   import pycountry
   from urllib.parse import urlparse
+
+  def fmt_decimal(value):
+      if value is None:
+          return "---"
+      formatted = f"{value:,.2f}"
+      formatted = formatted.replace(",", "\u202f")
+      return formatted
 %>
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
@@ -56,6 +63,20 @@
           <dd>${stages.get(project.stage) or "---"}</dd>
           <dt>${_("Project delivery method")}</dt>
           <dd>${delivery_methods.get(project.delivery_method) or "---"}</dd>
+        </dl>
+      </div>
+      <div class="col">
+        <dl>
+          <dt>${_("Usable area [m²]")}</dt>
+          <dd>${fmt_decimal(project.usable_area)}</dd>
+          <dt>${_("Cubic volume [m³]")}</dt>
+          <dd>${fmt_decimal(project.cubic_volume)}</dd>
+          <dt>${_("Currency")}</dt>
+          <dd>${currencies.get(project.currency) or "---"}</dd>
+          <dt>${_("Net value")}</dt>
+          <dd>${fmt_decimal(project.value_net)}</dd>
+          <dt>${_("Gross value")}</dt>
+          <dd>${fmt_decimal(project.value_gross)}</dd>
         </dl>
       </div>
     </div>

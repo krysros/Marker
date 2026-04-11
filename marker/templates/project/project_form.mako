@@ -103,6 +103,7 @@
           </div>
         % endif
       </div>
+      % if hasattr(form, 'deadline') and form.deadline.type != 'HiddenField':
       <div class="mb-3">
         ${form.deadline.label(class_="form-label")}
         ${form.deadline(class_="form-control" + (" is-invalid" if form.errors.get("deadline") else ""))}
@@ -110,6 +111,7 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
+      % endif
       <div class="mb-3">
         ${form.stage.label(class_="form-label")}
         ${form.stage(class_="form-control" + (" is-invalid" if form.errors.get("stage") else ""))}
@@ -124,6 +126,111 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
+      % if hasattr(form, 'deadline_from'):
+      <div class="row mb-3">
+        <div class="col">
+          ${form.deadline_from.label(class_="form-label")}
+          ${form.deadline_from(class_="form-control")}
+        </div>
+        <div class="col">
+          ${form.deadline_to.label(class_="form-label")}
+          ${form.deadline_to(class_="form-control")}
+        </div>
+      </div>
+      % endif
+      % if hasattr(form, 'usable_area'):
+      <div class="mb-3">
+        ${form.usable_area.label(class_="form-label")}
+        ${form.usable_area(class_="form-control" + (" is-invalid" if form.errors.get("usable_area") else ""))}
+        % for error in form.errors.get("usable_area", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      % endif
+      % if hasattr(form, 'usable_area_from'):
+      <div class="row mb-3">
+        <div class="col">
+          ${form.usable_area_from.label(class_="form-label")}
+          ${form.usable_area_from(class_="form-control")}
+        </div>
+        <div class="col">
+          ${form.usable_area_to.label(class_="form-label")}
+          ${form.usable_area_to(class_="form-control")}
+        </div>
+      </div>
+      % endif
+      % if hasattr(form, 'cubic_volume'):
+      <div class="mb-3">
+        ${form.cubic_volume.label(class_="form-label")}
+        ${form.cubic_volume(class_="form-control" + (" is-invalid" if form.errors.get("cubic_volume") else ""))}
+        % for error in form.errors.get("cubic_volume", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      % endif
+      % if hasattr(form, 'cubic_volume_from'):
+      <div class="row mb-3">
+        <div class="col">
+          ${form.cubic_volume_from.label(class_="form-label")}
+          ${form.cubic_volume_from(class_="form-control")}
+        </div>
+        <div class="col">
+          ${form.cubic_volume_to.label(class_="form-label")}
+          ${form.cubic_volume_to(class_="form-control")}
+        </div>
+      </div>
+      % endif
+      % if hasattr(form, 'currency'):
+      <div class="mb-3">
+        ${form.currency.label(class_="form-label")}
+        ${form.currency(class_="form-control" + (" is-invalid" if form.errors.get("currency") else ""))}
+        % for error in form.errors.get("currency", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      % endif
+      % if hasattr(form, 'value_net'):
+      <div class="mb-3">
+        ${form.value_net.label(class_="form-label")}
+        ${form.value_net(class_="form-control" + (" is-invalid" if form.errors.get("value_net") else ""))}
+        % for error in form.errors.get("value_net", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      % endif
+      % if hasattr(form, 'value_net_from'):
+      <div class="row mb-3">
+        <div class="col">
+          ${form.value_net_from.label(class_="form-label")}
+          ${form.value_net_from(class_="form-control")}
+        </div>
+        <div class="col">
+          ${form.value_net_to.label(class_="form-label")}
+          ${form.value_net_to(class_="form-control")}
+        </div>
+      </div>
+      % endif
+      % if hasattr(form, 'value_gross'):
+      <div class="mb-3">
+        ${form.value_gross.label(class_="form-label")}
+        ${form.value_gross(class_="form-control" + (" is-invalid" if form.errors.get("value_gross") else ""))}
+        % for error in form.errors.get("value_gross", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      % endif
+      % if hasattr(form, 'value_gross_from'):
+      <div class="row mb-3">
+        <div class="col">
+          ${form.value_gross_from.label(class_="form-label")}
+          ${form.value_gross_from(class_="form-control")}
+        </div>
+        <div class="col">
+          ${form.value_gross_to.label(class_="form-label")}
+          ${form.value_gross_to(class_="form-control")}
+        </div>
+      </div>
+      % endif
       <div class="mb-3">
         ${form.color.label(class_="form-label")}
         ${form.color(class_="form-control" + (" is-invalid" if form.errors.get("color") else ""))}

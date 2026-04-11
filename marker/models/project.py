@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
@@ -31,6 +32,11 @@ class Project(Base):
     deadline: Mapped[Optional[datetime.datetime]]
     stage: Mapped[Optional[str]]
     delivery_method: Mapped[Optional[str]]
+    usable_area: Mapped[Optional[Decimal]]
+    cubic_volume: Mapped[Optional[Decimal]]
+    currency: Mapped[Optional[str]]
+    value_net: Mapped[Optional[Decimal]]
+    value_gross: Mapped[Optional[Decimal]]
 
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
@@ -73,6 +79,11 @@ class Project(Base):
         deadline: datetime.datetime | None,
         stage: str | None,
         delivery_method: str | None,
+        usable_area: Decimal | None = None,
+        cubic_volume: Decimal | None = None,
+        currency: str | None = None,
+        value_net: Decimal | None = None,
+        value_gross: Decimal | None = None,
     ) -> None:
         self.name = name or ""
         self.street = street
@@ -85,6 +96,11 @@ class Project(Base):
         self.deadline = deadline
         self.stage = stage
         self.delivery_method = delivery_method
+        self.usable_area = usable_area
+        self.cubic_volume = cubic_volume
+        self.currency = currency
+        self.value_net = value_net
+        self.value_gross = value_gross
 
     @property
     def slug(self) -> str:

@@ -1,9 +1,13 @@
 2.8
 ---
 
+- Added project fields: usable area, cubic volume, currency, net value and gross value with range-based search and filtering
 - Added website uptime check views for companies and projects with Start/Stop control and color-coded HTTP response badges
 - Added date-time range filtering (date_from / date_to) for companies, projects, tags, contacts and comments across all list and related views
+- Numeric values displayed with two decimal places and narrow non-breaking space as thousands separator
+- Standardized locale POT file naming to follow Babel conventions
 - Updated Polish translations
+- Expanded test coverage to 100%
 
 2.7
 ---
