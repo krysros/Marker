@@ -1534,9 +1534,7 @@ def test_tag_export_companies_ods(dbsession):
     tag_id = tag.id
     transaction.commit()
     tag = dbsession.get(Tag, tag_id)
-    request = _make_request(
-        dbsession, user, tag=tag, params={"format": "ods"}
-    )
+    request = _make_request(dbsession, user, tag=tag, params={"format": "ods"})
     view = TagView(request)
     result = view.export_companies()
     assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
@@ -1551,9 +1549,7 @@ def test_tag_export_projects_ods(dbsession):
     tag_id = tag.id
     transaction.commit()
     tag = dbsession.get(Tag, tag_id)
-    request = _make_request(
-        dbsession, user, tag=tag, params={"format": "ods"}
-    )
+    request = _make_request(dbsession, user, tag=tag, params={"format": "ods"})
     view = TagView(request)
     result = view.export_projects()
     assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
