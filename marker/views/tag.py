@@ -32,7 +32,7 @@ from ..models import (
     projects_tags,
     selected_tags,
 )
-from ..utils.export import response_xlsx
+from ..utils.export import response_ods, response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
@@ -658,7 +658,11 @@ class TagView:
             _("Country"),
             _("Website"),
         ]
-        response = response_xlsx(companies, header_row)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(companies, header_row)
+        else:
+            response = response_xlsx(companies, header_row)
         log.info(_("The user %s exported company data") % self.request.identity.name)
         return response
 
@@ -888,7 +892,11 @@ class TagView:
             _("Stage"),
             _("Project delivery method"),
         ]
-        response = response_xlsx(projects, header_row)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(projects, header_row)
+        else:
+            response = response_xlsx(projects, header_row)
         log.info(_("The user %s exported project data") % self.request.identity.name)
         return response
 

@@ -8,9 +8,10 @@
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
-    ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_contacts', username=user.name, _query=q))}
+    ${button.a(icon='download', color='primary', title='XLSX', url=request.route_url('user_export_selected_contacts', username=user.name, _query=q))}
+    ${button.a(icon='download', color='outline-primary', title='ODS', url=request.route_url('user_export_selected_contacts', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
-</div>
+  </div>
 <hr>
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
