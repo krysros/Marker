@@ -92,7 +92,22 @@ def test_response_xlsx_with_row_color_and_datetime():
     assert len(response.body) > 0
 
 
-def test_response_xlsx_safe_cell_value_custom_type():
+def test_response_ods_contacts_company():
+    company = DummyCompany("TestCo", "Warsaw", "PL-MZ", "PL")
+    contact = DummyContact("Jan", "CEO", "123", "jan@example.com", company)
+    response = export.response_ods_contacts_company([contact])
+    assert response.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+    assert "Marker.ods" in response.content_disposition
+    assert len(response.body) > 0
+
+
+def test_response_ods_contacts_project():
+    project = DummyProject("TestProj", "Warsaw", "PL-MZ", "PL")
+    contact = DummyContactProject("Anna", "Manager", "456", "anna@example.com", project)
+    response = export.response_ods_contacts_project([contact])
+    assert response.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+    assert "Marker.ods" in response.content_disposition
+    assert len(response.body) > 0
     """Test _safe_cell_value with a custom type (covers line 64)."""
 
     class CustomObj:

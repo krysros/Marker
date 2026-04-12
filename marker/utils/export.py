@@ -6,6 +6,10 @@ from urllib.parse import quote
 import pycountry
 import xlsxwriter
 from mako.template import Template
+from odf.opendocument import OpenDocumentSpreadsheet
+from odf.style import Style, TableCellProperties, TextProperties
+from odf.table import Table, TableCell, TableColumn, TableRow
+from odf.text import P
 from pyramid.path import AssetResolver
 from pyramid.response import Response
 
@@ -265,6 +269,260 @@ def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response.content_disposition = 'attachment; filename="Marker.xlsx"'
+    return response
+
+
+def response_ods(rows, header_row, row_colors=None):
+    doc = OpenDocumentSpreadsheet()
+    stages_map = dict(STAGES)
+    delivery_methods_map = dict(PROJECT_DELIVERY_METHODS)
+
+    bootstrap_palette = {
+        "primary": "#DCEBFF",
+        "secondary": "#ECEFF1",
+        "success": "#DDF3E4",
+        "danger": "#FBE3E6",
+        "warning": "#FFF4CC",
+        "info": "#D8F4FB",
+        "light": "#F8F9FA",
+        "dark": "#D6D8DB",
+    }
+
+    bold_style = Style(name="bold", family="table-cell")
+    bold_style.addElement(TextProperties(fontweight="bold"))
+    doc.automaticstyles.addElement(bold_style)
+
+    color_styles = {}
+    for color_key, bg in bootstrap_palette.items():
+        style = Style(name=f"color_{color_key}", family="table-cell")
+        style.addElement(TableCellProperties(backgroundcolor=bg))
+        doc.automaticstyles.addElement(style)
+        color_styles[color_key] = style
+
+    def _normalized(text):
+        return str(text or "").strip().lower()
+
+    subdivision_markers = {
+        _normalized(_("Subdivision")),
+        "subdivision",
+        "województwo",
+    }
+    country_markers = {
+        _normalized(_("Country")),
+        "country",
+        "kraj",
+    }
+    stage_markers = {
+        _normalized(_("Stage")),
+        _normalized(_("Project stage")),
+        "stage",
+        "project stage",
+    }
+    delivery_method_markers = {
+        _normalized(_("Project delivery method")),
+        _normalized(_("Delivery method")),
+        "project delivery method",
+        "delivery method",
+    }
+    column_transformers = [
+        (
+            subdivision_markers,
+            lambda value: getattr(pycountry.subdivisions.get(code=value), "name", ""),
+        ),
+        (
+            country_markers,
+            lambda value: getattr(pycountry.countries.get(alpha_2=value), "name", ""),
+        ),
+        (stage_markers, lambda value: stages_map.get(value, value or "")),
+        (
+            delivery_method_markers,
+            lambda value: delivery_methods_map.get(value, value or ""),
+        ),
+    ]
+
+    table = Table(name="Sheet1")
+    table.addElement(TableColumn(numbercolumnsrepeated=str(len(header_row))))
+
+    header_tr = TableRow()
+    for elem in header_row:
+        header = str(elem).replace(" ", "_")
+        tc = TableCell(stylename=bold_style, valuetype="string")
+        tc.addElement(P(text=header))
+        header_tr.addElement(tc)
+    table.addElement(header_tr)
+
+    for i, row in enumerate(rows):
+        row_color = None
+        if row_colors and len(row_colors) > i:
+            row_color = str(row_colors[i] or "").strip().lower()
+
+        tr = TableRow()
+        for j, elem in enumerate(row):
+            header_name = _normalized(header_row[j])
+
+            for markers, transform in column_transformers:
+                if any(marker and marker in header_name for marker in markers):
+                    elem = transform(elem)
+                    break
+
+            style = color_styles.get(row_color)
+            if isinstance(elem, (datetime.datetime, datetime.date)):
+                tc = TableCell(
+                    valuetype="date",
+                    datevalue=elem.isoformat(),
+                    **({"stylename": style} if style else {}),
+                )
+                tc.addElement(P(text=str(elem)))
+            elif isinstance(elem, (int, float)):
+                tc = TableCell(
+                    valuetype="float",
+                    value=str(elem),
+                    **({"stylename": style} if style else {}),
+                )
+                tc.addElement(P(text=str(elem)))
+            else:
+                tc = TableCell(
+                    valuetype="string",
+                    **({"stylename": style} if style else {}),
+                )
+                tc.addElement(P(text=str(elem if elem is not None else "")))
+            tr.addElement(tc)
+        table.addElement(tr)
+
+    doc.spreadsheet.addElement(table)
+
+    output = io.BytesIO()
+    doc.save(output)
+    output.seek(0)
+
+    response = Response()
+    response.body = output.getvalue()
+    response.content_type = "application/vnd.oasis.opendocument.spreadsheet"
+    response.content_disposition = 'attachment; filename="Marker.ods"'
+    return response
+
+
+def response_ods_contacts_company(rows):
+    doc = OpenDocumentSpreadsheet()
+
+    bold_style = Style(name="bold", family="table-cell")
+    bold_style.addElement(TextProperties(fontweight="bold"))
+    doc.automaticstyles.addElement(bold_style)
+
+    header_row = [
+        _("Name"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
+        _("Company"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+    ]
+
+    table = Table(name="Sheet1")
+    table.addElement(TableColumn(numbercolumnsrepeated=str(len(header_row))))
+
+    header_tr = TableRow()
+    for elem in header_row:
+        header = str(elem).replace(" ", "_")
+        tc = TableCell(stylename=bold_style, valuetype="string")
+        tc.addElement(P(text=header))
+        header_tr.addElement(tc)
+    table.addElement(header_tr)
+
+    for row in rows:
+        tr = TableRow()
+        values = [
+            row.name,
+            row.role,
+            row.phone,
+            row.email,
+            row.company.name,
+            row.company.city,
+            getattr(
+                pycountry.subdivisions.get(code=row.company.subdivision), "name", ""
+            ),
+            getattr(pycountry.countries.get(alpha_2=row.company.country), "name", ""),
+        ]
+        for val in values:
+            tc = TableCell(valuetype="string")
+            tc.addElement(P(text=str(val or "")))
+            tr.addElement(tc)
+        table.addElement(tr)
+
+    doc.spreadsheet.addElement(table)
+
+    output = io.BytesIO()
+    doc.save(output)
+    output.seek(0)
+
+    response = Response()
+    response.body = output.getvalue()
+    response.content_type = "application/vnd.oasis.opendocument.spreadsheet"
+    response.content_disposition = 'attachment; filename="Marker.ods"'
+    return response
+
+
+def response_ods_contacts_project(rows):
+    doc = OpenDocumentSpreadsheet()
+
+    bold_style = Style(name="bold", family="table-cell")
+    bold_style.addElement(TextProperties(fontweight="bold"))
+    doc.automaticstyles.addElement(bold_style)
+
+    header_row = [
+        _("Name"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
+        _("Project"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+    ]
+
+    table = Table(name="Sheet1")
+    table.addElement(TableColumn(numbercolumnsrepeated=str(len(header_row))))
+
+    header_tr = TableRow()
+    for elem in header_row:
+        header = str(elem).replace(" ", "_")
+        tc = TableCell(stylename=bold_style, valuetype="string")
+        tc.addElement(P(text=header))
+        header_tr.addElement(tc)
+    table.addElement(header_tr)
+
+    for row in rows:
+        tr = TableRow()
+        values = [
+            row.name,
+            row.role,
+            row.phone,
+            row.email,
+            row.project.name,
+            row.project.city,
+            getattr(
+                pycountry.subdivisions.get(code=row.project.subdivision), "name", ""
+            ),
+            getattr(pycountry.countries.get(alpha_2=row.project.country), "name", ""),
+        ]
+        for val in values:
+            tc = TableCell(valuetype="string")
+            tc.addElement(P(text=str(val or "")))
+            tr.addElement(tc)
+        table.addElement(tr)
+
+    doc.spreadsheet.addElement(table)
+
+    output = io.BytesIO()
+    doc.save(output)
+    output.seek(0)
+
+    response = Response()
+    response.body = output.getvalue()
+    response.content_type = "application/vnd.oasis.opendocument.spreadsheet"
+    response.content_disposition = 'attachment; filename="Marker.ods"'
     return response
 
 

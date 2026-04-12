@@ -1,6 +1,9 @@
 2.8
 ---
 
+- Added ODS export support alongside XLSX for companies, projects, contacts, tags and starred/selected views
+- Added XLSX/ODS title labels to download buttons across all export views
+- Added odfpy dependency for ODS spreadsheet generation with row coloring and column transformers
 - Added project fields: usable area, cubic volume, currency, net value and gross value with range-based search and filtering
 - Added website uptime check views for companies and projects with Start/Stop control and color-coded HTTP response badges
 - Added date-time range filtering (date_from / date_to) for companies, projects, tags, contacts and comments across all list and related views

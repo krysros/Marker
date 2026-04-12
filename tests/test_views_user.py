@@ -4603,3 +4603,122 @@ def test_user_export_projects_stars_completed(dbsession):
     view = UserView(request)
     result = view.export_projects_stars()
     assert result is not None
+
+
+# ===========================================================================
+# ODS format export tests (cover all response_ods branches)
+# ===========================================================================
+
+
+def test_user_export_tags_ods(dbsession):
+    """Cover line 847: export_tags ODS branch."""
+    user = _user(dbsession, "extagods")
+    _tag(dbsession, user, "ExTagOds")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_tags()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_companies_ods(dbsession):
+    """Cover line 1131: export_companies ODS branch."""
+    user = _user(dbsession, "excoods")
+    _company(dbsession, user, "ExCoOds")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_companies()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_projects_ods(dbsession):
+    """Cover line 1462: export_projects ODS branch."""
+    user = _user(dbsession, "exprods")
+    _project(dbsession, user, "ExPrOds")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_projects()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_contacts_ods(dbsession):
+    """Cover line 1750: export_contacts ODS branch."""
+    user = _user(dbsession, "exctods")
+    co = _company(dbsession, user, "ExCtOdsCo")
+    _contact(dbsession, user, "ExCtOds", company=co)
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_contacts()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_selected_companies_ods(dbsession):
+    """Cover line 2107: export_selected_companies ODS branch."""
+    user = _user(dbsession, "exselcoods")
+    _company(dbsession, user, "ExSelCoOds")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_selected_companies()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_selected_projects_ods(dbsession):
+    """Cover line 2429: export_selected_projects ODS branch."""
+    user = _user(dbsession, "exselprods")
+    _project(dbsession, user, "ExSelPrOds")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_selected_projects()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_selected_tags_ods(dbsession):
+    """Cover line 2799: export_selected_tags ODS branch."""
+    user = _user(dbsession, "exseltagods")
+    _tag(dbsession, user, "ExSelTagOds")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_selected_tags()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_selected_contacts_ods(dbsession):
+    """Cover line 3410: export_selected_contacts ODS branch."""
+    user = _user(dbsession, "exselctods")
+    co = _company(dbsession, user, "ExSelCtOdsCo")
+    _contact(dbsession, user, "ExSelCtOds", company=co)
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_selected_contacts()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_companies_stars_ods(dbsession):
+    """Cover line 3824: export_companies_stars ODS branch."""
+    user = _user(dbsession, "excostarods")
+    co = _company(dbsession, user, "ExCoStarOds")
+    user.companies_stars.append(co)
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_companies_stars()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_user_export_projects_stars_ods(dbsession):
+    """Cover line 4069: export_projects_stars ODS branch."""
+    user = _user(dbsession, "exprstarods")
+    proj = _project(dbsession, user, "ExPrStarOds")
+    user.projects_stars.append(proj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    view = UserView(request)
+    result = view.export_projects_stars()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"

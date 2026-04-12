@@ -9,7 +9,8 @@
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     ${button.delete_selected(url=request.route_url('user_delete_selected_projects', username=user.name, _query=q), confirm_text=_("Delete all selected projects?"))}
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_selected_projects', username=user.name, _query=q))}
-    ${button.a(icon='download', color='primary', url=request.route_url('user_export_selected_projects', username=user.name, _query=q))}
+    ${button.a(icon='download', color='primary', title='XLSX', url=request.route_url('user_export_selected_projects', username=user.name, _query=q))}
+    ${button.a(icon='download', color='outline-primary', title='ODS', url=request.route_url('user_export_selected_projects', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
 </div>
 <hr>

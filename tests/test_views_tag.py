@@ -1525,6 +1525,40 @@ def test_tag_export_projects_name_asc(dbsession):
     assert result is not None
 
 
+def test_tag_export_companies_ods(dbsession):
+    """Cover line 663: export_companies ODS branch."""
+    user = _make_user(dbsession, "tagecodsuser")
+    tag = _make_tag(dbsession, user, "TagEcOdsTag")
+    co = _make_company(dbsession, user, "TagEcOdsCo")
+    tag.companies.append(co)
+    tag_id = tag.id
+    transaction.commit()
+    tag = dbsession.get(Tag, tag_id)
+    request = _make_request(
+        dbsession, user, tag=tag, params={"format": "ods"}
+    )
+    view = TagView(request)
+    result = view.export_companies()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+def test_tag_export_projects_ods(dbsession):
+    """Cover line 897: export_projects ODS branch."""
+    user = _make_user(dbsession, "tagepodsuser")
+    tag = _make_tag(dbsession, user, "TagEpOdsTag")
+    proj = _make_project(dbsession, user, "TagEpOdsProj")
+    tag.projects.append(proj)
+    tag_id = tag.id
+    transaction.commit()
+    tag = dbsession.get(Tag, tag_id)
+    request = _make_request(
+        dbsession, user, tag=tag, params={"format": "ods"}
+    )
+    view = TagView(request)
+    result = view.export_projects()
+    assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
 # ===========================================================================
 # Date range filtering tests
 # ===========================================================================

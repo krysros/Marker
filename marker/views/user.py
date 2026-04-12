@@ -46,7 +46,7 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_xlsx
+from ..utils.export import response_ods, response_xlsx
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
@@ -842,7 +842,11 @@ class UserView:
         tags = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._tag_export_rows(tags, category=category)
         header_row = self._tag_export_header(category=category)
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -1122,7 +1126,11 @@ class UserView:
         companies = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._company_export_rows(companies)
         header_row = self._company_export_header()
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -1449,7 +1457,11 @@ class UserView:
         projects = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._project_export_rows(projects)
         header_row = self._project_export_header()
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -1733,7 +1745,11 @@ class UserView:
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -2086,7 +2102,11 @@ class UserView:
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -2404,7 +2424,11 @@ class UserView:
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -2770,7 +2794,11 @@ class UserView:
         rows, row_colors = self._tag_export_rows(tags, category=category)
 
         header_row = self._tag_export_header(category=category)
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -3377,7 +3405,11 @@ class UserView:
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -3787,7 +3819,11 @@ class UserView:
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of companies with a star")
             % self.request.identity.name
@@ -4028,7 +4064,11 @@ class UserView:
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
-        response = response_xlsx(rows, header_row, row_colors=row_colors)
+        fmt = self.request.params.get("format", "xlsx")
+        if fmt == "ods":
+            response = response_ods(rows, header_row, row_colors=row_colors)
+        else:
+            response = response_xlsx(rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of projects with a star")
             % self.request.identity.name

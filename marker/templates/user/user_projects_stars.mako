@@ -9,7 +9,8 @@
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     ${button.a(icon='map', color='secondary', url=request.route_url('user_map_projects_stars', username=user.name))}
     ${button.button(icon='star', color='warning', url=request.route_url('user_clear_projects_stars', username=user.name))}
-    ${button.a(icon='download', color='primary', url=request.route_url('user_export_projects_stars', username=user.name, _query=q))}
+    ${button.a(icon='download', color='primary', title='XLSX', url=request.route_url('user_export_projects_stars', username=user.name, _query=q))}
+    ${button.a(icon='download', color='outline-primary', title='ODS', url=request.route_url('user_export_projects_stars', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
 </div>
 <hr>
