@@ -281,6 +281,24 @@ class ReportView:
                     .group_by(Project.id)
                     .order_by(desc("projects-companies"))
                 )
+            case "projects-highest-value":
+                stmt = (
+                    select(Project.name, Project.value_gross)
+                    .where(Project.value_gross.isnot(None))
+                    .order_by(desc(Project.value_gross))
+                )
+            case "projects-highest-usable-area":
+                stmt = (
+                    select(Project.name, Project.usable_area)
+                    .where(Project.usable_area.isnot(None))
+                    .order_by(desc(Project.usable_area))
+                )
+            case "projects-highest-cubic-volume":
+                stmt = (
+                    select(Project.name, Project.cubic_volume)
+                    .where(Project.cubic_volume.isnot(None))
+                    .order_by(desc(Project.cubic_volume))
+                )
             case _:
                 raise HTTPNotFound
 

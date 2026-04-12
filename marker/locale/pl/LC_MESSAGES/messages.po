@@ -661,6 +661,18 @@ msgstr "Najbardziej aktywni dostawcy"
 msgid "Projects with the greatest interest"
 msgstr "Projekty o największym zainteresowaniu"
 
+#: marker/forms/select.py:192
+msgid "Projects with the highest value"
+msgstr "Projekty o największej wartości"
+
+#: marker/forms/select.py:193
+msgid "Projects with the highest usable area"
+msgstr "Projekty o największej powierzchni użytkowej"
+
+#: marker/forms/select.py:194
+msgid "Projects with the highest cubic volume"
+msgstr "Projekty o największej kubaturze"
+
 #: marker/templates/301.mako:2
 msgid "Moved Permanently"
 msgstr "Trwale przeniesiony"

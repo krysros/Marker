@@ -1,5 +1,19 @@
 <%!
   import pycountry
+  from decimal import Decimal
+
+  _DECIMAL_REPORTS = {
+      "projects-highest-value",
+      "projects-highest-usable-area",
+      "projects-highest-cubic-volume",
+  }
+
+  def fmt_decimal(value):
+      if value is None:
+          return "---"
+      parts = f"{value:,.2f}".split(".")
+      parts[0] = parts[0].replace(",", "\u202f")
+      return ".".join(parts)
 %>
 
 % for k, v in paginator:
@@ -41,7 +55,14 @@
       "suppliers",
   }:
       result_url = request.route_url("company_all", _query={"name": k})
-  elif rel in {"projects-comments", "projects-stars", "projects-companies"}:
+  elif rel in {
+      "projects-comments",
+      "projects-stars",
+      "projects-companies",
+      "projects-highest-value",
+      "projects-highest-usable-area",
+      "projects-highest-cubic-volume",
+  }:
       result_url = request.route_url("project_all", _query={"name": k})
   if "subdivisions" in rel:
       label = getattr(pycountry.subdivisions.get(code=k), "name", "---")
@@ -53,6 +74,10 @@
 % else:
   <td>${label}</td>
 % endif
+% if rel in _DECIMAL_REPORTS:
+  <td>${fmt_decimal(v)}</td>
+% else:
   <td>${v}</td>
+% endif
 </tr>
 % endfor
