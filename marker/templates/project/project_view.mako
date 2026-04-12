@@ -63,20 +63,28 @@
           <dd>${stages.get(project.stage) or "---"}</dd>
           <dt>${_("Project delivery method")}</dt>
           <dd>${delivery_methods.get(project.delivery_method) or "---"}</dd>
-        </dl>
-      </div>
-      <div class="col">
-        <dl>
           <dt>${_("Usable area [m²]")}</dt>
           <dd>${fmt_decimal(project.usable_area)}</dd>
           <dt>${_("Cubic volume [m³]")}</dt>
           <dd>${fmt_decimal(project.cubic_volume)}</dd>
+        </dl>
+      </div>
+      <div class="col">
+        <dl>
           <dt>${_("Currency")}</dt>
           <dd>${currencies.get(project.currency) or "---"}</dd>
           <dt>${_("Net value")}</dt>
           <dd>${fmt_decimal(project.value_net)}</dd>
           <dt>${_("Gross value")}</dt>
           <dd>${fmt_decimal(project.value_gross)}</dd>
+          % if project.value_net and project.usable_area:
+          <dt>${_("Net price per m² of usable area")}</dt>
+          <dd>${fmt_decimal(project.value_net / project.usable_area)}</dd>
+          % endif
+          % if project.value_gross and project.usable_area:
+          <dt>${_("Gross price per m² of usable area")}</dt>
+          <dd>${fmt_decimal(project.value_gross / project.usable_area)}</dd>
+          % endif
         </dl>
       </div>
     </div>

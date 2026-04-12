@@ -327,6 +327,14 @@ msgstr "Wartość netto"
 msgid "Gross value"
 msgstr "Wartość brutto"
 
+#: marker/templates/project/project_view.mako
+msgid "Net price per m² of usable area"
+msgstr "Cena netto za m² powierzchni użytkowej"
+
+#: marker/templates/project/project_view.mako
+msgid "Gross price per m² of usable area"
+msgstr "Cena brutto za m² powierzchni użytkowej"
+
 #: marker/forms/project.py:135 marker/forms/project.py:206
 msgid "Deadline from"
 msgstr "Termin od"
