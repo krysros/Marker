@@ -116,6 +116,20 @@
 </div>
 </%def>
 
+<%def name="dropdown_download(url_xlsx='#', url_ods='#')">
+<div class="btn-group">
+  <div class="dropdown">
+    <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-download"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="${url_xlsx}">XLSX</a></li>
+      <li><a class="dropdown-item" href="${url_ods}">ODS</a></li>
+    </ul>
+  </div>
+</div>
+</%def>
+
 <%def name="dropdown_order(items)">
 <div class="btn-group">
   <div class="dropdown">

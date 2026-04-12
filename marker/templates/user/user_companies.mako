@@ -4,8 +4,7 @@
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_companies', username=user.name))}</div>
-  <div>${button.a(icon='download', color='primary', title='XLSX', url=request.route_url('user_export_companies', username=user.name, _query=q))}</div>
-  <div>${button.a(icon='download', color='outline-primary', title='ODS', url=request.route_url('user_export_companies', username=user.name, _query={**q, 'format': 'ods'}))}</div>
+  <div>${button.dropdown_download(url_xlsx=request.route_url('user_export_companies', username=user.name, _query=q), url_ods=request.route_url('user_export_companies', username=user.name, _query={**q, 'format': 'ods'}))}</div>
   <div>${button.a(icon='map', color='secondary', url=request.route_url('user_map_companies', username=user.name))}</div>
 </div>
 
