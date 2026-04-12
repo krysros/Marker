@@ -9,8 +9,7 @@
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
     </button>
-    ${button.a(icon='download', color='primary', title='XLSX', url=request.route_url('user_export_selected_tags', username=user.name, _query=q))}
-    ${button.a(icon='download', color='outline-primary', title='ODS', url=request.route_url('user_export_selected_tags', username=user.name, _query={**q, 'format': 'ods'}))}
+    ${button.dropdown_download(url_xlsx=request.route_url('user_export_selected_tags', username=user.name, _query=q), url_ods=request.route_url('user_export_selected_tags', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
 </h2>
 <hr>

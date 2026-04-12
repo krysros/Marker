@@ -7,8 +7,7 @@
   <div class="float-end">
     ${button.a(icon='table', color='secondary', url=request.route_url('user_projects_stars', username=user.name))}
     ${button.button(icon='star', color='warning', url=request.route_url('user_clear_projects_stars', username=user.name))}
-    ${button.a(icon='download', color='primary', title='XLSX', url=request.route_url('user_export_projects_stars', username=user.name, _query=q))}
-    ${button.a(icon='download', color='outline-primary', title='ODS', url=request.route_url('user_export_projects_stars', username=user.name, _query={**q, 'format': 'ods'}))}
+    ${button.dropdown_download(url_xlsx=request.route_url('user_export_projects_stars', username=user.name, _query=q), url_ods=request.route_url('user_export_projects_stars', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
 </h2>
 <hr>
