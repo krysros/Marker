@@ -189,4 +189,7 @@ REPORTS = [
     ("subcontractors", _("The most active subcontractors")),
     ("suppliers", _("The most active suppliers")),
     ("projects-companies", _("Projects with the greatest interest")),
+    ("projects-highest-value", _("Projects with the highest value")),
+    ("projects-highest-usable-area", _("Projects with the highest usable area")),
+    ("projects-highest-cubic-volume", _("Projects with the highest cubic volume")),
 ]

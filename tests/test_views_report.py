@@ -253,6 +253,31 @@ def test_report_view_projects_companies(dbsession):
     assert result["rel"] == "projects-companies"
 
 
+def test_report_view_projects_highest_value(dbsession):
+    request = _make_request(dbsession, matchdict={"rel": "projects-highest-value"})
+    view = ReportView(request)
+    result = view.view()
+    assert result["rel"] == "projects-highest-value"
+
+
+def test_report_view_projects_highest_usable_area(dbsession):
+    request = _make_request(
+        dbsession, matchdict={"rel": "projects-highest-usable-area"}
+    )
+    view = ReportView(request)
+    result = view.view()
+    assert result["rel"] == "projects-highest-usable-area"
+
+
+def test_report_view_projects_highest_cubic_volume(dbsession):
+    request = _make_request(
+        dbsession, matchdict={"rel": "projects-highest-cubic-volume"}
+    )
+    view = ReportView(request)
+    result = view.view()
+    assert result["rel"] == "projects-highest-cubic-volume"
+
+
 def test_report_view_not_found(dbsession):
     from pyramid.httpexceptions import HTTPNotFound
 
