@@ -1,3 +1,4 @@
+import json
 import os
 
 import google.genai as genai
@@ -24,42 +25,28 @@ def extract_fields_llm(html: str, api_key: str = None) -> dict:
             config={"response_mime_type": "application/json"},
         )
     except Exception as e:
-        # Handle HTTP 429 Too Many Requests (rate limit exceeded)
-        if (
-            hasattr(e, "args")
-            and e.args
-            and any(
-                "429" in str(arg) or "Too Many Requests" in str(arg) for arg in e.args
-            )
-        ):
+        err = str(e)
+        err_lower = err.lower()
+        if "429" in err or "too many requests" in err_lower:
             raise RuntimeError(
                 "Gemini API rate limit reached (HTTP 429 Too Many Requests). Please wait and try again. "
                 "More info: https://ai.google.dev/gemini-api/docs/rate-limits"
             )
-        # Handle quota exceeded (RESOURCE_EXHAUSTED) errors from Gemini API
-        if (
-            hasattr(e, "args")
-            and e.args
-            and isinstance(e.args[0], str)
-            and ("RESOURCE_EXHAUSTED" in e.args[0] or "quota" in e.args[0].lower())
-        ):
+        if "resource_exhausted" in err_lower or "quota" in err_lower:
             raise RuntimeError(
                 "Gemini API quota exceeded. Please check your plan, billing details, and rate limits. "
                 "See: https://ai.google.dev/gemini-api/docs/rate-limits and https://ai.dev/rate-limit for more information.\n"
                 f"Details: {e}"
             )
-        # If the model does not exist, suggest possible model names
-        if "not found" in str(e).lower() or "404" in str(e):
-            msg = (
+        if "not found" in err_lower or "404" in err:
+            raise RuntimeError(
                 "Requested Gemini model is not available or not supported by your API key. "
                 "Check your model name or Google Gemini documentation for available models.\n"
                 f"Details: {e}"
             )
-            raise RuntimeError(msg)
         raise
     try:
-        text = response.text
-        return __import__("json").loads(text)
+        return json.loads(response.text)
     except Exception as e:
         raise RuntimeError(
             f"LLM response decode error: {e}\nResponse: {getattr(response, 'text', str(response))}"
