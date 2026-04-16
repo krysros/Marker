@@ -941,6 +941,27 @@ def test_project_view_companies_invalid_sort(dbsession):
     assert result["q"]["order"] == "asc"
 
 
+def test_project_view_companies_desc_order(dbsession):
+    user = _make_user(dbsession, "projviewcodesc")
+    project = _make_project(dbsession, user, "ViewCoDescP")
+    company = _make_company(dbsession, user, "ViewDescCo")
+    activity = Activity(role="investor", stage="")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        project=project,
+        params={"sort": "name", "order": "desc"},
+    )
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    result = view.view()
+    assert "companies_assoc" in result
+
+
 def test_project_view_companies_filter_stage_and_role(dbsession):
     user = _make_user(dbsession, "projfltsr")
     project = _make_project(dbsession, user, "FltSRProj")
@@ -2910,3 +2931,21 @@ def test_project_similar_value_gross_to_invalid(dbsession):
     view = ProjectView(request)
     result = view.similar()
     assert "value_gross_to" not in result["q"]
+
+
+@patch("marker.views.project.project_autofill_from_website")
+def test_project_website_autofill_error(mock_autofill, dbsession):
+    mock_autofill.side_effect = RuntimeError("API unavailable")
+    user = _make_user(dbsession, "projwsaferr")
+    proj = _make_project(dbsession, user, "ProjWsAfErrP")
+    proj_id = proj.id
+    transaction.commit()
+    proj = dbsession.get(Project, proj_id)
+    request = _make_request(
+        dbsession, user, project=proj, params={"website": "http://x.com"}
+    )
+    view = ProjectView(request)
+    result = view.website_autofill()
+    assert result["fields"] == {}
+    assert "API unavailable" in result["error"]
+    assert request.response.status_code == 502

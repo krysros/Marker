@@ -3141,3 +3141,19 @@ def test_company_similar_date_to(dbsession):
     view = CompanyView(request)
     result = view.similar()
     assert result["q"]["date_to"] == "2030-01-01T00:00"
+
+
+@patch("marker.views.company.company_autofill_from_website")
+def test_company_website_autofill_error(mock_autofill, dbsession):
+    mock_autofill.side_effect = RuntimeError("API unavailable")
+    user = _co_user(dbsession, "coaferr")
+    company = _co_company(dbsession, user, "AfErrCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, params={"website": "http://x.com"}
+    )
+    view = CompanyView(request)
+    result = view.website_autofill()
+    assert result["fields"] == {}
+    assert "API unavailable" in result["error"]
+    assert request.response.status_code == 502
