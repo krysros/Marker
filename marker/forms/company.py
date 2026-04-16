@@ -1,6 +1,6 @@
+import re
 from operator import mul
 
-import regex as re
 from sqlalchemy import select
 from wtforms import (
     DateTimeLocalField,
@@ -128,9 +128,9 @@ class CompanyForm(Form):
         self.subdivision.choices = select_subdivisions(country)
 
     def validate_name(self, field):
-        # Accept any Unicode letter or digit as first character
-        if not re.match(r"^[\p{L}\p{N}]", field.data or "", re.UNICODE):
-            raise ValidationError(_("Name must start with a letter or digit."))
+        # Name must contain at least one letter or digit (Unicode)
+        if not re.search(r"[\w\d]", field.data or "", re.UNICODE):
+            raise ValidationError(_("Name must contain at least one letter or digit."))
         if self.edited_item:
             if self.edited_item.name == field.data:
                 return
@@ -282,7 +282,7 @@ class CompanyLinkForm(Form):
             self.edited_item = None
 
     def validate_name(self, field):
-        # if we are editing (not used here) ignore same value
+        # If we are editing (not used here), ignore the same value
         if self.edited_item and self.edited_item.name == field.data:
             return
         exists = self.request.dbsession.execute(

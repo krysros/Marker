@@ -93,11 +93,13 @@ def test_company_form_long_name():
     """
     Name fields up to 1000 characters should be accepted.
     """
+
     class DummyDBSession:
         def execute(self, *a, **kw):
             class Result:
                 def scalar_one_or_none(self):
                     return None
+
             return Result()
 
     class DummyRequest:
@@ -138,11 +140,13 @@ def test_company_form_too_long_name():
     """
     Name fields exceeding 1000 characters should be rejected.
     """
+
     class DummyDBSession:
         def execute(self, *a, **kw):
             class Result:
                 def scalar_one_or_none(self):
                     return None
+
             return Result()
 
     class DummyRequest:

@@ -1,4 +1,5 @@
-import regex as re
+import re
+
 from sqlalchemy import select
 from wtforms import DateTimeLocalField, Form, HiddenField, SelectField, StringField
 from wtforms.validators import InputRequired, Length, Optional, ValidationError
@@ -31,9 +32,9 @@ class TagForm(Form):
             self.edited_item = None
 
     def validate_name(self, field):
-        # Accept any Unicode letter or digit as first character
-        if not re.match(r"^[\p{L}\p{N}]", field.data or "", re.UNICODE):
-            raise ValidationError(_("Name must start with a letter or digit."))
+        # Name must contain at least one letter or digit (Unicode)
+        if not re.search(r"[\w\d]", field.data or "", re.UNICODE):
+            raise ValidationError(_("Name must contain at least one letter or digit."))
         if self.edited_item:
             if self.edited_item.name == field.data:
                 return
