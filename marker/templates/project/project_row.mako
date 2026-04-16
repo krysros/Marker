@@ -16,6 +16,10 @@
   <td>${checkbox.checkbox(assoc.project, selected_ids=selected_ids('selected_projects'), url=request.route_url('project_check', project_id=assoc.project.id, slug=assoc.project.slug))}</td>
   <td>
     <a href="${request.route_url('project_view', project_id=assoc.project.id, slug=assoc.project.slug)}">${assoc.project.name}</a>
+    <div class="small text-muted">
+      ${_("Utworzono")}: ${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}<br/>
+      ${_("Zmodyfikowano")}: ${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}
+    </div>
   </td>
   <td>${stages.get(assoc.stage)}</td>
   <td>${company_roles.get(assoc.role)}</td>
@@ -23,8 +27,6 @@
   <td>${fmt_decimal(assoc.value_gross)}</td>
   <td>${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</td>
   <td>${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</td>
-  <td>${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}</td>
-  <td>${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}</td>
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.project_star(assoc.project, size='sm')}
