@@ -1405,7 +1405,13 @@ class ProjectView:
     )
     def website_autofill(self):
         website = self.request.params.get("website", "")
-        return {"fields": project_autofill_from_website(website)}
+        try:
+            fields = project_autofill_from_website(website)
+        except Exception as e:
+            log.error("project_website_autofill error: %s", e)
+            self.request.response.status_code = 502
+            return {"error": str(e), "fields": {}}
+        return {"fields": fields}
 
     @view_config(
         route_name="project_edit", renderer="project_form.mako", permission="edit"
