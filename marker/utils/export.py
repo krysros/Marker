@@ -3,7 +3,6 @@ import io
 import unicodedata
 from urllib.parse import quote
 
-import pycountry
 import xlsxwriter
 from mako.template import Template
 from odf.opendocument import OpenDocumentSpreadsheet
@@ -15,6 +14,7 @@ from pyramid.response import Response
 
 from ..forms.select import PROJECT_DELIVERY_METHODS, STAGES
 from ..forms.ts import TranslationString as _
+from ..subscribers import get_country_name, get_subdivision_name
 
 
 def ascii_slug(text):
@@ -93,11 +93,11 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     column_transformers = [
         (
             subdivision_markers,
-            lambda value: getattr(pycountry.subdivisions.get(code=value), "name", ""),
+            lambda value: get_subdivision_name(value),
         ),
         (
             country_markers,
-            lambda value: getattr(pycountry.countries.get(alpha_2=value), "name", ""),
+            lambda value: get_country_name(value),
         ),
         (stage_markers, lambda value: stages_map.get(value, value or "")),
         (
@@ -186,14 +186,12 @@ def response_xlsx_contacts_company(rows, default_date_format="yyyy-mm-dd"):
         worksheet.write(
             i,
             6,
-            getattr(
-                pycountry.subdivisions.get(code=row.company.subdivision), "name", ""
-            ),
+            get_subdivision_name(row.company.subdivision),
         )
         worksheet.write(
             i,
             7,
-            getattr(pycountry.countries.get(alpha_2=row.company.country), "name", ""),
+            get_country_name(row.company.country),
         )
 
     # Close the workbook before streaming the data.
@@ -247,14 +245,12 @@ def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
         worksheet.write(
             i,
             6,
-            getattr(
-                pycountry.subdivisions.get(code=row.project.subdivision), "name", ""
-            ),
+            get_subdivision_name(row.project.subdivision),
         )
         worksheet.write(
             i,
             7,
-            getattr(pycountry.countries.get(alpha_2=row.project.country), "name", ""),
+            get_country_name(row.project.country),
         )
 
     # Close the workbook before streaming the data.
@@ -327,11 +323,11 @@ def response_ods(rows, header_row, row_colors=None):
     column_transformers = [
         (
             subdivision_markers,
-            lambda value: getattr(pycountry.subdivisions.get(code=value), "name", ""),
+            lambda value: get_subdivision_name(value),
         ),
         (
             country_markers,
-            lambda value: getattr(pycountry.countries.get(alpha_2=value), "name", ""),
+            lambda value: get_country_name(value),
         ),
         (stage_markers, lambda value: stages_map.get(value, value or "")),
         (
@@ -440,10 +436,8 @@ def response_ods_contacts_company(rows):
             row.email,
             row.company.name,
             row.company.city,
-            getattr(
-                pycountry.subdivisions.get(code=row.company.subdivision), "name", ""
-            ),
-            getattr(pycountry.countries.get(alpha_2=row.company.country), "name", ""),
+            get_subdivision_name(row.company.subdivision),
+            get_country_name(row.company.country),
         ]
         for val in values:
             tc = TableCell(valuetype="string")
@@ -502,10 +496,8 @@ def response_ods_contacts_project(rows):
             row.email,
             row.project.name,
             row.project.city,
-            getattr(
-                pycountry.subdivisions.get(code=row.project.subdivision), "name", ""
-            ),
-            getattr(pycountry.countries.get(alpha_2=row.project.country), "name", ""),
+            get_subdivision_name(row.project.subdivision),
+            get_country_name(row.project.country),
         ]
         for val in values:
             tc = TableCell(valuetype="string")

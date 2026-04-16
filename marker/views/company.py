@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-import pycountry
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
@@ -44,6 +43,7 @@ from ..models import (
     selected_contacts,
     selected_tags,
 )
+from ..subscribers import get_subdivision_name
 from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
 from ..utils.website_autofill import company_autofill_from_website
@@ -1391,9 +1391,7 @@ class CompanyView:
             loc = location(
                 street=form.street.data,
                 city=form.city.data,
-                subdivision=getattr(
-                    pycountry.subdivisions.get(code=form.subdivision.data), "name", ""
-                ),
+                subdivision=get_subdivision_name(form.subdivision.data),
                 country=countries.get(form.country.data),
                 postalcode=form.postcode.data,
             )

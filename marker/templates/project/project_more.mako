@@ -1,10 +1,6 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
-<%!
-  import pycountry
-%>
-
 <%
   show_shared_tags = bool(context.get("show_shared_tags", False))
   shared_tag_counts = context.get("shared_tag_counts", {})
@@ -29,8 +25,8 @@
   </td>
   <td>
     ${project.city or "---"}<br>
-    <small class="text-body-secondary">${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</small><br>
-    <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=project.country), "name", "---")}</small>
+    <small class="text-body-secondary">${get_subdivision_name(project.subdivision, "---")}</small><br>
+    <small class="text-body-secondary">${get_country_name(project.country, "---")}</small>
   </td>
   % if show_shared_tags:
   <td>

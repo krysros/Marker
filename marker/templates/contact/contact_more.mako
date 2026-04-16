@@ -2,10 +2,6 @@
 <%namespace name="checkbox" file="/common/checkbox.mako"/>
 <%page args="paginator, next_page=None"/>
 
-<%!
-  import pycountry
-%>
-
 % for contact in paginator:
 % if loop.last and next_page:
 <tr hx-get="${next_page}"
@@ -42,14 +38,14 @@
   <td>
     % if contact.company:
     ${contact.company.city or "---"}<br>
-    <small class="text-body-secondary">${getattr(pycountry.subdivisions.get(code=contact.company.subdivision), "name", "---")}</small><br>
-    <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=contact.company.country), "name", "---")}</small>
+    <small class="text-body-secondary">${get_subdivision_name(contact.company.subdivision, "---")}</small><br>
+    <small class="text-body-secondary">${get_country_name(contact.company.country, "---")}</small>
   </td>
   % elif contact.project:
   <td>
     ${contact.project.city or "---"}<br>
-    <small class="text-body-secondary">${getattr(pycountry.subdivisions.get(code=contact.project.subdivision), "name", "---")}</small><br>
-    <small class="text-body-secondary">${getattr(pycountry.countries.get(alpha_2=contact.project.country), "name", "---")}</small>
+    <small class="text-body-secondary">${get_subdivision_name(contact.project.subdivision, "---")}</small><br>
+    <small class="text-body-secondary">${get_country_name(contact.project.country, "---")}</small>
   </td>
   % endif
   <td>
