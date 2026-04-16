@@ -41,6 +41,7 @@ dependencies = [
     "pycountry",
     "google-genai",
     "odfpy",
+    "regex",
 ]
 
 [dependency-groups]

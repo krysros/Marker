@@ -68,6 +68,11 @@ def test_company_form_valid_name_digit():
     assert form.validate() is True
 
 
+def test_company_form_valid_name_polish_letter():
+    form = make_company_form("ŁódzkaFirma")
+    assert form.validate() is True
+
+
 def test_project_form_valid_name():
     form = make_project_form("Projekt123")
     assert form.validate() is True
@@ -87,6 +92,11 @@ def test_project_form_invalid_name_only_dash():
 
 def test_project_form_valid_name_digit():
     form = make_project_form("1Projekt")
+    assert form.validate() is True
+
+
+def test_project_form_valid_name_polish_letter():
+    form = make_project_form("ŚląskiProjekt")
     assert form.validate() is True
 
 
