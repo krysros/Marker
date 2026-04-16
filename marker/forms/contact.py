@@ -1,4 +1,5 @@
-import regex as re
+import re
+
 from wtforms import (
     DateTimeLocalField,
     EmailField,
@@ -52,9 +53,9 @@ class ContactForm(Form):
     color = SelectField(_("Color"), choices=COLORS, default="")
 
     def validate_name(self, field):
-        # Accept any Unicode letter or digit as first character
-        if not re.match(r"^[\p{L}\p{N}]", field.data or "", re.UNICODE):
-            raise ValidationError(_("Name must start with a letter or digit."))
+        # Name must contain at least one letter or digit (Unicode)
+        if not re.search(r"[\w\d]", field.data or "", re.UNICODE):
+            raise ValidationError(_("Name must contain at least one letter or digit."))
 
 
 class ContactSearchForm(Form):
