@@ -334,38 +334,6 @@ class ProjectView:
             except InvalidOperation:
                 pass
 
-        if currency:
-            stmt = stmt.filter(Project.currency == currency)
-            q["currency"] = currency
-
-        if value_net_from:
-            try:
-                stmt = stmt.filter(Project.value_net >= Decimal(value_net_from))
-                q["value_net_from"] = value_net_from
-            except InvalidOperation:
-                pass
-
-        if value_net_to:
-            try:
-                stmt = stmt.filter(Project.value_net <= Decimal(value_net_to))
-                q["value_net_to"] = value_net_to
-            except InvalidOperation:
-                pass
-
-        if value_gross_from:
-            try:
-                stmt = stmt.filter(Project.value_gross >= Decimal(value_gross_from))
-                q["value_gross_from"] = value_gross_from
-            except InvalidOperation:
-                pass
-
-        if value_gross_to:
-            try:
-                stmt = stmt.filter(Project.value_gross <= Decimal(value_gross_to))
-                q["value_gross_to"] = value_gross_to
-            except InvalidOperation:
-                pass
-
         if date_from:
             date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
             stmt = stmt.filter(Project.created_at >= date_from_dt)
@@ -1024,11 +992,6 @@ class ProjectView:
         usable_area_to = self.request.params.get("usable_area_to", None)
         cubic_volume_from = self.request.params.get("cubic_volume_from", None)
         cubic_volume_to = self.request.params.get("cubic_volume_to", None)
-        currency = self.request.params.get("currency", None)
-        value_net_from = self.request.params.get("value_net_from", None)
-        value_net_to = self.request.params.get("value_net_to", None)
-        value_gross_from = self.request.params.get("value_gross_from", None)
-        value_gross_to = self.request.params.get("value_gross_to", None)
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "shared_tags")
@@ -1145,38 +1108,6 @@ class ProjectView:
             try:
                 stmt = stmt.filter(Project.cubic_volume <= Decimal(cubic_volume_to))
                 q["cubic_volume_to"] = cubic_volume_to
-            except InvalidOperation:
-                pass
-
-        if currency:
-            stmt = stmt.filter(Project.currency == currency)
-            q["currency"] = currency
-
-        if value_net_from:
-            try:
-                stmt = stmt.filter(Project.value_net >= Decimal(value_net_from))
-                q["value_net_from"] = value_net_from
-            except InvalidOperation:
-                pass
-
-        if value_net_to:
-            try:
-                stmt = stmt.filter(Project.value_net <= Decimal(value_net_to))
-                q["value_net_to"] = value_net_to
-            except InvalidOperation:
-                pass
-
-        if value_gross_from:
-            try:
-                stmt = stmt.filter(Project.value_gross >= Decimal(value_gross_from))
-                q["value_gross_from"] = value_gross_from
-            except InvalidOperation:
-                pass
-
-        if value_gross_to:
-            try:
-                stmt = stmt.filter(Project.value_gross <= Decimal(value_gross_to))
-                q["value_gross_to"] = value_gross_to
             except InvalidOperation:
                 pass
 
@@ -1331,9 +1262,6 @@ class ProjectView:
                 delivery_method=form.delivery_method.data,
                 usable_area=form.usable_area.data,
                 cubic_volume=form.cubic_volume.data,
-                currency=form.currency.data,
-                value_net=form.value_net.data,
-                value_gross=form.value_gross.data,
             )
             loc = location(
                 street=form.street.data,
@@ -1671,7 +1599,13 @@ class ProjectView:
 
                 if not exist:
                     with self.request.dbsession.no_autoflush:
-                        a = Activity(stage=form.stage.data, role=form.role.data)
+                        a = Activity(
+                            stage=form.stage.data,
+                            role=form.role.data,
+                            currency=form.currency.data,
+                            value_net=form.value_net.data,
+                            value_gross=form.value_gross.data,
+                        )
                         a.company = company
                         project.companies.append(a)
                         log.info(

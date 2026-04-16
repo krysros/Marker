@@ -283,9 +283,14 @@ class ReportView:
                 )
             case "projects-highest-value":
                 stmt = (
-                    select(Project.name, Project.value_gross)
-                    .where(Project.value_gross.isnot(None))
-                    .order_by(desc(Project.value_gross))
+                    select(
+                        Project.name,
+                        func.max(Activity.value_gross).label("value_gross"),
+                    )
+                    .join(Activity)
+                    .where(Activity.value_gross.isnot(None))
+                    .group_by(Project.id)
+                    .order_by(desc("value_gross"))
                 )
             case "projects-highest-usable-area":
                 stmt = (

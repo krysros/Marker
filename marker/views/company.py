@@ -28,6 +28,7 @@ from ..forms.select import (
     STAGES,
     USER_ROLES,
     select_countries,
+    select_currencies,
 )
 from ..models import (
     Activity,
@@ -536,6 +537,7 @@ class CompanyView:
             "company": company,
             "is_company_selected": is_company_selected,
             "countries": countries,
+            "currencies": dict(select_currencies()),
             "stages": stages,
             "filter_stages": {k: v for k, v in stages.items() if k},
             "company_roles": company_roles,
@@ -1633,7 +1635,13 @@ class CompanyView:
 
                 if not exist:
                     with self.request.dbsession.no_autoflush:
-                        a = Activity(stage=form.stage.data, role=form.role.data)
+                        a = Activity(
+                            stage=form.stage.data,
+                            role=form.role.data,
+                            currency=form.currency.data,
+                            value_net=form.value_net.data,
+                            value_gross=form.value_gross.data,
+                        )
                         a.project = project
                         company.projects.append(a)
                         log.info(

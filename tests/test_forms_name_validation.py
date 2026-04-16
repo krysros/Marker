@@ -36,7 +36,6 @@ def make_project_form(name):
             "color": "primary",
             "stage": "announcement",
             "delivery_method": "design-build",
-            "currency": "",
         }
     )
     return ProjectForm(request=DummyRequest(), formdata=data)

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Column, ForeignKey, Index, Integer, Table
@@ -22,6 +23,9 @@ class Activity(Base):
     )
     stage: Mapped[Optional[str]]
     role: Mapped[Optional[str]]
+    currency: Mapped[Optional[str]]
+    value_net: Mapped[Optional[Decimal]]
+    value_gross: Mapped[Optional[Decimal]]
     company: Mapped["Company"] = relationship(back_populates="projects")
     project: Mapped["Project"] = relationship(back_populates="companies")
 
