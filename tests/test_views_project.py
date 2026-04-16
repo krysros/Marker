@@ -941,6 +941,34 @@ def test_project_view_companies_invalid_sort(dbsession):
     assert result["q"]["order"] == "asc"
 
 
+def test_project_view_companies_filter_stage_and_role(dbsession):
+    user = _make_user(dbsession, "projfltsr")
+    project = _make_project(dbsession, user, "FltSRProj")
+    company = _make_company(dbsession, user, "FltSRCo")
+    activity = Activity(role="investor", stage="announcement")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        project=project,
+        params={
+            "sort": "name",
+            "order": "asc",
+            "stage": "announcement",
+            "role": "investor",
+        },
+    )
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    result = view.view()
+    assert len(result["companies_assoc"]) == 1
+    assert result["q"]["stage"] == "announcement"
+    assert result["q"]["role"] == "investor"
+
+
 def test_project_view_contacts_route(dbsession):
     """Line 763+: project_contacts route."""
     user = _make_user(dbsession, "projviewcont")

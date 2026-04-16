@@ -890,9 +890,20 @@ class ProjectView:
                 _order = "asc"
                 q["order"] = _order
 
+            _filter_stage = self.request.params.get("stage", "")
+            _filter_role = self.request.params.get("role", "")
+            if _filter_stage:
+                q["stage"] = _filter_stage
+            if _filter_role:
+                q["role"] = _filter_role
+
             stmt = (
                 select(Activity).join(Company).filter(Activity.project_id == project.id)
             )
+            if _filter_stage:
+                stmt = stmt.filter(Activity.stage == _filter_stage)
+            if _filter_role:
+                stmt = stmt.filter(Activity.role == _filter_role)
             order_column = {
                 "name": polish_sort_expression(Company.name),
                 "stage": Activity.stage,
@@ -969,9 +980,11 @@ class ProjectView:
             "project": project,
             "is_project_selected": is_project_selected,
             "stages": stages,
+            "filter_stages": {k: v for k, v in stages.items() if k},
             "countries": countries,
             "currencies": dict(select_currencies()),
             "company_roles": company_roles,
+            "filter_roles": {k: v for k, v in company_roles.items() if k},
             "delivery_methods": delivery_methods,
             "companies_assoc": companies_assoc,
             "contacts": contacts,

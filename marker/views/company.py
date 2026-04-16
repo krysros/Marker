@@ -442,9 +442,20 @@ class CompanyView:
                 _order = "asc"
                 q["order"] = _order
 
+            _filter_stage = self.request.params.get("stage", "")
+            _filter_role = self.request.params.get("role", "")
+            if _filter_stage:
+                q["stage"] = _filter_stage
+            if _filter_role:
+                q["role"] = _filter_role
+
             stmt = (
                 select(Activity).join(Project).filter(Activity.company_id == company.id)
             )
+            if _filter_stage:
+                stmt = stmt.filter(Activity.stage == _filter_stage)
+            if _filter_role:
+                stmt = stmt.filter(Activity.role == _filter_role)
             order_column = {
                 "name": polish_sort_expression(Project.name),
                 "stage": Activity.stage,
@@ -526,7 +537,9 @@ class CompanyView:
             "is_company_selected": is_company_selected,
             "countries": countries,
             "stages": stages,
+            "filter_stages": {k: v for k, v in stages.items() if k},
             "company_roles": company_roles,
+            "filter_roles": {k: v for k, v in company_roles.items() if k},
             "projects_assoc": projects_assoc,
             "contacts": contacts,
             "tags": tags,
