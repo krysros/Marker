@@ -2352,6 +2352,7 @@ def test_company_add_project_post_success(dbsession):
             "name": "AddProjSucProject",
             "stage": "",
             "role": "",
+            "currency": "",
         },
     )
     view = CompanyView(request)
@@ -2394,6 +2395,7 @@ def test_company_activity_edit_post_success(dbsession):
         post={
             "stage": "",
             "role": "",
+            "currency": "",
         },
     )
     request.matchdict = {"company_id": str(company.id), "project_id": str(project.id)}

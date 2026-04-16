@@ -2,6 +2,15 @@
 <%namespace name="checkbox" file="checkbox.mako"/>
 <%page args="assoc"/>
 
+<%!
+  def fmt_decimal(value):
+      if value is None:
+          return "---"
+      formatted = f"{value:,.2f}"
+      formatted = formatted.replace(",", "\u202f")
+      return formatted
+%>
+
 % if assoc:
 <tr>
   <td>${checkbox.checkbox(assoc.project, selected_ids=selected_ids('selected_projects'), url=request.route_url('project_check', project_id=assoc.project.id, slug=assoc.project.slug))}</td>
@@ -10,6 +19,10 @@
   </td>
   <td>${stages.get(assoc.stage)}</td>
   <td>${company_roles.get(assoc.role)}</td>
+  <td>${fmt_decimal(assoc.value_net)}</td>
+  <td>${fmt_decimal(assoc.value_gross)}</td>
+  <td>${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</td>
+  <td>${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</td>
   <td>${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}</td>
   <td>${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}</td>
   <td>

@@ -22,7 +22,6 @@ from .select import (
     STAGES,
     STATUS,
     select_countries,
-    select_currencies,
     select_subdivisions,
 )
 from .ts import TranslationString as _
@@ -80,17 +79,6 @@ class ProjectForm(Form):
     )
     cubic_volume = DecimalField(
         _("Cubic volume [m³]"),
-        validators=[Optional()],
-        places=2,
-    )
-    currency = SelectField(_("Currency"), choices=select_currencies())
-    value_net = DecimalField(
-        _("Net value"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_gross = DecimalField(
-        _("Gross value"),
         validators=[Optional()],
         places=2,
     )
@@ -167,27 +155,6 @@ class ProjectSearchForm(Form):
         validators=[Optional()],
         places=2,
     )
-    currency = SelectField(_("Currency"), choices=select_currencies())
-    value_net_from = DecimalField(
-        _("Net value from"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_net_to = DecimalField(
-        _("Net value to"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_gross_from = DecimalField(
-        _("Gross value from"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_gross_to = DecimalField(
-        _("Gross value to"),
-        validators=[Optional()],
-        places=2,
-    )
     color = SelectField(_("Color"), choices=COLORS)
 
 
@@ -220,7 +187,6 @@ class ProjectFilterForm(Form):
     )
     status = SelectField(_("Status"), choices=STATUS)
     color = SelectField(_("Color"), choices=COLORS)
-    currency = SelectField(_("Currency"), choices=select_currencies())
     usable_area_from = DecimalField(
         _("Usable area from [m²]"),
         validators=[Optional()],
@@ -238,26 +204,6 @@ class ProjectFilterForm(Form):
     )
     cubic_volume_to = DecimalField(
         _("Cubic volume to [m³]"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_net_from = DecimalField(
-        _("Net value from"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_net_to = DecimalField(
-        _("Net value to"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_gross_from = DecimalField(
-        _("Gross value from"),
-        validators=[Optional()],
-        places=2,
-    )
-    value_gross_to = DecimalField(
-        _("Gross value to"),
         validators=[Optional()],
         places=2,
     )
