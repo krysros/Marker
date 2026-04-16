@@ -15,7 +15,7 @@ class TagForm(Form):
         _("Name"),
         validators=[
             InputRequired(),
-            Length(min=3, max=50),
+            Length(max=1000),
         ],
         filters=[strip_filter],
         render_kw={"autofocus": True},

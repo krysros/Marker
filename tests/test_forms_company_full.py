@@ -90,12 +90,14 @@ def test_company_form_missing_name():
 
 
 def test_company_form_long_name():
+    """
+    Name fields up to 1000 characters should be accepted.
+    """
     class DummyDBSession:
         def execute(self, *a, **kw):
             class Result:
                 def scalar_one_or_none(self):
                     return None
-
             return Result()
 
     class DummyRequest:
@@ -107,7 +109,52 @@ def test_company_form_long_name():
 
     data = MultiDict(
         {
-            "name": "A" * 101,
+            "name": "A" * 1000,
+            "street": "Test Street",
+            "postcode": "00-001",
+            "city": "Warsaw",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "website": "",
+            "color": "primary",
+            "NIP": "",
+            "REGON": "",
+            "KRS": "",
+            "court": "Białystok XII",
+        }
+    )
+    form = CompanyForm(request=DummyRequest(), formdata=data)
+    from marker.forms.select import COLORS, select_countries, select_subdivisions
+
+    form.subdivision.choices = select_subdivisions("PL")
+    form.country.choices = select_countries()
+    form.color.choices = COLORS
+
+    form.process(data=data)
+    assert form.validate()
+
+
+def test_company_form_too_long_name():
+    """
+    Name fields exceeding 1000 characters should be rejected.
+    """
+    class DummyDBSession:
+        def execute(self, *a, **kw):
+            class Result:
+                def scalar_one_or_none(self):
+                    return None
+            return Result()
+
+    class DummyRequest:
+        def __init__(self):
+            self.translate = lambda x: x
+            self.dbsession = DummyDBSession()
+
+    from webob.multidict import MultiDict
+
+    data = MultiDict(
+        {
+            "name": "A" * 1001,
             "street": "Test Street",
             "postcode": "00-001",
             "city": "Warsaw",
