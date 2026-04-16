@@ -1337,6 +1337,23 @@ class ProjectView:
             fields = project_autofill_from_website(website)
         except Exception as e:
             log.error("project_website_autofill error: %s", e)
+            _ = self.request.translate
+            error_msg = str(e)
+            # If the error message contains a long API response, only show a summary
+            if "Response:" in error_msg and len(error_msg) > 300:
+                error_msg = (
+                    error_msg.split("Response:")[0].strip() + " (details omitted)"
+                )
+            flash_msg = f"Autofill error: {error_msg}"
+            max_len = 500
+            if len(flash_msg.encode("utf-8")) > max_len:
+                flash_msg = (
+                    flash_msg.encode("utf-8")[:max_len].decode(
+                        "utf-8", errors="ignore"
+                    )
+                    + "..."
+                )
+            self.request.session.flash(_(flash_msg), "error")
             self.request.response.status_code = 502
             return {"error": str(e), "fields": {}}
         return {"fields": fields}
