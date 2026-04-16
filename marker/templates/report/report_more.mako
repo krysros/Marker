@@ -1,5 +1,4 @@
 <%!
-  import pycountry
   from decimal import Decimal
 
   _DECIMAL_REPORTS = {
@@ -65,7 +64,7 @@
   }:
       result_url = request.route_url("project_all", _query={"name": k})
   if "subdivisions" in rel:
-      label = getattr(pycountry.subdivisions.get(code=k), "name", "---")
+      label = get_subdivision_name(k, "---")
   else:
       label = k or "---"
 %>

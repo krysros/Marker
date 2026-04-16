@@ -3,7 +3,6 @@
 <%namespace name="pills" file="pills.mako"/>
 
 <%!
-  import pycountry
   from urllib.parse import urlparse
 %>
 
@@ -45,7 +44,7 @@
           <dt>${_("City")}</dt>
           <dd>${company.city or "---"}</dd>
           <dt>${_("Subdivision")}</dt>
-          <dd>${getattr(pycountry.subdivisions.get(code=company.subdivision), "name", "---")}</dd>
+          <dd>${get_subdivision_name(company.subdivision, "---")}</dd>
           <dt>${_("Country")}</dt>
           <dd>${countries.get(company.country) or "---"}</dd>
         </dl>

@@ -1,5 +1,6 @@
 import os
 
+import pycountry
 from pyramid.i18n import TranslationStringFactory, get_localizer
 from sqlalchemy import select
 
@@ -56,12 +57,28 @@ def _selected_ids_loader(request):
     return selected_ids
 
 
+def get_subdivision_name(code, default=""):
+    try:
+        return pycountry.subdivisions.get(code=code).name
+    except (LookupError, AttributeError):
+        return default
+
+
+def get_country_name(alpha_2, default=""):
+    try:
+        return pycountry.countries.get(alpha_2=alpha_2).name
+    except (LookupError, AttributeError):
+        return default
+
+
 def add_renderer_globals(event):
     request = event["request"]
     event["_"] = request.translate
     event["localizer"] = request.localizer
     event["selected_ids"] = _selected_ids_loader(request)
     event["gemini_api_key_set"] = bool(os.environ.get("GEMINI_API_KEY"))
+    event["get_subdivision_name"] = get_subdivision_name
+    event["get_country_name"] = get_country_name
 
 
 tsf = TranslationStringFactory("Marker")

@@ -1,9 +1,5 @@
 <%namespace name="button" file="button.mako"/>
 
-<%!
-  import pycountry
-%>
-
 <%
   role_criteria = context.get("role_criteria", {})
 %>
@@ -31,10 +27,10 @@
             <strong>${role_criteria.get(v, v)}</strong>;
           % endif
         % elif k == "country":
-          <strong>${pycountry.countries.get(alpha_2=v).name}</strong>;
+          <strong>${get_country_name(v, "---")}</strong>;
         % elif k == "subdivision":
           % for i in v:
-            <strong>${getattr(pycountry.subdivisions.get(code=i), "name", "---")}</strong>;
+            <strong>${get_subdivision_name(i, "---")}</strong>;
           % endfor
         % elif k == "stage":
           <strong>${stages.get(v)}</strong>;

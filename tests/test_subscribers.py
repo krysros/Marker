@@ -1,7 +1,13 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from marker.subscribers import _selected_ids_loader, add_localizer, add_renderer_globals
+from marker.subscribers import (
+    _selected_ids_loader,
+    add_localizer,
+    add_renderer_globals,
+    get_country_name,
+    get_subdivision_name,
+)
 
 
 def test_selected_ids_loader_anonymous():
@@ -41,6 +47,33 @@ def test_add_renderer_globals():
     assert event["_"] is translate_fn
     assert event["localizer"] is localizer_obj
     assert callable(event["selected_ids"])
+    assert event["get_subdivision_name"] is get_subdivision_name
+    assert event["get_country_name"] is get_country_name
+    assert isinstance(event["gemini_api_key_set"], bool)
+
+
+def test_get_subdivision_name_valid():
+    assert get_subdivision_name("AD-02") == "Canillo"
+
+
+def test_get_subdivision_name_invalid():
+    assert get_subdivision_name("INVALID-CODE") == ""
+
+
+def test_get_subdivision_name_none():
+    assert get_subdivision_name(None, "---") == "---"
+
+
+def test_get_country_name_valid():
+    assert get_country_name("PL") == "Poland"
+
+
+def test_get_country_name_invalid():
+    assert get_country_name("XX") == ""
+
+
+def test_get_country_name_none():
+    assert get_country_name(None, "---") == "---"
 
 
 def test_add_localizer():
@@ -53,3 +86,5 @@ def test_add_localizer():
         add_localizer(event)
     assert mock_request.localizer is mock_localizer
     assert callable(mock_request.translate)
+    result = mock_request.translate("hello")
+    assert result == "translated"

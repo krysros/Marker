@@ -3,7 +3,6 @@
 <%namespace name="pills" file="pills.mako"/>
 
 <%!
-  import pycountry
   from urllib.parse import urlparse
 
   def fmt_decimal(value):
@@ -50,7 +49,7 @@
           <dt>${_("City")}</dt>
           <dd>${project.city or "---"}</dd>
           <dt>${_("Subdivision")}</dt>
-          <dd>${getattr(pycountry.subdivisions.get(code=project.subdivision), "name", "---")}</dd>
+          <dd>${get_subdivision_name(project.subdivision, "---")}</dd>
           <dt>${_("Country")}</dt>
           <dd>${countries.get(project.country) or "---"}</dd> 
         </dl>
