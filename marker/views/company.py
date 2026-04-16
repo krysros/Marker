@@ -1392,9 +1392,7 @@ class CompanyView:
             max_len = 500
             if len(flash_msg.encode("utf-8")) > max_len:
                 flash_msg = (
-                    flash_msg.encode("utf-8")[:max_len].decode(
-                        "utf-8", errors="ignore"
-                    )
+                    flash_msg.encode("utf-8")[:max_len].decode("utf-8", errors="ignore")
                     + "..."
                 )
             self.request.session.flash(_(flash_msg), "error")
