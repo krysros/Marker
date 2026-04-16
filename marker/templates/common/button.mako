@@ -157,3 +157,40 @@
   </div>
 </div>
 </%def>
+
+<%def name="dropdown_filter(param, label, items)">
+<div class="btn-group">
+  <div class="dropdown">
+    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      % if q.get(param):
+        <i class="bi bi-funnel-fill"></i>
+      % else:
+        <i class="bi bi-funnel"></i>
+      % endif
+      ${label}
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a class="dropdown-item" role="button" href="${request.current_route_url(_query={k: v for k, v in q.items() if k != param})}">
+          % if not q.get(param):
+            <strong>${_("All")}</strong>
+          % else:
+            ${_("All")}
+          % endif
+        </a>
+      </li>
+      % for k, v in items.items():
+      <li>
+        <a class="dropdown-item" role="button" href="${request.current_route_url(_query={**q, param: k})}">
+          % if k == q.get(param):
+            <strong>${v}</strong>
+          % else:
+            ${v}
+          % endif
+        </a>
+      </li>
+      % endfor
+    </ul>
+  </div>
+</div>
+</%def>

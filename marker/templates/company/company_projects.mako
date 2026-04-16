@@ -17,6 +17,8 @@
 <%include file="company_lead.mako"/>
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
+  <div>${button.dropdown_filter('stage', _('Stage'), filter_stages)}</div>
+  <div>${button.dropdown_filter('role', _('Role'), filter_roles)}</div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>

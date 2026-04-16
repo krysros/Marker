@@ -1,6 +1,8 @@
 2.8
 ---
 
+- Added stage and role filter dropdowns for projects assigned to a company and companies assigned to a project
+- Added reusable dropdown_filter template component with active filter indicator
 - Added ODS export support alongside XLSX for companies, projects, contacts, tags and starred/selected views
 - Added XLSX/ODS title labels to download buttons across all export views
 - Added odfpy dependency for ODS spreadsheet generation with row coloring and column transformers

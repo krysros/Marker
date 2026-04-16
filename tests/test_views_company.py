@@ -1368,6 +1368,64 @@ def test_company_view_projects_contacts_tags_sort_order_branches(dbsession):
     assert "tags" in result3 or "bulk" in result3
 
 
+def test_company_view_projects_filter_stage_and_role(dbsession):
+    user = User(name="u", fullname="U", email="flt@e.com", role="admin", password="x")
+    dbsession.add(user)
+    company = Company(
+        name="FilterCo",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-MZ",
+        country="PL",
+        color="",
+        website="",
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
+    dbsession.add(company)
+    project = Project(
+        name="FilterProj",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="announcement",
+        delivery_method="",
+    )
+    project.created_by = user
+    dbsession.add(project)
+    dbsession.flush()
+    activity = Activity(stage="announcement", role="investor")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+    dbsession.flush()
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        params={
+            "sort": "name",
+            "order": "asc",
+            "stage": "announcement",
+            "role": "investor",
+        },
+    )
+    request.matched_route.name = "company_projects"
+    request.identity.selected_projects = []
+    view = CompanyView(request)
+    result = view.view()
+    assert len(result["projects_assoc"]) == 1
+    assert result["q"]["stage"] == "announcement"
+    assert result["q"]["role"] == "investor"
+
+
 def test_company_map_and_json_branches_starview(dbsession):
     user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
     dbsession.add(user)
