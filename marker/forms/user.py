@@ -21,7 +21,7 @@ class UserForm(Form):
         _("Name"),
         validators=[
             InputRequired(),
-            Length(min=3, max=30),
+            Length(max=1000),
         ],
         filters=[strip_filter],
         render_kw={"autofocus": True},

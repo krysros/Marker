@@ -23,7 +23,7 @@ class ContactForm(Form):
         _("Name"),
         validators=[
             InputRequired(),
-            Length(max=100),
+            Length(max=1000),
         ],
         filters=[strip_filter],
         render_kw={"autofocus": True},
