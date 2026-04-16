@@ -31,10 +31,8 @@
         <th>${_("Project")}</th>
         <th>${_("Stage")}</th>
         <th>${_("Role")}</th>
-        <th>${_("Net value")}</th>
-        <th>${_("Gross value")}</th>
-        <th>${_("Net price per m² of usable area")}</th>
-        <th>${_("Gross price per m² of usable area")}</th>
+        <th>${_("Wartość")}</th>
+        <th>${_("Cena za m²")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>

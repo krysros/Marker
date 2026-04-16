@@ -23,10 +23,14 @@
   </td>
   <td>${stages.get(assoc.stage)}</td>
   <td>${company_roles.get(assoc.role)}</td>
-  <td>${fmt_decimal(assoc.value_net)}</td>
-  <td>${fmt_decimal(assoc.value_gross)}</td>
-  <td>${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</td>
-  <td>${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</td>
+  <td>
+    <span class="d-block">${_("Netto")}: ${fmt_decimal(assoc.value_net)}</span>
+    <span class="d-block">${_("Brutto")}: ${fmt_decimal(assoc.value_gross)}</span>
+  </td>
+  <td>
+    <span class="d-block">${_("Netto")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</span>
+    <span class="d-block">${_("Brutto")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</span>
+  </td>
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.company_star(assoc.company, size='sm')}
