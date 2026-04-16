@@ -35,8 +35,6 @@
         <th>${_("Gross value")}</th>
         <th>${_("Net price per m² of usable area")}</th>
         <th>${_("Gross price per m² of usable area")}</th>
-        <th>${_("Created at")}</th>
-        <th>${_("Updated at")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>
