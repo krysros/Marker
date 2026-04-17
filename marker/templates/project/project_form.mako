@@ -134,6 +134,7 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
+      % if hasattr(form, 'object_category'):
       <div class="mb-3">
         ${form.object_category.label(class_="form-label")}
         ${form.object_category(class_="form-control" + (" is-invalid" if form.errors.get("object_category") else ""))}
@@ -141,6 +142,7 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
+      % endif
       % if hasattr(form, 'deadline_from'):
       <div class="row mb-3">
         <div class="col">
