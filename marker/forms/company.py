@@ -267,7 +267,7 @@ class CompanyLinkForm(Form):
         _("Name"),
         validators=[
             InputRequired(),
-            Length(min=1, max=200),
+            Length(max=1000),
         ],
         filters=[strip_filter],
         render_kw={"autofocus": True},
