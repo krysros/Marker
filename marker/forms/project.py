@@ -163,6 +163,11 @@ class ProjectSearchForm(Form):
         places=2,
     )
     color = SelectField(_("Color"), choices=COLORS)
+    object_category = SelectField(
+        _("Object category"),
+        choices=OBJECT_CATEGORIES,
+        validators=[Optional()],
+    )
 
 
 class ProjectFilterForm(Form):
@@ -225,6 +230,11 @@ class ProjectFilterForm(Form):
         format="%Y-%m-%dT%H:%M",
         validators=[Optional()],
         widget=DateTimeLocalInput(),
+    )
+    object_category = SelectField(
+        _("Object category"),
+        choices=OBJECT_CATEGORIES,
+        validators=[Optional()],
     )
 
     def __init__(self, *args, request, **kwargs):
