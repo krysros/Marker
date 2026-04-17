@@ -52,14 +52,6 @@
           <dd>${get_subdivision_name(project.subdivision, "---")}</dd>
           <dt>${_("Country")}</dt>
           <dd>${countries.get(project.country) or "---"}</dd>
-          <dt>${_("Object category")}</dt>
-          <dd>
-            % if project.object_category:
-              ${project.object_category}
-            % else:
-              ---
-            % endif
-          </dd>
         </dl>
       </div>
       <div class="col">
@@ -70,6 +62,14 @@
           <dd>${stages.get(project.stage) or "---"}</dd>
           <dt>${_("Project delivery method")}</dt>
           <dd>${delivery_methods.get(project.delivery_method) or "---"}</dd>
+          <dt>${_("Object category")}</dt>
+          <dd>
+            % if project.object_category:
+              ${project.object_category}
+            % else:
+              ---
+            % endif
+          </dd>
           <dt>${_("Usable area [m²]")}</dt>
           <dd>${fmt_decimal(project.usable_area)}</dd>
           <dt>${_("Cubic volume [m³]")}</dt>
