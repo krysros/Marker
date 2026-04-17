@@ -21,6 +21,7 @@ from .select import (
     PROJECT_DELIVERY_METHODS,
     STAGES,
     STATUS,
+    OBJECT_CATEGORIES,
     select_countries,
     select_subdivisions,
 )
@@ -69,6 +70,11 @@ class ProjectForm(Form):
         widget=DateTimeLocalInput(),
     )
     stage = SelectField(_("Stage"), choices=STAGES)
+    object_category = SelectField(
+        _("Object category"),
+        choices=OBJECT_CATEGORIES,
+        validators=[Optional()],
+    )
     delivery_method = SelectField(
         _("Project delivery method"), choices=PROJECT_DELIVERY_METHODS
     )

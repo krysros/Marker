@@ -46,6 +46,13 @@
         % endfor
       </div>
       <div class="mb-3">
+        ${form.object_category.label(class_="form-label")}
+        ${form.object_category(class_="form-control" + (" is-invalid" if form.errors.get("object_category") else ""))}
+        % for error in form.errors.get("object_category", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      <div class="mb-3">
         ${form.subdivision.label(class_="form-label")}
         <select class="form-control" id="subdivision" name="subdivision">
         % for code, name in subdivisions.items():

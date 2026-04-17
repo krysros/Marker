@@ -31,6 +31,7 @@ class Project(Base):
     color: Mapped[Optional[str]]
     deadline: Mapped[Optional[datetime.datetime]]
     stage: Mapped[Optional[str]]
+    object_category: Mapped[Optional[str]]
     delivery_method: Mapped[Optional[str]]
     usable_area: Mapped[Optional[Decimal]]
     cubic_volume: Mapped[Optional[Decimal]]

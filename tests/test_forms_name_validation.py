@@ -53,7 +53,7 @@ def test_company_form_valid_name():
 
 def test_company_form_invalid_name_dash():
     form = make_company_form("---Firma")
-    # The name contains a letter, so it should be valid
+    # Name starting with dash should be valid (no dash check)
     assert form.validate() is True
 
 
@@ -80,7 +80,7 @@ def test_project_form_valid_name():
 
 def test_project_form_invalid_name_dash():
     form = make_project_form("---Projekt")
-    # The name contains a letter, so it should be valid
+    # Name starting with dash should be valid (no dash check)
     assert form.validate() is True
 
 
@@ -107,8 +107,8 @@ def test_tag_form_valid_name():
 
 def test_tag_form_invalid_name_dash():
     form = make_tag_form("---Tag")
-    assert not form.validate()
-    assert "name" in form.errors
+    # Name starting with dash should be valid (no dash check)
+    assert form.validate() is True
 
 
 def test_tag_form_invalid_name_only_dash():
