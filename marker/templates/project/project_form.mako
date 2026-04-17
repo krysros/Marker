@@ -45,13 +45,7 @@
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
-      <div class="mb-3">
-        ${form.object_category.label(class_="form-label")}
-        ${form.object_category(class_="form-control" + (" is-invalid" if form.errors.get("object_category") else ""))}
-        % for error in form.errors.get("object_category", []):
-          <div class="invalid-feedback">${error}</div>
-        % endfor
-      </div>
+        <!-- pole object_category przeniesione niżej -->
       <div class="mb-3">
         ${form.subdivision.label(class_="form-label")}
         <select class="form-control" id="subdivision" name="subdivision">
@@ -110,6 +104,13 @@
           </div>
         % endif
       </div>
+      <div class="mb-3">
+        ${form.color.label(class_="form-label")}
+        ${form.color(class_="form-control" + (" is-invalid" if form.errors.get("color") else ""))}
+        % for error in form.errors.get("color", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
       % if hasattr(form, 'deadline') and form.deadline.type != 'HiddenField':
       <div class="mb-3">
         ${form.deadline.label(class_="form-label")}
@@ -130,6 +131,13 @@
         ${form.delivery_method.label(class_="form-label")}
         ${form.delivery_method(class_="form-control" + (" is-invalid" if form.errors.get("delivery_method") else ""))}
         % for error in form.errors.get("delivery_method", []):
+          <div class="invalid-feedback">${error}</div>
+        % endfor
+      </div>
+      <div class="mb-3">
+        ${form.object_category.label(class_="form-label")}
+        ${form.object_category(class_="form-control" + (" is-invalid" if form.errors.get("object_category") else ""))}
+        % for error in form.errors.get("object_category", []):
           <div class="invalid-feedback">${error}</div>
         % endfor
       </div>
@@ -238,13 +246,6 @@
         </div>
       </div>
       % endif
-      <div class="mb-3">
-        ${form.color.label(class_="form-label")}
-        ${form.color(class_="form-control" + (" is-invalid" if form.errors.get("color") else ""))}
-        % for error in form.errors.get("color", []):
-          <div class="invalid-feedback">${error}</div>
-        % endfor
-      </div>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>
       </div>
