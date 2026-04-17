@@ -24,13 +24,6 @@
     <small class="text-body-secondary">${_("Updated at")}: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>
   <td>
-    % if project.object_category:
-      ${project.object_category}
-    % else:
-      ---
-    % endif
-  </td>
-  <td>
     ${project.city or "---"}<br>
     <small class="text-body-secondary">${get_subdivision_name(project.subdivision, "---")}</small><br>
     <small class="text-body-secondary">${get_country_name(project.country, "---")}</small>
