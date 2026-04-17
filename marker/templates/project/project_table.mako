@@ -10,6 +10,7 @@
       <tr>
         <th>${checkbox.select_all()}</th>
         <th>${_("Project")}</th>
+        <th>${_("Object category")}</th>
         <th>${_("City")}</th>
         % if show_shared_tags:
         <th>${_("Common tags")}</th>

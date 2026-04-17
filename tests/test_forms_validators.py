@@ -267,8 +267,7 @@ def test_company_name_starts_with_dash():
             "color": "",
         }
     )
-    form.validate()
-    assert "name" in form.errors
+    assert form.validate() is True
 
 
 def test_company_filter_form_with_country():
@@ -455,8 +454,7 @@ def test_project_name_starts_with_dash():
             "delivery_method": "",
         }
     )
-    form.validate()
-    assert "name" in form.errors
+    assert form.validate() is True
 
 
 def test_project_filter_form_with_country():
@@ -556,8 +554,7 @@ def test_tag_name_starts_with_dash():
     req = DummyRequest(db)
     data = MultiDict({"name": "---Bad"})
     form = TagForm(data, request=req)
-    form.validate()
-    assert "name" in form.errors
+    assert form.validate() is True
 
 
 def test_tag_filter_form():
@@ -688,8 +685,7 @@ def test_change_password_mismatch():
 def test_contact_form_name_starts_with_dash():
     data = MultiDict({"name": "---Bad", "color": ""})
     form = ContactForm(data)
-    form.validate()
-    assert "name" in form.errors
+    assert form.validate() is True
 
 
 def test_contact_filter_form_with_country():

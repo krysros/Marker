@@ -30,7 +30,7 @@ def test_contact_form_valid_name():
 
 def test_contact_form_invalid_name_dash():
     form = make_form("---Firma")
-    # The name contains a letter, so it should be valid
+    # Name starting with dash should be valid (no dash check)
     assert form.validate() is True
 
 

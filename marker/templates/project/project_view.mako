@@ -51,7 +51,15 @@
           <dt>${_("Subdivision")}</dt>
           <dd>${get_subdivision_name(project.subdivision, "---")}</dd>
           <dt>${_("Country")}</dt>
-          <dd>${countries.get(project.country) or "---"}</dd> 
+          <dd>${countries.get(project.country) or "---"}</dd>
+          <dt>${_("Object category")}</dt>
+          <dd>
+            % if project.object_category:
+              ${project.object_category}
+            % else:
+              ---
+            % endif
+          </dd>
         </dl>
       </div>
       <div class="col">
