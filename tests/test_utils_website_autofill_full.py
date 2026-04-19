@@ -93,9 +93,7 @@ def test_project_autofill_success(mock_loader, mock_llm, mock_geo):
 def test_autofill_missing_api_key(mock_loader):
     mock_loader.return_value = [MagicMock(page_content="test page content")]
     with patch.dict("os.environ", {}, clear=True):
-        import pydantic_core
-
-        with pytest.raises(pydantic_core._pydantic_core.ValidationError):
+        with pytest.raises(ValueError):
             company_autofill_from_website("https://example.com")
 
 
