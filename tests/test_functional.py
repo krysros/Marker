@@ -2311,12 +2311,23 @@ def test_company_website_autofill_supports_developer_descriptors(
     os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
 
+    def mock_invoke(self, prompt):
+        if "Developer" in prompt:
+            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
+        else:
+            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
+    def make_loader(descriptor):
+        return lambda self: [type("Doc", (), {"page_content": f"Alfa {descriptor}"})()]
+
+    def mock_invoke(self, prompt):
+        if "Deweloper" in prompt:
+            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
+        else:
+            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
+
     monkeypatch.setattr(
-        website_autofill,
-        "extract_fields_llm",
-        lambda html, api_key=None: {
-            "name": "Alfa Developer" if "Developer" in html else "Alfa Deweloper"
-        },
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        mock_invoke,
     )
 
     user = models.user.User(
@@ -2342,26 +2353,10 @@ def test_company_website_autofill_supports_developer_descriptors(
     )
 
     for descriptor in ("Deweloper", "Developer"):
-        html = f"""
-        <html>
-            <head>
-                <title>Kontakt - Alfa</title>
-                <meta property="og:site_name" content="Alfa" />
-            </head>
-            <body>
-                Alfa {descriptor}
-                ul. Przykładowa 1
-                00-001 Warszawa
-            </body>
-        </html>
-        """
-
         monkeypatch.setattr(
-            website_autofill,
-            "_download_html",
-            lambda url, timeout, html=html: (html, "https://alfa.pl/kontakt/"),
+            "langchain_community.document_loaders.WebBaseLoader.load",
+            make_loader(descriptor),
         )
-
         response = testapp.get(
             "/company/add/website_autofill",
             params={"website": "https://alfa.pl/kontakt/"},
@@ -2379,9 +2374,12 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        website_autofill,
-        "extract_fields_llm",
-        lambda html, api_key=None: {"name": "Alfa Developer"},
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "alfa developer Alfa Developer"})()],
+    )
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: type("Resp", (), {"content": '{"name": "Alfa Developer"}'})(),
     )
 
     user = models.user.User(
@@ -2406,25 +2404,6 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
         lambda **kwargs: None,
     )
 
-    html = """
-    <html>
-        <head>
-            <title>Kontakt - alfa</title>
-        </head>
-        <body>
-            alfa developer
-            Alfa Developer
-            ul. Przykładowa 1
-            00-001 Warszawa
-        </body>
-    </html>
-    """
-
-    monkeypatch.setattr(
-        website_autofill,
-        "_download_html",
-        lambda url, timeout: (html, "https://alfa.pl/kontakt/"),
-    )
 
     response = testapp.get(
         "/company/add/website_autofill",
@@ -2443,14 +2422,12 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        website_autofill,
-        "extract_fields_llm",
-        lambda html, api_key=None: {
-            "name": "Nowa Przestrzeń Developer",
-            "street": "Kwiatowa 12",
-            "postcode": "00-123",
-            "city": "Warszawa",
-        },
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "Nowa Przestrzeń Developer Kwiatowa 12 00-123 Warszawa"})()],
+    )
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: type("Resp", (), {"content": '{"name": "Nowa Przestrzeń Developer", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}'})(),
     )
 
     user = models.user.User(
@@ -2475,52 +2452,17 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
         lambda **kwargs: None,
     )
 
-    html_variants = (
-        """
-        <html>
-            <head>
-                <title>Kontakt</title>
-            </head>
-            <body>
-                Nowa Przestrzeń Developer
-                Kwiatowa 12
-                00-123 Warszawa
-            </body>
-        </html>
-        """,
-        """
-        <html>
-            <head>
-                <title>Kontakt</title>
-            </head>
-            <body>
-                Nowa Przestrzeń Developer, Kwiatowa 12, 00-123 Warszawa
-            </body>
-        </html>
-        """,
+    response = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://nowa-przestrzen.pl/kontakt/"},
+        status=200,
     )
+    fields = response.json["fields"]
 
-    for html in html_variants:
-        monkeypatch.setattr(
-            website_autofill,
-            "_download_html",
-            lambda url, timeout, html=html: (
-                html,
-                "https://nowa-przestrzen.pl/kontakt/",
-            ),
-        )
-
-        response = testapp.get(
-            "/company/add/website_autofill",
-            params={"website": "https://nowa-przestrzen.pl/kontakt/"},
-            status=200,
-        )
-        fields = response.json["fields"]
-
-        assert fields["name"] == "Nowa Przestrzeń Developer"
-        assert fields["street"] == "Kwiatowa 12"
-        assert fields["postcode"] == "00-123"
-        assert fields["city"] == "Warszawa"
+    assert fields["name"] == "Nowa Przestrzeń Developer"
+    assert fields["street"] == "Kwiatowa 12"
+    assert fields["postcode"] == "00-123"
+    assert fields["city"] == "Warszawa"
 
 
 def test_company_website_autofill_includes_trade_prefix_from_previous_line(
@@ -2565,37 +2507,13 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
     )
 
     for prefix_line, expected_name in html_cases:
-        html = f"""
-        <html>
-            <head>
-                <title>Kontakt</title>
-            </head>
-            <body>
-                {prefix_line}
-                Alfa
-                Kwiatowa 12
-                00-123 Warszawa
-            </body>
-        </html>
-        """
-
         monkeypatch.setattr(
-            website_autofill,
-            "_download_html",
-            lambda url, timeout, html=html: (
-                html,
-                "https://alfa.pl/kontakt/",
-            ),
+            "langchain_community.document_loaders.WebBaseLoader.load",
+            lambda self: [type("Doc", (), {"page_content": f"{prefix_line} Alfa Kwiatowa 12 00-123 Warszawa"})()],
         )
         monkeypatch.setattr(
-            website_autofill,
-            "extract_fields_llm",
-            lambda html_arg, api_key=None, expected_name=expected_name: {
-                "name": expected_name,
-                "street": "Kwiatowa 12",
-                "postcode": "00-123",
-                "city": "Warszawa",
-            },
+            "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+            lambda self, prompt, expected_name=expected_name: type("Resp", (), {"content": f'{{"name": "{expected_name}", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}}'})(),
         )
 
         response = testapp.get(

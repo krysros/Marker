@@ -56,12 +56,3 @@ def test_location_details_integration():
     result = location_details(q="Warsaw, Poland")
     # Accept results with at least 'country' present, since API may not return city keys
     assert result is None or ("country" in result)
-
-
-@pytest.mark.integration
-def test_website_autofill_regex_integration():
-    from marker.utils.website_autofill import _POSTCODE_RE, _STREET_RE
-
-    text = "ul. Kwiatowa 12, 00-123 Warszawa"
-    assert _STREET_RE.search(text)
-    assert _POSTCODE_RE.search(text)
