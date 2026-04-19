@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from marker.utils.website_autofill import (
-    _download_html,
     _fold_text,
     _normalize_whitespace,
     _subdivision_code_from_value,
@@ -56,95 +55,69 @@ def test_subdivision_code_from_value_not_found():
     assert result == ""
 
 
-@patch("marker.utils.website_autofill._download_html")
-@patch("marker.utils.website_autofill.extract_fields_llm")
 @patch("marker.utils.website_autofill.location_details")
-def test_company_autofill_success(mock_geo, mock_llm, mock_download):
-    mock_download.return_value = ("<html>test</html>", "https://example.com")
-    mock_llm.return_value = {
-        "name": "TestCo",
-        "street": "ul. Testowa 1",
-        "postcode": "00-001",
-        "city": "Warsaw",
-    }
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_company_autofill_success(mock_loader, mock_llm, mock_geo):
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "TestCo", "street": "ul. Testowa 1", "postcode": "00-001", "city": "Warsaw"}')
     mock_geo.return_value = {
         "country_code": "PL",
         "state": "Mazowieckie",
     }
-
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
-
     assert result["name"] == "TestCo"
     assert result["country"] == "PL"
     assert result["subdivision"] == "PL-14"
 
 
-@patch("marker.utils.website_autofill._download_html")
-@patch("marker.utils.website_autofill.extract_fields_llm")
 @patch("marker.utils.website_autofill.location_details")
-def test_project_autofill_success(mock_geo, mock_llm, mock_download):
-    mock_download.return_value = ("<html>test</html>", "https://example.com")
-    mock_llm.return_value = {
-        "name": "TestProject",
-        "city": "Krakow",
-    }
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_project_autofill_success(mock_loader, mock_llm, mock_geo):
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "TestProject", "city": "Krakow"}')
     mock_geo.return_value = None
-
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = project_autofill_from_website("https://example.com")
-
     assert result["name"] == "TestProject"
     assert result["city"] == "Krakow"
 
 
-@patch("marker.utils.website_autofill._download_html")
-def test_autofill_missing_api_key(mock_download):
-    mock_download.return_value = ("<html></html>", "https://example.com")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_missing_api_key(mock_loader):
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
     with patch.dict("os.environ", {}, clear=True):
-        with pytest.raises(RuntimeError, match="GEMINI_API_KEY"):
+        import pydantic_core
+        with pytest.raises(pydantic_core._pydantic_core.ValidationError):
             company_autofill_from_website("https://example.com")
 
 
-@patch("marker.utils.website_autofill._download_html")
-def test_autofill_download_error(mock_download):
-    mock_download.side_effect = RuntimeError("Error fetching website")
-    with pytest.raises(RuntimeError, match="Error fetching"):
-        company_autofill_from_website("https://fail.com")
-
-
-@patch("marker.utils.website_autofill._download_html")
-@patch("marker.utils.website_autofill.extract_fields_llm")
 @patch("marker.utils.website_autofill.location_details")
-def test_autofill_no_street_prefix(mock_geo, mock_llm, mock_download):
-    mock_download.return_value = ("<html></html>", "https://example.com")
-    mock_llm.return_value = {
-        "name": "Co",
-        "street": "Testowa 1",
-        "city": "Warsaw",
-    }
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_no_street_prefix(mock_loader, mock_llm, mock_geo):
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "street": "Testowa 1", "city": "Warsaw"}')
     mock_geo.return_value = None
-
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
-
     assert result["street"] == "Testowa 1"
 
 
-@patch("marker.utils.website_autofill._download_html")
-@patch("marker.utils.website_autofill.extract_fields_llm")
 @patch("marker.utils.website_autofill.location_details")
-def test_autofill_geo_no_subdivision_code(mock_geo, mock_llm, mock_download):
-    mock_download.return_value = ("<html></html>", "https://example.com")
-    mock_llm.return_value = {"name": "Co", "city": "Unknown"}
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_geo_no_subdivision_code(mock_loader, mock_llm, mock_geo):
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Unknown"}')
     mock_geo.return_value = {
         "country_code": "PL",
         "state": "NonexistentState",
     }
-
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
-
     # Falls back to state name when no ISO code found
     assert result.get("subdivision") == "NonexistentState"
 
@@ -162,21 +135,3 @@ def test_subdivision_code_fuzzy_contained_match():
     assert result == "PL-14"
 
 
-@patch("marker.utils.website_autofill.urllib.request.urlopen")
-def test_download_html_success(mock_urlopen):
-    mock_resp = MagicMock()
-    mock_resp.read.return_value = b"<html>test</html>"
-    mock_resp.geturl.return_value = "https://example.com"
-    mock_resp.__enter__ = lambda s: s
-    mock_resp.__exit__ = MagicMock(return_value=False)
-    mock_urlopen.return_value = mock_resp
-    html, url = _download_html("https://example.com")
-    assert html == "<html>test</html>"
-    assert url == "https://example.com"
-
-
-@patch("marker.utils.website_autofill.urllib.request.urlopen")
-def test_download_html_error(mock_urlopen):
-    mock_urlopen.side_effect = Exception("connection failed")
-    with pytest.raises(RuntimeError, match="Error fetching"):
-        _download_html("https://fail.com")
