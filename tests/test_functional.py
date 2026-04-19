@@ -5,6 +5,14 @@ from sqlalchemy import select
 from marker import models
 
 
+def _login_as_editor(testapp, username, password):
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = username
+    form["password"] = password
+    form.submit(status=303)
+
+
 def _assert_category_select_has_default_all(page_text):
     from bs4 import BeautifulSoup
 
@@ -2316,6 +2324,7 @@ def test_company_website_autofill_supports_developer_descriptors(
             return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
         else:
             return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
+
     def make_loader(descriptor):
         return lambda self: [type("Doc", (), {"page_content": f"Alfa {descriptor}"})()]
 
@@ -2375,11 +2384,15 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
 
     monkeypatch.setattr(
         "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "alfa developer Alfa Developer"})()],
+        lambda self: [
+            type("Doc", (), {"page_content": "alfa developer Alfa Developer"})()
+        ],
     )
     monkeypatch.setattr(
         "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: type("Resp", (), {"content": '{"name": "Alfa Developer"}'})(),
+        lambda self, prompt: type(
+            "Resp", (), {"content": '{"name": "Alfa Developer"}'}
+        )(),
     )
 
     user = models.user.User(
@@ -2404,7 +2417,6 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
         lambda **kwargs: None,
     )
 
-
     response = testapp.get(
         "/company/add/website_autofill",
         params={"website": "https://alfa.pl/kontakt/"},
@@ -2423,11 +2435,25 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
 
     monkeypatch.setattr(
         "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "Nowa Przestrzeń Developer Kwiatowa 12 00-123 Warszawa"})()],
+        lambda self: [
+            type(
+                "Doc",
+                (),
+                {
+                    "page_content": "Nowa Przestrzeń Developer Kwiatowa 12 00-123 Warszawa"
+                },
+            )()
+        ],
     )
     monkeypatch.setattr(
         "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: type("Resp", (), {"content": '{"name": "Nowa Przestrzeń Developer", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}'})(),
+        lambda self, prompt: type(
+            "Resp",
+            (),
+            {
+                "content": '{"name": "Nowa Przestrzeń Developer", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}'
+            },
+        )(),
     )
 
     user = models.user.User(
@@ -2509,11 +2535,23 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
     for prefix_line, expected_name in html_cases:
         monkeypatch.setattr(
             "langchain_community.document_loaders.WebBaseLoader.load",
-            lambda self: [type("Doc", (), {"page_content": f"{prefix_line} Alfa Kwiatowa 12 00-123 Warszawa"})()],
+            lambda self: [
+                type(
+                    "Doc",
+                    (),
+                    {"page_content": f"{prefix_line} Alfa Kwiatowa 12 00-123 Warszawa"},
+                )()
+            ],
         )
         monkeypatch.setattr(
             "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-            lambda self, prompt, expected_name=expected_name: type("Resp", (), {"content": f'{{"name": "{expected_name}", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}}'})(),
+            lambda self, prompt, expected_name=expected_name: type(
+                "Resp",
+                (),
+                {
+                    "content": f'{{"name": "{expected_name}", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}}'
+                },
+            )(),
         )
 
         response = testapp.get(
@@ -2527,3 +2565,120 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
         assert fields["street"] == "Kwiatowa 12"
         assert fields["postcode"] == "00-123"
         assert fields["city"] == "Warszawa"
+
+
+def test_company_website_autofill_error(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker.utils import website_autofill
+
+    # Patch the LLM call to raise an exception
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
+    )
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: (_ for _ in ()).throw(RuntimeError("LLM error!")),
+    )
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+    from marker import models
+
+    user = models.user.User(
+        name="company-autofill-error-editor",
+        password="admin",
+        fullname="Company Autofill Error Editor",
+        email="company.autofill.error@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-autofill-error-editor", "admin")
+    resp = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://fail.example.com"},
+        status=502,
+    )
+    assert resp.json["error"] == "LLM error!"
+    assert resp.json["fields"] == {}
+
+
+def test_company_website_autofill_error_long_response(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
+    )
+    # Simulate a long error message with 'Response:'
+    long_error = "Some error. Response: " + ("x" * 500)
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: (_ for _ in ()).throw(RuntimeError(long_error)),
+    )
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+    user = models.user.User(
+        name="company-autofill-error-long-editor",
+        password="admin",
+        fullname="Company Autofill Error Long Editor",
+        email="company.autofill.error.long@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-autofill-error-long-editor", "admin")
+    resp = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://fail.example.com"},
+        status=502,
+    )
+    assert resp.json["error"].startswith("Some error.")
+    assert resp.json["fields"] == {}
+
+
+def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
+    )
+    # Simulate a very long error message (over 500 bytes)
+    very_long_error = "x" * 1000
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: (_ for _ in ()).throw(RuntimeError(very_long_error)),
+    )
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+    user = models.user.User(
+        name="company-autofill-error-flash-editor",
+        password="admin",
+        fullname="Company Autofill Error Flash Editor",
+        email="company.autofill.error.flash@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-autofill-error-flash-editor", "admin")
+    resp = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://fail.example.com"},
+        status=502,
+    )
+    assert resp.json["error"].startswith("x")
+    assert resp.json["fields"] == {}
