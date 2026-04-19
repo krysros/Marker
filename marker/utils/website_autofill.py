@@ -1,58 +1,39 @@
-import ssl
-
-ssl._create_default_https_context = ssl._create_unverified_context
-
-import os
+import json
 import re
 import unicodedata
-import urllib.request
 
 import pycountry
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from .geo import location_details
-from .llm_extract import extract_fields_llm
-
-_STREET_RE = re.compile(
-    r"^(ulica|ul\.|ul)\s*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż]+\s*\d+", re.IGNORECASE
-)
-_POSTCODE_RE = re.compile(r"\d{2}-\d{3}")
-
-__all__ = [
-    "_STREET_RE",
-    "_POSTCODE_RE",
-    # ...existing code...
-]
 
 
-def _download_html(url, timeout=10):
-    """
-    Download HTML content from the given URL with a timeout.
-    Returns a tuple: (html_content, final_url)
-    """
-    try:
-        with urllib.request.urlopen(url, timeout=timeout) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
-            final_url = resp.geturl()
-            return html, final_url
-    except Exception as e:
-        raise RuntimeError(f"Error fetching website: {e}")
+def _clean_json_string(json_string):
+    pattern = r"^```json\s*(.*?)\s*```$"
+    cleaned_string = re.sub(pattern, r"\1", json_string, flags=re.DOTALL)
+    return cleaned_string.strip()
 
 
-def _autofill_from_website(website, fields):
+def _autofill_from_website(url, prompt):
     """
     Shared logic for autofilling company or project data from a website.
     """
+    # Load the content of the page
+    loader = WebBaseLoader(url)
+    docs = loader.load()
 
-    try:
-        html, _ = _download_html(website, timeout=10)
-    except Exception as e:
-        raise RuntimeError(f"Error fetching website: {e}")
+    # Extract just the text from the loaded document
+    content = docs[0].page_content
 
-    api_key = os.environ.get("GEMINI_API_KEY", "")
-    if not api_key:
-        raise RuntimeError("GEMINI_API_KEY environment variable is missing")
+    # Initialize Gemini model
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
-    result = extract_fields_llm(html, api_key)
+    # Make the request
+    response = llm.invoke(f"{prompt}:\n\n{content}")
+
+    # Convert the response to JSON
+    result = json.loads(_clean_json_string(response.content))
 
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
@@ -62,10 +43,7 @@ def _autofill_from_website(website, fields):
         result["street"] = street
 
     # Set country and subdivision (voivodeship/state) based on address using Nominatim
-    address_query = " ".join(
-        str(result.get(f, "")) for f in ("street", "postcode", "city") if result.get(f)
-    )
-    geo = location_details(q=address_query)
+    geo = location_details(**result)
     if geo:
         # Set country to country code (e.g. PL)
         if geo.get("country_code"):
@@ -80,35 +58,17 @@ def _autofill_from_website(website, fields):
             else:
                 result["subdivision"] = geo["state"]
 
-    return {field: result.get(field) for field in fields if result.get(field)}
+    return result
 
 
 def company_autofill_from_website(website):
-
-    fields = (
-        "name",
-        "street",
-        "postcode",
-        "city",
-        "subdivision",
-        "country",
-        "NIP",
-        "REGON",
-        "KRS",
-    )
-    return _autofill_from_website(website, fields)
+    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Return the result as JSON."
+    return _autofill_from_website(website, prompt)
 
 
 def project_autofill_from_website(website):
-    fields = (
-        "name",
-        "street",
-        "postcode",
-        "city",
-        "subdivision",
-        "country",
-    )
-    return _autofill_from_website(website, fields)
+    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Return the result as JSON."
+    return _autofill_from_website(website, prompt)
 
 
 def _subdivision_code_from_value(value, country_code):
