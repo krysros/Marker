@@ -2368,7 +2368,7 @@ def test_company_website_autofill_supports_developer_descriptors(
         )
         response = testapp.get(
             "/company/add/website_autofill",
-            params={"website": "https://alfa.pl/kontakt/"},
+            params={"website": f"https://example.com/kontakt/"},
             status=200,
         )
         fields = response.json["fields"]
@@ -2419,7 +2419,7 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
 
     response = testapp.get(
         "/company/add/website_autofill",
-        params={"website": "https://alfa.pl/kontakt/"},
+        params={"website": "https://example.com/kontakt/"},
         status=200,
     )
     fields = response.json["fields"]
@@ -2480,7 +2480,7 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
 
     response = testapp.get(
         "/company/add/website_autofill",
-        params={"website": "https://nowa-przestrzen.pl/kontakt/"},
+        params={"website": "https://example.com/kontakt/"},
         status=200,
     )
     fields = response.json["fields"]
@@ -2556,7 +2556,7 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
 
         response = testapp.get(
             "/company/add/website_autofill",
-            params={"website": "https://alfa.pl/kontakt/"},
+            params={"website": "https://example.com/kontakt/"},
             status=200,
         )
         fields = response.json["fields"]
