@@ -39,8 +39,11 @@ dependencies = [
     "markdown",
     "nh3",
     "pycountry",
-    "google-genai",
     "odfpy",
+    "beautifulsoup4",
+    "langchain",
+    "langchain-community",
+    "langchain-google-genai",
 ]
 
 [dependency-groups]
