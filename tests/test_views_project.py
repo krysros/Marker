@@ -2764,3 +2764,58 @@ def test_project_website_autofill_error(mock_autofill, dbsession):
     assert result["fields"] == {}
     assert "API unavailable" in result["error"]
     assert request.response.status_code == 502
+
+
+@patch("marker.views.project.project_autofill_from_website")
+def test_project_website_autofill_error_long_response(mock_autofill, dbsession):
+    # Simulate a long error message with 'Response:'
+    long_msg = "Some error occurred. Response: " + ("x" * 500)
+    mock_autofill.side_effect = RuntimeError(long_msg)
+    user = _make_user(dbsession, "projwsaferrlong")
+    proj = _make_project(dbsession, user, "ProjWsAfErrLongP")
+    proj_id = proj.id
+    transaction.commit()
+    proj = dbsession.get(Project, proj_id)
+    request = _make_request(
+        dbsession, user, project=proj, params={"website": "http://x.com"}
+    )
+    # Patch session.flash to append to a real list
+    flashes = []
+
+    def flash(msg, category=None):
+        flashes.append((category, msg))
+
+    request.session.flash = flash
+    view = ProjectView(request)
+    result = view.website_autofill()
+    # The returned error is the original exception, but the flash message is truncated and should contain (details omitted)
+    flash_msg = flashes[-1][1]
+    assert "(details omitted)" in flash_msg
+    assert request.response.status_code == 502
+
+
+@patch("marker.views.project.project_autofill_from_website")
+def test_project_website_autofill_error_flash_truncation(mock_autofill, dbsession):
+    # Simulate an extremely long error message to trigger flash truncation
+    long_msg = "A" * 2000
+    mock_autofill.side_effect = RuntimeError(long_msg)
+    user = _make_user(dbsession, "projwsaferrflash")
+    proj = _make_project(dbsession, user, "ProjWsAfErrFlashP")
+    proj_id = proj.id
+    transaction.commit()
+    proj = dbsession.get(Project, proj_id)
+    request = _make_request(
+        dbsession, user, project=proj, params={"website": "http://x.com"}
+    )
+    flashes = []
+
+    def flash(msg, category=None):
+        flashes.append((category, msg))
+
+    request.session.flash = flash
+    view = ProjectView(request)
+    result = view.website_autofill()
+    # The flash message should be truncated to max_len and end with '...'
+    flash_msg = flashes[-1][1]
+    assert flash_msg.endswith("...")
+    assert request.response.status_code == 502

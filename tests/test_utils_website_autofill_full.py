@@ -60,7 +60,9 @@ def test_subdivision_code_from_value_not_found():
 @patch("langchain_community.document_loaders.WebBaseLoader.load")
 def test_company_autofill_success(mock_loader, mock_llm, mock_geo):
     mock_loader.return_value = [MagicMock(page_content="test page content")]
-    mock_llm.return_value = MagicMock(content='{"name": "TestCo", "street": "ul. Testowa 1", "postcode": "00-001", "city": "Warsaw"}')
+    mock_llm.return_value = MagicMock(
+        content='{"name": "TestCo", "street": "ul. Testowa 1", "postcode": "00-001", "city": "Warsaw"}'
+    )
     mock_geo.return_value = {
         "country_code": "PL",
         "state": "Mazowieckie",
@@ -77,7 +79,9 @@ def test_company_autofill_success(mock_loader, mock_llm, mock_geo):
 @patch("langchain_community.document_loaders.WebBaseLoader.load")
 def test_project_autofill_success(mock_loader, mock_llm, mock_geo):
     mock_loader.return_value = [MagicMock(page_content="test page content")]
-    mock_llm.return_value = MagicMock(content='{"name": "TestProject", "city": "Krakow"}')
+    mock_llm.return_value = MagicMock(
+        content='{"name": "TestProject", "city": "Krakow"}'
+    )
     mock_geo.return_value = None
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = project_autofill_from_website("https://example.com")
@@ -90,6 +94,7 @@ def test_autofill_missing_api_key(mock_loader):
     mock_loader.return_value = [MagicMock(page_content="test page content")]
     with patch.dict("os.environ", {}, clear=True):
         import pydantic_core
+
         with pytest.raises(pydantic_core._pydantic_core.ValidationError):
             company_autofill_from_website("https://example.com")
 
@@ -99,7 +104,9 @@ def test_autofill_missing_api_key(mock_loader):
 @patch("langchain_community.document_loaders.WebBaseLoader.load")
 def test_autofill_no_street_prefix(mock_loader, mock_llm, mock_geo):
     mock_loader.return_value = [MagicMock(page_content="test page content")]
-    mock_llm.return_value = MagicMock(content='{"name": "Co", "street": "Testowa 1", "city": "Warsaw"}')
+    mock_llm.return_value = MagicMock(
+        content='{"name": "Co", "street": "Testowa 1", "city": "Warsaw"}'
+    )
     mock_geo.return_value = None
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
@@ -133,5 +140,3 @@ def test_subdivision_code_fuzzy_contained_match():
     # "region mazowieckie area" doesn't match exactly but contains the subdivision name
     result = _subdivision_code_from_value("region mazowieckie area", "PL")
     assert result == "PL-14"
-
-
