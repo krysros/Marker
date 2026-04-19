@@ -18,10 +18,10 @@ from .association import ActivityForm
 from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
 from .select import (
     COLORS,
+    OBJECT_CATEGORIES,
     PROJECT_DELIVERY_METHODS,
     STAGES,
     STATUS,
-    OBJECT_CATEGORIES,
     select_countries,
     select_subdivisions,
 )

@@ -3663,7 +3663,9 @@ class UserView:
             % (self.request.identity.name, new_name)
         )
         # Redirect to the merged tag's view
-        next_url = self.request.route_url("tag_view", tag_id=target_tag.id, slug=target_tag.slug)
+        next_url = self.request.route_url(
+            "tag_view", tag_id=target_tag.id, slug=target_tag.slug
+        )
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
         response.status_code = 303
