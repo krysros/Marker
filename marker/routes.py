@@ -893,3 +893,9 @@ def includeme(config):
         "/company/add/ai",
         factory=default_factory,
     )
+
+    config.add_route(
+        "project_add_ai",
+        "/project/add/ai",
+        factory=default_factory,
+    )

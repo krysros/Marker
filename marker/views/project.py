@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import func, select
+from webob.multidict import MultiDict
 
 from ..forms import (
     ActivityForm,
@@ -15,6 +16,7 @@ from ..forms import (
     ProjectForm,
     ProjectSearchForm,
     TagLinkForm,
+    ProjectAddAIForm,
 )
 from ..forms.select import (
     COLORS,
@@ -45,7 +47,7 @@ from ..models import (
     selected_tags,
 )
 from ..subscribers import get_subdivision_name
-from ..utils.geo import location
+from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
 from ..utils.website_autofill import project_autofill_from_website
 from . import (
@@ -1874,3 +1876,108 @@ class ProjectView:
         # indicating that the row should be replaced with nothing.
         self.request.response.headers = {"HX-Trigger": "tagEvent"}
         return ""
+
+    @view_config(
+        route_name="project_add_ai",
+        renderer="project/project_add_ai.mako",
+        permission="edit",
+    )
+    def add_ai(self):
+        _ = self.request.translate
+
+        form = ProjectAddAIForm(
+            self.request.POST if self.request.method == "POST" else None
+        )
+        if self.request.method == "POST" and form.validate():
+            website = form.website.data.strip()
+            try:
+                autofill = project_autofill_from_website(website)
+            except Exception as e:
+                error_msg = str(e)
+                # If the error message contains a long API response, only show a summary
+                if "Response:" in error_msg and len(error_msg) > 300:
+                    error_msg = (
+                        error_msg.split("Response:")[0].strip() + " (details omitted)"
+                    )
+                flash_msg = f"Autofill error: {error_msg}"
+                max_len = 500
+                if len(flash_msg.encode("utf-8")) > max_len:
+                    flash_msg = (
+                        flash_msg.encode("utf-8")[:max_len].decode(
+                            "utf-8", errors="ignore"
+                        )
+                        + "..."
+                    )
+                self.request.session.flash(_(flash_msg), "error")
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    # Redirect to the same form page to force a full reload and avoid card-in-card
+                    response.headers = {
+                        "HX-Redirect": self.request.route_url("project_add_ai")
+                    }
+                    response.status_code = getattr(e, "status_code", 200)
+                    return response
+                return {"heading": _("Add a project using AI autofill"), "form": form}
+            autofill = dict(autofill)
+            autofill["website"] = website
+
+            project_form = ProjectForm(MultiDict(autofill), request=self.request)
+            name = project_form.name.data or ""
+            if name:
+                existing = self.request.dbsession.execute(
+                    select(Project).where(func.lower(Project.name) == func.lower(name))
+                ).scalar_one_or_none()
+                if existing:
+                    self.request.session.flash(
+                        _(
+                            "warning:A project with the name obtained from the provided website address already exists in the database."
+                        )
+                    )
+                    next_url = self.request.route_url(
+                        "project_view", project_id=existing.id, slug=existing.slug
+                    )
+                    if self.request.headers.get("HX-Request"):
+                        response = self.request.response
+                        response.headers["HX-Redirect"] = next_url
+                        response.status_code = 200
+                        return response
+                    return HTTPSeeOther(location=next_url)
+
+            geo = location_details(
+                street=project_form.street.data,
+                city=project_form.city.data,
+                country=project_form.country.data,
+                postalcode=project_form.postcode.data,
+            )
+            project = Project(
+                name=project_form.name.data,
+                street=project_form.street.data,
+                postcode=project_form.postcode.data,
+                city=project_form.city.data,
+                subdivision=project_form.subdivision.data,
+                country=project_form.country.data,
+                website=project_form.website.data,
+                color=project_form.color.data,
+                deadline=project_form.deadline.data,
+                stage=project_form.stage.data,
+                delivery_method=project_form.delivery_method.data,
+                usable_area=project_form.usable_area.data,
+                cubic_volume=project_form.cubic_volume.data,
+            )
+            if geo:
+                project.latitude = geo.get("lat")
+                project.longitude = geo.get("lon")
+            project.created_by = self.request.identity
+            self.request.dbsession.add(project)
+            self.request.dbsession.flush()
+            self.request.session.flash(_("success:Added to the database"))
+            next_url = self.request.route_url(
+                "project_view", project_id=project.id, slug=project.slug
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 200
+                return response
+            return HTTPSeeOther(location=next_url)
+        return {"heading": _("Add a project using AI autofill"), "form": form}
