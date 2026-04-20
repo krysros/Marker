@@ -1,6 +1,8 @@
 import json
+import os
 import re
 import unicodedata
+os.environ["USER_AGENT"] = "MarkerBot/1.0"
 
 import pycountry
 from langchain_community.document_loaders import WebBaseLoader
