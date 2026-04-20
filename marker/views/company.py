@@ -1398,6 +1398,10 @@ class CompanyView:
             self.request.session.flash(_(flash_msg), "error")
             self.request.response.status_code = 502
             return {"error": str(e), "fields": {}}
+        log.info(
+            _("The user %s used company autofill from website (AI)")
+            % self.request.identity.name
+        )
         return {"fields": fields}
 
     @view_config(
@@ -1856,6 +1860,10 @@ class CompanyView:
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
+            log.info(
+                _("The user %s added a company using AI autofill")
+                % self.request.identity.name
+            )
             self.request.session.flash(_("success:Added to the database"))
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
