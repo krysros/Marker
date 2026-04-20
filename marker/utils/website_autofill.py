@@ -27,7 +27,7 @@ def _autofill_from_website(url, prompt):
     content = docs[0].page_content
 
     # Initialize Gemini model
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
     # Make the request
     response = llm.invoke(f"{prompt}:\n\n{content}")
@@ -42,9 +42,17 @@ def _autofill_from_website(url, prompt):
         street = re.sub(r"^(ulica|ul\.)\s*|^ul\s+", "", street, flags=re.IGNORECASE)
         result["street"] = street
 
-    # Set country and subdivision (voivodeship/state) based on address using Nominatim
+    # Set country, subdivision, and postcode based on address using Nominatim
     geo = location_details(**result)
     if geo:
+        # Autofill postcode if not provided by user
+        if not result.get("postcode"):
+            print(geo.get("postcode"))
+            print(geo.get("postalcode"))
+            print(geo)
+            postcode = geo.get("postcode") or geo.get("postalcode") or geo.get("postal") or geo.get("postal_code")
+            if postcode:
+                result["postcode"] = postcode
         # Set country to country code (e.g. PL)
         if geo.get("country_code"):
             result["country"] = geo["country_code"].upper()
