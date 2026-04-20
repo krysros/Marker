@@ -1334,12 +1334,12 @@ class ProjectView:
         permission="edit",
     )
     def website_autofill(self):
+        _ = self.request.translate
         website = self.request.params.get("website", "")
         try:
             fields = project_autofill_from_website(website)
         except Exception as e:
             log.error("project_website_autofill error: %s", e)
-            _ = self.request.translate
             error_msg = str(e)
             # If the error message contains a long API response, only show a summary
             if "Response:" in error_msg and len(error_msg) > 300:
@@ -1356,6 +1356,10 @@ class ProjectView:
             self.request.session.flash(_(flash_msg), "error")
             self.request.response.status_code = 502
             return {"error": str(e), "fields": {}}
+        log.info(
+            _("The user %s used project website autofill for: %s")
+            % (self.request.identity.name, website)
+        )
         return {"fields": fields}
 
     @view_config(
@@ -1971,6 +1975,10 @@ class ProjectView:
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
             self.request.session.flash(_("success:Added to the database"))
+            log.info(
+                _("The user %s has added a project using AI autofill")
+                % self.request.identity.name
+            )
             next_url = self.request.route_url(
                 "project_view", project_id=project.id, slug=project.slug
             )
