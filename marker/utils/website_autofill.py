@@ -2,6 +2,7 @@ import json
 import os
 import re
 import unicodedata
+
 os.environ["USER_AGENT"] = "MarkerBot/1.0"
 
 import pycountry
@@ -52,7 +53,12 @@ def _autofill_from_website(url, prompt):
             print(geo.get("postcode"))
             print(geo.get("postalcode"))
             print(geo)
-            postcode = geo.get("postcode") or geo.get("postalcode") or geo.get("postal") or geo.get("postal_code")
+            postcode = (
+                geo.get("postcode")
+                or geo.get("postalcode")
+                or geo.get("postal")
+                or geo.get("postal_code")
+            )
             if postcode:
                 result["postcode"] = postcode
         # Set country to country code (e.g. PL)

@@ -12,11 +12,11 @@ from ..forms import (
     CommentForm,
     CompanyActivityForm,
     ContactForm,
+    ProjectAddAIForm,
     ProjectFilterForm,
     ProjectForm,
     ProjectSearchForm,
     TagLinkForm,
-    ProjectAddAIForm,
 )
 from ..forms.select import (
     COLORS,
