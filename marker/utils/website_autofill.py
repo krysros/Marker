@@ -72,12 +72,12 @@ def _autofill_from_website(url, prompt):
 
 
 def company_autofill_from_website(website):
-    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Return the result as JSON."
+    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
     return _autofill_from_website(website, prompt)
 
 
 def project_autofill_from_website(website):
-    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Return the result as JSON."
+    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
     return _autofill_from_website(website, prompt)
 
 
