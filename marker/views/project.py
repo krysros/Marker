@@ -1928,7 +1928,7 @@ class ProjectView:
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
             name = project_form.name.data or ""
             if not name:
-                self.request.session.flash(_("error:Cannot add a project without a name. The AI-generated data did not contain a project name."), "error")
+                self.request.session.flash(_("danger:Cannot add a project without a name. The AI-generated data did not contain a project name."))
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers = {
