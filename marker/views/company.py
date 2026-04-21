@@ -1816,25 +1816,35 @@ class CompanyView:
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
             name = company_form.name.data or ""
-            if name:
-                existing = self.request.dbsession.execute(
-                    select(Company).where(func.lower(Company.name) == func.lower(name))
-                ).scalar_one_or_none()
-                if existing:
-                    self.request.session.flash(
-                        _(
-                            "warning:A company with the name obtained from the provided website address already exists in the database."
-                        )
+            if not name:
+                self.request.session.flash(_("error:Cannot add a company without a name. The AI-generated data did not contain a company name."), "error")
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    response.headers = {
+                        "HX-Redirect": self.request.route_url("company_add_ai")
+                    }
+                    response.status_code = 200
+                    return response
+                return {"heading": _("Add a company using AI autofill"), "form": form}
+
+            existing = self.request.dbsession.execute(
+                select(Company).where(func.lower(Company.name) == func.lower(name))
+            ).scalar_one_or_none()
+            if existing:
+                self.request.session.flash(
+                    _(
+                        "warning:A company with the name obtained from the provided website address already exists in the database."
                     )
-                    next_url = self.request.route_url(
-                        "company_view", company_id=existing.id, slug=existing.slug
-                    )
-                    if self.request.headers.get("HX-Request"):
-                        response = self.request.response
-                        response.headers["HX-Redirect"] = next_url
-                        response.status_code = 200
-                        return response
-                    return HTTPSeeOther(location=next_url)
+                )
+                next_url = self.request.route_url(
+                    "company_view", company_id=existing.id, slug=existing.slug
+                )
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    response.headers["HX-Redirect"] = next_url
+                    response.status_code = 200
+                    return response
+                return HTTPSeeOther(location=next_url)
 
             geo = location_details(
                 street=company_form.street.data,
