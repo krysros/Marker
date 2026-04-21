@@ -1817,7 +1817,7 @@ class CompanyView:
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
             name = company_form.name.data or ""
             if not name:
-                self.request.session.flash(_("error:Cannot add a company without a name. The AI-generated data did not contain a company name."), "error")
+                self.request.session.flash(_("danger:Cannot add a company without a name. The AI-generated data did not contain a company name."))
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers = {
