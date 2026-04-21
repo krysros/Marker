@@ -1376,6 +1376,7 @@ class CompanyView:
         permission="edit",
     )
     def website_autofill(self):
+        _ = self.request.translate
         website = self.request.params.get("website", "")
         try:
             fields = company_autofill_from_website(website)
