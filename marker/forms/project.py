@@ -59,7 +59,7 @@ class ProjectForm(Form):
     country = SelectField(_("Country"), choices=select_countries())
     website = StringField(
         _("Website"),
-        validators=[Length(max=2000)],
+        validators=[Length(max=1000)],
         filters=[strip_filter],
     )
     color = SelectField(_("Color"), choices=COLORS, default="")

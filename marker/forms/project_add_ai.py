@@ -9,7 +9,7 @@ class ProjectAddAIForm(Form):
         _("Project website address"),
         validators=[
             InputRequired(),
-            Length(max=100),
+            Length(max=1000),
             URL(require_tld=True, message=_("Please enter a valid URL.")),
         ],
         render_kw={"placeholder": "https://example.com", "autofocus": True},
