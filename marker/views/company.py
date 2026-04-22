@@ -1815,6 +1815,10 @@ class CompanyView:
             autofill["website"] = website
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
+            if not company_form.validate():
+                self.request.session.flash(_("danger:Some fields from AI autofill are invalid. Please correct the highlighted errors."))
+                return {"heading": _("Add a company using AI autofill"), "form": company_form}
+
             name = company_form.name.data or ""
             if not name:
                 self.request.session.flash(_("danger:Cannot add a company without a name. The AI-generated data did not contain a company name."))
@@ -1825,7 +1829,7 @@ class CompanyView:
                     }
                     response.status_code = 200
                     return response
-                return {"heading": _("Add a company using AI autofill"), "form": form}
+                return {"heading": _("Add a company using AI autofill"), "form": company_form}
 
             existing = self.request.dbsession.execute(
                 select(Company).where(func.lower(Company.name) == func.lower(name))
