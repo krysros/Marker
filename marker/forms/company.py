@@ -21,6 +21,7 @@ from .filters import (
     remove_multiple_spaces,
     strip_filter,
     title,
+    remove_pl_prefix
 )
 from .select import COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
@@ -90,6 +91,7 @@ class CompanyForm(Form):
             strip_filter,
             dash_filter,
             remove_multiple_spaces,
+            remove_pl_prefix,
             remove_dashes_and_spaces,
         ],
     )
