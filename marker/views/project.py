@@ -1926,6 +1926,10 @@ class ProjectView:
             autofill["website"] = website
 
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
+            if not project_form.validate():
+                self.request.session.flash(_("danger:Some fields from AI autofill are invalid. Please correct the highlighted errors."))
+                return {"heading": _("Add a project using AI autofill"), "form": project_form}
+
             name = project_form.name.data or ""
             if not name:
                 self.request.session.flash(_("danger:Cannot add a project without a name. The AI-generated data did not contain a project name."))
@@ -1936,7 +1940,7 @@ class ProjectView:
                     }
                     response.status_code = 200
                     return response
-                return {"heading": _("Add a project using AI autofill"), "form": form}
+                return {"heading": _("Add a project using AI autofill"), "form": project_form}
 
             existing = self.request.dbsession.execute(
                 select(Project).where(func.lower(Project.name) == func.lower(name))
