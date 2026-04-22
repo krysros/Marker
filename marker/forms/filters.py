@@ -26,6 +26,13 @@ def remove_dashes_and_spaces(v):
     return v.replace("-", "").replace(" ", "") if v else ""
 
 
+def remove_pl_prefix(v):
+    """Removes 'PL' or 'pl' prefix from NIP if present."""
+    if v and isinstance(v, str) and v.strip().upper().startswith("PL"):
+        return v.strip()[2:]
+    return v
+
+
 def remove_mailto(v):
     """Removes "mailto:" from a string."""
     if v.startswith("mailto:"):
