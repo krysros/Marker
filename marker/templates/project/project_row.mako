@@ -17,19 +17,19 @@
   <td>
     <a href="${request.route_url('project_view', project_id=assoc.project.id, slug=assoc.project.slug)}">${assoc.project.name}</a>
     <div class="small text-muted">
-      ${_("Utworzono")}: ${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}<br/>
-      ${_("Zmodyfikowano")}: ${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}
+      ${_("Created at")}: ${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}<br/>
+      ${_("Updated at")}: ${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}
     </div>
   </td>
   <td>${stages.get(assoc.stage)}</td>
   <td>${company_roles.get(assoc.role)}</td>
   <td>
-    <span class="d-block">${_("Netto")}: ${fmt_decimal(assoc.value_net)}</span>
-    <span class="d-block">${_("Brutto")}: ${fmt_decimal(assoc.value_gross)}</span>
+    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net)}</span>
+    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross)}</span>
   </td>
   <td>
-    <span class="d-block">${_("Netto")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</span>
-    <span class="d-block">${_("Brutto")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</span>
+    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</span>
+    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</span>
   </td>
   <td>
     <div class="hstack gap-2 mx-2">
