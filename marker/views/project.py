@@ -1927,7 +1927,7 @@ class ProjectView:
 
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
             if not project_form.validate():
-                self.request.session.flash(_("danger:Some fields from AI autofill are invalid. Please correct the highlighted errors."))
+                self.request.session.flash(_("danger:Some AI autofill fields are invalid. Please provide a URL that includes data such as name and address."))
                 return {"heading": _("Add a project using AI autofill"), "form": project_form}
 
             name = project_form.name.data or ""

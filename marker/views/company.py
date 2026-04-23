@@ -1816,7 +1816,7 @@ class CompanyView:
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
             if not company_form.validate():
-                self.request.session.flash(_("danger:Some fields from AI autofill are invalid. Please correct the highlighted errors."))
+                self.request.session.flash(_("danger:Some AI autofill fields are invalid. Please provide a URL that includes data such as name and address."))
                 return {"heading": _("Add a company using AI autofill"), "form": company_form}
 
             name = company_form.name.data or ""
