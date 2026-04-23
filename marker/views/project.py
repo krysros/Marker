@@ -1927,12 +1927,11 @@ class ProjectView:
 
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
             if not project_form.validate():
-                self.request.session.flash(_("danger:Some AI autofill fields are invalid. Please provide a URL that includes data such as name and address."))
-                return {"heading": _("Add a project using AI autofill"), "form": project_form}
-
-            name = project_form.name.data or ""
-            if not name:
-                self.request.session.flash(_("danger:Cannot add a project without a name. The AI-generated data did not contain a project name."))
+                self.request.session.flash(
+                    _(
+                        "danger:The AI ​​doesn't detect the relevant data. Please provide a URL containing data such as your name and address, or enter your data using a form."
+                    )
+                )
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers = {
@@ -1940,7 +1939,29 @@ class ProjectView:
                     }
                     response.status_code = 200
                     return response
-                return {"heading": _("Add a project using AI autofill"), "form": project_form}
+                return {
+                    "heading": _("Add a project using AI autofill"),
+                    "form": project_form,
+                }
+
+            name = project_form.name.data or ""
+            if not name:
+                self.request.session.flash(
+                    _(
+                        "danger:Cannot add a project without a name. The AI-generated data did not contain a project name."
+                    )
+                )
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    response.headers = {
+                        "HX-Redirect": self.request.route_url("project_add_ai")
+                    }
+                    response.status_code = 200
+                    return response
+                return {
+                    "heading": _("Add a project using AI autofill"),
+                    "form": project_form,
+                }
 
             existing = self.request.dbsession.execute(
                 select(Project).where(func.lower(Project.name) == func.lower(name))
