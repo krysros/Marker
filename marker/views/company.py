@@ -1816,12 +1816,11 @@ class CompanyView:
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
             if not company_form.validate():
-                self.request.session.flash(_("danger:Some AI autofill fields are invalid. Please provide a URL that includes data such as name and address."))
-                return {"heading": _("Add a company using AI autofill"), "form": company_form}
-
-            name = company_form.name.data or ""
-            if not name:
-                self.request.session.flash(_("danger:Cannot add a company without a name. The AI-generated data did not contain a company name."))
+                self.request.session.flash(
+                    _(
+                        "danger:The AI ​​doesn't detect the relevant data. Please provide a URL containing data such as your name and address, or enter your data using a form."
+                    )
+                )
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers = {
@@ -1829,7 +1828,29 @@ class CompanyView:
                     }
                     response.status_code = 200
                     return response
-                return {"heading": _("Add a company using AI autofill"), "form": company_form}
+                return {
+                    "heading": _("Add a company using AI autofill"),
+                    "form": company_form,
+                }
+
+            name = company_form.name.data or ""
+            if not name:
+                self.request.session.flash(
+                    _(
+                        "danger:Cannot add a company without a name. The AI-generated data did not contain a company name."
+                    )
+                )
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    response.headers = {
+                        "HX-Redirect": self.request.route_url("company_add_ai")
+                    }
+                    response.status_code = 200
+                    return response
+                return {
+                    "heading": _("Add a company using AI autofill"),
+                    "form": company_form,
+                }
 
             existing = self.request.dbsession.execute(
                 select(Company).where(func.lower(Company.name) == func.lower(name))
