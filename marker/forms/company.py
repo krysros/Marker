@@ -19,9 +19,9 @@ from .filters import (
     dash_filter,
     remove_dashes_and_spaces,
     remove_multiple_spaces,
+    remove_pl_prefix,
     strip_filter,
     title,
-    remove_pl_prefix
 )
 from .select import COLORS, select_countries, select_subdivisions
 from .ts import TranslationString as _
