@@ -31,8 +31,8 @@
         <th>${_("Company")}</th>
         <th>${_("Stage")}</th>
         <th>${_("Role")}</th>
-        <th>${_("Wartość")}</th>
-        <th>${_("Cena za m²")}</th>
+        <th>${_("Value")}</th>
+        <th>${_("Price per m²")}</th>
         <th>${_("Action")}</th>
       </tr>
     </thead>

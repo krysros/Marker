@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-17 00:28+0200\n"
+"POT-Creation-Date: 2026-04-23 12:09+0200\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -25,7 +25,7 @@ msgstr ""
 #: marker/templates/project/project_contacts.mako:29
 #: marker/templates/user/user_table.mako:6
 #: marker/templates/user/user_view.mako:51 marker/views/company.py:851
-#: marker/views/project.py:1539
+#: marker/views/project.py:1545
 msgid "Fullname"
 msgstr "Imię i nazwisko"
 
@@ -41,7 +41,7 @@ msgstr "Imię i nazwisko"
 #: marker/templates/user/user_view.mako:54 marker/utils/export.py:167
 #: marker/utils/export.py:226 marker/utils/export.py:412
 #: marker/utils/export.py:472 marker/views/company.py:852
-#: marker/views/project.py:1540
+#: marker/views/project.py:1546
 msgid "Email"
 msgstr "Email"
 
@@ -58,14 +58,14 @@ msgid "The password is too simple"
 msgstr "Hasło jest zbyt proste"
 
 #: marker/forms/association.py:9 marker/forms/project.py:72
-#: marker/forms/project.py:141 marker/forms/project.py:191
+#: marker/forms/project.py:141 marker/forms/project.py:196
 #: marker/templates/company/company_projects.mako:20
 #: marker/templates/company/company_projects.mako:32
 #: marker/templates/project/project_companies.mako:20
 #: marker/templates/project/project_companies.mako:32
-#: marker/templates/project/project_view.mako:69 marker/utils/export.py:82
+#: marker/templates/project/project_view.mako:61 marker/utils/export.py:82
 #: marker/utils/export.py:312 marker/views/company.py:431
-#: marker/views/project.py:846 marker/views/tag.py:892
+#: marker/views/project.py:848 marker/views/tag.py:892
 msgid "Stage"
 msgstr "Etap"
 
@@ -87,7 +87,7 @@ msgstr "Etap"
 #: marker/templates/user/user_view.mako:61 marker/utils/export.py:165
 #: marker/utils/export.py:224 marker/utils/export.py:410
 #: marker/utils/export.py:470 marker/views/company.py:432
-#: marker/views/project.py:847
+#: marker/views/project.py:849
 msgid "Role"
 msgstr "Rola"
 
@@ -117,25 +117,25 @@ msgstr "Komentarz"
 msgid "Category"
 msgstr "Kategoria"
 
-#: marker/forms/comment.py:31 marker/forms/company.py:213
-#: marker/forms/contact.py:81 marker/forms/project.py:218
+#: marker/forms/comment.py:31 marker/forms/company.py:215
+#: marker/forms/contact.py:81 marker/forms/project.py:223
 #: marker/forms/tag.py:56
 msgid "Date from"
 msgstr "Data od"
 
-#: marker/forms/comment.py:37 marker/forms/company.py:219
-#: marker/forms/contact.py:87 marker/forms/project.py:224
+#: marker/forms/comment.py:37 marker/forms/company.py:221
+#: marker/forms/contact.py:87 marker/forms/project.py:229
 #: marker/forms/tag.py:62
 msgid "Date to"
 msgstr "Data do"
 
-#: marker/forms/company.py:53 marker/forms/company.py:183
-#: marker/forms/company.py:199 marker/forms/company.py:242
-#: marker/forms/company.py:267 marker/forms/contact.py:24
+#: marker/forms/company.py:54 marker/forms/company.py:185
+#: marker/forms/company.py:201 marker/forms/company.py:244
+#: marker/forms/company.py:269 marker/forms/contact.py:24
 #: marker/forms/contact.py:62 marker/forms/contact.py:70
 #: marker/forms/project.py:33 marker/forms/project.py:120
-#: marker/forms/project.py:169 marker/forms/project.py:247
-#: marker/forms/project.py:272 marker/forms/select.py:40
+#: marker/forms/project.py:174 marker/forms/project.py:257
+#: marker/forms/project.py:282 marker/forms/select.py:40
 #: marker/forms/select.py:47 marker/forms/select.py:59
 #: marker/forms/select.py:69 marker/forms/select.py:81 marker/forms/tag.py:16
 #: marker/forms/tag.py:49 marker/forms/tag.py:53 marker/forms/tag.py:71
@@ -151,31 +151,31 @@ msgstr "Data do"
 #: marker/templates/user/user_view.mako:48 marker/utils/export.py:164
 #: marker/utils/export.py:223 marker/utils/export.py:409
 #: marker/utils/export.py:469 marker/views/company.py:850
-#: marker/views/project.py:1538 marker/views/tag.py:653 marker/views/tag.py:884
+#: marker/views/project.py:1544 marker/views/tag.py:653 marker/views/tag.py:884
 msgid "Name"
 msgstr "Nazwa"
 
-#: marker/forms/company.py:62 marker/forms/company.py:184
-#: marker/forms/company.py:200 marker/forms/project.py:42
-#: marker/forms/project.py:121 marker/forms/project.py:170
+#: marker/forms/company.py:63 marker/forms/company.py:186
+#: marker/forms/company.py:202 marker/forms/project.py:42
+#: marker/forms/project.py:121 marker/forms/project.py:175
 #: marker/templates/company/company_view.mako:40
 #: marker/templates/project/project_view.mako:45 marker/views/tag.py:654
 #: marker/views/tag.py:885
 msgid "Street"
 msgstr "Ulica"
 
-#: marker/forms/company.py:67 marker/forms/company.py:185
-#: marker/forms/company.py:201 marker/forms/project.py:47
-#: marker/forms/project.py:122 marker/forms/project.py:171
+#: marker/forms/company.py:68 marker/forms/company.py:187
+#: marker/forms/company.py:203 marker/forms/project.py:47
+#: marker/forms/project.py:122 marker/forms/project.py:176
 #: marker/templates/company/company_view.mako:42
 #: marker/templates/project/project_view.mako:47 marker/views/tag.py:655
 #: marker/views/tag.py:886
 msgid "Post code"
 msgstr "Kod pocztowy"
 
-#: marker/forms/company.py:72 marker/forms/company.py:186
-#: marker/forms/company.py:202 marker/forms/project.py:52
-#: marker/forms/project.py:123 marker/forms/project.py:172
+#: marker/forms/company.py:73 marker/forms/company.py:188
+#: marker/forms/company.py:204 marker/forms/project.py:52
+#: marker/forms/project.py:123 marker/forms/project.py:177
 #: marker/forms/select.py:50 marker/forms/select.py:60
 #: marker/forms/select.py:70 marker/forms/select.py:82
 #: marker/templates/company/company_contacts.mako:34
@@ -184,17 +184,17 @@ msgstr "Kod pocztowy"
 #: marker/templates/contact/contact_table.mako:19
 #: marker/templates/contact/contact_tags_table.mako:13
 #: marker/templates/project/project_contacts.mako:34
-#: marker/templates/project/project_table.mako:14
+#: marker/templates/project/project_table.mako:13
 #: marker/templates/project/project_view.mako:49 marker/utils/export.py:169
 #: marker/utils/export.py:228 marker/utils/export.py:414
 #: marker/utils/export.py:474 marker/views/tag.py:656 marker/views/tag.py:887
 msgid "City"
 msgstr "Miasto"
 
-#: marker/forms/company.py:77 marker/forms/company.py:188
-#: marker/forms/company.py:204 marker/forms/contact.py:76
+#: marker/forms/company.py:78 marker/forms/company.py:190
+#: marker/forms/company.py:206 marker/forms/contact.py:76
 #: marker/forms/project.py:57 marker/forms/project.py:125
-#: marker/forms/project.py:174 marker/forms/select.py:51
+#: marker/forms/project.py:179 marker/forms/select.py:51
 #: marker/forms/select.py:61 marker/forms/select.py:71
 #: marker/forms/select.py:83 marker/templates/company/company_view.mako:46
 #: marker/templates/project/project_view.mako:51 marker/utils/export.py:72
@@ -204,10 +204,10 @@ msgstr "Miasto"
 msgid "Subdivision"
 msgstr "Województwo"
 
-#: marker/forms/company.py:79 marker/forms/company.py:190
-#: marker/forms/company.py:206 marker/forms/contact.py:78
+#: marker/forms/company.py:80 marker/forms/company.py:192
+#: marker/forms/company.py:208 marker/forms/contact.py:78
 #: marker/forms/project.py:59 marker/forms/project.py:127
-#: marker/forms/project.py:176 marker/forms/select.py:52
+#: marker/forms/project.py:181 marker/forms/select.py:52
 #: marker/forms/select.py:62 marker/forms/select.py:72
 #: marker/forms/select.py:84 marker/templates/company/company_view.mako:48
 #: marker/templates/project/project_view.mako:53 marker/utils/export.py:77
@@ -217,69 +217,69 @@ msgstr "Województwo"
 msgid "Country"
 msgstr "Kraj"
 
-#: marker/forms/company.py:81 marker/forms/company.py:191
-#: marker/forms/company.py:207 marker/forms/project.py:61
-#: marker/forms/project.py:128 marker/forms/project.py:177
+#: marker/forms/company.py:82 marker/forms/company.py:193
+#: marker/forms/company.py:209 marker/forms/project.py:61
+#: marker/forms/project.py:128 marker/forms/project.py:182
 #: marker/templates/company/company_uptime.mako:28
 #: marker/templates/project/project_uptime.mako:28 marker/views/tag.py:659
 #: marker/views/tag.py:890
 msgid "Website"
 msgstr "Strona internetowa"
 
-#: marker/forms/company.py:85 marker/forms/company.py:192
-#: marker/forms/company.py:208 marker/forms/contact.py:53
+#: marker/forms/company.py:86 marker/forms/company.py:194
+#: marker/forms/company.py:210 marker/forms/contact.py:53
 #: marker/forms/contact.py:66 marker/forms/contact.py:79
 #: marker/forms/project.py:65 marker/forms/project.py:165
-#: marker/forms/project.py:196
+#: marker/forms/project.py:201
 msgid "Color"
 msgstr "Kolor"
 
-#: marker/forms/company.py:87 marker/forms/company.py:193
-#: marker/forms/company.py:209 marker/templates/company/company_view.mako:54
+#: marker/forms/company.py:88 marker/forms/company.py:195
+#: marker/forms/company.py:211 marker/templates/company/company_view.mako:54
 msgid "NIP"
 msgstr "NIP"
 
-#: marker/forms/company.py:97 marker/forms/company.py:194
-#: marker/forms/company.py:210 marker/templates/company/company_view.mako:56
+#: marker/forms/company.py:99 marker/forms/company.py:196
+#: marker/forms/company.py:212 marker/templates/company/company_view.mako:56
 msgid "REGON"
 msgstr "REGON"
 
-#: marker/forms/company.py:107 marker/forms/company.py:195
-#: marker/forms/company.py:211 marker/templates/company/company_view.mako:58
+#: marker/forms/company.py:109 marker/forms/company.py:197
+#: marker/forms/company.py:213 marker/templates/company/company_view.mako:58
 msgid "KRS"
 msgstr "KRS"
 
-#: marker/forms/company.py:133 marker/forms/contact.py:58
+#: marker/forms/company.py:135 marker/forms/contact.py:58
 #: marker/forms/project.py:108 marker/forms/tag.py:37
 msgid "Name must contain at least one letter or digit."
 msgstr "Nazwa musi zawierać co najmniej jedną literę lub cyfrę."
 
-#: marker/forms/company.py:141 marker/forms/project.py:116
+#: marker/forms/company.py:143 marker/forms/project.py:116
 #: marker/forms/tag.py:45 marker/forms/user.py:64
 msgid "This name is already taken"
 msgstr "Ta nazwa jest już zajęta"
 
-#: marker/forms/company.py:148
+#: marker/forms/company.py:150
 msgid "The NIP number should consist of 10 digits"
 msgstr "Numer NIP powinien się składać z 10 cyfr"
 
-#: marker/forms/company.py:154
+#: marker/forms/company.py:156
 msgid "Invalid VAT number"
 msgstr "Nieprawidłowy numer NIP"
 
-#: marker/forms/company.py:162
+#: marker/forms/company.py:164
 msgid "The REGON number should consist of 9 or 14 digits"
 msgstr "Numer REGON powinien się składać z 9 lub 14 cyfr"
 
-#: marker/forms/company.py:172
+#: marker/forms/company.py:174
 msgid "Invalid REGON number"
 msgstr "Nieprawidłowy numer REGON"
 
-#: marker/forms/company.py:179
+#: marker/forms/company.py:181
 msgid "The KRS number should consist of 10 digits"
 msgstr "Numer KRS powinien się składać z 10 cyfr"
 
-#: marker/forms/company.py:262 marker/forms/company.py:292
+#: marker/forms/company.py:264 marker/forms/company.py:294
 msgid "There is no company with this name"
 msgstr "Nie ma firmy o takiej nazwie"
 
@@ -287,7 +287,7 @@ msgstr "Nie ma firmy o takiej nazwie"
 msgid "Company website address"
 msgstr "Adres strony internetowej firmy"
 
-#: marker/forms/company_add_ai.py:13
+#: marker/forms/company_add_ai.py:13 marker/forms/project_add_ai.py:13
 msgid "Please enter a valid URL."
 msgstr "Proszę podać prawidłowy adres URL."
 
@@ -316,19 +316,19 @@ msgstr "Nazwa użytkownika"
 msgid "Password"
 msgstr "Hasło"
 
-#: marker/forms/project.py:67 marker/forms/project.py:178
+#: marker/forms/project.py:67 marker/forms/project.py:183
 #: marker/templates/project/project_more.mako:22
-#: marker/templates/project/project_view.mako:67 marker/views/tag.py:891
+#: marker/templates/project/project_view.mako:59 marker/views/tag.py:891
 msgid "Deadline"
 msgstr "Termin"
 
-#: marker/forms/project.py:74 marker/templates/project/project_table.mako:13
-#: marker/templates/project/project_view.mako:55
+#: marker/forms/project.py:74 marker/forms/project.py:167
+#: marker/forms/project.py:235 marker/templates/project/project_view.mako:65
 msgid "Object category"
 msgstr "Kategoria obiektu"
 
 #: marker/forms/project.py:79 marker/forms/project.py:143
-#: marker/forms/project.py:193 marker/templates/project/project_view.mako:71
+#: marker/forms/project.py:198 marker/templates/project/project_view.mako:63
 #: marker/utils/export.py:88 marker/utils/export.py:318 marker/views/tag.py:893
 #: marker/views/user.py:320 marker/views/user.py:339
 msgid "Project delivery method"
@@ -342,44 +342,48 @@ msgstr "Powierzchnia użytkowa [m²]"
 msgid "Cubic volume [m³]"
 msgstr "Kubatura [m³]"
 
-#: marker/forms/project.py:130 marker/forms/project.py:180
+#: marker/forms/project.py:130 marker/forms/project.py:185
 msgid "Deadline from"
 msgstr "Termin od"
 
-#: marker/forms/project.py:136 marker/forms/project.py:186
+#: marker/forms/project.py:136 marker/forms/project.py:191
 msgid "Deadline to"
 msgstr "Termin do"
 
-#: marker/forms/project.py:146 marker/forms/project.py:198
+#: marker/forms/project.py:146 marker/forms/project.py:203
 msgid "Usable area from [m²]"
 msgstr "Powierzchnia użytkowa od [m²]"
 
-#: marker/forms/project.py:151 marker/forms/project.py:203
+#: marker/forms/project.py:151 marker/forms/project.py:208
 msgid "Usable area to [m²]"
 msgstr "Powierzchnia użytkowa do [m²]"
 
-#: marker/forms/project.py:156 marker/forms/project.py:208
+#: marker/forms/project.py:156 marker/forms/project.py:213
 msgid "Cubic volume from [m³]"
 msgstr "Kubatura od [m³]"
 
-#: marker/forms/project.py:161 marker/forms/project.py:213
+#: marker/forms/project.py:161 marker/forms/project.py:218
 msgid "Cubic volume to [m³]"
 msgstr "Kubatura do [m³]"
 
-#: marker/forms/project.py:195
+#: marker/forms/project.py:200
 msgid "Status"
 msgstr "Status"
 
-#: marker/forms/project.py:267 marker/forms/project.py:296
+#: marker/forms/project.py:277 marker/forms/project.py:306
 msgid "There is no project with this name"
 msgstr "Nie ma projektu o tej nazwie"
+
+#: marker/forms/project_add_ai.py:9
+msgid "Project website address"
+msgstr "Strona internetowa projektu"
 
 #: marker/forms/select.py:41 marker/forms/select.py:53
 #: marker/forms/select.py:63 marker/forms/select.py:73
 #: marker/forms/select.py:85 marker/views/company.py:498
 #: marker/views/company.py:853 marker/views/company.py:1037
-#: marker/views/project.py:459 marker/views/project.py:913
-#: marker/views/project.py:1541
+#: marker/views/project.py:461 marker/views/project.py:915
+#: marker/views/project.py:1547
 msgid "Date created"
 msgstr "Data utworzenia"
 
@@ -387,27 +391,27 @@ msgstr "Data utworzenia"
 #: marker/forms/select.py:64 marker/forms/select.py:74
 #: marker/forms/select.py:86 marker/views/company.py:499
 #: marker/views/company.py:854 marker/views/company.py:1038
-#: marker/views/project.py:460 marker/views/project.py:914
-#: marker/views/project.py:1542
+#: marker/views/project.py:462 marker/views/project.py:916
+#: marker/views/project.py:1548
 msgid "Date modified"
 msgstr "Data modyfikacji"
 
 #: marker/forms/select.py:75 marker/forms/select.py:87
 #: marker/templates/base/navbar.mako:76
 #: marker/templates/company/company_table.mako:18
-#: marker/templates/project/project_table.mako:19
+#: marker/templates/project/project_table.mako:18
 #: marker/templates/user/user_map_companies_stars.mako:5
 #: marker/templates/user/user_map_projects_stars.mako:5
-#: marker/views/company.py:144 marker/views/project.py:144
+#: marker/views/company.py:144 marker/views/project.py:146
 msgid "Stars"
 msgstr "Gwiazdki"
 
 #: marker/forms/select.py:76 marker/forms/select.py:88
 #: marker/templates/base/layout.mako:54 marker/templates/base/navbar.mako:22
 #: marker/templates/comment/comment_all.mako:5
-#: marker/templates/company/company_table.mako:19 marker/templates/home.mako:76
-#: marker/templates/project/project_table.mako:20 marker/views/company.py:132
-#: marker/views/project.py:132 marker/views/user.py:270
+#: marker/templates/company/company_table.mako:19 marker/templates/home.mako:79
+#: marker/templates/project/project_table.mako:19 marker/views/company.py:132
+#: marker/views/project.py:134 marker/views/user.py:270
 msgid "Comments"
 msgstr "Komentarze"
 
@@ -528,7 +532,7 @@ msgstr "Wszystkie"
 #: marker/templates/company/company_map.mako:5
 #: marker/templates/company/company_uptime.mako:5
 #: marker/templates/contact/contact_search_tags.mako:11
-#: marker/templates/home.mako:19 marker/templates/project/project_table.mako:18
+#: marker/templates/home.mako:19 marker/templates/project/project_table.mako:17
 #: marker/templates/tag/tag_table.mako:15
 #: marker/templates/user/user_selected_companies.mako:22
 #: marker/templates/user/user_selected_related_contacts.mako:45
@@ -536,7 +540,7 @@ msgstr "Wszystkie"
 #: marker/templates/user/user_selected_tags.mako:40
 #: marker/templates/user/user_selected_tags_companies.mako:17
 #: marker/templates/user/user_selected_tags_projects.mako:17
-#: marker/views/project.py:96 marker/views/tag.py:67 marker/views/user.py:232
+#: marker/views/project.py:98 marker/views/tag.py:67 marker/views/user.py:232
 msgid "Companies"
 msgstr "Firmy"
 
@@ -546,7 +550,7 @@ msgstr "Firmy"
 #: marker/templates/company/company_table.mako:17
 #: marker/templates/contact/contact_search_tags.mako:12
 #: marker/templates/home.mako:35 marker/templates/project/project_all.mako:5
-#: marker/templates/project/project_all.mako:24
+#: marker/templates/project/project_all.mako:27
 #: marker/templates/project/project_contacts.mako:33
 #: marker/templates/project/project_map.mako:5
 #: marker/templates/project/project_uptime.mako:5
@@ -561,107 +565,107 @@ msgstr "Firmy"
 msgid "Projects"
 msgstr "Projekty"
 
-#: marker/forms/select.py:195
+#: marker/forms/select.py:264
 msgid "The most popular tags among companies"
 msgstr "Najpopularniejsze tagi wśród firm"
 
-#: marker/forms/select.py:196
+#: marker/forms/select.py:265
 msgid "The most popular tags among projects"
 msgstr "Najpopularniejsze tagi wśród projektów"
 
-#: marker/forms/select.py:197
+#: marker/forms/select.py:266
 msgid "Subdivisions with the largest number of companies"
 msgstr "Województwa o największej liczbie firm"
 
-#: marker/forms/select.py:198
+#: marker/forms/select.py:267
 msgid "Cities with the largest number of companies"
 msgstr "Miasta o największej liczbie firm"
 
-#: marker/forms/select.py:199
+#: marker/forms/select.py:268
 msgid "The most commented companies"
 msgstr "Najczęściej komentowane firmy"
 
-#: marker/forms/select.py:200
+#: marker/forms/select.py:269
 msgid "Subdivisions with the largest number of projects"
 msgstr "Województwa o największej liczbie projektów"
 
-#: marker/forms/select.py:201
+#: marker/forms/select.py:270
 msgid "Cities with the largest number of projects"
 msgstr "Miasta o największej liczbie projektów"
 
-#: marker/forms/select.py:202
+#: marker/forms/select.py:271
 msgid "The most commented projects"
 msgstr "Najczęściej komentowane projekty"
 
-#: marker/forms/select.py:203
+#: marker/forms/select.py:272
 msgid "User activity (added companies)"
 msgstr "Aktywność użytkowników (dodane firmy)"
 
-#: marker/forms/select.py:204
+#: marker/forms/select.py:273
 msgid "User activity (added projects)"
 msgstr "Aktywność użytkowników (dodane projekty)"
 
-#: marker/forms/select.py:205
+#: marker/forms/select.py:274
 msgid "Investors (number of projects)"
 msgstr "Inwestorzy (liczba projektów)"
 
-#: marker/forms/select.py:206
+#: marker/forms/select.py:275
 msgid "Recommended companies"
 msgstr "Rekomendowane firmy"
 
-#: marker/forms/select.py:207
+#: marker/forms/select.py:276
 msgid "Watched projects"
 msgstr "Obserwowane projekty"
 
-#: marker/forms/select.py:210
+#: marker/forms/select.py:279
 msgid "Companies that announced the largest number of investments"
 msgstr "Firmy, które ogłosiły największą liczbę inwestycji"
 
-#: marker/forms/select.py:214
+#: marker/forms/select.py:283
 msgid "Companies that took part in the largest number of tenders"
 msgstr "Firmy, które wzięły udział w największej liczbie przetargów"
 
-#: marker/forms/select.py:218
+#: marker/forms/select.py:287
 msgid "Companies that have completed the largest number of investments"
 msgstr "Firmy, które zrealizowały największą liczbę inwestycji"
 
-#: marker/forms/select.py:220
+#: marker/forms/select.py:289
 msgid "The most active designers"
 msgstr "Najbardziej aktywni projektanci"
 
-#: marker/forms/select.py:221
+#: marker/forms/select.py:290
 msgid "The most active purchasers"
 msgstr "Najbardziej aktywni zamawiający"
 
-#: marker/forms/select.py:222
+#: marker/forms/select.py:291
 msgid "The most active investors"
 msgstr "Najbardziej aktywni inwestorzy"
 
-#: marker/forms/select.py:223
+#: marker/forms/select.py:292
 msgid "The most active general contractors"
 msgstr "Najbardziej aktywni generalni wykonawcy"
 
-#: marker/forms/select.py:224
+#: marker/forms/select.py:293
 msgid "The most active subcontractors"
 msgstr "Najbardziej aktywni podwykonawcy"
 
-#: marker/forms/select.py:225
+#: marker/forms/select.py:294
 msgid "The most active suppliers"
 msgstr "Najbardziej aktywni dostawcy"
 
-#: marker/forms/select.py:226
+#: marker/forms/select.py:295
 msgid "Projects with the greatest interest"
 msgstr "Projekty o największym zainteresowaniu"
 
-#: marker/forms/select.py:227
+#: marker/forms/select.py:296
 msgid "Projects with the highest value"
 msgstr "Projekty o największej wartości"
 
-#: marker/forms/select.py:228
+#: marker/forms/select.py:297
 msgid "Projects with the highest usable area"
 msgstr "Projekty o największej powierzchni użytkowej"
 
-#: marker/forms/select.py:229
+#: marker/forms/select.py:298
 msgid "Projects with the highest cubic volume"
 msgstr "Projekty o największej kubaturze"
 
@@ -714,19 +718,19 @@ msgstr "Aktualnie realizowane lub zakończone projekty."
 #: marker/templates/common/search_criteria.mako:45
 #: marker/templates/contact/contact_search_tags.mako:16
 #: marker/templates/contractor/contractor_all.mako:29
-#: marker/templates/home.mako:48 marker/templates/tag/tag_all.mako:5
+#: marker/templates/home.mako:51 marker/templates/tag/tag_all.mako:5
 #: marker/templates/user/user_selected_related_contacts.mako:56
 #: marker/templates/user/user_selected_tags.mako:39
 #: marker/templates/user/user_selected_tags_companies.mako:16
 #: marker/templates/user/user_selected_tags_projects.mako:16
 #: marker/views/company.py:108 marker/views/company.py:1109
-#: marker/views/project.py:108 marker/views/project.py:1005
+#: marker/views/project.py:110 marker/views/project.py:1007
 #: marker/views/user.py:252 marker/views/user.py:304 marker/views/user.py:321
 #: marker/views/user.py:340 marker/views/user.py:356
 msgid "Tags"
 msgstr "Tagi"
 
-#: marker/templates/home.mako:50
+#: marker/templates/home.mako:53
 msgid "Business profiles of companies and types of projects."
 msgstr "Profile działalności firm i rodzaje projektów."
 
@@ -736,7 +740,7 @@ msgstr "Profile działalności firm i rodzaje projektów."
 #: marker/templates/contact/contact_all.mako:5
 #: marker/templates/contact/contact_search_tags.mako:13
 #: marker/templates/contact/contact_search_tags_results.mako:5
-#: marker/templates/home.mako:63 marker/templates/project/project_all.mako:27
+#: marker/templates/home.mako:66 marker/templates/project/project_all.mako:30
 #: marker/templates/user/user_selected_companies.mako:23
 #: marker/templates/user/user_selected_projects.mako:23
 #: marker/templates/user/user_selected_related_contacts.mako:46
@@ -745,27 +749,27 @@ msgstr "Profile działalności firm i rodzaje projektów."
 #: marker/templates/user/user_selected_tags.mako:42
 #: marker/templates/user/user_selected_tags_companies.mako:19
 #: marker/templates/user/user_selected_tags_projects.mako:19
-#: marker/views/company.py:120 marker/views/project.py:120
+#: marker/views/company.py:120 marker/views/project.py:122
 #: marker/views/user.py:260 marker/views/user.py:3072 marker/views/user.py:3095
 #: marker/views/user.py:3118
 msgid "Contacts"
 msgstr "Kontakty"
 
-#: marker/templates/home.mako:65
+#: marker/templates/home.mako:68
 msgid "Contacts assigned to companies and projects."
 msgstr "Kontakty przypisane do firm i projektów."
 
-#: marker/templates/home.mako:78
+#: marker/templates/home.mako:81
 msgid "Comments on companies and projects."
 msgstr "Komentarze dotyczące firm i projektów."
 
-#: marker/templates/base/navbar.mako:34 marker/templates/home.mako:88
+#: marker/templates/base/navbar.mako:34 marker/templates/home.mako:91
 #: marker/templates/report/report_all.mako:4
 #: marker/templates/report/report_view.mako:3
 msgid "Reports"
 msgstr "Raporty"
 
-#: marker/templates/home.mako:90
+#: marker/templates/home.mako:93
 msgid "Summary of the database content."
 msgstr "Podsumowanie zawartości bazy danych."
 
@@ -792,11 +796,12 @@ msgstr "Konto"
 #: marker/templates/contact/contact_import.mako:70
 #: marker/templates/contractor/contractor_all.mako:38
 #: marker/templates/project/project_activity_form.mako:59
+#: marker/templates/project/project_add_ai.mako:20
 #: marker/templates/project/project_add_comment.mako:25
 #: marker/templates/project/project_add_contact.mako:52
 #: marker/templates/project/project_add_tag.mako:26
 #: marker/templates/project/project_filter.mako:91
-#: marker/templates/project/project_form.mako:249
+#: marker/templates/project/project_form.mako:252
 #: marker/templates/tag/tag_add_company.mako:25
 #: marker/templates/tag/tag_add_project.mako:25
 #: marker/templates/tag/tag_filter.mako:21
@@ -835,7 +840,7 @@ msgstr "Wybierz, co dodać"
 #: marker/templates/contact/contact_view.mako:29
 #: marker/templates/project/project_companies.mako:31
 #: marker/utils/export.py:168 marker/utils/export.py:413
-#: marker/views/company.py:88 marker/views/project.py:845
+#: marker/views/company.py:88 marker/views/project.py:847
 msgid "Company"
 msgstr "Firma"
 
@@ -846,7 +851,7 @@ msgstr "Firma"
 #: marker/templates/contact/contact_view.mako:34
 #: marker/templates/project/project_table.mako:12 marker/utils/export.py:227
 #: marker/utils/export.py:473 marker/views/company.py:430
-#: marker/views/project.py:88
+#: marker/views/project.py:90
 msgid "Project"
 msgstr "Projekt"
 
@@ -858,7 +863,7 @@ msgstr "Projekt"
 #: marker/templates/project/project_tag_input_row.mako:10
 #: marker/templates/project/project_tags.mako:29
 #: marker/templates/tag/tag_table.mako:13 marker/templates/tag/tag_view.mako:14
-#: marker/views/company.py:497 marker/views/project.py:912
+#: marker/views/company.py:497 marker/views/project.py:914
 #: marker/views/tag.py:61 marker/views/user.py:329 marker/views/user.py:345
 msgid "Tag"
 msgstr "Tag"
@@ -882,7 +887,7 @@ msgstr "Skrót"
 #: marker/templates/contact/contact_tags_table.mako:14
 #: marker/templates/project/project_companies.mako:36
 #: marker/templates/project/project_contacts.mako:35
-#: marker/templates/project/project_table.mako:21
+#: marker/templates/project/project_table.mako:20
 #: marker/templates/project/project_tag_input_row.mako:21
 #: marker/templates/project/project_tag_input_row.mako:22
 #: marker/templates/project/project_tags.mako:32
@@ -1009,7 +1014,7 @@ msgid "Go to the form and add..."
 msgstr "Przejdź do formularza i dodaj..."
 
 #: marker/templates/company/company_all.mako:25
-#: marker/templates/project/project_all.mako:22
+#: marker/templates/project/project_all.mako:25
 #: marker/templates/user/user_selected_companies.mako:21
 #: marker/templates/user/user_selected_projects.mako:21
 #: marker/templates/user/user_selected_related_contacts.mako:44
@@ -1023,13 +1028,13 @@ msgstr "Tryb widoku"
 
 #: marker/templates/company/company_form.mako:78
 #: marker/templates/company/company_form.mako:79
-#: marker/templates/project/project_form.mako:85
-#: marker/templates/project/project_form.mako:86
+#: marker/templates/project/project_form.mako:79
+#: marker/templates/project/project_form.mako:80
 msgid "Refresh form from website"
 msgstr "Odśwież formularz z witryny"
 
 #: marker/templates/company/company_form.mako:89
-#: marker/templates/project/project_form.mako:96
+#: marker/templates/project/project_form.mako:90
 msgid ""
 "Click the refresh button to fill the remaining fields from the website "
 "address."
@@ -1038,77 +1043,69 @@ msgstr ""
 "witryny."
 
 #: marker/templates/company/company_more.mako:22
+#: marker/templates/company/company_row.mako:20
 #: marker/templates/company/company_tags.mako:30
 #: marker/templates/company/company_view.mako:70
 #: marker/templates/contact/contact_more.mako:17
 #: marker/templates/contact/contact_view.mako:64
 #: marker/templates/project/project_more.mako:23
+#: marker/templates/project/project_row.mako:20
 #: marker/templates/project/project_tags.mako:30
 #: marker/templates/project/project_view.mako:87
 #: marker/templates/tag/tag_more.mako:20 marker/templates/tag/tag_view.mako:31
 #: marker/templates/user/user_more.mako:12
 #: marker/templates/user/user_view.mako:71 marker/views/company.py:433
-#: marker/views/project.py:848
+#: marker/views/project.py:850
 msgid "Created at"
 msgstr "Utworzono"
 
 #: marker/templates/company/company_more.mako:23
+#: marker/templates/company/company_row.mako:21
 #: marker/templates/company/company_tags.mako:31
 #: marker/templates/company/company_view.mako:76
 #: marker/templates/contact/contact_more.mako:18
 #: marker/templates/contact/contact_view.mako:71
 #: marker/templates/project/project_more.mako:24
+#: marker/templates/project/project_row.mako:21
 #: marker/templates/project/project_tags.mako:31
 #: marker/templates/project/project_view.mako:93
 #: marker/templates/tag/tag_more.mako:21 marker/templates/tag/tag_view.mako:37
 #: marker/templates/user/user_more.mako:13
 #: marker/templates/user/user_view.mako:74 marker/views/company.py:434
-#: marker/views/project.py:849
+#: marker/views/project.py:851
 msgid "Updated at"
 msgstr "Zmodyfikowano"
 
 #: marker/templates/company/company_more.mako:38
 #: marker/templates/company/company_table.mako:15
-#: marker/templates/project/project_more.mako:46
-#: marker/templates/project/project_table.mako:16
+#: marker/templates/project/project_more.mako:39
+#: marker/templates/project/project_table.mako:15
 msgid "Common tags"
 msgstr "Wspólne tagi"
 
 #: marker/templates/company/company_projects.mako:34
 #: marker/templates/project/project_companies.mako:34
-msgid "Wartość"
-msgstr ""
+msgid "Value"
+msgstr "Wartość"
 
 #: marker/templates/company/company_projects.mako:35
 #: marker/templates/project/project_companies.mako:35
-msgid "Cena za m²"
-msgstr ""
-
-#: marker/templates/company/company_row.mako:20
-#: marker/templates/project/project_row.mako:20
-msgid "Utworzono"
-msgstr ""
-
-#: marker/templates/company/company_row.mako:21
-#: marker/templates/project/project_row.mako:21
-msgid "Zmodyfikowano"
-msgstr ""
+msgid "Price per m²"
+msgstr "Cena za m²"
 
 #: marker/templates/company/company_row.mako:27
 #: marker/templates/company/company_row.mako:31
 #: marker/templates/project/project_row.mako:27
 #: marker/templates/project/project_row.mako:31
-#, fuzzy
-msgid "Netto"
-msgstr "Inwestor"
+msgid "Net"
+msgstr "Netto"
 
 #: marker/templates/company/company_row.mako:28
 #: marker/templates/company/company_row.mako:32
 #: marker/templates/project/project_row.mako:28
 #: marker/templates/project/project_row.mako:32
-#, fuzzy
-msgid "Brutto"
-msgstr "Auto"
+msgid "Gross"
+msgstr "Brutto"
 
 #: marker/templates/company/company_uptime.mako:5
 #: marker/templates/project/project_uptime.mako:5
@@ -1328,9 +1325,9 @@ msgid "Delivery method"
 msgstr "Sposób realizacji projektu"
 
 #: marker/views/account.py:23 marker/views/account.py:38
-#: marker/views/company.py:1426 marker/views/company.py:1712
-#: marker/views/contact.py:317 marker/views/project.py:1382
-#: marker/views/project.py:1827 marker/views/tag.py:1012
+#: marker/views/company.py:1431 marker/views/company.py:1717
+#: marker/views/contact.py:317 marker/views/project.py:1388
+#: marker/views/project.py:1833 marker/views/tag.py:1012
 #: marker/views/user.py:1790
 msgid "success:Changes have been saved"
 msgstr "success:Zmiany zostały zapisane"
@@ -1380,7 +1377,7 @@ msgstr "Użytkownik %s usunął komentarz"
 msgid "Find a comment"
 msgstr "Znajdź komentarz"
 
-#: marker/views/company.py:158 marker/views/project.py:158
+#: marker/views/company.py:158 marker/views/project.py:160
 msgid "Similar"
 msgstr "Podobne"
 
@@ -1391,15 +1388,16 @@ msgstr "Użytkownik %s dodał tag do firmy"
 
 #: marker/views/company.py:938 marker/views/company.py:982
 #: marker/views/company.py:1008 marker/views/company.py:1350
-#: marker/views/company.py:1666 marker/views/company.py:1859
-#: marker/views/project.py:1306 marker/views/project.py:1630
-#: marker/views/project.py:1711 marker/views/project.py:1755
-#: marker/views/project.py:1781 marker/views/tag.py:932 marker/views/tag.py:966
-#: marker/views/tag.py:996 marker/views/user.py:1773
+#: marker/views/company.py:1671 marker/views/company.py:1903
+#: marker/views/project.py:1308 marker/views/project.py:1636
+#: marker/views/project.py:1717 marker/views/project.py:1761
+#: marker/views/project.py:1787 marker/views/project.py:2012
+#: marker/views/tag.py:932 marker/views/tag.py:966 marker/views/tag.py:996
+#: marker/views/user.py:1773
 msgid "success:Added to the database"
 msgstr "success:Dodano do bazy danych"
 
-#: marker/views/company.py:944 marker/views/project.py:1717
+#: marker/views/company.py:944 marker/views/project.py:1723
 msgid "Add a tag"
 msgstr "Dodaj tag"
 
@@ -1408,20 +1406,20 @@ msgstr "Dodaj tag"
 msgid "The user %s has added a contact to the company"
 msgstr "Użytkownik %s dodał kontakt do firmy"
 
-#: marker/views/company.py:988 marker/views/project.py:1761
+#: marker/views/company.py:988 marker/views/project.py:1767
 msgid "Add a contact"
 msgstr "Dodaj kontakt"
 
-#: marker/views/company.py:1007 marker/views/project.py:1780
+#: marker/views/company.py:1007 marker/views/project.py:1786
 #, python-format
 msgid "The user %s added a comment"
 msgstr "Użytkownik %s dodał komentarz"
 
-#: marker/views/company.py:1014 marker/views/project.py:1787
+#: marker/views/company.py:1014 marker/views/project.py:1793
 msgid "Add a comment"
 msgstr "Dodaj komentarz"
 
-#: marker/views/company.py:1351 marker/views/project.py:1307
+#: marker/views/company.py:1351 marker/views/project.py:1309
 msgid "info:Add tags and contacts"
 msgstr "info:Dodaj tagi i kontakty"
 
@@ -1430,76 +1428,107 @@ msgstr "info:Dodaj tagi i kontakty"
 msgid "The user %s has added a company"
 msgstr "Użytkownik %s dodał firmę"
 
-#: marker/views/company.py:1371 marker/views/project.py:1636
+#: marker/views/company.py:1371 marker/views/project.py:1642
 #: marker/views/tag.py:940
 msgid "Add a company"
 msgstr "Dodaj firmę"
 
-#: marker/views/company.py:1431
+#: marker/views/company.py:1403
+#, python-format
+msgid "The user %s used company autofill from website (AI)"
+msgstr "Użytkownik %s użył autouzupełniania firmy ze strony internetowej (AI)"
+
+#: marker/views/company.py:1436
 #, python-format
 msgid "The user %s changed the company details"
 msgstr "Użytkownik %s zmienił dane firmy"
 
-#: marker/views/company.py:1435
+#: marker/views/company.py:1440
 msgid "Edit company details"
 msgstr "Edytuj dane firmy"
 
-#: marker/views/company.py:1467 marker/views/contact.py:336
-#: marker/views/project.py:1429 marker/views/tag.py:1032
+#: marker/views/company.py:1472 marker/views/contact.py:336
+#: marker/views/project.py:1435 marker/views/tag.py:1032
 #: marker/views/user.py:1819
 msgid "success:Removed from the database"
 msgstr "success:Usunięto z bazy danych"
 
-#: marker/views/company.py:1468 marker/views/company.py:1510
+#: marker/views/company.py:1473 marker/views/company.py:1515
 #: marker/views/contact.py:360
 #, python-format
 msgid "The user %s deleted the company"
 msgstr "Użytkownik %s usunął firmę"
 
-#: marker/views/company.py:1594
+#: marker/views/company.py:1599
 msgid "Find a company"
 msgstr "Znajdź firmę"
 
-#: marker/views/company.py:1621
+#: marker/views/company.py:1626
 #, python-format
 msgid "The user %s unlinked the tag from the company"
 msgstr "Użytkownik %s odczepił tag od firmy"
 
-#: marker/views/company.py:1663
+#: marker/views/company.py:1668
 #, python-format
 msgid "The user %s added the project to the company"
 msgstr "Użytkownik %s dodał projekt do firmy"
 
-#: marker/views/company.py:1672 marker/views/project.py:1327
+#: marker/views/company.py:1677 marker/views/project.py:1329
 #: marker/views/tag.py:974
 msgid "Add a project"
 msgstr "Dodaj projekt"
 
-#: marker/views/company.py:1717 marker/views/project.py:1832
+#: marker/views/company.py:1722 marker/views/project.py:1838
 #, python-format
 msgid "The user %s changed the activity details"
 msgstr "Użytkownik %s zmienił szczegóły aktywności"
 
-#: marker/views/company.py:1722 marker/views/project.py:1837
+#: marker/views/company.py:1727 marker/views/project.py:1843
 msgid "Edit activity details"
 msgstr "Edytuj szczegóły aktywności"
 
-#: marker/views/company.py:1760
+#: marker/views/company.py:1765
 #, python-format
 msgid "The user %s unlinked the company from the project"
 msgstr "Użytkownik %s odczepił firmę od projektu"
 
-#: marker/views/company.py:1808 marker/views/company.py:1869
+#: marker/views/company.py:1813 marker/views/company.py:1832
+#: marker/views/company.py:1851 marker/views/company.py:1913
 msgid "Add a company using AI autofill"
 msgstr "Dodaj firmę za pomocą automatycznego uzupełniania AI"
 
-#: marker/views/company.py:1821
+#: marker/views/company.py:1821 marker/views/project.py:1932
+msgid ""
+"danger:The AI ​​doesn't detect the relevant data. Please provide a URL "
+"containing data such as your name and address, or enter your data using a"
+" form."
+msgstr ""
+"danger:Sztuczna inteligencja nie wykrywa odpowiednich danych. Proszę "
+"podać adres URL zawierający dane, takie jak imię i nazwisko oraz adres, "
+"lub wprowadzić dane za pomocą formularza."
+
+#: marker/views/company.py:1840
+msgid ""
+"danger:Cannot add a company without a name. The AI-generated data did not"
+" contain a company name."
+msgstr ""
+"danger:Nie można dodać firmy bez nazwy. Dane wygenerowane przez sztuczną "
+"inteligencję nie zawierały nazwy firmy."
+
+#: marker/views/company.py:1861
 msgid ""
 "warning:A company with the name obtained from the provided website "
 "address already exists in the database."
 msgstr ""
 "warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w "
 "bazie."
+
+#: marker/views/company.py:1900
+#, python-format
+msgid "The user %s added a company using AI autofill"
+msgstr ""
+"Użytkownik %s dodał firmę korzystając z funkcji automatycznego "
+"uzupełniania AI"
 
 #: marker/views/contact.py:321
 #, python-format
@@ -1556,48 +1585,83 @@ msgstr "Użytkownik %s zaimportował plik CSV (%s kontaktów, %s pominięto)"
 msgid "Import CSV"
 msgstr "Importuj CSV"
 
-#: marker/views/project.py:1308
+#: marker/views/project.py:1310
 #, python-format
 msgid "The user %s has added a project"
 msgstr "Użytkownik %s dodał projekt"
 
-#: marker/views/project.py:1389
+#: marker/views/project.py:1360
+#, python-format
+msgid "The user %s used project website autofill for: %s"
+msgstr ""
+"Użytkownik %s użył funkcji automatycznego wypełniania strony internetowej"
+" projektu dla: %s"
+
+#: marker/views/project.py:1395
 #, python-format
 msgid "The user %s changed the project details"
 msgstr "Użytkownik %s zmienił dane projektu"
 
-#: marker/views/project.py:1393
+#: marker/views/project.py:1399
 msgid "Edit project details"
 msgstr "Edytuj dane projektu"
 
-#: marker/views/project.py:1430 marker/views/project.py:1472
+#: marker/views/project.py:1436 marker/views/project.py:1478
 #, python-format
 msgid "The user %s deleted the project"
 msgstr "Użytkownik %s usunął projekt"
 
-#: marker/views/project.py:1502
+#: marker/views/project.py:1508
 msgid "Find a project"
 msgstr "Znajdź projekt"
 
-#: marker/views/project.py:1627
+#: marker/views/project.py:1633
 #, python-format
 msgid "The user %s added the company to the project"
 msgstr "Użytkownik %s dodał firmę do projektu"
 
-#: marker/views/project.py:1708
+#: marker/views/project.py:1714
 #, python-format
 msgid "The user %s has added a tag to the project"
 msgstr "Użytkownik %s dodał tag do projektu"
 
-#: marker/views/project.py:1752
+#: marker/views/project.py:1758
 #, python-format
 msgid "The user %s has added a contact to the project"
 msgstr "Użytkownik %s dodał kontakt do projektu"
 
-#: marker/views/project.py:1870
+#: marker/views/project.py:1876
 #, python-format
 msgid "The user %s unlinked the tag from the project"
 msgstr "Użytkownik %s odpiął tag od projektu"
+
+#: marker/views/project.py:1924 marker/views/project.py:1943
+#: marker/views/project.py:1962 marker/views/project.py:2026
+msgid "Add a project using AI autofill"
+msgstr "Dodaj firmę za pomocą automatycznego uzupełniania AI"
+
+#: marker/views/project.py:1951
+msgid ""
+"danger:Cannot add a project without a name. The AI-generated data did not"
+" contain a project name."
+msgstr ""
+"danger:Nie można dodać projektu bez nazwy. Dane wygenerowane przez "
+"sztuczną inteligencję nie zawierały nazwy projektu."
+
+#: marker/views/project.py:1972
+msgid ""
+"warning:A project with the name obtained from the provided website "
+"address already exists in the database."
+msgstr ""
+"warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w "
+"bazie."
+
+#: marker/views/project.py:2014
+#, python-format
+msgid "The user %s has added a project using AI autofill"
+msgstr ""
+"Użytkownik %s dodał projekt korzystając z funkcji automatycznego "
+"wypełniania AI"
 
 #: marker/views/report.py:30
 msgid "Report"
@@ -1845,29 +1909,23 @@ msgstr "success:Wybrane tagi zostały scalone"
 msgid "The user %s merged selected tags to '%s'"
 msgstr "Użytkownik %s scalił zaznaczone tagi w '%s'"
 
-#: marker/views/user.py:3828
+#: marker/views/user.py:3831
 #, python-format
 msgid "The user %s exported the data of companies with a star"
 msgstr "Użytkownik %s eksportował dane firm z gwiazdką"
 
-#: marker/views/user.py:3843
+#: marker/views/user.py:3846
 #, python-format
 msgid "The user %s cleared companies with a star"
 msgstr "Użytkownik %s eksportował dane firm z gwiazdką"
 
-#: marker/views/user.py:4073
+#: marker/views/user.py:4076
 #, python-format
 msgid "The user %s exported the data of projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
-#: marker/views/user.py:4088
+#: marker/views/user.py:4091
 #, python-format
 msgid "The user %s cleared projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
-
-#~ msgid "Net price per m² of usable area"
-#~ msgstr "Cena netto za m² powierzchni użytkowej"
-
-#~ msgid "Gross price per m² of usable area"
-#~ msgstr "Cena brutto za m² powierzchni użytkowej"
 
