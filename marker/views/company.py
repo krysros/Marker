@@ -1382,7 +1382,6 @@ class CompanyView:
             fields = company_autofill_from_website(website)
         except Exception as e:
             log.error("company_website_autofill error: %s", e)
-            _ = self.request.translate
             error_msg = str(e)
             # If the error message contains a long API response, only show a summary
             if "Response:" in error_msg and len(error_msg) > 300:
