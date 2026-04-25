@@ -1776,137 +1776,86 @@ class CompanyView:
     )
     def add_ai(self):
         _ = self.request.translate
-
         form = CompanyAddAIForm(
             self.request.POST if self.request.method == "POST" else None
         )
         if self.request.method == "POST" and form.validate():
-            website = form.website.data.strip()
+            autofill = {}
             try:
-                autofill = company_autofill_from_website(website)
+                autofill = company_autofill_from_website(form.website.data)
+                autofill = dict(autofill)
+                autofill["website"] = form.website.data
             except Exception as e:
-                error_msg = str(e)
-                # If the error message contains a long API response, only show a summary
-                if "Response:" in error_msg and len(error_msg) > 300:
-                    error_msg = (
-                        error_msg.split("Response:")[0].strip() + " (details omitted)"
-                    )
-                flash_msg = f"Autofill error: {error_msg}"
-                max_len = 500
-                if len(flash_msg.encode("utf-8")) > max_len:
-                    flash_msg = (
-                        flash_msg.encode("utf-8")[:max_len].decode(
-                            "utf-8", errors="ignore"
-                        )
-                        + "..."
-                    )
-                self.request.session.flash(_(flash_msg), "error")
+                self.request.session.flash(_("danger:An error occurred while trying to autofill the company data"))
+                next_url = self.request.route_url("company_add_ai")
+                # next_url = self.request.current_route_path()
+
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
-                    # Redirect to the same form page to force a full reload and avoid card-in-card
-                    response.headers = {
-                        "HX-Redirect": self.request.route_url("company_add_ai")
-                    }
-                    response.status_code = getattr(e, "status_code", 200)
+                    response.headers["HX-Redirect"] = next_url
+                    response.status_code = 303
                     return response
-                return {"heading": _("Add a company using AI autofill"), "form": form}
-            autofill = dict(autofill)
-            autofill["website"] = website
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
-            if not company_form.validate():
-                self.request.session.flash(
-                    _(
-                        "danger:The AI ​​doesn't detect the relevant data. Please provide a URL containing data such as your name and address, or enter your data using a form."
+            
+            if self.request.method == "POST" and form.validate():
+                name = company_form.name.data or ""
+                existing = self.request.dbsession.execute(
+                    select(Company).where(func.lower(Company.name) == func.lower(name))
+                ).scalar_one_or_none()
+                if existing:
+                    self.request.session.flash(
+                        _(
+                            "warning:A company with the name obtained from the provided website address already exists in the database."
+                        )
                     )
-                )
-                if self.request.headers.get("HX-Request"):
-                    response = self.request.response
-                    response.headers = {
-                        "HX-Redirect": self.request.route_url("company_add_ai")
-                    }
-                    response.status_code = 200
-                    return response
-                return {
-                    "heading": _("Add a company using AI autofill"),
-                    "form": company_form,
-                }
+                    next_url = self.request.route_url(
+                        "company_view", company_id=existing.id, slug=existing.slug
+                    )
+                    if self.request.headers.get("HX-Request"):
+                        response = self.request.response
+                        response.headers["HX-Redirect"] = next_url
+                        response.status_code = 303
+                        return response
+                    return HTTPSeeOther(location=next_url)
 
-            name = company_form.name.data or ""
-            if not name:
-                self.request.session.flash(
-                    _(
-                        "danger:Cannot add a company without a name. The AI-generated data did not contain a company name."
-                    )
+                geo = location_details(
+                    street=company_form.street.data,
+                    city=company_form.city.data,
+                    country=company_form.country.data,
+                    postalcode=company_form.postcode.data,
                 )
-                if self.request.headers.get("HX-Request"):
-                    response = self.request.response
-                    response.headers = {
-                        "HX-Redirect": self.request.route_url("company_add_ai")
-                    }
-                    response.status_code = 200
-                    return response
-                return {
-                    "heading": _("Add a company using AI autofill"),
-                    "form": company_form,
-                }
-
-            existing = self.request.dbsession.execute(
-                select(Company).where(func.lower(Company.name) == func.lower(name))
-            ).scalar_one_or_none()
-            if existing:
-                self.request.session.flash(
-                    _(
-                        "warning:A company with the name obtained from the provided website address already exists in the database."
-                    )
+                company = Company(
+                    name=company_form.name.data,
+                    street=company_form.street.data,
+                    postcode=company_form.postcode.data,
+                    city=company_form.city.data,
+                    subdivision=company_form.subdivision.data,
+                    country=company_form.country.data,
+                    website=company_form.website.data,
+                    color=company_form.color.data,
+                    NIP=company_form.NIP.data,
+                    REGON=company_form.REGON.data,
+                    KRS=company_form.KRS.data,
+                )
+                if geo:
+                    company.latitude = geo.get("lat")
+                    company.longitude = geo.get("lon")
+                company.created_by = self.request.identity
+                self.request.dbsession.add(company)
+                self.request.dbsession.flush()
+                self.request.session.flash(_("success:Added to the database"))
+                log.info(
+                    _("The user %s added a company using AI autofill")
+                    % self.request.identity.name
                 )
                 next_url = self.request.route_url(
-                    "company_view", company_id=existing.id, slug=existing.slug
+                    "company_view", company_id=company.id, slug=company.slug
                 )
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers["HX-Redirect"] = next_url
-                    response.status_code = 200
+                    response.status_code = 303
                     return response
                 return HTTPSeeOther(location=next_url)
-
-            geo = location_details(
-                street=company_form.street.data,
-                city=company_form.city.data,
-                country=company_form.country.data,
-                postalcode=company_form.postcode.data,
-            )
-            company = Company(
-                name=company_form.name.data,
-                street=company_form.street.data,
-                postcode=company_form.postcode.data,
-                city=company_form.city.data,
-                subdivision=company_form.subdivision.data,
-                country=company_form.country.data,
-                website=company_form.website.data,
-                color=company_form.color.data,
-                NIP=company_form.NIP.data,
-                REGON=company_form.REGON.data,
-                KRS=company_form.KRS.data,
-            )
-            if geo:
-                company.latitude = geo.get("lat")
-                company.longitude = geo.get("lon")
-            company.created_by = self.request.identity
-            self.request.dbsession.add(company)
-            self.request.dbsession.flush()
-            log.info(
-                _("The user %s added a company using AI autofill")
-                % self.request.identity.name
-            )
-            self.request.session.flash(_("success:Added to the database"))
-            next_url = self.request.route_url(
-                "company_view", company_id=company.id, slug=company.slug
-            )
-            if self.request.headers.get("HX-Request"):
-                response = self.request.response
-                response.headers["HX-Redirect"] = next_url
-                response.status_code = 200
-                return response
-            return HTTPSeeOther(location=next_url)
         return {"heading": _("Add a company using AI autofill"), "form": form}
