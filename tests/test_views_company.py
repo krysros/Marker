@@ -2567,7 +2567,7 @@ def test_company_map(dbsession):
     assert "url" in result
 
 
-# --- Cover line 307: all() desc ordering for standard sort ---
+# --- Cover line 185: all() desc ordering for standard sort ---
 
 
 def test_company_all_name_asc(dbsession):
@@ -2648,7 +2648,7 @@ def test_company_view_contacts_bulk_select(dbsession):
     assert result is request.response
 
 
-# --- Cover line 1085: similar() shared_tags desc ---
+# --- Cover line 1090: similar() shared_tags desc ---
 
 
 def test_company_similar_shared_tags_desc(dbsession):
@@ -2675,7 +2675,7 @@ def test_company_similar_shared_tags_desc(dbsession):
     assert "paginator" in result
 
 
-# --- Cover line 1483: search POST ---
+# --- Cover line 1574: search POST ---
 
 
 def test_company_search_post_with_tag(dbsession):
@@ -2699,7 +2699,7 @@ def test_company_search_post_with_tag(dbsession):
 
 
 def test_company_similar_shared_tags_asc(dbsession):
-    """Cover line 1085: similar() shared_tags asc."""
+    """Cover line 1090: similar() shared_tags asc."""
     user = _co_user(dbsession, "cosimsta")
     co1 = _co_company(dbsession, user, "CoSimStaCo1")
     co2 = _co_company(dbsession, user, "CoSimStaCo2")
@@ -2754,7 +2754,7 @@ def test_company_similar_empty_tag_name(dbsession):
 
 
 def test_company_unlink_tag_not_found(dbsession):
-    """Cover line 1515: unlink_tag with non-existent tag."""
+    """Cover line 1601: unlink_tag with non-existent tag."""
     user = _co_user(dbsession, "counlinktagnf")
     co = _co_company(dbsession, user, "CoUnlinkTagNfCo")
     co_id = co.id
@@ -2767,7 +2767,7 @@ def test_company_unlink_tag_not_found(dbsession):
 
 
 def test_company_activity_edit_project_not_found(dbsession):
-    """Cover line 1593: activity_edit with non-existent project."""
+    """Cover line 1682: activity_edit with non-existent project."""
     user = _co_user(dbsession, "coacteditnf")
     co = _co_company(dbsession, user, "CoActEditNfCo")
     co_id = co.id
@@ -2780,7 +2780,7 @@ def test_company_activity_edit_project_not_found(dbsession):
 
 
 def test_company_activity_unlink_project_not_found(dbsession):
-    """Cover line 1644: activity_unlink with non-existent project."""
+    """Cover line 1733: activity_unlink with non-existent project."""
     user = _co_user(dbsession, "coactunlinknf")
     co = _co_company(dbsession, user, "CoActUnlinkNfCo")
     co_id = co.id
@@ -2797,7 +2797,7 @@ def test_company_activity_unlink_project_not_found(dbsession):
     side_effect=Exception("API failure"),
 )
 def test_company_add_ai_error_no_htmx(mock_autofill, dbsession):
-    """Cover line 1700: add_ai error without HX-Request header."""
+    """Cover line 1772: add_ai error without HX-Request header."""
     user = _co_user(dbsession, "coaddaierr")
     transaction.commit()
     request = _co_request(
@@ -2823,7 +2823,7 @@ def test_company_add_ai_error_no_htmx(mock_autofill, dbsession):
     side_effect=Exception("A" * 600),
 )
 def test_company_add_ai_error_htmx(mock_autofill, dbsession):
-    """Cover line 1685: add_ai error with long message + HX-Request header."""
+    """Cover line 1772: add_ai error with long message + HX-Request header."""
     user = _co_user(dbsession, "coaddaihtmx")
     transaction.commit()
     request = _co_request(
@@ -2842,7 +2842,7 @@ def test_company_add_ai_error_htmx(mock_autofill, dbsession):
 
 @patch("marker.views.company.location", return_value={"lat": 50.0, "lon": 20.0})
 def test_company_add_post_with_tags(mock_loc, dbsession):
-    """Cover lines 1258-1265: add() POST with tags."""
+    """Cover lines 1286-1300: add() POST with tags."""
     user = _co_user(dbsession, "coaddtags")
     transaction.commit()
     request = _co_request(

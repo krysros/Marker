@@ -2530,7 +2530,7 @@ def test_user_export_tags_invalid_sort_order(dbsession):
 
 
 def test_user_export_tags_projects_no_projects(dbsession):
-    """Cover lines 520-528: tag with category=projects but tag has no projects."""
+    """Cover lines 820-866: tag with category=projects but tag has no projects."""
     user = _user(dbsession, "texpnp")
     tag = _tag(dbsession, user, "TExpNoProjTag")
     # tag has no projects
@@ -2550,7 +2550,7 @@ def test_user_export_tags_projects_no_projects(dbsession):
 
 
 def test_user_export_contacts_sort_country_projects(dbsession):
-    """Cover lines 1725-1730: export_contacts country sort with projects category."""
+    """Cover lines 1660-1761: export_contacts country sort with projects category."""
     user = _user(dbsession, "texccp")
     proj = _project(dbsession, user, "TExCCProj")
     from marker.models.contact import Contact
@@ -2575,7 +2575,7 @@ def test_user_export_contacts_sort_country_projects(dbsession):
 
 
 def test_user_export_contacts_sort_country_companies(dbsession):
-    """Cover lines 1731-1736: export_contacts country sort with companies."""
+    """Cover lines 1660-1761: export_contacts country sort with companies."""
     user = _user(dbsession, "texccco")
     co = _company(dbsession, user, "TExCCComp")
     from marker.models.contact import Contact
@@ -2600,7 +2600,7 @@ def test_user_export_contacts_sort_country_companies(dbsession):
 
 
 def test_user_export_contacts_color_filter(dbsession):
-    """Cover line 1722: export_contacts color filter."""
+    """Cover line 1660: export_contacts color filter."""
     user = _user(dbsession, "texccolor")
     co = _company(dbsession, user, "TExColorComp")
     from marker.models.contact import Contact
@@ -2623,7 +2623,7 @@ def test_user_export_contacts_color_filter(dbsession):
 
 
 def test_user_export_contacts_sort_country_projects_desc(dbsession):
-    """Cover lines 1729-1730: export_contacts country sort projects desc."""
+    """Cover lines 1660-1761: export_contacts country sort projects desc."""
     user = _user(dbsession, "texccpd")
     proj = _project(dbsession, user, "TExCCPdProj")
     from marker.models.contact import Contact
@@ -2648,7 +2648,7 @@ def test_user_export_contacts_sort_country_projects_desc(dbsession):
 
 
 def test_user_export_contacts_sort_country_companies_asc(dbsession):
-    """Cover line 1734: export_contacts country sort companies asc."""
+    """Cover line 1660: export_contacts country sort companies asc."""
     user = _user(dbsession, "texcccoa")
     co = _company(dbsession, user, "TExCCCoAComp")
     from marker.models.contact import Contact
@@ -2673,7 +2673,7 @@ def test_user_export_contacts_sort_country_companies_asc(dbsession):
 
 
 def test_user_selected_projects_stage_filter(dbsession):
-    """Cover lines 2187-2188: selected projects stage filter."""
+    """Cover lines 2126-2245: selected projects stage filter."""
     user = _user(dbsession, "tselstage")
     proj = _project(dbsession, user, "TSelStageProj")
     proj.stage = "design"
@@ -2692,7 +2692,7 @@ def test_user_selected_projects_stage_filter(dbsession):
 
 
 def test_user_selected_projects_delivery_method_filter(dbsession):
-    """Cover lines 2191-2192: selected projects delivery_method filter."""
+    """Cover lines 2126-2245: selected projects delivery_method filter."""
     user = _user(dbsession, "tseldm")
     proj = _project(dbsession, user, "TSelDmProj")
     proj.delivery_method = "general_contractor"
@@ -2711,7 +2711,7 @@ def test_user_selected_projects_delivery_method_filter(dbsession):
 
 
 def test_user_selected_projects_bulk_select(dbsession):
-    """Cover line 2200: selected_projects bulk selection."""
+    """Cover line 2126: selected_projects bulk selection."""
     user = _user(dbsession, "tspbulk")
     proj = _project(dbsession, user, "TSpBulkProj")
     user.selected_projects.append(proj)
@@ -2732,7 +2732,7 @@ def test_user_selected_projects_bulk_select(dbsession):
 
 
 def test_user_json_selected_projects_color(dbsession):
-    """Cover line 2271: json_selected_projects color filter."""
+    """Cover line 2245: json_selected_projects color filter."""
     user = _user(dbsession, "tjspcolor")
     proj = _project(dbsession, user, "TJspColorProj")
     proj.color = "red"
@@ -2747,7 +2747,7 @@ def test_user_json_selected_projects_color(dbsession):
 
 
 def test_user_json_selected_projects_delivery_method(dbsession):
-    """Cover line 2283: json_selected_projects delivery_method filter."""
+    """Cover line 2245: json_selected_projects delivery_method filter."""
     user = _user(dbsession, "tjspdm")
     proj = _project(dbsession, user, "TJspDmProj")
     proj.delivery_method = "general_contractor"
@@ -2762,7 +2762,7 @@ def test_user_json_selected_projects_delivery_method(dbsession):
 
 
 def test_user_selected_projects_contacts_country_subdivision(dbsession):
-    """Cover lines 2931-2937: _selected_related_contacts projects country/subdivision."""
+    """Cover lines 2808-3067: _selected_related_contacts projects country/subdivision."""
     user = _user(dbsession, "tscpcat")
     proj = _project(dbsession, user, "TScpCatProj")
     from marker.models.contact import Contact
@@ -2787,7 +2787,7 @@ def test_user_selected_projects_contacts_country_subdivision(dbsession):
 
 
 def test_user_selected_projects_contacts_sort_city_related(dbsession):
-    """Cover lines 2974: _selected_related_contacts city sort projects."""
+    """Cover lines 2808-3067: _selected_related_contacts city sort projects."""
     user = _user(dbsession, "tsccityp")
     proj = _project(dbsession, user, "TScCityProj")
     from marker.models.contact import Contact
@@ -2812,7 +2812,7 @@ def test_user_selected_projects_contacts_sort_city_related(dbsession):
 
 
 def test_user_selected_companies_contacts_sort_city_asc(dbsession):
-    """Cover lines 2981-2982: _selected_related_contacts city sort companies asc."""
+    """Cover lines 2808-3067: _selected_related_contacts city sort companies asc."""
     user = _user(dbsession, "tsccityco")
     co = _company(dbsession, user, "TScCityComp")
     from marker.models.contact import Contact
@@ -2837,7 +2837,7 @@ def test_user_selected_companies_contacts_sort_city_asc(dbsession):
 
 
 def test_user_selected_companies_contacts_sort_city_desc(dbsession):
-    """Cover lines 2989-2990: _selected_related_contacts city sort companies desc."""
+    """Cover lines 2808-3067: _selected_related_contacts city sort companies desc."""
     user = _user(dbsession, "tsccityd")
     co = _company(dbsession, user, "TScCityDComp")
     from marker.models.contact import Contact
@@ -2862,7 +2862,7 @@ def test_user_selected_companies_contacts_sort_city_desc(dbsession):
 
 
 def test_user_export_selected_contacts_projects_country_subdivision(dbsession):
-    """Cover line 3370: export_selected_contacts projects country/subdivision."""
+    """Cover line 3315: export_selected_contacts projects country/subdivision."""
     user = _user(dbsession, "tescpc")
     proj = _project(dbsession, user, "TEscpcProj")
     from marker.models.contact import Contact
@@ -2888,7 +2888,7 @@ def test_user_export_selected_contacts_projects_country_subdivision(dbsession):
 
 
 def test_user_export_selected_contacts_companies_subdivision(dbsession):
-    """Cover line 3362: export_selected_contacts companies subdivision."""
+    """Cover line 3315: export_selected_contacts companies subdivision."""
     user = _user(dbsession, "tesccsub")
     co = _company(dbsession, user, "TEscSubComp")
     from marker.models.contact import Contact
@@ -2913,7 +2913,7 @@ def test_user_export_selected_contacts_companies_subdivision(dbsession):
 
 
 def test_user_export_selected_contacts_sort_country_projects(dbsession):
-    """Cover lines 3380-3385: export_selected_contacts country sort projects."""
+    """Cover lines 3315-3425: export_selected_contacts country sort projects."""
     user = _user(dbsession, "tesccntp")
     proj = _project(dbsession, user, "TEsccntpProj")
     from marker.models.contact import Contact
@@ -2939,7 +2939,7 @@ def test_user_export_selected_contacts_sort_country_projects(dbsession):
 
 
 def test_user_export_selected_contacts_sort_country_companies(dbsession):
-    """Cover lines 3386-3391: export_selected_contacts country sort companies."""
+    """Cover lines 3315-3425: export_selected_contacts country sort companies."""
     user = _user(dbsession, "tesccntco")
     co = _company(dbsession, user, "TEsccntcoComp")
     from marker.models.contact import Contact
