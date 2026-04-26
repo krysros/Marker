@@ -60,7 +60,6 @@ from . import (
     normalize_ci_expression,
     normalize_ci_value,
     polish_sort_expression,
-    set_select_all_state,
     sort_column,
     toggle_selected_item,
 )
@@ -935,15 +934,12 @@ class ProjectView:
             bulk_selected_items = self.request.identity.selected_tags
 
         if is_bulk_select_request(self.request):
-            checked = self.request.params.get("checked", "false").lower() == "true"
             if bulk_stmt is not None and bulk_selected_items is not None:
                 return handle_bulk_selection(
                     self.request,
                     bulk_stmt,
                     bulk_selected_items,
                 )
-
-            set_select_all_state(self.request, checked)
             return htmx_refresh_response(self.request)
 
         return {
@@ -1653,7 +1649,6 @@ class ProjectView:
     )
     def check(self):
         project_id = self.request.context.project.id
-        set_select_all_state(self.request, False)
         checked = toggle_selected_item(
             self.request,
             selected_projects,
@@ -1898,7 +1893,11 @@ class ProjectView:
                 autofill = dict(autofill)
                 autofill["website"] = form.website.data
             except Exception as e:
-                self.request.session.flash(_("danger:An error occurred while trying to autofill the project data"))
+                self.request.session.flash(
+                    _(
+                        "danger:An error occurred while trying to autofill the project data"
+                    )
+                )
                 next_url = self.request.route_url("project_add_ai")
                 # next_url = self.request.current_route_path()
 
@@ -1907,9 +1906,9 @@ class ProjectView:
                     response.headers["HX-Redirect"] = next_url
                     response.status_code = 303
                     return response
-                
+
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
-            
+
             if self.request.method == "POST" and form.validate():
                 name = project_form.name.data or ""
                 existing = self.request.dbsession.execute(

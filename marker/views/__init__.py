@@ -1,5 +1,6 @@
-from urllib.parse import parse_qsl, urlencode, urlsplit
+from urllib.parse import urlsplit
 
+from pyramid.i18n import TranslationString as _
 from sqlalchemy import String, Text, delete, func, insert, literal, select
 from zope.sqlalchemy import mark_changed
 
@@ -93,7 +94,41 @@ class Filter:
         self.__dict__.update(entries)
 
 
+def is_all_selected(request, stmt, selection_table):
+    """
+    Checks if all visible records (according to stmt) are selected for the current user.
+    selection_table: e.g. selected_companies, selected_projects, selected_contacts, selected_tags
+    """
+    # Determine columns related to the selection table
+    for key, (table, selected_column, entity_id_column) in _SELECTION_TARGETS.items():
+        if table is selection_table:
+            break
+    else:
+        raise ValueError(_("Unknown selection table"))
+
+    user_id = request.identity.id
+    # Subquery with IDs of visible records
+    item_ids_subquery = _selected_item_ids_subquery(stmt, entity_id_column)
+    # Count of all visible records
+    total_count = request.dbsession.execute(
+        select(func.count()).select_from(item_ids_subquery)
+    ).scalar()
+    if total_count == 0:
+        return False
+    # Count of selected records for the user
+    selected_count = request.dbsession.execute(
+        select(func.count())
+        .select_from(selection_table)
+        .where(
+            selection_table.c.user_id == user_id,
+            selected_column.in_(select(item_ids_subquery.c.item_id)),
+        )
+    ).scalar()
+    return selected_count == total_count
+
+
 def sort_column(model, sort_key):
+    """Return column for sorting, using Polish collation if string."""
     column = getattr(model, sort_key)
     if isinstance(getattr(column, "type", None), (String, Text)):
         return polish_sort_expression(column)
@@ -101,6 +136,7 @@ def sort_column(model, sort_key):
 
 
 def normalize_ci_expression(column):
+    """Return SQL expression for case-insensitive, accent-insensitive comparison (Polish)."""
     expr = column
     for upper, lower in _POLISH_UPPER_TO_LOWER.items():
         expr = func.replace(expr, upper, lower)
@@ -108,6 +144,7 @@ def normalize_ci_expression(column):
 
 
 def polish_sort_expression(expression):
+    """Return SQL expression for sorting according to Polish alphabet."""
     expr = normalize_ci_expression(expression)
     for index, letter in enumerate(_POLISH_SORT_ALPHABET, start=1):
         expr = func.replace(expr, letter, f"{index:02d}")
@@ -115,6 +152,7 @@ def polish_sort_expression(expression):
 
 
 def normalize_ci_value(value):
+    """Return normalized string for case-insensitive, accent-insensitive comparison (Polish)."""
     normalized = str(value)
     for upper, lower in _POLISH_UPPER_TO_LOWER.items():
         normalized = normalized.replace(upper, lower)
@@ -122,10 +160,12 @@ def normalize_ci_value(value):
 
 
 def contains_ci(column, value):
+    """Return SQL LIKE expression for case-insensitive, accent-insensitive containment (Polish)."""
     return normalize_ci_expression(column).like("%" + normalize_ci_value(value) + "%")
 
 
 def safe_redirect_target(request, target, fallback_url):
+    """Return a safe redirect target, falling back to fallback_url if unsafe."""
     if not target:
         return fallback_url
 
@@ -151,10 +191,12 @@ def safe_redirect_target(request, target, fallback_url):
 
 
 def is_bulk_select_request(request):
+    """Return True if request is POST with _select_all=1."""
     return request.method == "POST" and request.params.get("_select_all") == "1"
 
 
 def update_selected_items(selected_items, items, checked):
+    """Update selected_items by adding or removing items based on checked flag."""
     if not items:
         return
 
@@ -180,6 +222,7 @@ def update_selected_items(selected_items, items, checked):
 
 
 def _resolve_selection_target(selected_items):
+    """Return the selection target tuple for the given selected_items collection."""
     adapter = getattr(selected_items, "_sa_adapter", None)
     relationship_key = getattr(getattr(adapter, "attr", None), "key", None)
     if not relationship_key:
@@ -189,6 +232,7 @@ def _resolve_selection_target(selected_items):
 
 
 def _selected_item_ids_subquery(stmt, selected_entity_id_column):
+    """Return a subquery of item IDs from the given statement and entity ID column."""
     return (
         stmt.order_by(None)
         .with_only_columns(selected_entity_id_column.label("item_id"))
@@ -198,23 +242,19 @@ def _selected_item_ids_subquery(stmt, selected_entity_id_column):
 
 
 def _coerce_bulk_checked(request):
+    """Return boolean value for bulk selection (select all) based on request params.
+    If 'checked' is not provided, defaults to True (e.g. clicking 'Select all')."""
     raw_checked = request.params.get("checked")
-
     if raw_checked is None:
-        # Treat select_all as a toggle button when no explicit value is sent.
-        current = request.session.get("select_all_states", {}).get(
-            _select_all_state_key(request),
-            False,
-        )
-        return not current
-
+        # Default: select_all = True if 'checked' is not provided (e.g. clicking 'Select all')
+        return True
     if isinstance(raw_checked, bool):
         return raw_checked
-
     return str(raw_checked).strip().lower() in {"1", "true", "on", "yes"}
 
 
 def apply_bulk_selection(request, stmt, selected_items):
+    """Apply bulk selection or deselection to the selected_items collection or selection table."""
     checked = _coerce_bulk_checked(request)
     target = _resolve_selection_target(selected_items)
 
@@ -264,6 +304,8 @@ def apply_bulk_selection(request, stmt, selected_items):
 
 
 def toggle_selected_item(request, selection_table, selected_column, item_id):
+    """Toggle selection of a single item for the current user in the selection table.
+    Returns True if selected, False if deselected."""
     if item_id is None:
         return False
 
@@ -302,6 +344,7 @@ def toggle_selected_item(request, selection_table, selected_column, item_id):
 
 
 def clear_selected_rows(request, selection_table, selected_column, item_ids):
+    """Remove selected rows for the given item_ids from the selection table for the current user."""
     ids = {item_id for item_id in item_ids if item_id is not None}
     if not ids:
         return
@@ -309,40 +352,19 @@ def clear_selected_rows(request, selection_table, selected_column, item_ids):
     request.dbsession.execute(delete(selection_table).where(selected_column.in_(ids)))
     mark_changed(request.dbsession)
 
-
-def _select_all_state_key(request):
-    path, _, qs = request.path_qs.partition("?")
-    params = [
-        (key, value)
-        for key, value in parse_qsl(qs, keep_blank_values=True)
-        if key != "_select_all"
-    ]
-    normalized_qs = urlencode(params, doseq=True)
-    return f"{path}?{normalized_qs}" if normalized_qs else path
-
-
-_MAX_SELECT_ALL_STATES = 40
-
-
-def set_select_all_state(request, checked):
-    states = request.session.setdefault("select_all_states", {})
-    key = _select_all_state_key(request)
-    states.pop(key, None)  # move to end on update
-    states[key] = bool(checked)
-    if len(states) > _MAX_SELECT_ALL_STATES:
-        excess = len(states) - _MAX_SELECT_ALL_STATES
-        for old_key in list(states.keys())[:excess]:
-            del states[old_key]
+    # No-op: session-based select_all state is not used in the new implementation.
+    pass
 
 
 def handle_bulk_selection(request, stmt, selected_items):
-    checked = _coerce_bulk_checked(request)
+    """Handle a bulk selection request and return an HTMX refresh response."""
     apply_bulk_selection(request, stmt, selected_items)
-    set_select_all_state(request, checked)
+    # Removed set_select_all_state, select_all state is now computed dynamically.
     return htmx_refresh_response(request)
 
 
 def htmx_refresh_response(request):
+    """Return a response with the HX-Refresh header for HTMX."""
     response = request.response
     response.headers = {"HX-Refresh": "true"}
     response.status_code = 200

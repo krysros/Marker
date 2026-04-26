@@ -26,7 +26,6 @@ from . import (
     normalize_ci_expression,
     normalize_ci_value,
     polish_sort_expression,
-    set_select_all_state,
     sort_column,
     toggle_selected_item,
 )
@@ -688,7 +687,6 @@ class ContactView:
     )
     def check(self):
         contact_id = self.request.context.contact.id
-        set_select_all_state(self.request, False)
         checked = toggle_selected_item(
             self.request,
             selected_contacts,
