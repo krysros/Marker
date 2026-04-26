@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-26 10:04+0200\n"
+"POT-Creation-Date: 2026-04-26 19:25+0200\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -1498,7 +1498,9 @@ msgstr "Użytkownik %s odczepił firmę od projektu"
 
 #: marker/views/company.py:1786
 msgid "danger:An error occurred while trying to autofill the company data"
-msgstr "danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych firmy"
+msgstr ""
+"danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych "
+"firmy"
 
 #: marker/views/company.py:1808
 msgid ""
@@ -1626,7 +1628,9 @@ msgstr "Użytkownik %s odpiął tag od projektu"
 
 #: marker/views/project.py:1898
 msgid "danger:An error occurred while trying to autofill the project data"
-msgstr "danger:Wystąpił błąd podczas próby automatycznego wypełnienia danych projektu"
+msgstr ""
+"danger:Wystąpił błąd podczas próby automatycznego wypełnienia danych "
+"projektu"
 
 #: marker/views/project.py:1920
 msgid ""
