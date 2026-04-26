@@ -2457,7 +2457,7 @@ def test_company_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
     request.headers = {"HX-Request": "true"}
     view = CompanyView(request)
     result = view.add_ai()
-    assert result.status_code == 200
+    assert result.status_code == 303
 
 
 @patch(
@@ -2509,7 +2509,7 @@ def test_company_add_ai_existing_company_htmx(mock_autofill, mock_geo, dbsession
     request.headers = {"HX-Request": "true"}
     view = CompanyView(request)
     result = view.add_ai()
-    assert result.status_code == 200
+    assert result.status_code == 303
 
 
 # ===========================================================================

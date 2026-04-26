@@ -113,7 +113,6 @@ def test_update_selected_items_no_duplicate():
 def test_coerce_bulk_checked_true():
     request = DummyRequest()
     request.params = {"checked": "1"}
-    request.session = {}
     request.path_qs = "/test"
     assert _coerce_bulk_checked(request) is True
 
@@ -121,7 +120,6 @@ def test_coerce_bulk_checked_true():
 def test_coerce_bulk_checked_false():
     request = DummyRequest()
     request.params = {"checked": "0"}
-    request.session = {}
     request.path_qs = "/test"
     assert _coerce_bulk_checked(request) is False
 
@@ -129,7 +127,6 @@ def test_coerce_bulk_checked_false():
 def test_coerce_bulk_checked_yes():
     request = DummyRequest()
     request.params = {"checked": "yes"}
-    request.session = {}
     request.path_qs = "/test"
     assert _coerce_bulk_checked(request) is True
 
@@ -137,22 +134,13 @@ def test_coerce_bulk_checked_yes():
 def test_coerce_bulk_checked_bool():
     request = DummyRequest()
     request.params = {"checked": True}
-    request.session = {}
     request.path_qs = "/test"
-    assert _coerce_bulk_checked(request) is True
-
-    request = DummyRequest()
-    request.params = {}
-    request.session = {"select_all_states": {"/test": True}}
-    request.path_qs = "/test"
-    # In new logic, default is always True if 'checked' is not provided
     assert _coerce_bulk_checked(request) is True
 
 
 def test_coerce_bulk_checked_bool_false():
     request = DummyRequest()
     request.params = {"checked": False}
-    request.session = {}
     request.path_qs = "/test"
     assert _coerce_bulk_checked(request) is False
 
@@ -263,7 +251,6 @@ def test_apply_bulk_selection_deselect(dbsession):
     request.dbsession = dbsession
     request.identity = user
     request.params = {"checked": "0"}
-    request.session = {}
     request.path_qs = "/test"
 
     stmt = sa_select(Company).filter(Company.created_by == user)
@@ -347,7 +334,6 @@ def test_apply_bulk_selection_plain_list(dbsession):
     request.dbsession = dbsession
     request.identity = user
     request.params = {"checked": "1"}
-    request.session = {}
     request.path_qs = "/test"
 
     selected = []  # plain list, not an SA relationship
