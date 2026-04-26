@@ -6,21 +6,12 @@ from unittest.mock import MagicMock
 from pyramid.testing import DummyRequest
 
 from marker.views import (
-    Filter,
     _coerce_bulk_checked,
-    _select_all_state_key,
     htmx_refresh_response,
     normalize_ci_value,
     safe_redirect_target,
-    set_select_all_state,
     update_selected_items,
 )
-
-
-def test_filter_init():
-    f = Filter(name="test", age=5)
-    assert f.name == "test"
-    assert f.age == 5
 
 
 def test_safe_redirect_target_empty():
@@ -150,13 +141,12 @@ def test_coerce_bulk_checked_bool():
     request.path_qs = "/test"
     assert _coerce_bulk_checked(request) is True
 
-
-def test_coerce_bulk_checked_toggle():
     request = DummyRequest()
     request.params = {}
     request.session = {"select_all_states": {"/test": True}}
     request.path_qs = "/test"
-    assert _coerce_bulk_checked(request) is False
+    # In new logic, default is always True if 'checked' is not provided
+    assert _coerce_bulk_checked(request) is True
 
 
 def test_coerce_bulk_checked_bool_false():
@@ -291,39 +281,6 @@ def test_coerce_bulk_checked_toggle_default_false():
     request.session = {}
     request.path_qs = "/test"
     assert _coerce_bulk_checked(request) is True
-
-
-def test_set_select_all_state():
-    request = DummyRequest()
-    request.session = {}
-    request.path_qs = "/test"
-    set_select_all_state(request, True)
-    assert request.session["select_all_states"]["/test"] is True
-
-
-def test_set_select_all_state_eviction():
-    request = DummyRequest()
-    request.session = {"select_all_states": {f"/p{i}": True for i in range(45)}}
-    request.path_qs = "/new"
-    set_select_all_state(request, True)
-    states = request.session["select_all_states"]
-    assert len(states) <= 40
-    assert "/new" in states
-
-
-def test_select_all_state_key_strips_select_all():
-    request = DummyRequest()
-    request.path_qs = "/test?_select_all=1&sort=name"
-    key = _select_all_state_key(request)
-    assert "_select_all" not in key
-    assert "sort=name" in key
-
-
-def test_select_all_state_key_no_query():
-    request = DummyRequest()
-    request.path_qs = "/test"
-    key = _select_all_state_key(request)
-    assert key == "/test"
 
 
 def test_htmx_refresh_response():

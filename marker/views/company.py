@@ -58,7 +58,6 @@ from . import (
     normalize_ci_expression,
     normalize_ci_value,
     polish_sort_expression,
-    set_select_all_state,
     sort_column,
     toggle_selected_item,
 )
@@ -522,15 +521,12 @@ class CompanyView:
             bulk_selected_items = self.request.identity.selected_tags
 
         if is_bulk_select_request(self.request):
-            checked = self.request.params.get("checked", "false").lower() == "true"
             if bulk_stmt is not None and bulk_selected_items is not None:
                 return handle_bulk_selection(
                     self.request,
                     bulk_stmt,
                     bulk_selected_items,
                 )
-
-            set_select_all_state(self.request, checked)
             return htmx_refresh_response(self.request)
 
         return {
@@ -1544,7 +1540,6 @@ class CompanyView:
     )
     def check(self):
         company_id = self.request.context.company.id
-        set_select_all_state(self.request, False)
         checked = toggle_selected_item(
             self.request,
             selected_companies,
@@ -1786,7 +1781,11 @@ class CompanyView:
                 autofill = dict(autofill)
                 autofill["website"] = form.website.data
             except Exception as e:
-                self.request.session.flash(_("danger:An error occurred while trying to autofill the company data"))
+                self.request.session.flash(
+                    _(
+                        "danger:An error occurred while trying to autofill the company data"
+                    )
+                )
                 next_url = self.request.route_url("company_add_ai")
                 # next_url = self.request.current_route_path()
 
@@ -1797,7 +1796,7 @@ class CompanyView:
                     return response
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
-            
+
             if self.request.method == "POST" and form.validate():
                 name = company_form.name.data or ""
                 existing = self.request.dbsession.execute(

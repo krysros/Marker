@@ -40,7 +40,6 @@ from . import (
     contains_ci,
     handle_bulk_selection,
     is_bulk_select_request,
-    set_select_all_state,
     sort_column,
     toggle_selected_item,
 )
@@ -1067,7 +1066,6 @@ class TagView:
     )
     def check(self):
         tag_id = self.request.context.tag.id
-        set_select_all_state(self.request, False)
         checked = toggle_selected_item(
             self.request,
             selected_tags,
