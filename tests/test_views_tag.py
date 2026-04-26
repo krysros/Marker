@@ -1453,7 +1453,7 @@ def test_tag_projects_bulk_select(dbsession):
 
 
 def test_tag_json_projects_bbox_invalid(dbsession):
-    """Cover lines 432-433: json_projects bbox with invalid coords (except handler)."""
+    """Cover lines 392-474: json_projects bbox with invalid coords (except handler)."""
     user = _make_user(dbsession, "tagjpbboxinv")
     tag = _make_tag(dbsession, user, "TagJpBboxInvTag")
     proj = _make_project(dbsession, user, "TagJpBboxInvProj")
@@ -1480,7 +1480,7 @@ def test_tag_json_projects_bbox_invalid(dbsession):
 
 
 def test_tag_export_companies_name_asc(dbsession):
-    """Cover line 620: export_companies non-stars sort asc."""
+    """Cover line 606: export_companies non-stars sort asc."""
     user = _make_user(dbsession, "tagecnmasc")
     tag = _make_tag(dbsession, user, "TagEcNmAscTag")
     co = _make_company(dbsession, user, "TagEcNmAscCo")
@@ -1503,7 +1503,7 @@ def test_tag_export_companies_name_asc(dbsession):
 
 
 def test_tag_export_projects_name_asc(dbsession):
-    """Cover line 835: export_projects non-stars sort asc."""
+    """Cover line 836: export_projects non-stars sort asc."""
     user = _make_user(dbsession, "tagepnmasc")
     tag = _make_tag(dbsession, user, "TagEpNmAscTag")
     proj = _make_project(dbsession, user, "TagEpNmAscProj")
@@ -1541,7 +1541,7 @@ def test_tag_export_companies_ods(dbsession):
 
 
 def test_tag_export_projects_ods(dbsession):
-    """Cover line 897: export_projects ODS branch."""
+    """Cover line 907: export_projects ODS branch."""
     user = _make_user(dbsession, "tagepodsuser")
     tag = _make_tag(dbsession, user, "TagEpOdsTag")
     proj = _make_project(dbsession, user, "TagEpOdsProj")

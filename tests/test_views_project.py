@@ -1659,7 +1659,7 @@ def test_project_comments_invalid_sort_order(dbsession):
     assert result["q"]["sort"] == "created_at"
 
 
-# --- Cover lines 515-516: map_projects status=in_progress ---
+# --- Cover lines 511-701: map_projects status=in_progress ---
 
 
 def test_project_map_in_progress(dbsession):
@@ -1677,7 +1677,7 @@ def test_project_map_in_progress(dbsession):
     assert result["q"]["status"] == "in_progress"
 
 
-# --- Cover lines 824-825: view() bulk select on default route ---
+# --- Cover lines 813-975: view() bulk select on default route ---
 
 
 def test_project_view_bulk_select_default_route(dbsession):
@@ -1700,7 +1700,7 @@ def test_project_view_bulk_select_default_route(dbsession):
     assert result is request.response
 
 
-# --- Cover lines 879, 882: similar() status=completed ---
+# --- Cover lines 975, 975: similar() status=completed ---
 
 
 def test_project_similar_status_completed_with_paginator(dbsession):
@@ -1731,7 +1731,7 @@ def test_project_similar_status_completed_with_paginator(dbsession):
     assert "paginator" in result
 
 
-# --- Cover lines 907-908: similar() shared_tags asc ---
+# --- Cover lines 975-1017: similar() shared_tags asc ---
 
 
 def test_project_similar_shared_tags_asc(dbsession):
@@ -1760,7 +1760,7 @@ def test_project_similar_shared_tags_asc(dbsession):
     assert "paginator" in result
 
 
-# --- Cover lines 926-927: similar() stars desc ---
+# --- Cover lines 975-1017: similar() stars desc ---
 
 
 def test_project_similar_stars_desc(dbsession):
@@ -1789,7 +1789,7 @@ def test_project_similar_stars_desc(dbsession):
     assert "paginator" in result
 
 
-# --- Cover lines 930-931: similar() comments ---
+# --- Cover lines 975-1017: similar() comments ---
 
 
 def test_project_similar_comments(dbsession):
@@ -1853,7 +1853,7 @@ def test_project_similar_name_asc(dbsession):
 
 
 def test_project_similar_invalid_sort_order(dbsession):
-    """Cover lines 879, 882: similar() invalid sort/order defaults."""
+    """Cover lines 975, 975: similar() invalid sort/order defaults."""
     user = _make_user(dbsession, "projsiminv")
     proj1 = _make_project(dbsession, user, "ProjSimInvP1")
     proj2 = _make_project(dbsession, user, "ProjSimInvP2")
@@ -1880,7 +1880,7 @@ def test_project_similar_invalid_sort_order(dbsession):
 
 
 def test_project_similar_in_progress(dbsession):
-    """Cover lines 907-908: similar() status=in_progress."""
+    """Cover lines 975-1017: similar() status=in_progress."""
     import datetime
 
     user = _make_user(dbsession, "projsiminprog")
@@ -1909,7 +1909,7 @@ def test_project_similar_in_progress(dbsession):
 
 
 def test_project_similar_stage(dbsession):
-    """Cover lines 926-927: similar() stage filter."""
+    """Cover lines 975-1017: similar() stage filter."""
     user = _make_user(dbsession, "projsimstage")
     proj1 = _make_project(dbsession, user, "ProjSimStageP1")
     proj2 = _make_project(dbsession, user, "ProjSimStageP2")
@@ -1936,7 +1936,7 @@ def test_project_similar_stage(dbsession):
 
 
 def test_project_similar_delivery_method(dbsession):
-    """Cover lines 930-931: similar() delivery_method filter."""
+    """Cover lines 975-1017: similar() delivery_method filter."""
     user = _make_user(dbsession, "projsimdm")
     proj1 = _make_project(dbsession, user, "ProjSimDmP1")
     proj2 = _make_project(dbsession, user, "ProjSimDmP2")
