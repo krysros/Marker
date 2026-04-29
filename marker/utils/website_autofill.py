@@ -50,9 +50,6 @@ def _autofill_from_website(url, prompt):
     if geo:
         # Autofill postcode if not provided by user
         if not result.get("postcode"):
-            print(geo.get("postcode"))
-            print(geo.get("postalcode"))
-            print(geo)
             postcode = (
                 geo.get("postcode")
                 or geo.get("postalcode")
