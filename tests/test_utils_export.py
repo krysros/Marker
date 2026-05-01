@@ -48,7 +48,8 @@ def test_response_xlsx_datetime_with_row_color():
         assert response.body
 
 
-def test_response_xlsx_row_color_formats_use_fill_without_borders():
+def test_response_xlsx_row_color_formats_not_applied():
+    """When row_colors is passed, no bg_color formats should be applied (coloring was removed)."""
     captured_formats = []
 
     class DummyWorksheet:
@@ -77,15 +78,7 @@ def test_response_xlsx_row_color_formats_use_fill_without_borders():
         export.response_xlsx([["A"]], ["Name"], row_colors=["primary"])
 
     color_formats = [
-        fmt for fmt in captured_formats if fmt.get("bg_color") == "#DCEBFF"
+        fmt for fmt in captured_formats if fmt.get("bg_color")
     ]
 
-    assert color_formats
-    for fmt in color_formats:
-        assert fmt.get("border") == 0
-        assert "font_color" not in fmt
-        assert "border_color" not in fmt
-        assert "top_color" not in fmt
-        assert "right_color" not in fmt
-        assert "bottom_color" not in fmt
-        assert "left_color" not in fmt
+    assert not color_formats

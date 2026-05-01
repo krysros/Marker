@@ -25,6 +25,7 @@ from . import (
     is_bulk_select_request,
     normalize_ci_expression,
     normalize_ci_value,
+    normalized_tags_from_request,
     polish_sort_expression,
     sort_column,
     toggle_selected_item,
@@ -44,15 +45,7 @@ class ContactView:
         return target
 
     def _normalized_tags(self):
-        seen = set()
-        tags = []
-        for value in self.request.params.getall("tag"):
-            name = value.strip()
-            normalized = name.lower()
-            if name and normalized not in seen:
-                seen.add(normalized)
-                tags.append(name)
-        return tags
+        return normalized_tags_from_request(self.request)
 
     def _stmt_contacts_by_tags(self, tags):
         stmt = select(Contact).distinct()

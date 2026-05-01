@@ -127,12 +127,31 @@ def is_all_selected(request, stmt, selection_table):
     return selected_count == total_count
 
 
+def normalized_tags_from_request(request):
+    """Return deduplicated tag names from request params (case-insensitive dedup)."""
+    seen = set()
+    tags = []
+    for value in request.params.getall("tag"):
+        name = value.strip()
+        normalized = name.lower()
+        if name and normalized not in seen:
+            seen.add(normalized)
+            tags.append(name)
+    return tags
+
+
 def sort_column(model, sort_key):
     """Return column for sorting, using Polish collation if string."""
     column = getattr(model, sort_key)
     if isinstance(getattr(column, "type", None), (String, Text)):
         return polish_sort_expression(column)
     return column
+
+
+def apply_order(stmt, col, order, *tiebreaks):
+    """Apply ascending or descending ordering to stmt by col, with optional tiebreaks."""
+    direction = col.asc() if order == "asc" else col.desc()
+    return stmt.order_by(direction, *tiebreaks)
 
 
 def normalize_ci_expression(column):

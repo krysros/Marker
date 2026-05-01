@@ -270,6 +270,14 @@ def response_ods_contacts_project(rows):
     return _response_ods_contacts(rows, "project", _("Project"))
 
 
+def make_export_response(request, rows, header_row, row_colors=None):
+    """Return an export response (XLSX or ODS) based on the request's 'format' param."""
+    fmt = request.params.get("format", "xlsx")
+    if fmt == "ods":
+        return response_ods(rows, header_row, row_colors=row_colors)
+    return response_xlsx(rows, header_row, row_colors=row_colors)
+
+
 def vcard_template():
     a = AssetResolver("marker")
     resolver = a.resolve("templates/contact/vcard.mako")
