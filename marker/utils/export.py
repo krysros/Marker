@@ -6,7 +6,7 @@ from urllib.parse import quote
 import xlsxwriter
 from mako.template import Template
 from odf.opendocument import OpenDocumentSpreadsheet
-from odf.style import Style, TableCellProperties, TextProperties
+from odf.style import Style, TextProperties
 from odf.table import Table, TableCell, TableColumn, TableRow
 from odf.text import P
 from pyramid.path import AssetResolver
@@ -22,41 +22,15 @@ def ascii_slug(text):
 
 
 def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors=None):
-    # Create an in-memory output file for the new workbook.
     output = io.BytesIO()
-    # Create a workbook.
     workbook = xlsxwriter.Workbook(
         output, {"constant_memory": True, "default_date_format": default_date_format}
     )
     worksheet = workbook.add_worksheet()
-    cell_format = workbook.add_format({"bold": True})
+    bold_format = workbook.add_format({"bold": True})
+    date_format = workbook.add_format({"num_format": default_date_format})
     stages_map = dict(STAGES)
     delivery_methods_map = dict(PROJECT_DELIVERY_METHODS)
-    bootstrap_palette = {
-        "primary": {"bg": "#DCEBFF", "font": "#1F2D3D"},
-        "secondary": {"bg": "#ECEFF1", "font": "#1F2D3D"},
-        "success": {"bg": "#DDF3E4", "font": "#1F2D3D"},
-        "danger": {"bg": "#FBE3E6", "font": "#1F2D3D"},
-        "warning": {"bg": "#FFF4CC", "font": "#1F2D3D"},
-        "info": {"bg": "#D8F4FB", "font": "#1F2D3D"},
-        "light": {"bg": "#F8F9FA", "font": "#1F2D3D"},
-        "dark": {"bg": "#D6D8DB", "font": "#1F2D3D"},
-    }
-
-    row_formats = {}
-    row_date_formats = {}
-    for color_key, palette in bootstrap_palette.items():
-        base_row_format = {
-            "bg_color": palette["bg"],
-            "border": 0,
-        }
-        row_formats[color_key] = workbook.add_format(base_row_format)
-        row_date_formats[color_key] = workbook.add_format(
-            {
-                **base_row_format,
-                "num_format": default_date_format,
-            }
-        )
 
     def _normalized(text):
         return str(text or "").strip().lower()
@@ -91,55 +65,31 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
         "delivery method",
     }
     column_transformers = [
-        (
-            subdivision_markers,
-            lambda value: get_subdivision_name(value),
-        ),
-        (
-            country_markers,
-            lambda value: get_country_name(value),
-        ),
+        (subdivision_markers, lambda value: get_subdivision_name(value)),
+        (country_markers, lambda value: get_country_name(value)),
         (stage_markers, lambda value: stages_map.get(value, value or "")),
-        (
-            delivery_method_markers,
-            lambda value: delivery_methods_map.get(value, value or ""),
-        ),
+        (delivery_method_markers, lambda value: delivery_methods_map.get(value, value or "")),
     ]
 
-    # Write rows.
-    # Write header row with underscores instead of spaces
     for j, elem in enumerate(header_row):
         header = str(elem).replace(" ", "_")
-        worksheet.write(0, j, _safe_cell_value(header), cell_format)
+        worksheet.write(0, j, header, bold_format)
 
     for i, row in enumerate(rows, start=1):
-        row_color = None
-        if row_colors and len(row_colors) >= i:
-            row_color = str(row_colors[i - 1] or "").strip().lower()
-
         for j, elem in enumerate(row):
             header_name = _normalized(header_row[j])
-
             for markers, transform in column_transformers:
                 if any(marker and marker in header_name for marker in markers):
                     elem = transform(elem)
                     break
-
             elem = _safe_cell_value(elem)
-
-            if row_color in row_formats:
-                if isinstance(elem, (datetime.datetime, datetime.date)):
-                    worksheet.write(i, j, elem, row_date_formats[row_color])
-                else:
-                    worksheet.write(i, j, elem, row_formats[row_color])
+            if isinstance(elem, (datetime.datetime, datetime.date)):
+                worksheet.write(i, j, elem, date_format)
             else:
                 worksheet.write(i, j, elem)
 
-    # Close the workbook before streaming the data.
     workbook.close()
-    # Rewind the buffer.
     output.seek(0)
-    # Construct a server response.
     response = Response()
     response.body_file = output
     response.body = output.getvalue()  # For test access
@@ -273,27 +223,9 @@ def response_ods(rows, header_row, row_colors=None):
     stages_map = dict(STAGES)
     delivery_methods_map = dict(PROJECT_DELIVERY_METHODS)
 
-    bootstrap_palette = {
-        "primary": "#DCEBFF",
-        "secondary": "#ECEFF1",
-        "success": "#DDF3E4",
-        "danger": "#FBE3E6",
-        "warning": "#FFF4CC",
-        "info": "#D8F4FB",
-        "light": "#F8F9FA",
-        "dark": "#D6D8DB",
-    }
-
     bold_style = Style(name="bold", family="table-cell")
     bold_style.addElement(TextProperties(fontweight="bold"))
     doc.automaticstyles.addElement(bold_style)
-
-    color_styles = {}
-    for color_key, bg in bootstrap_palette.items():
-        style = Style(name=f"color_{color_key}", family="table-cell")
-        style.addElement(TableCellProperties(backgroundcolor=bg))
-        doc.automaticstyles.addElement(style)
-        color_styles[color_key] = style
 
     def _normalized(text):
         return str(text or "").strip().lower()
@@ -321,19 +253,10 @@ def response_ods(rows, header_row, row_colors=None):
         "delivery method",
     }
     column_transformers = [
-        (
-            subdivision_markers,
-            lambda value: get_subdivision_name(value),
-        ),
-        (
-            country_markers,
-            lambda value: get_country_name(value),
-        ),
+        (subdivision_markers, lambda value: get_subdivision_name(value)),
+        (country_markers, lambda value: get_country_name(value)),
         (stage_markers, lambda value: stages_map.get(value, value or "")),
-        (
-            delivery_method_markers,
-            lambda value: delivery_methods_map.get(value, value or ""),
-        ),
+        (delivery_method_markers, lambda value: delivery_methods_map.get(value, value or "")),
     ]
 
     table = Table(name="Sheet1")
@@ -347,40 +270,22 @@ def response_ods(rows, header_row, row_colors=None):
         header_tr.addElement(tc)
     table.addElement(header_tr)
 
-    for i, row in enumerate(rows):
-        row_color = None
-        if row_colors and len(row_colors) > i:
-            row_color = str(row_colors[i] or "").strip().lower()
-
+    for row in rows:
         tr = TableRow()
         for j, elem in enumerate(row):
             header_name = _normalized(header_row[j])
-
             for markers, transform in column_transformers:
                 if any(marker and marker in header_name for marker in markers):
                     elem = transform(elem)
                     break
-
-            style = color_styles.get(row_color)
             if isinstance(elem, (datetime.datetime, datetime.date)):
-                tc = TableCell(
-                    valuetype="date",
-                    datevalue=elem.isoformat(),
-                    **({"stylename": style} if style else {}),
-                )
+                tc = TableCell(valuetype="date", datevalue=elem.isoformat())
                 tc.addElement(P(text=str(elem)))
             elif isinstance(elem, (int, float)):
-                tc = TableCell(
-                    valuetype="float",
-                    value=str(elem),
-                    **({"stylename": style} if style else {}),
-                )
+                tc = TableCell(valuetype="float", value=str(elem))
                 tc.addElement(P(text=str(elem)))
             else:
-                tc = TableCell(
-                    valuetype="string",
-                    **({"stylename": style} if style else {}),
-                )
+                tc = TableCell(valuetype="string")
                 tc.addElement(P(text=str(elem if elem is not None else "")))
             tr.addElement(tc)
         table.addElement(tr)
