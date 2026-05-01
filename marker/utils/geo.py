@@ -5,7 +5,7 @@ import urllib.request
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 REQUEST_HEADERS = {
-    "User-Agent": "MarkerBot/1.0",
+    "User-Agent": "Marker/1.0",
     "Accept": "application/json",
 }
 

@@ -3,19 +3,14 @@ import os
 import re
 import unicodedata
 
-os.environ["USER_AGENT"] = "MarkerBot/1.0"
+os.environ["USER_AGENT"] = "Marker/1.0"
 
 import pycountry
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from ..forms.ts import TranslationString as _
 from .geo import location_details
-
-
-def _clean_json_string(json_string):
-    pattern = r"^```json\s*(.*?)\s*```$"
-    cleaned_string = re.sub(pattern, r"\1", json_string, flags=re.DOTALL)
-    return cleaned_string.strip()
 
 
 def _autofill_from_website(url, prompt):
@@ -25,18 +20,23 @@ def _autofill_from_website(url, prompt):
     # Load the content of the page
     loader = WebBaseLoader(url)
     docs = loader.load()
+    if not docs:
+        raise ValueError(
+            str(_("Could not load content from %(url)s")) % {"url": url}
+        )
 
-    # Extract just the text from the loaded document
     content = docs[0].page_content
 
-    # Initialize Gemini model
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
+    # Initialize Gemini model with forced JSON output
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        response_mime_type="application/json",
+    )
 
     # Make the request
     response = llm.invoke(f"{prompt}:\n\n{content}")
 
-    # Convert the response to JSON
-    result = json.loads(_clean_json_string(response.content))
+    result = json.loads(response.content)
 
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
