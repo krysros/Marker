@@ -1798,43 +1798,7 @@ def test_company_json_view(dbsession):
     assert isinstance(result, list)
 
 
-def test_add_ai_branches(dbsession):
-    user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
-    dbsession.add(user)
-    dbsession.flush()
-    from tests.conftest import DummyRequestWithIdentity
-
-    request = DummyRequestWithIdentity()
-    request.dbsession = dbsession
-    request.identity = user
-    request.method = "POST"
-    request.POST = MultiDict({"website": "test"})
-    request.session = MagicMock()
-    request.response = MagicMock()
-    request.translate = lambda x: x
-    request.route_url = lambda *a, **kw: "/company_view"
-    # Patch CompanyAddAIForm to always validate
-    from marker.forms.company_add_ai import CompanyAddAIForm
-
-    orig_validate = CompanyAddAIForm.validate
-    CompanyAddAIForm.validate = lambda self: True
-    # Patch autofill to return new company name
-    import marker.views.company as company_views
-
-    orig_autofill = company_views.company_autofill_from_website
-    company_views.company_autofill_from_website = lambda website: {"name": "NewCompany"}
-    # Patch location_details to return geo
-    import marker.utils.geo as geo_mod
-
-    orig_loc = geo_mod.location_details
-    geo_mod.location_details = lambda **kwargs: {"lat": 1, "lon": 2}
-    view = CompanyView(request)
-    resp = view.add_ai()
-    assert hasattr(resp, "status_code")
-    # Restore
-    CompanyAddAIForm.validate = orig_validate
-    company_views.company_autofill_from_website = orig_autofill
-    geo_mod.location_details = orig_loc
+def test_companies_stars_view(dbsession):
     user = User(name="u2", fullname="U2", email="e2@e.com", role="user", password="x")
     dbsession.add(user)
     company = Company(
@@ -1852,6 +1816,8 @@ def test_add_ai_branches(dbsession):
     )
     dbsession.add(company)
     dbsession.flush()
+    from tests.conftest import DummyRequestWithIdentity
+
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
     request.identity = user
@@ -2347,7 +2313,9 @@ def test_company_activity_unlink_success(dbsession):
     "marker.views.company.company_autofill_from_website",
     return_value={"name": "NewAICo"},
 )
-def test_company_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
+def test_company_add_ai_post_invalid_form_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns data that fails CompanyForm validation (missing country).
+    With HX-Request, should redirect via HX-Redirect to the manual add form."""
     user = _co_user(dbsession, "coaddaihtmx")
     transaction.commit()
     request = _co_request(
@@ -2357,6 +2325,61 @@ def test_company_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
     view = CompanyView(request)
     result = view.add_ai()
     assert result.status_code == 303
+
+
+@patch("marker.views.company.location_details", return_value={"lat": 1, "lon": 2})
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "NewAICoSuccess", "country": "PL"},
+)
+def test_company_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns valid data; company is saved and HX-Redirect issued."""
+    user = _co_user(dbsession, "coaddaisuccess")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert result.status_code == 303
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "NewAICoNoHX", "country": "PL"},
+)
+def test_company_add_ai_post_success_no_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns valid data without HX-Request; HTTPSeeOther redirect."""
+    user = _co_user(dbsession, "coaddaisucnohx")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "NewAICoInvNoHX"},
+)
+def test_company_add_ai_post_invalid_form_no_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns invalid data without HX-Request; returns form dict."""
+    user = _co_user(dbsession, "coaddaiinvnohx")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert isinstance(result, dict)
+    assert "form" in result
 
 
 @patch(
@@ -3062,3 +3085,107 @@ def test_company_website_autofill_error(mock_autofill, dbsession):
     assert result["fields"] == {}
     assert "API unavailable" in result["error"]
     assert request.response.status_code == 502
+
+
+# ===========================================================================
+# Coverage for remaining branches
+# ===========================================================================
+
+
+def test_company_all_street_postcode_city_website_filters(dbsession):
+    """Cover lines 226-227, 230-231, 242-251 in company all()."""
+    user = _co_user(dbsession, "coallflt")
+    co = _co_company(dbsession, user, "AllFltCo")
+    co.street = "FilterStreet"
+    co.postcode = "11-111"
+    co.city = "FilterCity"
+    co.website = "http://filterweb.com"
+    co.subdivision = "PL-MZ"
+    co.country = "PL"
+    co.color = "green"
+    dbsession.flush()
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        params={
+            "street": "FilterStreet",
+            "postcode": "11-111",
+            "city": "FilterCity",
+            "website": "filterweb",
+            "subdivision": "PL-MZ",
+            "country": "PL",
+            "color": "green",
+        },
+    )
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["street"] == "FilterStreet"
+    assert result["q"]["postcode"] == "11-111"
+    assert result["q"]["city"] == "FilterCity"
+    assert result["q"]["website"] == "filterweb"
+    assert result["q"]["country"] == "PL"
+    assert result["q"]["color"] == "green"
+
+
+def test_company_similar_color_country_subdivision_filters(dbsession):
+    """Cover lines 1093-1102 in company similar(): color, country, subdivision."""
+    user = _co_user(dbsession, "cosimccs")
+    co1 = _co_company(dbsession, user, "CoSimCCSCo1")
+    co2 = _co_company(dbsession, user, "CoSimCCSCo2")
+    co2.color = "blue"
+    co2.country = "PL"
+    co2.subdivision = "PL-MZ"
+    tag = Tag(name="CoSimCCSTag")
+    tag.created_by = user
+    co1.tags.append(tag)
+    co2.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=co1,
+        params={"color": "blue", "country": "PL", "subdivision": "PL-MZ"},
+    )
+    view = CompanyView(request)
+    result = view.similar()
+    assert result["q"]["color"] == "blue"
+    assert result["q"]["country"] == "PL"
+
+
+def test_company_add_get_validate_from_ai(dbsession):
+    """Cover line 1300 in company add(): validate_from_ai branch."""
+    user = _co_user(dbsession, "coaddfai")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, params={"validate": "1", "name": "ValidateCo"}
+    )
+    view = CompanyView(request)
+    result = view.add()
+    assert "form" in result
+
+
+def test_company_similar_bulk_select(dbsession):
+    """Cover line 1140 in company similar(): bulk select request."""
+    user = _co_user(dbsession, "cosimbulk")
+    co1 = _co_company(dbsession, user, "CoSimBulkCo1")
+    co2 = _co_company(dbsession, user, "CoSimBulkCo2")
+    tag = Tag(name="CoSimBulkTag")
+    tag.created_by = user
+    co1.tags.append(tag)
+    co2.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession,
+        user,
+        company=co1,
+        method="POST",
+        params={"_select_all": "1", "checked": "1"},
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    request.matched_route.name = "company_similar"
+    view = CompanyView(request)
+    result = view.similar()
+    assert result is request.response

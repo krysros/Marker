@@ -2819,3 +2819,178 @@ def test_project_website_autofill_error_flash_truncation(mock_autofill, dbsessio
     flash_msg = flashes[-1][1]
     assert flash_msg.endswith("...")
     assert request.response.status_code == 502
+
+
+# ===========================================================================
+# add() validate_from_ai and add_ai() coverage
+# ===========================================================================
+
+
+def test_project_add_get_validate_from_ai(dbsession):
+    """GET add with validate=1 triggers form.validate() — line 1260."""
+    user = _make_user(dbsession, "projaddvai")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="GET", params={"validate": "1", "name": "ValidateProj"}
+    )
+    view = ProjectView(request)
+    result = view.add()
+    assert "form" in result
+    # form should have been validated (errors may be present but form is returned)
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "NewAIProjInv"},
+)
+def test_project_add_ai_post_invalid_form_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns data that fails ProjectForm validation (missing country).
+    With HX-Request, should HX-Redirect to manual add form."""
+    user = _make_user(dbsession, "projaddaihtmx")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert result.status_code == 303
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "NewAIProjInvNoHX"},
+)
+def test_project_add_ai_post_invalid_form_no_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns invalid data without HX-Request; returns form dict."""
+    user = _make_user(dbsession, "projaddaiinvnohx")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, dict)
+    assert "form" in result
+
+
+@patch("marker.views.project.location_details", return_value={"lat": 1.0, "lon": 2.0})
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "NewAIProjSuccess", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns valid data; project saved, HX-Redirect issued."""
+    user = _make_user(dbsession, "projaddaisuccess")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert result.status_code == 303
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "NewAIProjSucNoHX", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_post_success_no_htmx(mock_autofill, mock_geo, dbsession):
+    """Autofill returns valid data without HX-Request; HTTPSeeOther redirect."""
+    user = _make_user(dbsession, "projaddaisucnohx")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    side_effect=Exception("autofill failed"),
+)
+def test_project_add_ai_post_exception_htmx(mock_autofill, dbsession):
+    """Exception during autofill with HX-Request triggers HX-Redirect."""
+    user = _make_user(dbsession, "projaddaierr")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://fail.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert result.status_code == 303
+
+
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    side_effect=Exception("autofill failed"),
+)
+def test_project_add_ai_post_exception_no_htmx(mock_autofill, dbsession):
+    """Exception during autofill without HX-Request gives HTTPSeeOther redirect."""
+    user = _make_user(dbsession, "projaddaierrnohx")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://fail.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ExistingAIProj", "country": "PL"},
+)
+def test_project_add_ai_existing_project(mock_autofill, mock_geo, dbsession):
+    """If a project with the autofilled name already exists, redirect to it."""
+    user = _make_user(dbsession, "projaddaiexist")
+    _make_project(dbsession, user, "ExistingAIProj")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://existing.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ExistAIProjHTMX", "country": "PL"},
+)
+def test_project_add_ai_existing_project_htmx(mock_autofill, mock_geo, dbsession):
+    """If a project with the autofilled name already exists, HX-Redirect issued."""
+    user = _make_user(dbsession, "projaddaiexhtmx")
+    _make_project(dbsession, user, "ExistAIProjHTMX")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://existhtmx.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert result.status_code == 303
+
+
+def test_project_add_ai_get(dbsession):
+    """GET add_ai should return form dict."""
+    user = _make_user(dbsession, "projaddaiget")
+    transaction.commit()
+    request = _make_request(dbsession, user, method="GET")
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert "form" in result

@@ -138,3 +138,34 @@ def test_subdivision_code_fuzzy_contained_match():
     # "region mazowieckie area" doesn't match exactly but contains the subdivision name
     result = _subdivision_code_from_value("region mazowieckie area", "PL")
     assert result == "PL-14"
+
+
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_empty_docs_raises(mock_loader):
+    """Empty docs list should raise ValueError."""
+    import marker.forms.ts as ts_mod
+
+    mock_loader.return_value = []
+    with patch.object(ts_mod.TranslationString, "__str__", lambda self: self.msg):
+        with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
+            with pytest.raises(ValueError, match="Could not load content from"):
+                company_autofill_from_website("https://empty.example.com")
+
+
+@patch("marker.utils.website_autofill.location_details")
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_geo_provides_postcode(mock_loader, mock_llm, mock_geo):
+    """Geo lookup provides postcode when result has none."""
+    mock_loader.return_value = [MagicMock(page_content="test content")]
+    mock_llm.return_value = MagicMock(
+        content='{"name": "Co", "city": "Warsaw"}'
+    )
+    mock_geo.return_value = {
+        "country_code": "PL",
+        "state": "Mazowieckie",
+        "postcode": "00-001",
+    }
+    with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
+        result = company_autofill_from_website("https://example.com")
+    assert result["postcode"] == "00-001"
