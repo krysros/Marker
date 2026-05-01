@@ -647,7 +647,7 @@ def test_user_export_tags_companies(dbsession):
     request = _req(dbsession, user, params={"category": "companies"})
     view = UserView(request)
     result = view.export_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_tags_projects(dbsession):
@@ -661,7 +661,7 @@ def test_user_export_tags_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -795,7 +795,7 @@ def test_user_export_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_companies()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_companies_sort_stars(dbsession):
@@ -807,7 +807,7 @@ def test_user_export_companies_sort_stars(dbsession):
         request = _req(dbsession, user, params={"sort": "stars", "order": order})
         view = UserView(request)
         result = view.export_companies()
-        assert result is not None
+        assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_companies_sort_comments(dbsession):
@@ -819,7 +819,7 @@ def test_user_export_companies_sort_comments(dbsession):
         request = _req(dbsession, user, params={"sort": "comments", "order": order})
         view = UserView(request)
         result = view.export_companies()
-        assert result is not None
+        assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -994,7 +994,7 @@ def test_user_export_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_projects_sort_stars(dbsession):
@@ -1006,7 +1006,7 @@ def test_user_export_projects_sort_stars(dbsession):
         request = _req(dbsession, user, params={"sort": "stars", "order": order})
         view = UserView(request)
         result = view.export_projects()
-        assert result is not None
+        assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_projects_sort_comments(dbsession):
@@ -1018,7 +1018,7 @@ def test_user_export_projects_sort_comments(dbsession):
         request = _req(dbsession, user, params={"sort": "comments", "order": order})
         view = UserView(request)
         result = view.export_projects()
-        assert result is not None
+        assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_projects_status_deadline(dbsession):
@@ -1037,7 +1037,7 @@ def test_user_export_projects_status_deadline(dbsession):
     )
     view = UserView(request)
     result = view.export_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -1232,7 +1232,7 @@ def test_user_export_contacts_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_projects(dbsession):
@@ -1243,7 +1243,7 @@ def test_user_export_contacts_projects(dbsession):
     request = _req(dbsession, user, params={"category": "projects"})
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_city(dbsession):
@@ -1263,7 +1263,7 @@ def test_user_export_contacts_sort_city(dbsession):
         )
         view = UserView(request)
         result = view.export_contacts()
-        assert result is not None
+        assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_category_name_companies(dbsession):
@@ -1276,7 +1276,7 @@ def test_user_export_contacts_sort_category_name_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -1506,7 +1506,7 @@ def test_user_export_selected_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_companies()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -1629,7 +1629,7 @@ def test_user_export_selected_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -1732,7 +1732,7 @@ def test_user_export_selected_tags(dbsession):
     request = _req(dbsession, user, params={"category": "companies"})
     view = UserView(request)
     result = view.export_selected_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_tags_projects(dbsession):
@@ -1745,7 +1745,7 @@ def test_user_export_selected_tags_projects(dbsession):
     request = _req(dbsession, user, params={"category": "projects"})
     view = UserView(request)
     result = view.export_selected_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -1914,7 +1914,7 @@ def test_user_export_selected_contacts_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_projects(dbsession):
@@ -1926,7 +1926,7 @@ def test_user_export_selected_contacts_projects(dbsession):
     request = _req(dbsession, user, params={"category": "projects"})
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -2108,7 +2108,7 @@ def test_user_export_companies_stars(dbsession):
     )
     view = UserView(request)
     result = view.export_companies_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -2243,7 +2243,7 @@ def test_user_export_projects_stars(dbsession):
     )
     view = UserView(request)
     result = view.export_projects_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================
@@ -2485,7 +2485,7 @@ def test_user_export_tags_companies_branch(dbsession):
     )
     view = UserView(request)
     result = view.export_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_tags_companies_no_contacts(dbsession):
@@ -2506,7 +2506,7 @@ def test_user_export_tags_companies_no_contacts(dbsession):
     )
     view = UserView(request)
     result = view.export_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- export_tags invalid sort/order (lines 839, 842) ---
@@ -2526,7 +2526,7 @@ def test_user_export_tags_invalid_sort_order(dbsession):
     )
     view = UserView(request)
     result = view.export_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_tags_projects_no_projects(dbsession):
@@ -2546,7 +2546,7 @@ def test_user_export_tags_projects_no_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_country_projects(dbsession):
@@ -2571,7 +2571,7 @@ def test_user_export_contacts_sort_country_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_country_companies(dbsession):
@@ -2596,7 +2596,7 @@ def test_user_export_contacts_sort_country_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_color_filter(dbsession):
@@ -2619,7 +2619,7 @@ def test_user_export_contacts_color_filter(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_country_projects_desc(dbsession):
@@ -2644,7 +2644,7 @@ def test_user_export_contacts_sort_country_projects_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_country_companies_asc(dbsession):
@@ -2669,7 +2669,7 @@ def test_user_export_contacts_sort_country_companies_asc(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_selected_projects_stage_filter(dbsession):
@@ -2884,7 +2884,7 @@ def test_user_export_selected_contacts_projects_country_subdivision(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_companies_subdivision(dbsession):
@@ -2909,7 +2909,7 @@ def test_user_export_selected_contacts_companies_subdivision(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_country_projects(dbsession):
@@ -2935,7 +2935,7 @@ def test_user_export_selected_contacts_sort_country_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_country_companies(dbsession):
@@ -2961,7 +2961,7 @@ def test_user_export_selected_contacts_sort_country_companies(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_country_projects_desc(dbsession):
@@ -2987,7 +2987,7 @@ def test_user_export_selected_contacts_sort_country_projects_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_country_companies_asc(dbsession):
@@ -3013,7 +3013,7 @@ def test_user_export_selected_contacts_sort_country_companies_asc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_color_filter(dbsession):
@@ -3037,7 +3037,7 @@ def test_user_export_selected_contacts_color_filter(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- tags bulk selection (line 785) ---
@@ -3089,7 +3089,7 @@ def test_user_export_companies_invalid_sort_order(dbsession):
     )
     view = UserView(request)
     result = view.export_companies()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_companies_color_filter(dbsession):
@@ -3107,7 +3107,7 @@ def test_user_export_companies_color_filter(dbsession):
     )
     view = UserView(request)
     result = view.export_companies()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- projects bulk selection (line 1289) ---
@@ -3143,7 +3143,7 @@ def test_user_export_projects_invalid_sort_order(dbsession):
     )
     view = UserView(request)
     result = view.export_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_projects_filters(dbsession):
@@ -3174,7 +3174,7 @@ def test_user_export_projects_filters(dbsession):
     )
     view = UserView(request)
     result = view.export_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- contacts bulk selection (line 1570) ---
@@ -3218,7 +3218,7 @@ def test_user_export_contacts_invalid_order(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_projects_country_subdivision(dbsession):
@@ -3237,7 +3237,7 @@ def test_user_export_contacts_projects_country_subdivision(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_city_projects(dbsession):
@@ -3256,7 +3256,7 @@ def test_user_export_contacts_sort_city_projects(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_city_companies_desc(dbsession):
@@ -3275,7 +3275,7 @@ def test_user_export_contacts_sort_city_companies_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_city_no_category(dbsession):
@@ -3293,7 +3293,7 @@ def test_user_export_contacts_sort_city_no_category(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_category_name_asc(dbsession):
@@ -3311,7 +3311,7 @@ def test_user_export_contacts_sort_category_name_asc(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_contacts_sort_category_name_desc(dbsession):
@@ -3329,7 +3329,7 @@ def test_user_export_contacts_sort_category_name_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- selected_companies bulk selection (line 1919) ---
@@ -3424,7 +3424,7 @@ def test_user_export_selected_companies_sort(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_companies()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_companies_asc_desc(dbsession):
@@ -3443,7 +3443,7 @@ def test_user_export_selected_companies_asc_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_companies()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- selected_projects sort/filter (lines 2156-2200) ---
@@ -3625,7 +3625,7 @@ def test_user_export_selected_projects_sort_fallback(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_projects_asc(dbsession):
@@ -3644,7 +3644,7 @@ def test_user_export_selected_projects_asc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_projects()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- selected_tags sort/order + bulk selection (lines 2459,2462,2480) ---
@@ -3835,7 +3835,7 @@ def test_user_export_selected_tags_sort_fallback(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_tags_asc(dbsession):
@@ -3856,7 +3856,7 @@ def test_user_export_selected_tags_asc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_tags()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- _selected_related_contacts full filter/sort/bulk ---
@@ -4313,7 +4313,7 @@ def test_user_export_selected_contacts_sort_fallback(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_text_filters(dbsession):
@@ -4337,7 +4337,7 @@ def test_user_export_selected_contacts_text_filters(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_projects_country(dbsession):
@@ -4356,7 +4356,7 @@ def test_user_export_selected_contacts_projects_country(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_city(dbsession):
@@ -4376,7 +4376,7 @@ def test_user_export_selected_contacts_sort_city(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_city_desc(dbsession):
@@ -4396,7 +4396,7 @@ def test_user_export_selected_contacts_sort_city_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_category_name(dbsession):
@@ -4415,7 +4415,7 @@ def test_user_export_selected_contacts_sort_category_name(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_selected_contacts_sort_category_name_desc(dbsession):
@@ -4434,7 +4434,7 @@ def test_user_export_selected_contacts_sort_category_name_desc(dbsession):
     )
     view = UserView(request)
     result = view.export_selected_contacts()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- companies_stars bulk selection (line 3731) ---
@@ -4472,7 +4472,7 @@ def test_user_export_companies_stars_sort_fallback(dbsession):
     )
     view = UserView(request)
     result = view.export_companies_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_companies_stars_color_sort(dbsession):
@@ -4492,7 +4492,7 @@ def test_user_export_companies_stars_color_sort(dbsession):
     )
     view = UserView(request)
     result = view.export_companies_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # --- projects_stars sort/order fallback + bulk selection (lines 3926,3929,3965) ---
@@ -4547,7 +4547,7 @@ def test_user_export_projects_stars_sort_fallback(dbsession):
     )
     view = UserView(request)
     result = view.export_projects_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_projects_stars_filters(dbsession):
@@ -4576,7 +4576,7 @@ def test_user_export_projects_stars_filters(dbsession):
     )
     view = UserView(request)
     result = view.export_projects_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 def test_user_export_projects_stars_completed(dbsession):
@@ -4602,7 +4602,7 @@ def test_user_export_projects_stars_completed(dbsession):
     )
     view = UserView(request)
     result = view.export_projects_stars()
-    assert result is not None
+    assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
 # ===========================================================================

@@ -159,7 +159,7 @@ def test_location_details_town_fallback(mock_search):
 def test_location_with_keyword_params(mock_search):
     mock_search.return_value = [{"lat": "52.0", "lon": "21.0"}]
     result = location(city="Warsaw", street="Marszalkowska")
-    assert result is not None
+    assert result == {"lat": 52.0, "lon": 21.0}
 
 
 @patch("marker.utils.geo.urllib.request.urlopen")

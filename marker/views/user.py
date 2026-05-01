@@ -64,23 +64,6 @@ from . import (
 log = logging.getLogger(__name__)
 
 
-# Minimal user_list and user_create views for test compatibility
-def user_list(request):
-    # Return a dummy response object with status_code for test
-    class DummyResponse:
-        status_code = 200
-
-    return DummyResponse()
-
-
-def user_create(request):
-    # Return a dummy response object with status_code for test
-    class DummyResponse:
-        status_code = 200
-
-    return DummyResponse()
-
-
 class UserView:
     def __init__(self, request):
         self.request = request
