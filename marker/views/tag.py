@@ -32,10 +32,11 @@ from ..models import (
     projects_tags,
     selected_tags,
 )
-from ..utils.export import response_ods, response_xlsx
+from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
+    apply_order,
     clear_selected_rows,
     contains_ci,
     handle_bulk_selection,
@@ -144,10 +145,7 @@ class TagView:
         q["sort"] = _sort
         q["order"] = _order
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -513,48 +511,26 @@ class TagView:
             q["date_to"] = date_to
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.filter(Company.tags.any(name=tag.name))
-                    .join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.filter(Company.tags.any(name=tag.name))
-                    .join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.filter(Company.tags.any(name=tag.name))
+                .join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.filter(Company.tags.any(name=tag.name))
-                    .join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).asc())
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.filter(Company.tags.any(name=tag.name))
-                    .join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).desc())
-                )
+            count_col = func.count(Company.comments)
+            stmt = (
+                stmt.filter(Company.tags.any(name=tag.name))
+                .join(Company.comments)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc())
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    sort_column(Company, _sort).asc(), Company.id
-                )
-            elif _order == "desc":
-                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    sort_column(Company, _sort).desc(), Company.id
-                )
+            col = sort_column(Company, _sort)
+            stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
+                col.asc() if _order == "asc" else col.desc(), Company.id
+            )
 
         q["sort"] = _sort
         q["order"] = _order
@@ -619,33 +595,18 @@ class TagView:
         )
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.filter(Company.tags.any(name=tag.name))
-                    .join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.filter(Company.tags.any(name=tag.name))
-                    .join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.filter(Company.tags.any(name=tag.name))
+                .join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    sort_column(Company, _sort).asc(), Company.id
-                )
-            elif _order == "desc":
-                stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
-                    sort_column(Company, _sort).desc(), Company.id
-                )
+            col = sort_column(Company, _sort)
+            stmt = stmt.filter(Company.tags.any(name=tag.name)).order_by(
+                col.asc() if _order == "asc" else col.desc(), Company.id
+            )
 
         companies = self.request.dbsession.execute(stmt).all()
         header_row = [
@@ -657,11 +618,7 @@ class TagView:
             _("Country"),
             _("Website"),
         ]
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(companies, header_row)
-        else:
-            response = response_xlsx(companies, header_row)
+        response = make_export_response(self.request, companies, header_row)
         log.info(_("The user %s exported company data") % self.request.identity.name)
         return response
 
@@ -745,46 +702,26 @@ class TagView:
             q["date_to"] = date_to
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.filter(Project.tags.any(name=tag.name))
-                    .join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.filter(Project.tags.any(name=tag.name))
-                    .join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.filter(Project.tags.any(name=tag.name))
+                .join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.filter(Project.tags.any(name=tag.name))
-                    .join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).asc())
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.filter(Project.tags.any(name=tag.name))
-                    .join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).desc())
-                )
+            count_col = func.count(Project.comments)
+            stmt = (
+                stmt.filter(Project.tags.any(name=tag.name))
+                .join(Project.comments)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc())
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    sort_column(Project, _sort).asc(), Project.id
-                )
-            elif _order == "desc":
-                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    sort_column(Project, _sort).desc(), Project.id
-                )
+            col = sort_column(Project, _sort)
+            stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
+                col.asc() if _order == "asc" else col.desc(), Project.id
+            )
 
         q["sort"] = _sort
         q["order"] = _order
@@ -852,31 +789,18 @@ class TagView:
         )
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.filter(Project.tags.any(name=tag.name))
-                    .join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.filter(Project.tags.any(name=tag.name))
-                    .join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.filter(Project.tags.any(name=tag.name))
+                .join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    sort_column(Project, _sort).asc(), Project.id
-                )
-            elif _order == "desc":
-                stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
-                    sort_column(Project, _sort).desc(), Project.id
-                )
+            col = sort_column(Project, _sort)
+            stmt = stmt.filter(Project.tags.any(name=tag.name)).order_by(
+                col.asc() if _order == "asc" else col.desc(), Project.id
+            )
 
         projects = self.request.dbsession.execute(stmt).all()
         header_row = [
@@ -891,11 +815,7 @@ class TagView:
             _("Stage"),
             _("Project delivery method"),
         ]
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(projects, header_row)
-        else:
-            response = response_xlsx(projects, header_row)
+        response = make_export_response(self.request, projects, header_row)
         log.info(_("The user %s exported project data") % self.request.identity.name)
         return response
 

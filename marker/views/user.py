@@ -46,10 +46,11 @@ from ..models import (
     selected_projects,
     selected_tags,
 )
-from ..utils.export import response_ods, response_xlsx
+from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
+    apply_order,
     clear_selected_rows,
     contains_ci,
     handle_bulk_selection,
@@ -766,10 +767,7 @@ class UserView:
         stmt = select(Tag).filter(Tag.created_by == user)
         stmt, category = self._filter_tags_by_category(stmt, category, q=q)
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -834,19 +832,12 @@ class UserView:
         stmt = select(Tag).filter(Tag.created_by == user)
         stmt, category = self._filter_tags_by_category(stmt, category)
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
         tags = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._tag_export_rows(tags, category=category)
         header_row = self._tag_export_header(category=category)
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -938,40 +929,21 @@ class UserView:
             q["color"] = color
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).asc(), Company.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).desc(), Company.id)
-                )
+            count_col = func.count(Company.comments)
+            stmt = (
+                stmt.join(Company.comments)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
+            stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1088,49 +1060,26 @@ class UserView:
             stmt = stmt.filter(Company.color == color)
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).asc(), Company.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).desc(), Company.id)
-                )
+            count_col = func.count(Company.comments)
+            stmt = (
+                stmt.join(Company.comments)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
+            stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
         companies = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._company_export_rows(companies)
         header_row = self._company_export_header()
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -1250,38 +1199,21 @@ class UserView:
             q["status"] = status
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).desc(), Project.id)
-                )
+            count_col = func.count(Project.comments)
+            stmt = (
+                stmt.join(Project.comments)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
+            stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -1421,47 +1353,26 @@ class UserView:
             stmt = stmt.filter(Project.deadline < now)
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).desc(), Project.id)
-                )
+            count_col = func.count(Project.comments)
+            stmt = (
+                stmt.join(Project.comments)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
+            stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
         projects = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._project_export_rows(projects)
         header_row = self._project_export_header()
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -1745,11 +1656,7 @@ class UserView:
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -2102,11 +2009,7 @@ class UserView:
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -2424,11 +2327,7 @@ class UserView:
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -2474,10 +2373,7 @@ class UserView:
         if category in {"companies", "projects"}:
             stmt, category = self._filter_tags_by_category(stmt, category, q=q)
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
@@ -2785,20 +2681,13 @@ class UserView:
 
         stmt, category = self._filter_tags_by_category(stmt, category)
 
-        if _order == "asc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).asc())
-        elif _order == "desc":
-            stmt = stmt.order_by(sort_column(Tag, _sort).desc())
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
         tags = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._tag_export_rows(tags, category=category)
 
         header_row = self._tag_export_header(category=category)
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -3405,11 +3294,7 @@ class UserView:
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -3822,11 +3707,7 @@ class UserView:
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of companies with a star")
             % self.request.identity.name
@@ -4067,11 +3948,7 @@ class UserView:
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
-        fmt = self.request.params.get("format", "xlsx")
-        if fmt == "ods":
-            response = response_ods(rows, header_row, row_colors=row_colors)
-        else:
-            response = response_xlsx(rows, header_row, row_colors=row_colors)
+        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
         log.info(
             _("The user %s exported the data of projects with a star")
             % self.request.identity.name

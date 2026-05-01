@@ -49,6 +49,7 @@ from ..utils.paginator import get_paginator
 from ..utils.website_autofill import company_autofill_from_website
 from . import (
     Filter,
+    apply_order,
     clear_selected_rows,
     contains_ci,
     handle_bulk_selection,
@@ -56,6 +57,7 @@ from . import (
     is_bulk_select_request,
     normalize_ci_expression,
     normalize_ci_value,
+    normalized_tags_from_request,
     polish_sort_expression,
     sort_column,
     toggle_selected_item,
@@ -69,15 +71,7 @@ class CompanyView:
         self.request = request
 
     def _normalized_tags(self):
-        seen = set()
-        tags = []
-        for value in self.request.params.getall("tag"):
-            name = value.strip()
-            normalized = name.lower()
-            if name and normalized not in seen:
-                seen.add(normalized)
-                tags.append(name)
-        return tags
+        return normalized_tags_from_request(self.request)
 
     def pills(self, company):
         _ = self.request.translate
@@ -285,40 +279,21 @@ class CompanyView:
         q["order"] = _order
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).asc())
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).desc())
-                )
+            count_col = func.count(Company.comments)
+            stmt = (
+                stmt.join(Company.comments)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc())
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
+            stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
         selected_items = self.request.identity.selected_companies
         if view_mode == "contacts":
@@ -483,10 +458,7 @@ class CompanyView:
                 q["order"] = _order
 
             stmt = select(Contact).filter(Contact.company_id == company.id)
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
-            else:
-                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
+            stmt = apply_order(stmt, sort_column(Contact, _sort), _order, Contact.id)
             contacts = self.request.dbsession.execute(stmt).scalars().all()
             bulk_stmt = stmt
             bulk_selected_items = self.request.identity.selected_contacts
@@ -511,10 +483,7 @@ class CompanyView:
                 .join(companies_tags)
                 .filter(companies_tags.c.company_id == company.id)
             )
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Tag, _sort).asc(), Tag.id)
-            else:
-                stmt = stmt.order_by(sort_column(Tag, _sort).desc(), Tag.id)
+            stmt = apply_order(stmt, sort_column(Tag, _sort), _order, Tag.id)
             tags = self.request.dbsession.execute(stmt).scalars().all()
             bulk_stmt = stmt
             bulk_selected_items = self.request.identity.selected_tags
@@ -623,27 +592,14 @@ class CompanyView:
         q["order"] = _order
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
+            stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt.order_by(None).subquery())
@@ -1164,39 +1120,21 @@ class CompanyView:
             else:
                 stmt = stmt.order_by(similarity.c.shared_tags.desc(), Company.id)
         elif _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).asc(), Company.id
-                    )
-                )
-            else:
-                stmt = (
-                    stmt.join(companies_stars)
-                    .group_by(Company.id)
-                    .order_by(
-                        func.count(companies_stars.c.company_id).desc(), Company.id
-                    )
-                )
+            count_col = func.count(companies_stars.c.company_id)
+            stmt = (
+                stmt.join(companies_stars)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).asc())
-                )
-            else:
-                stmt = (
-                    stmt.join(Company.comments)
-                    .group_by(Company.id)
-                    .order_by(func.count(Company.comments).desc())
-                )
-        elif _order == "asc":
-            stmt = stmt.order_by(sort_column(Company, _sort).asc(), Company.id)
+            count_col = func.count(Company.comments)
+            stmt = (
+                stmt.join(Company.comments)
+                .group_by(Company.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc())
+            )
         else:
-            stmt = stmt.order_by(sort_column(Company, _sort).desc(), Company.id)
+            stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(

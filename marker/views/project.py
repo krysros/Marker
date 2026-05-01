@@ -52,6 +52,7 @@ from ..utils.paginator import get_paginator
 from ..utils.website_autofill import project_autofill_from_website
 from . import (
     Filter,
+    apply_order,
     clear_selected_rows,
     contains_ci,
     handle_bulk_selection,
@@ -59,6 +60,7 @@ from . import (
     is_bulk_select_request,
     normalize_ci_expression,
     normalize_ci_value,
+    normalized_tags_from_request,
     polish_sort_expression,
     sort_column,
     toggle_selected_item,
@@ -72,15 +74,7 @@ class ProjectView:
         self.request = request
 
     def _normalized_tags(self):
-        seen = set()
-        tags = []
-        for value in self.request.params.getall("tag"):
-            name = value.strip()
-            normalized = name.lower()
-            if name and normalized not in seen:
-                seen.add(normalized)
-                tags.append(name)
-        return tags
+        return normalized_tags_from_request(self.request)
 
     def pills(self, project):
         _ = self.request.translate
@@ -347,38 +341,21 @@ class ProjectView:
         q["order"] = _order
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).asc())
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).desc())
-                )
+            count_col = func.count(Project.comments)
+            stmt = (
+                stmt.join(Project.comments)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc())
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
+            stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
         selected_items = self.request.identity.selected_projects
         if view_mode == "contacts":
@@ -584,25 +561,14 @@ class ProjectView:
         q["order"] = _order
 
         if _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            elif _order == "desc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         else:
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
-            elif _order == "desc":
-                stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
+            stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt.order_by(None).subquery())
@@ -896,10 +862,7 @@ class ProjectView:
                 q["order"] = _order
 
             stmt = select(Contact).filter(Contact.project_id == project.id)
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
-            else:
-                stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
+            stmt = apply_order(stmt, sort_column(Contact, _sort), _order, Contact.id)
             contacts = self.request.dbsession.execute(stmt).scalars().all()
             bulk_stmt = stmt
             bulk_selected_items = self.request.identity.selected_contacts
@@ -920,10 +883,7 @@ class ProjectView:
                 q["order"] = _order
 
             stmt = select(Tag).filter(Tag.projects.any(Project.id == project.id))
-            if _order == "asc":
-                stmt = stmt.order_by(sort_column(Tag, _sort).asc(), Tag.id)
-            else:
-                stmt = stmt.order_by(sort_column(Tag, _sort).desc(), Tag.id)
+            stmt = apply_order(stmt, sort_column(Tag, _sort), _order, Tag.id)
             tags = self.request.dbsession.execute(stmt).scalars().all()
             bulk_stmt = stmt
             bulk_selected_items = self.request.identity.selected_tags
@@ -1113,37 +1073,21 @@ class ProjectView:
             else:
                 stmt = stmt.order_by(similarity.c.shared_tags.desc(), Project.id)
         elif _sort == "stars":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(func.count(projects_stars.c.project_id).asc(), Project.id)
-                )
-            else:
-                stmt = (
-                    stmt.join(projects_stars)
-                    .group_by(Project.id)
-                    .order_by(
-                        func.count(projects_stars.c.project_id).desc(), Project.id
-                    )
-                )
+            count_col = func.count(projects_stars.c.project_id)
+            stmt = (
+                stmt.join(projects_stars)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+            )
         elif _sort == "comments":
-            if _order == "asc":
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).asc())
-                )
-            else:
-                stmt = (
-                    stmt.join(Project.comments)
-                    .group_by(Project.id)
-                    .order_by(func.count(Project.comments).desc())
-                )
-        elif _order == "asc":
-            stmt = stmt.order_by(sort_column(Project, _sort).asc(), Project.id)
+            count_col = func.count(Project.comments)
+            stmt = (
+                stmt.join(Project.comments)
+                .group_by(Project.id)
+                .order_by(count_col.asc() if _order == "asc" else count_col.desc())
+            )
         else:
-            stmt = stmt.order_by(sort_column(Project, _sort).desc(), Project.id)
+            stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
         if is_bulk_select_request(self.request):
             return handle_bulk_selection(
