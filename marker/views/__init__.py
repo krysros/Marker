@@ -94,39 +94,6 @@ class Filter:
         self.__dict__.update(entries)
 
 
-def is_all_selected(request, stmt, selection_table):
-    """
-    Checks if all visible records (according to stmt) are selected for the current user.
-    selection_table: e.g. selected_companies, selected_projects, selected_contacts, selected_tags
-    """
-    # Determine columns related to the selection table
-    for key, (table, selected_column, entity_id_column) in _SELECTION_TARGETS.items():
-        if table is selection_table:
-            break
-    else:
-        raise ValueError(_("Unknown selection table"))
-
-    user_id = request.identity.id
-    # Subquery with IDs of visible records
-    item_ids_subquery = _selected_item_ids_subquery(stmt, entity_id_column)
-    # Count of all visible records
-    total_count = request.dbsession.execute(
-        select(func.count()).select_from(item_ids_subquery)
-    ).scalar()
-    if total_count == 0:
-        return False
-    # Count of selected records for the user
-    selected_count = request.dbsession.execute(
-        select(func.count())
-        .select_from(selection_table)
-        .where(
-            selection_table.c.user_id == user_id,
-            selected_column.in_(select(item_ids_subquery.c.item_id)),
-        )
-    ).scalar()
-    return selected_count == total_count
-
-
 def normalized_tags_from_request(request):
     """Return deduplicated tag names from request params (case-insensitive dedup)."""
     seen = set()
