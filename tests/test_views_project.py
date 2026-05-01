@@ -2880,7 +2880,13 @@ def test_project_add_ai_post_invalid_form_no_htmx(mock_autofill, mock_geo, dbses
 @patch("marker.views.project.location_details", return_value={"lat": 1.0, "lon": 2.0})
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "NewAIProjSuccess", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "NewAIProjSuccess",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
 def test_project_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
     """Autofill returns valid data; project saved, HX-Redirect issued."""
@@ -2898,7 +2904,13 @@ def test_project_add_ai_post_success_htmx(mock_autofill, mock_geo, dbsession):
 @patch("marker.views.project.location_details", return_value=None)
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "NewAIProjSucNoHX", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "NewAIProjSucNoHX",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
 def test_project_add_ai_post_success_no_htmx(mock_autofill, mock_geo, dbsession):
     """Autofill returns valid data without HX-Request; HTTPSeeOther redirect."""

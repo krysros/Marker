@@ -283,7 +283,9 @@ class CompanyView:
             stmt = (
                 stmt.join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Company.comments)
@@ -596,7 +598,9 @@ class CompanyView:
             stmt = (
                 stmt.join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         else:
             stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
@@ -1124,7 +1128,9 @@ class CompanyView:
             stmt = (
                 stmt.join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Company.comments)
@@ -1222,9 +1228,8 @@ class CompanyView:
     )
     def add(self):
         _ = self.request.translate
-        validate_from_ai = (
-            self.request.method == "GET"
-            and bool(self.request.params.get("validate"))
+        validate_from_ai = self.request.method == "GET" and bool(
+            self.request.params.get("validate")
         )
         form = CompanyForm(
             self.request.params if self.request.method == "GET" else self.request.POST,
@@ -1730,9 +1735,7 @@ class CompanyView:
             name = autofill.get("name") or ""
             existing = (
                 self.request.dbsession.execute(
-                    select(Company).where(
-                        func.lower(Company.name) == func.lower(name)
-                    )
+                    select(Company).where(func.lower(Company.name) == func.lower(name))
                 ).scalar_one_or_none()
                 if name
                 else None
@@ -1758,19 +1761,23 @@ class CompanyView:
                 if self.request.headers.get("HX-Request"):
                     next_url = self.request.route_url(
                         "company_add",
-                        _query={k: v for k, v in {
-                            "validate": "1",
-                            "name": company_form.name.data,
-                            "street": company_form.street.data,
-                            "postcode": company_form.postcode.data,
-                            "city": company_form.city.data,
-                            "subdivision": company_form.subdivision.data,
-                            "country": company_form.country.data,
-                            "website": company_form.website.data,
-                            "NIP": company_form.NIP.data,
-                            "REGON": company_form.REGON.data,
-                            "KRS": company_form.KRS.data,
-                        }.items() if v},
+                        _query={
+                            k: v
+                            for k, v in {
+                                "validate": "1",
+                                "name": company_form.name.data,
+                                "street": company_form.street.data,
+                                "postcode": company_form.postcode.data,
+                                "city": company_form.city.data,
+                                "subdivision": company_form.subdivision.data,
+                                "country": company_form.country.data,
+                                "website": company_form.website.data,
+                                "NIP": company_form.NIP.data,
+                                "REGON": company_form.REGON.data,
+                                "KRS": company_form.KRS.data,
+                            }.items()
+                            if v
+                        },
                     )
                     response = self.request.response
                     response.headers["HX-Redirect"] = next_url

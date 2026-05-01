@@ -158,9 +158,7 @@ def test_autofill_empty_docs_raises(mock_loader):
 def test_autofill_geo_provides_postcode(mock_loader, mock_llm, mock_geo):
     """Geo lookup provides postcode when result has none."""
     mock_loader.return_value = [MagicMock(page_content="test content")]
-    mock_llm.return_value = MagicMock(
-        content='{"name": "Co", "city": "Warsaw"}'
-    )
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Warsaw"}')
     mock_geo.return_value = {
         "country_code": "PL",
         "state": "Mazowieckie",

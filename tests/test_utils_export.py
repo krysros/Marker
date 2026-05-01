@@ -77,8 +77,6 @@ def test_response_xlsx_row_color_formats_not_applied():
     ):
         export.response_xlsx([["A"]], ["Name"], row_colors=["primary"])
 
-    color_formats = [
-        fmt for fmt in captured_formats if fmt.get("bg_color")
-    ]
+    color_formats = [fmt for fmt in captured_formats if fmt.get("bg_color")]
 
     assert not color_formats

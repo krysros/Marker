@@ -21,9 +21,7 @@ def _autofill_from_website(url, prompt):
     loader = WebBaseLoader(url)
     docs = loader.load()
     if not docs:
-        raise ValueError(
-            str(_("Could not load content from %(url)s")) % {"url": url}
-        )
+        raise ValueError(str(_("Could not load content from %(url)s")) % {"url": url})
 
     content = docs[0].page_content
 

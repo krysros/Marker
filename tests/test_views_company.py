@@ -1078,8 +1078,6 @@ def test_add_project_existing_activity(dbsession):
     ProjectActivityForm.validate = orig_validate
 
 
-
-
 def test_company_count_views_and_json(dbsession):
     user = User(name="u", fullname="U", email="e@e.com", role="user", password="x")
     dbsession.add(user)
