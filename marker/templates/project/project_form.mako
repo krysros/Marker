@@ -8,7 +8,7 @@
 <div class="card mt-4 mb-4">
   <div class="card-header">${heading}</div>
   <div class="card-body">
-    <form action="${form_action if defined('form_action') else request.current_route_path()}" method="post">
+    <form action="${context.get('form_action', request.current_route_path())}" method="post">
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.name.label(class_="form-label")}
