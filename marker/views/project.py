@@ -1909,6 +1909,14 @@ class ProjectView:
 
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
 
+            if not project_form.validate():
+                self.request.override_renderer = "project_form.mako"
+                return {
+                    "heading": _("Add a project"),
+                    "form": project_form,
+                    "form_action": self.request.route_url("project_add"),
+                }
+
             if self.request.method == "POST" and form.validate():
                 name = project_form.name.data or ""
                 existing = self.request.dbsession.execute(

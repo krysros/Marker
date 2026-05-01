@@ -1797,6 +1797,14 @@ class CompanyView:
 
             company_form = CompanyForm(MultiDict(autofill), request=self.request)
 
+            if not company_form.validate():
+                self.request.override_renderer = "company_form.mako"
+                return {
+                    "heading": _("Add a company"),
+                    "form": company_form,
+                    "form_action": self.request.route_url("company_add"),
+                }
+
             if self.request.method == "POST" and form.validate():
                 name = company_form.name.data or ""
                 existing = self.request.dbsession.execute(
