@@ -2,6 +2,28 @@ import zope.sqlalchemy
 from sqlalchemy import engine_from_config, event
 from sqlalchemy.orm import configure_mappers, sessionmaker
 
+# Polish alphabet order for SQLite collation.
+# Each letter maps to a unique surrogate code point so that str comparison
+# produces correct Polish alphabetical ordering.
+_POLISH_LOWER = "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż"
+_POLISH_COLLATE_MAP = str.maketrans(
+    _POLISH_LOWER,
+    "".join(chr(0x1000 + i) for i in range(len(_POLISH_LOWER))),
+)
+
+
+def _polish_collate(a: str, b: str) -> int:
+    """Case-insensitive Polish alphabetical collation for SQLite."""
+    ka = a.lower().translate(_POLISH_COLLATE_MAP)
+    kb = b.lower().translate(_POLISH_COLLATE_MAP)
+    return (ka > kb) - (ka < kb)
+
+
+def _unicode_lower(s: str | None) -> str | None:
+    """Unicode-aware lower() for SQLite (built-in lower() handles ASCII only)."""
+    return s.lower() if s else s
+
+
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
 from .association import Activity  # flake8: noqa
@@ -35,6 +57,8 @@ def get_engine(settings, prefix="sqlalchemy."):
             cursor = dbapi_connection.cursor()
             cursor.execute("PRAGMA foreign_keys=ON")
             cursor.close()
+            dbapi_connection.create_collation("POLISH_CI", _polish_collate)
+            dbapi_connection.create_function("unicode_lower", 1, _unicode_lower)
 
     return engine
 

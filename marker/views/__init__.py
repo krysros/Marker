@@ -38,56 +38,6 @@ _SELECTION_TARGETS = {
     ),
 }
 
-_POLISH_UPPER_TO_LOWER = {
-    "Ą": "ą",
-    "Ć": "ć",
-    "Ę": "ę",
-    "Ł": "ł",
-    "Ń": "ń",
-    "Ó": "ó",
-    "Ś": "ś",
-    "Ź": "ź",
-    "Ż": "ż",
-}
-
-_POLISH_SORT_ALPHABET = [
-    "a",
-    "ą",
-    "b",
-    "c",
-    "ć",
-    "d",
-    "e",
-    "ę",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "ł",
-    "m",
-    "n",
-    "ń",
-    "o",
-    "ó",
-    "p",
-    "q",
-    "r",
-    "s",
-    "ś",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-    "ź",
-    "ż",
-]
-
 
 class Filter:
     def __init__(self, **entries):
@@ -123,26 +73,17 @@ def apply_order(stmt, col, order, *tiebreaks):
 
 def normalize_ci_expression(column):
     """Return SQL expression for case-insensitive, accent-insensitive comparison (Polish)."""
-    expr = column
-    for upper, lower in _POLISH_UPPER_TO_LOWER.items():
-        expr = func.replace(expr, upper, lower)
-    return func.lower(expr)
+    return func.unicode_lower(column)
 
 
 def polish_sort_expression(expression):
     """Return SQL expression for sorting according to Polish alphabet."""
-    expr = normalize_ci_expression(expression)
-    for index, letter in enumerate(_POLISH_SORT_ALPHABET, start=1):
-        expr = func.replace(expr, letter, f"{index:02d}")
-    return expr
+    return expression.collate("POLISH_CI")
 
 
 def normalize_ci_value(value):
     """Return normalized string for case-insensitive, accent-insensitive comparison (Polish)."""
-    normalized = str(value)
-    for upper, lower in _POLISH_UPPER_TO_LOWER.items():
-        normalized = normalized.replace(upper, lower)
-    return normalized.lower()
+    return str(value).lower()
 
 
 def contains_ci(column, value):
