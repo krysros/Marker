@@ -1,8 +1,8 @@
 """create tables
 
-Revision ID: 97209f739ca8
+Revision ID: 9ca296fb5e5a
 Revises:
-Create Date: 2025-06-20 23:28:14.508049
+Create Date: 2026-05-01 22:43:03.395820
 
 """
 
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "97209f739ca8"
+revision = "9ca296fb5e5a"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,7 +47,6 @@ def upgrade():
         sa.Column("NIP", sa.String(), nullable=True),
         sa.Column("REGON", sa.String(), nullable=True),
         sa.Column("KRS", sa.String(), nullable=True),
-        sa.Column("court", sa.String(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=True),
@@ -81,7 +80,10 @@ def upgrade():
         sa.Column("color", sa.String(), nullable=True),
         sa.Column("deadline", sa.DateTime(), nullable=True),
         sa.Column("stage", sa.String(), nullable=True),
+        sa.Column("object_category", sa.String(), nullable=True),
         sa.Column("delivery_method", sa.String(), nullable=True),
+        sa.Column("usable_area", sa.Numeric(), nullable=True),
+        sa.Column("cubic_volume", sa.Numeric(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=True),
@@ -123,24 +125,14 @@ def upgrade():
         sa.PrimaryKeyConstraint("id", name=op.f("pk_tags")),
     )
     op.create_table(
-        "themes",
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("theme", sa.String(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["users.id"],
-            name=op.f("fk_themes_user_id_users"),
-            onupdate="CASCADE",
-            ondelete="CASCADE",
-        ),
-        sa.PrimaryKeyConstraint("user_id", name=op.f("pk_themes")),
-    )
-    op.create_table(
         "activity",
         sa.Column("company_id", sa.Integer(), nullable=False),
         sa.Column("project_id", sa.Integer(), nullable=False),
         sa.Column("stage", sa.String(), nullable=True),
         sa.Column("role", sa.String(), nullable=True),
+        sa.Column("currency", sa.String(), nullable=True),
+        sa.Column("value_net", sa.Numeric(), nullable=True),
+        sa.Column("value_gross", sa.Numeric(), nullable=True),
         sa.ForeignKeyConstraint(
             ["company_id"],
             ["companies.id"],
@@ -235,6 +227,9 @@ def upgrade():
         ["company_id"],
         unique=False,
     )
+    op.create_index(
+        op.f("ix_companies_tags_tag_id"), "companies_tags", ["tag_id"], unique=False
+    )
     op.create_table(
         "contacts",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -242,6 +237,7 @@ def upgrade():
         sa.Column("role", sa.String(), nullable=True),
         sa.Column("phone", sa.String(), nullable=True),
         sa.Column("email", sa.String(), nullable=True),
+        sa.Column("color", sa.String(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.Column("creator_id", sa.Integer(), nullable=True),
@@ -252,6 +248,7 @@ def upgrade():
             ["company_id"],
             ["companies.id"],
             name=op.f("fk_contacts_company_id_companies"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["creator_id"],
@@ -269,6 +266,7 @@ def upgrade():
             ["project_id"],
             ["projects.id"],
             name=op.f("fk_contacts_project_id_projects"),
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_contacts")),
     )
@@ -310,6 +308,15 @@ def upgrade():
             ondelete="CASCADE",
         ),
     )
+    op.create_index(
+        op.f("ix_projects_tags_project_id"),
+        "projects_tags",
+        ["project_id"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_projects_tags_tag_id"), "projects_tags", ["tag_id"], unique=False
+    )
     op.create_table(
         "selected_companies",
         sa.Column("company_id", sa.Integer(), nullable=True),
@@ -328,6 +335,12 @@ def upgrade():
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
+    )
+    op.create_index(
+        "ix_selected_companies_user_company",
+        "selected_companies",
+        ["user_id", "company_id"],
+        unique=False,
     )
     op.create_table(
         "selected_projects",
@@ -348,6 +361,12 @@ def upgrade():
             ondelete="CASCADE",
         ),
     )
+    op.create_index(
+        "ix_selected_projects_user_project",
+        "selected_projects",
+        ["user_id", "project_id"],
+        unique=False,
+    )
     op.create_table(
         "selected_tags",
         sa.Column("tag_id", sa.Integer(), nullable=True),
@@ -366,6 +385,12 @@ def upgrade():
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
+    )
+    op.create_index(
+        "ix_selected_tags_user_tag",
+        "selected_tags",
+        ["user_id", "tag_id"],
+        unique=False,
     )
     op.create_table(
         "selected_contacts",
@@ -386,24 +411,36 @@ def upgrade():
             ondelete="CASCADE",
         ),
     )
+    op.create_index(
+        "ix_selected_contacts_user_contact",
+        "selected_contacts",
+        ["user_id", "contact_id"],
+        unique=False,
+    )
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index("ix_selected_contacts_user_contact", table_name="selected_contacts")
     op.drop_table("selected_contacts")
+    op.drop_index("ix_selected_tags_user_tag", table_name="selected_tags")
     op.drop_table("selected_tags")
+    op.drop_index("ix_selected_projects_user_project", table_name="selected_projects")
     op.drop_table("selected_projects")
+    op.drop_index("ix_selected_companies_user_company", table_name="selected_companies")
     op.drop_table("selected_companies")
+    op.drop_index(op.f("ix_projects_tags_tag_id"), table_name="projects_tags")
+    op.drop_index(op.f("ix_projects_tags_project_id"), table_name="projects_tags")
     op.drop_table("projects_tags")
     op.drop_table("projects_stars")
     op.drop_table("contacts")
+    op.drop_index(op.f("ix_companies_tags_tag_id"), table_name="companies_tags")
     op.drop_index(op.f("ix_companies_tags_company_id"), table_name="companies_tags")
     op.drop_table("companies_tags")
     op.drop_table("companies_stars")
     op.drop_table("comments")
     op.drop_table("activity")
-    op.drop_table("themes")
     op.drop_table("tags")
     op.drop_table("projects")
     op.drop_table("companies")

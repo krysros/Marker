@@ -60,82 +60,9 @@ def test_alembic_env_offline_mode():
 # --- migration downgrades ---
 
 
-def test_97209f739ca8_downgrade():
-    mod = _load_migration("20250620_97209f739ca8")
+def test_9ca296fb5e5a_downgrade():
+    mod = _load_migration("20260501_9ca296fb5e5a")
     with patch.object(mod, "op") as mock_op:
         mod.downgrade()
-        assert mock_op.drop_table.call_count > 0
-
-
-def test_b522888918c5_downgrade():
-    mod = _load_migration("20250727_b522888918c5")
-    with patch.object(mod, "op") as mock_op:
-        mod.downgrade()
-        mock_op.create_table.assert_called_once()
-
-
-def test_163919059dcc_downgrade():
-    mod = _load_migration("20260222_163919059dcc")
-    with patch.object(mod, "op") as mock_op:
-        mod.downgrade()
-        mock_op.drop_column.assert_called_once()
-
-
-def test_2a6f4a9d1c3e_downgrade():
-    mod = _load_migration("20260305_2a6f4a9d1c3e")
-    with patch.object(mod, "op") as mock_op:
-        mock_batch = MagicMock()
-        mock_op.batch_alter_table.return_value.__enter__ = MagicMock(
-            return_value=mock_batch
-        )
-        mock_op.batch_alter_table.return_value.__exit__ = MagicMock(return_value=False)
-        mod.downgrade()
-        mock_batch.drop_constraint.assert_called_once()
-        mock_batch.create_foreign_key.assert_called_once()
-
-
-def test_9c1d6e7a4b2f_downgrade():
-    mod = _load_migration("20260305_9c1d6e7a4b2f")
-    with patch.object(mod, "op") as mock_op:
-        mock_batch = MagicMock()
-        mock_op.batch_alter_table.return_value.__enter__ = MagicMock(
-            return_value=mock_batch
-        )
-        mock_op.batch_alter_table.return_value.__exit__ = MagicMock(return_value=False)
-        mod.downgrade()
-        mock_batch.drop_constraint.assert_called_once()
-        mock_batch.create_foreign_key.assert_called_once()
-
-
-def test_4fd5be91a2c7_downgrade():
-    mod = _load_migration("20260308_4fd5be91a2c7")
-    with patch.object(mod, "op") as mock_op:
-        mod.downgrade()
-        assert mock_op.drop_index.call_count == 3
-
-
-def test_d3a6f1b2c9e4_downgrade():
-    mod = _load_migration("20260308_d3a6f1b2c9e4")
-    with patch.object(mod, "op") as mock_op:
-        mod.downgrade()
-        assert mock_op.drop_index.call_count == 4
-
-
-def test_6f7a9c1e2b3d_downgrade():
-    mod = _load_migration("20260309_6f7a9c1e2b3d")
-    # downgrade is just `pass`
-    mod.downgrade()
-
-
-def test_ef6388976d02_downgrade():
-    mod = _load_migration("20260328_ef6388976d02")
-    with patch.object(mod, "op") as mock_op:
-        mod.downgrade()
-        mock_op.add_column.assert_called_once()
-
-
-def test_6ae8eb2273ab_downgrade():
-    mod = _load_migration("20260411_6ae8eb2273ab")
-    with patch.object(mod, "op") as mock_op:
-        mod.downgrade()
-        assert mock_op.drop_column.call_count == 5
+        assert mock_op.drop_index.call_count == 8
+        assert mock_op.drop_table.call_count == 15
