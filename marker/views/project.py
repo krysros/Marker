@@ -345,7 +345,9 @@ class ProjectView:
             stmt = (
                 stmt.join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Project.comments)
@@ -565,7 +567,9 @@ class ProjectView:
             stmt = (
                 stmt.join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         else:
             stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
@@ -1077,7 +1081,9 @@ class ProjectView:
             stmt = (
                 stmt.join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Project.comments)
@@ -1179,9 +1185,8 @@ class ProjectView:
     )
     def add(self):
         _ = self.request.translate
-        validate_from_ai = (
-            self.request.method == "GET"
-            and bool(self.request.params.get("validate"))
+        validate_from_ai = self.request.method == "GET" and bool(
+            self.request.params.get("validate")
         )
         form = ProjectForm(
             self.request.params if self.request.method == "GET" else self.request.POST,
@@ -1844,9 +1849,7 @@ class ProjectView:
             name = autofill.get("name") or ""
             existing = (
                 self.request.dbsession.execute(
-                    select(Project).where(
-                        func.lower(Project.name) == func.lower(name)
-                    )
+                    select(Project).where(func.lower(Project.name) == func.lower(name))
                 ).scalar_one_or_none()
                 if name
                 else None
@@ -1872,19 +1875,27 @@ class ProjectView:
                 if self.request.headers.get("HX-Request"):
                     next_url = self.request.route_url(
                         "project_add",
-                        _query={k: v for k, v in {
-                            "validate": "1",
-                            "name": project_form.name.data,
-                            "street": project_form.street.data,
-                            "postcode": project_form.postcode.data,
-                            "city": project_form.city.data,
-                            "subdivision": project_form.subdivision.data,
-                            "country": project_form.country.data,
-                            "website": project_form.website.data,
-                            "deadline": str(project_form.deadline.data) if project_form.deadline.data else None,
-                            "stage": project_form.stage.data,
-                            "delivery_method": project_form.delivery_method.data,
-                        }.items() if v},
+                        _query={
+                            k: v
+                            for k, v in {
+                                "validate": "1",
+                                "name": project_form.name.data,
+                                "street": project_form.street.data,
+                                "postcode": project_form.postcode.data,
+                                "city": project_form.city.data,
+                                "subdivision": project_form.subdivision.data,
+                                "country": project_form.country.data,
+                                "website": project_form.website.data,
+                                "deadline": (
+                                    str(project_form.deadline.data)
+                                    if project_form.deadline.data
+                                    else None
+                                ),
+                                "stage": project_form.stage.data,
+                                "delivery_method": project_form.delivery_method.data,
+                            }.items()
+                            if v
+                        },
                     )
                     response = self.request.response
                     response.headers["HX-Redirect"] = next_url

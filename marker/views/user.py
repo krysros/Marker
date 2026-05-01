@@ -837,7 +837,9 @@ class UserView:
         tags = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._tag_export_rows(tags, category=category)
         header_row = self._tag_export_header(category=category)
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -933,14 +935,18 @@ class UserView:
             stmt = (
                 stmt.join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Company.comments)
             stmt = (
                 stmt.join(Company.comments)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         else:
             stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
@@ -1064,14 +1070,18 @@ class UserView:
             stmt = (
                 stmt.join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Company.comments)
             stmt = (
                 stmt.join(Company.comments)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         else:
             stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
@@ -1079,7 +1089,9 @@ class UserView:
         companies = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._company_export_rows(companies)
         header_row = self._company_export_header()
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -1203,14 +1215,18 @@ class UserView:
             stmt = (
                 stmt.join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Project.comments)
             stmt = (
                 stmt.join(Project.comments)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         else:
             stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
@@ -1357,14 +1373,18 @@ class UserView:
             stmt = (
                 stmt.join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Project.comments)
             stmt = (
                 stmt.join(Project.comments)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         else:
             stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
@@ -1372,7 +1392,9 @@ class UserView:
         projects = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._project_export_rows(projects)
         header_row = self._project_export_header()
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -1656,7 +1678,9 @@ class UserView:
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -2009,7 +2033,9 @@ class UserView:
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of selected companies")
             % self.request.identity.name
@@ -2327,7 +2353,9 @@ class UserView:
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of selected projects")
             % self.request.identity.name
@@ -2687,7 +2715,9 @@ class UserView:
         rows, row_colors = self._tag_export_rows(tags, category=category)
 
         header_row = self._tag_export_header(category=category)
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of selected tags")
             % self.request.identity.name
@@ -3294,7 +3324,9 @@ class UserView:
         contacts = self.request.dbsession.execute(stmt).scalars().all()
         rows, row_colors = self._selected_contacts_export_rows(contacts, category)
         header_row = self._selected_contacts_export_header(category)
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
 
         log.info(
             _("The user %s exported the data of selected contacts")
@@ -3707,7 +3739,9 @@ class UserView:
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of companies with a star")
             % self.request.identity.name
@@ -3948,7 +3982,9 @@ class UserView:
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
-        response = make_export_response(self.request, rows, header_row, row_colors=row_colors)
+        response = make_export_response(
+            self.request, rows, header_row, row_colors=row_colors
+        )
         log.info(
             _("The user %s exported the data of projects with a star")
             % self.request.identity.name

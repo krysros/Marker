@@ -516,7 +516,9 @@ class TagView:
                 stmt.filter(Company.tags.any(name=tag.name))
                 .join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Company.comments)
@@ -600,7 +602,9 @@ class TagView:
                 stmt.filter(Company.tags.any(name=tag.name))
                 .join(companies_stars)
                 .group_by(Company.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Company.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Company.id
+                )
             )
         else:
             col = sort_column(Company, _sort)
@@ -707,7 +711,9 @@ class TagView:
                 stmt.filter(Project.tags.any(name=tag.name))
                 .join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         elif _sort == "comments":
             count_col = func.count(Project.comments)
@@ -794,7 +800,9 @@ class TagView:
                 stmt.filter(Project.tags.any(name=tag.name))
                 .join(projects_stars)
                 .group_by(Project.id)
-                .order_by(count_col.asc() if _order == "asc" else count_col.desc(), Project.id)
+                .order_by(
+                    count_col.asc() if _order == "asc" else count_col.desc(), Project.id
+                )
             )
         else:
             col = sort_column(Project, _sort)

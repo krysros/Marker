@@ -25,6 +25,7 @@ def ascii_slug(text):
 # Module-level helpers shared by all export functions
 # ---------------------------------------------------------------------------
 
+
 def _normalized(text):
     return str(text or "").strip().lower()
 
@@ -53,7 +54,12 @@ def _build_column_transformers():
             get_country_name,
         ),
         (
-            {_normalized(_("Stage")), _normalized(_("Project stage")), "stage", "project stage"},
+            {
+                _normalized(_("Stage")),
+                _normalized(_("Project stage")),
+                "stage",
+                "project stage",
+            },
             lambda v: _STAGES_MAP.get(v, v or ""),
         ),
         (
@@ -79,6 +85,7 @@ def _apply_column_transform(elem, header_name, column_transformers):
 # XLSX
 # ---------------------------------------------------------------------------
 
+
 def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors=None):
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
@@ -96,7 +103,9 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
 
     for i, row in enumerate(rows, start=1):
         for j, elem in enumerate(row):
-            elem = _apply_column_transform(elem, normalized_headers[j], column_transformers)
+            elem = _apply_column_transform(
+                elem, normalized_headers[j], column_transformers
+            )
             elem = _safe_cell_value(elem)
             if isinstance(elem, (datetime.datetime, datetime.date)):
                 worksheet.write(i, j, elem, date_format)
@@ -115,7 +124,9 @@ def response_xlsx(rows, header_row, default_date_format="yyyy-mm-dd", row_colors
     return response
 
 
-def _response_xlsx_contacts(rows, entity_attr, entity_label, default_date_format="yyyy-mm-dd"):
+def _response_xlsx_contacts(
+    rows, entity_attr, entity_label, default_date_format="yyyy-mm-dd"
+):
     output = io.BytesIO()
     workbook = xlsxwriter.Workbook(
         output, {"constant_memory": True, "default_date_format": default_date_format}
@@ -123,7 +134,16 @@ def _response_xlsx_contacts(rows, entity_attr, entity_label, default_date_format
     worksheet = workbook.add_worksheet()
     bold_format = workbook.add_format({"bold": True})
 
-    header_row = [_("Name"), _("Role"), _("Phone"), _("Email"), entity_label, _("City"), _("Subdivision"), _("Country")]
+    header_row = [
+        _("Name"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
+        entity_label,
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+    ]
     for j, elem in enumerate(header_row):
         worksheet.write(0, j, str(elem).replace(" ", "_"), bold_format)
 
@@ -162,6 +182,7 @@ def response_xlsx_contacts_project(rows, default_date_format="yyyy-mm-dd"):
 # ODS
 # ---------------------------------------------------------------------------
 
+
 def response_ods(rows, header_row, row_colors=None):
     doc = OpenDocumentSpreadsheet()
 
@@ -185,7 +206,9 @@ def response_ods(rows, header_row, row_colors=None):
     for row in rows:
         tr = TableRow()
         for j, elem in enumerate(row):
-            elem = _apply_column_transform(elem, normalized_headers[j], column_transformers)
+            elem = _apply_column_transform(
+                elem, normalized_headers[j], column_transformers
+            )
             if isinstance(elem, (datetime.datetime, datetime.date)):
                 tc = TableCell(valuetype="date", datevalue=elem.isoformat())
                 tc.addElement(P(text=str(elem)))
@@ -218,7 +241,16 @@ def _response_ods_contacts(rows, entity_attr, entity_label):
     bold_style.addElement(TextProperties(fontweight="bold"))
     doc.automaticstyles.addElement(bold_style)
 
-    header_row = [_("Name"), _("Role"), _("Phone"), _("Email"), entity_label, _("City"), _("Subdivision"), _("Country")]
+    header_row = [
+        _("Name"),
+        _("Role"),
+        _("Phone"),
+        _("Email"),
+        entity_label,
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+    ]
 
     table = Table(name="Sheet1")
     table.addElement(TableColumn(numbercolumnsrepeated=str(len(header_row))))
