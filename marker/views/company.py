@@ -17,7 +17,6 @@ from ..forms import (
     ProjectActivityForm,
     TagLinkForm,
 )
-from ..forms.company import CompanyForm
 from ..forms.select import (
     COLORS,
     COMPANY_ROLES,
@@ -1780,7 +1779,7 @@ class CompanyView:
                 autofill = company_autofill_from_website(form.website.data)
                 autofill = dict(autofill)
                 autofill["website"] = form.website.data
-            except Exception as e:
+            except Exception:
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the company data"

@@ -213,11 +213,6 @@ class ProjectView:
         usable_area_to = self.request.params.get("usable_area_to", None)
         cubic_volume_from = self.request.params.get("cubic_volume_from", None)
         cubic_volume_to = self.request.params.get("cubic_volume_to", None)
-        currency = self.request.params.get("currency", None)
-        value_net_from = self.request.params.get("value_net_from", None)
-        value_net_to = self.request.params.get("value_net_to", None)
-        value_gross_from = self.request.params.get("value_gross_from", None)
-        value_gross_to = self.request.params.get("value_gross_to", None)
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
         _sort = self.request.params.get("sort", "created_at")
@@ -1892,7 +1887,7 @@ class ProjectView:
                 autofill = project_autofill_from_website(form.website.data)
                 autofill = dict(autofill)
                 autofill["website"] = form.website.data
-            except Exception as e:
+            except Exception:
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the project data"
