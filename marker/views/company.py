@@ -1222,7 +1222,15 @@ class CompanyView:
     )
     def add(self):
         _ = self.request.translate
-        form = CompanyForm(self.request.POST, request=self.request)
+        validate_from_ai = (
+            self.request.method == "GET"
+            and bool(self.request.params.get("validate"))
+        )
+        form = CompanyForm(
+            self.request.params if self.request.method == "GET" else self.request.POST,
+            request=self.request,
+            meta={"locales": [self.request.locale_name]},
+        )
         countries = dict(select_countries())
         tags = self._normalized_tags()
 
@@ -1288,18 +1296,8 @@ class CompanyView:
             )
             return HTTPSeeOther(location=next_url)
 
-        if self.request.query_string:
-            form.name.data = self.request.params.get("name", None)
-            form.street.data = self.request.params.get("street", None)
-            form.postcode.data = self.request.params.get("postcode", None)
-            form.city.data = self.request.params.get("city", None)
-            form.country.data = self.request.params.get("country", None)
-            form.subdivision.data = self.request.params.get("subdivision", None)
-            form.website.data = self.request.params.get("website", None)
-            form.color.data = self.request.params.get("color", None)
-            form.NIP.data = self.request.params.get("NIP", None)
-            form.REGON.data = self.request.params.get("REGON", None)
-            form.KRS.data = self.request.params.get("KRS", None)
+        if validate_from_ai:
+            form.validate()
 
         return {"heading": _("Add a company"), "form": form, "tags": tags}
 
@@ -1712,89 +1710,41 @@ class CompanyView:
             self.request.POST if self.request.method == "POST" else None
         )
         if self.request.method == "POST" and form.validate():
-            autofill = {}
             try:
-                autofill = company_autofill_from_website(form.website.data)
-                autofill = dict(autofill)
+                autofill = dict(company_autofill_from_website(form.website.data))
                 autofill["website"] = form.website.data
-            except Exception:
+            except Exception as e:
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the company data"
                     )
                 )
                 next_url = self.request.route_url("company_add_ai")
-                # next_url = self.request.current_route_path()
-
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers["HX-Redirect"] = next_url
                     response.status_code = 303
                     return response
+                return HTTPSeeOther(location=next_url)
 
-            company_form = CompanyForm(MultiDict(autofill), request=self.request)
-
-            if not company_form.validate():
-                self.request.override_renderer = "company_form.mako"
-                return {
-                    "heading": _("Add a company"),
-                    "form": company_form,
-                    "form_action": self.request.route_url("company_add"),
-                }
-
-            if self.request.method == "POST" and form.validate():
-                name = company_form.name.data or ""
-                existing = self.request.dbsession.execute(
-                    select(Company).where(func.lower(Company.name) == func.lower(name))
+            name = autofill.get("name") or ""
+            existing = (
+                self.request.dbsession.execute(
+                    select(Company).where(
+                        func.lower(Company.name) == func.lower(name)
+                    )
                 ).scalar_one_or_none()
-                if existing:
-                    self.request.session.flash(
-                        _(
-                            "warning:A company with the name obtained from the provided website address already exists in the database."
-                        )
+                if name
+                else None
+            )
+            if existing:
+                self.request.session.flash(
+                    _(
+                        "warning:A company with the name obtained from the provided website address already exists in the database."
                     )
-                    next_url = self.request.route_url(
-                        "company_view", company_id=existing.id, slug=existing.slug
-                    )
-                    if self.request.headers.get("HX-Request"):
-                        response = self.request.response
-                        response.headers["HX-Redirect"] = next_url
-                        response.status_code = 303
-                        return response
-                    return HTTPSeeOther(location=next_url)
-
-                geo = location_details(
-                    street=company_form.street.data,
-                    city=company_form.city.data,
-                    country=company_form.country.data,
-                    postalcode=company_form.postcode.data,
-                )
-                company = Company(
-                    name=company_form.name.data,
-                    street=company_form.street.data,
-                    postcode=company_form.postcode.data,
-                    city=company_form.city.data,
-                    subdivision=company_form.subdivision.data,
-                    country=company_form.country.data,
-                    website=company_form.website.data,
-                    color=company_form.color.data,
-                    NIP=company_form.NIP.data,
-                    REGON=company_form.REGON.data,
-                    KRS=company_form.KRS.data,
-                )
-                if geo:
-                    company.latitude = geo.get("lat")
-                    company.longitude = geo.get("lon")
-                company.created_by = self.request.identity
-                self.request.dbsession.add(company)
-                self.request.dbsession.flush()
-                self.request.session.flash(_("success:Added to the database"))
-                log.info(
-                    _("The user %s added a company using AI autofill")
-                    % self.request.identity.name
                 )
                 next_url = self.request.route_url(
-                    "company_view", company_id=company.id, slug=company.slug
+                    "company_view", company_id=existing.id, slug=existing.slug
                 )
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
@@ -1802,4 +1752,74 @@ class CompanyView:
                     response.status_code = 303
                     return response
                 return HTTPSeeOther(location=next_url)
+
+            company_form = CompanyForm(MultiDict(autofill), request=self.request)
+            if not company_form.validate():
+                if self.request.headers.get("HX-Request"):
+                    next_url = self.request.route_url(
+                        "company_add",
+                        _query={k: v for k, v in {
+                            "validate": "1",
+                            "name": company_form.name.data,
+                            "street": company_form.street.data,
+                            "postcode": company_form.postcode.data,
+                            "city": company_form.city.data,
+                            "subdivision": company_form.subdivision.data,
+                            "country": company_form.country.data,
+                            "website": company_form.website.data,
+                            "NIP": company_form.NIP.data,
+                            "REGON": company_form.REGON.data,
+                            "KRS": company_form.KRS.data,
+                        }.items() if v},
+                    )
+                    response = self.request.response
+                    response.headers["HX-Redirect"] = next_url
+                    response.status_code = 303
+                    return response
+                self.request.override_renderer = "company_form.mako"
+                return {
+                    "heading": _("Add a company"),
+                    "form": company_form,
+                    "form_action": self.request.route_url("company_add"),
+                }
+
+            geo = location_details(
+                street=company_form.street.data,
+                city=company_form.city.data,
+                country=company_form.country.data,
+                postalcode=company_form.postcode.data,
+            )
+            company = Company(
+                name=company_form.name.data,
+                street=company_form.street.data,
+                postcode=company_form.postcode.data,
+                city=company_form.city.data,
+                subdivision=company_form.subdivision.data,
+                country=company_form.country.data,
+                website=company_form.website.data,
+                color=company_form.color.data,
+                NIP=company_form.NIP.data,
+                REGON=company_form.REGON.data,
+                KRS=company_form.KRS.data,
+            )
+            if geo:
+                company.latitude = geo.get("lat")
+                company.longitude = geo.get("lon")
+            company.created_by = self.request.identity
+            self.request.dbsession.add(company)
+            self.request.dbsession.flush()
+            self.request.session.flash(_("success:Added to the database"))
+            log.info(
+                _("The user %s added a company using AI autofill")
+                % self.request.identity.name
+            )
+            next_url = self.request.route_url(
+                "company_view", company_id=company.id, slug=company.slug
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
         return {"heading": _("Add a company using AI autofill"), "form": form}

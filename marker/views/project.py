@@ -1179,7 +1179,15 @@ class ProjectView:
     )
     def add(self):
         _ = self.request.translate
-        form = ProjectForm(self.request.POST, request=self.request)
+        validate_from_ai = (
+            self.request.method == "GET"
+            and bool(self.request.params.get("validate"))
+        )
+        form = ProjectForm(
+            self.request.params if self.request.method == "GET" else self.request.POST,
+            request=self.request,
+            meta={"locales": [self.request.locale_name]},
+        )
         countries = dict(select_countries())
         tags = self._normalized_tags()
 
@@ -1248,18 +1256,8 @@ class ProjectView:
             )
             return HTTPSeeOther(location=next_url)
 
-        if self.request.query_string:
-            form.name.data = self.request.params.get("name", None)
-            form.street.data = self.request.params.get("street", None)
-            form.postcode.data = self.request.params.get("postcode", None)
-            form.city.data = self.request.params.get("city", None)
-            form.country.data = self.request.params.get("country", None)
-            form.subdivision.data = self.request.params.get("subdivision", None)
-            form.website.data = self.request.params.get("website", None)
-            form.color.data = self.request.params.get("color", None)
-            form.deadline.data = self.request.params.get("deadline", None)
-            form.stage.data = self.request.params.get("stage", None)
-            form.delivery_method.data = self.request.params.get("delivery_method", None)
+        if validate_from_ai:
+            form.validate()
 
         return {"heading": _("Add a project"), "form": form, "tags": tags}
 
@@ -1826,56 +1824,78 @@ class ProjectView:
             self.request.POST if self.request.method == "POST" else None
         )
         if self.request.method == "POST" and form.validate():
-            autofill = {}
             try:
-                autofill = project_autofill_from_website(form.website.data)
-                autofill = dict(autofill)
+                autofill = dict(project_autofill_from_website(form.website.data))
                 autofill["website"] = form.website.data
-            except Exception:
+            except Exception as e:
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the project data"
                     )
                 )
                 next_url = self.request.route_url("project_add_ai")
-                # next_url = self.request.current_route_path()
-
                 if self.request.headers.get("HX-Request"):
                     response = self.request.response
                     response.headers["HX-Redirect"] = next_url
                     response.status_code = 303
                     return response
+                return HTTPSeeOther(location=next_url)
+
+            name = autofill.get("name") or ""
+            existing = (
+                self.request.dbsession.execute(
+                    select(Project).where(
+                        func.lower(Project.name) == func.lower(name)
+                    )
+                ).scalar_one_or_none()
+                if name
+                else None
+            )
+            if existing:
+                self.request.session.flash(
+                    _(
+                        "warning:A project with the name obtained from the provided website address already exists in the database."
+                    )
+                )
+                next_url = self.request.route_url(
+                    "project_view", project_id=existing.id, slug=existing.slug
+                )
+                if self.request.headers.get("HX-Request"):
+                    response = self.request.response
+                    response.headers["HX-Redirect"] = next_url
+                    response.status_code = 303
+                    return response
+                return HTTPSeeOther(location=next_url)
 
             project_form = ProjectForm(MultiDict(autofill), request=self.request)
-
             if not project_form.validate():
+                if self.request.headers.get("HX-Request"):
+                    next_url = self.request.route_url(
+                        "project_add",
+                        _query={k: v for k, v in {
+                            "validate": "1",
+                            "name": project_form.name.data,
+                            "street": project_form.street.data,
+                            "postcode": project_form.postcode.data,
+                            "city": project_form.city.data,
+                            "subdivision": project_form.subdivision.data,
+                            "country": project_form.country.data,
+                            "website": project_form.website.data,
+                            "deadline": str(project_form.deadline.data) if project_form.deadline.data else None,
+                            "stage": project_form.stage.data,
+                            "delivery_method": project_form.delivery_method.data,
+                        }.items() if v},
+                    )
+                    response = self.request.response
+                    response.headers["HX-Redirect"] = next_url
+                    response.status_code = 303
+                    return response
                 self.request.override_renderer = "project_form.mako"
                 return {
                     "heading": _("Add a project"),
                     "form": project_form,
                     "form_action": self.request.route_url("project_add"),
                 }
-
-            if self.request.method == "POST" and form.validate():
-                name = project_form.name.data or ""
-                existing = self.request.dbsession.execute(
-                    select(Project).where(func.lower(Project.name) == func.lower(name))
-                ).scalar_one_or_none()
-                if existing:
-                    self.request.session.flash(
-                        _(
-                            "warning:A project with the name obtained from the provided website address already exists in the database."
-                        )
-                    )
-                    next_url = self.request.route_url(
-                        "project_view", project_id=existing.id, slug=existing.slug
-                    )
-                    if self.request.headers.get("HX-Request"):
-                        response = self.request.response
-                        response.headers["HX-Redirect"] = next_url
-                        response.status_code = 303
-                        return response
-                    return HTTPSeeOther(location=next_url)
 
             geo = location_details(
                 street=project_form.street.data,
