@@ -5,6 +5,7 @@
   <i class="bi bi-tags"></i> ${_("Selected tags")}
   <span class="badge bg-secondary">${counter}</span>
   <div class="float-end">
+    ${button.deselect_selected(url=request.route_url('user_deselect_tags', username=user.name), confirm_text=_("Deselect all selected tags?"))}
     ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
