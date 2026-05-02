@@ -49,7 +49,7 @@ from ..models import (
 from ..subscribers import get_subdivision_name
 from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import project_autofill_from_website
+from ..utils.website_autofill import contacts_autofill_from_website, project_autofill_from_website
 from . import (
     Filter,
     apply_order,
@@ -1947,6 +1947,26 @@ class ProjectView:
             project.created_by = self.request.identity
             self.request.dbsession.add(project)
             self.request.dbsession.flush()
+
+            # Extract and save contacts from the website
+            try:
+                extracted_contacts = contacts_autofill_from_website(form.website.data)
+                for c_data in extracted_contacts:
+                    name = (c_data.get("name") or "").strip()
+                    if not name:
+                        continue
+                    contact = Contact(
+                        name=name,
+                        role=c_data.get("role") or None,
+                        phone=c_data.get("phone") or None,
+                        email=c_data.get("email") or None,
+                        color=None,
+                    )
+                    contact.created_by = self.request.identity
+                    project.contacts.append(contact)
+            except Exception as e:
+                log.warning("Failed to extract contacts via AI for project %s: %s", project.id, e)
+
             self.request.session.flash(_("success:Added to the database"))
             log.info(
                 _("The user %s has added a project using AI autofill")

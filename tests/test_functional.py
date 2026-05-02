@@ -2751,3 +2751,72 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
     assert contact.role == "CEO"
     assert contact.phone == "+48123456789"
     assert contact.email == "jan@acme.com"
+
+
+def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import project as project_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "Budowex Anna Nowak PM"})()],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract a list of contacts" in prompt:
+            return type(
+                "Resp",
+                (),
+                {
+                    "content": '[{"name": "Anna Nowak", "role": "PM", "phone": "+48987654321", "email": "anna@budowex.com"}]'
+                },
+            )()
+        return type("Resp", (), {"content": '{"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}'})()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        mock_invoke,
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="project-add-ai-contacts-editor",
+        password="admin",
+        fullname="Project Add AI Contacts Editor",
+        email="project.add.ai.contacts@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "project-add-ai-contacts-editor", "admin")
+
+    ai_page = testapp.get("/project/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_input = soup.find("input", {"name": "csrf_token"})
+    assert csrf_input is not None
+    csrf_token = csrf_input["value"]
+
+    resp = testapp.post(
+        "/project/add/ai",
+        params={"website": "https://budowex.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    project = dbsession.execute(
+        select(models.project.Project).where(
+            models.project.Project.name == "Budowex"
+        )
+    ).scalar_one_or_none()
+    assert project is not None
+    assert len(project.contacts) == 1
+    contact = project.contacts[0]
+    assert contact.name == "Anna Nowak"
+    assert contact.role == "PM"
+    assert contact.phone == "+48987654321"
+    assert contact.email == "anna@budowex.com"
