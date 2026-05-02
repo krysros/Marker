@@ -17,6 +17,7 @@
   <%include file="project_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
+  <a class="btn btn-outline-secondary" href="${request.route_url('user_selected_projects_similar', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags', username=user.name)}">${_("Tags")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies', username=user.name)}">${_("Companies")}</a>
