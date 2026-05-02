@@ -3571,6 +3571,38 @@ class UserView:
         return response
 
     @view_config(
+        route_name="user_deselect_all",
+        request_method="POST",
+        permission="view",
+    )
+    def deselect_all(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        dbsession = self.request.dbsession
+        dbsession.execute(
+            delete(selected_companies).where(selected_companies.c.user_id == user.id)
+        )
+        dbsession.execute(
+            delete(selected_projects).where(selected_projects.c.user_id == user.id)
+        )
+        dbsession.execute(
+            delete(selected_tags).where(selected_tags.c.user_id == user.id)
+        )
+        dbsession.execute(
+            delete(selected_contacts).where(selected_contacts.c.user_id == user.id)
+        )
+        mark_changed(dbsession)
+        self.request.session.flash(_("success:All selections cleared"))
+        log.info(
+            _("The user %s cleared all selections") % self.request.identity.name
+        )
+        next_url = self.request.route_url("home")
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
         route_name="user_merge_selected_tags",
         request_method="POST",
         permission="edit",

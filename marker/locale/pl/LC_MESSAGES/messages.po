@@ -1921,6 +1921,19 @@ msgstr "Odznaczyć wszystkie zaznaczone kontakty?"
 msgid "Deselect all selected tags?"
 msgstr "Odznaczyć wszystkie zaznaczone tagi?"
 
+msgid "Deselect all selected items?"
+msgstr "Odznaczyć wszystkie zaznaczone elementy?"
+
+msgid "Deselect all"
+msgstr "Odznacz wszystkie"
+
+msgid "success:All selections cleared"
+msgstr "success:Wszystkie zaznaczenia zostały wyczyszczone"
+
+#, python-format
+msgid "The user %s cleared all selections"
+msgstr "Użytkownik %s wyczyścił wszystkie zaznaczenia"
+
 #: marker/views/user.py:3472
 msgid "warning:Please provide a name and select tags"
 msgstr "warning:Proszę podać nazwę i wybrać tagi"
