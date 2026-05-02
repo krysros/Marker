@@ -2820,3 +2820,174 @@ def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
     assert contact.role == "PM"
     assert contact.phone == "+48987654321"
     assert contact.email == "anna@budowex.com"
+
+
+def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import company as company_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "TagCo offers construction and civil engineering services."})()],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract up to 20 tags" in prompt:
+            return type("Resp", (), {"content": '["Construction", "Civil engineering"]'})()
+        if "Extract a list of contacts" in prompt:
+            return type("Resp", (), {"content": "[]"})()
+        return type("Resp", (), {"content": '{"name": "TagCo", "city": "Gdansk", "country": "PL"}'})()
+
+    monkeypatch.setattr("langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke)
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="company-add-ai-tags-editor",
+        password="admin",
+        fullname="Company Add AI Tags Editor",
+        email="company.add.ai.tags@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-add-ai-tags-editor", "admin")
+
+    ai_page = testapp.get("/company/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_token = soup.find("input", {"name": "csrf_token"})["value"]
+
+    resp = testapp.post(
+        "/company/add/ai",
+        params={"website": "https://tagco.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    company = dbsession.execute(
+        select(models.company.Company).where(models.company.Company.name == "TagCo")
+    ).scalar_one_or_none()
+    assert company is not None
+    tag_names = {t.name for t in company.tags}
+    assert "Construction" in tag_names
+    assert "Civil engineering" in tag_names
+
+
+def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
+    """When the LLM returns a tag that already exists in the DB, the existing Tag row is reused."""
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import company as company_views
+
+    # Pre-create a tag that should be reused
+    existing_tag = models.tag.Tag("Architecture")
+    dbsession.add(existing_tag)
+    dbsession.flush()
+    existing_tag_id = existing_tag.id
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "ArchFirm provides architecture services."})()],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract up to 20 tags" in prompt:
+            return type("Resp", (), {"content": '["Architecture"]'})()
+        if "Extract a list of contacts" in prompt:
+            return type("Resp", (), {"content": "[]"})()
+        return type("Resp", (), {"content": '{"name": "ArchFirm", "city": "Poznan", "country": "PL"}'})()
+
+    monkeypatch.setattr("langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke)
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="company-add-ai-reuse-tag-editor",
+        password="admin",
+        fullname="Company Add AI Reuse Tag Editor",
+        email="company.add.ai.reusetag@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-add-ai-reuse-tag-editor", "admin")
+
+    ai_page = testapp.get("/company/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_token = soup.find("input", {"name": "csrf_token"})["value"]
+
+    testapp.post(
+        "/company/add/ai",
+        params={"website": "https://archfirm.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+
+    company = dbsession.execute(
+        select(models.company.Company).where(models.company.Company.name == "ArchFirm")
+    ).scalar_one_or_none()
+    assert company is not None
+    assert len(company.tags) == 1
+    # Must be the same row, not a duplicate
+    assert company.tags[0].id == existing_tag_id
+
+
+def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import project as project_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "TagProject residential housing development."})()],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract up to 20 tags" in prompt:
+            return type("Resp", (), {"content": '["Residential", "Housing"]'})()
+        if "Extract a list of contacts" in prompt:
+            return type("Resp", (), {"content": "[]"})()
+        return type("Resp", (), {"content": '{"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}'})()
+
+    monkeypatch.setattr("langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke)
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="project-add-ai-tags-editor",
+        password="admin",
+        fullname="Project Add AI Tags Editor",
+        email="project.add.ai.tags@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "project-add-ai-tags-editor", "admin")
+
+    ai_page = testapp.get("/project/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_token = soup.find("input", {"name": "csrf_token"})["value"]
+
+    resp = testapp.post(
+        "/project/add/ai",
+        params={"website": "https://tagproject.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    project = dbsession.execute(
+        select(models.project.Project).where(models.project.Project.name == "TagProject")
+    ).scalar_one_or_none()
+    assert project is not None
+    tag_names = {t.name for t in project.tags}
+    assert "Residential" in tag_names
+    assert "Housing" in tag_names

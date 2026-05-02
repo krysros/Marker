@@ -46,7 +46,7 @@ from ..models import (
 from ..subscribers import get_subdivision_name
 from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import company_autofill_from_website, contacts_autofill_from_website
+from ..utils.website_autofill import company_autofill_from_website, contacts_autofill_from_website, tags_autofill_from_website
 from . import (
     Filter,
     apply_order,
@@ -1846,6 +1846,30 @@ class CompanyView:
                     company.contacts.append(contact)
             except Exception as e:
                 log.warning("Failed to extract contacts via AI for company %s: %s", company.id, e)
+
+            # Extract and assign tags from the website
+            try:
+                existing_tag_names = list(
+                    self.request.dbsession.execute(select(Tag.name)).scalars().all()
+                )
+                extracted_tags = tags_autofill_from_website(
+                    form.website.data, existing_tag_names
+                )
+                for tag_name in extracted_tags[:20]:
+                    existing_tag = self.request.dbsession.execute(
+                        select(Tag).where(
+                            func.lower(Tag.name) == func.lower(tag_name)
+                        )
+                    ).scalar_one_or_none()
+                    if existing_tag:
+                        tag = existing_tag
+                    else:
+                        tag = Tag(tag_name)
+                        tag.created_by = self.request.identity
+                    if tag not in company.tags:
+                        company.tags.append(tag)
+            except Exception as e:
+                log.warning("Failed to extract tags via AI for company %s: %s", company.id, e)
 
             self.request.session.flash(_("success:Added to the database"))
             log.info(
