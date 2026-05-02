@@ -1,5 +1,6 @@
 """Prices view — project activity prices (unit prices per m²)."""
 from collections import namedtuple
+from decimal import Decimal, InvalidOperation
 
 from pyramid.view import view_config
 from sqlalchemy import case as sa_case, func, select
@@ -35,6 +36,14 @@ class PricesView:
         stage = self.request.params.get("stage", "")
         role = self.request.params.get("role", "")
         currency = self.request.params.get("currency", "")
+        value_net_from = self.request.params.get("value_net_from", "")
+        value_net_to = self.request.params.get("value_net_to", "")
+        value_gross_from = self.request.params.get("value_gross_from", "")
+        value_gross_to = self.request.params.get("value_gross_to", "")
+        unit_price_net_from = self.request.params.get("unit_price_net_from", "")
+        unit_price_net_to = self.request.params.get("unit_price_net_to", "")
+        unit_price_gross_from = self.request.params.get("unit_price_gross_from", "")
+        unit_price_gross_to = self.request.params.get("unit_price_gross_to", "")
         _sort = self.request.params.get("sort", "project_name")
         _order = self.request.params.get("order", "asc")
         if _order not in {"asc", "desc"}:
@@ -77,6 +86,74 @@ class PricesView:
         if currency:
             stmt = stmt.filter(Activity.currency == currency)
             q["currency"] = currency
+
+        if value_net_from:
+            try:
+                stmt = stmt.filter(Activity.value_net >= Decimal(value_net_from))
+                q["value_net_from"] = value_net_from
+            except (InvalidOperation, ValueError):
+                pass
+
+        if value_net_to:
+            try:
+                stmt = stmt.filter(Activity.value_net <= Decimal(value_net_to))
+                q["value_net_to"] = value_net_to
+            except (InvalidOperation, ValueError):
+                pass
+
+        if value_gross_from:
+            try:
+                stmt = stmt.filter(Activity.value_gross >= Decimal(value_gross_from))
+                q["value_gross_from"] = value_gross_from
+            except (InvalidOperation, ValueError):
+                pass
+
+        if value_gross_to:
+            try:
+                stmt = stmt.filter(Activity.value_gross <= Decimal(value_gross_to))
+                q["value_gross_to"] = value_gross_to
+            except (InvalidOperation, ValueError):
+                pass
+
+        if unit_price_net_from:
+            try:
+                stmt = stmt.filter(
+                    Project.usable_area > 0,
+                    Activity.value_net / Project.usable_area >= Decimal(unit_price_net_from),
+                )
+                q["unit_price_net_from"] = unit_price_net_from
+            except (InvalidOperation, ValueError):
+                pass
+
+        if unit_price_net_to:
+            try:
+                stmt = stmt.filter(
+                    Project.usable_area > 0,
+                    Activity.value_net / Project.usable_area <= Decimal(unit_price_net_to),
+                )
+                q["unit_price_net_to"] = unit_price_net_to
+            except (InvalidOperation, ValueError):
+                pass
+
+        if unit_price_gross_from:
+            try:
+                stmt = stmt.filter(
+                    Project.usable_area > 0,
+                    Activity.value_gross / Project.usable_area >= Decimal(unit_price_gross_from),
+                )
+                q["unit_price_gross_from"] = unit_price_gross_from
+            except (InvalidOperation, ValueError):
+                pass
+
+        if unit_price_gross_to:
+            try:
+                stmt = stmt.filter(
+                    Project.usable_area > 0,
+                    Activity.value_gross / Project.usable_area <= Decimal(unit_price_gross_to),
+                )
+                q["unit_price_gross_to"] = unit_price_gross_to
+            except (InvalidOperation, ValueError):
+                pass
 
         q["sort"] = _sort
         q["order"] = _order
