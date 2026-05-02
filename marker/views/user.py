@@ -1110,6 +1110,7 @@ class UserView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         order_criteria = dict(ORDER_CRITERIA)
@@ -1194,6 +1195,10 @@ class UserView:
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
             q["status"] = status
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         if _sort == "stars":
             count_col = func.count(projects_stars.c.project_id)
@@ -2043,6 +2048,7 @@ class UserView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = [
@@ -2103,6 +2109,10 @@ class UserView:
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Project, _sort).asc())
@@ -2550,6 +2560,7 @@ class UserView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = [
@@ -2619,6 +2630,10 @@ class UserView:
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
             q["delivery_method"] = delivery_method
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Project, _sort).asc())
@@ -3130,6 +3145,7 @@ class UserView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "name")
         _order = self.request.params.get("order", "asc")
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
@@ -3160,6 +3176,9 @@ class UserView:
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
@@ -4117,6 +4136,7 @@ class UserView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA_EXT)
@@ -4157,6 +4177,10 @@ class UserView:
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
             q["subdivision"] = list(subdivision)
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         q["sort"] = _sort
         q["order"] = _order

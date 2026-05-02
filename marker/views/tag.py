@@ -720,6 +720,7 @@ class TagView:
         ]
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -770,6 +771,10 @@ class TagView:
             date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
             stmt = stmt.filter(Project.created_at <= date_to_dt)
             q["date_to"] = date_to
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         if _sort == "stars":
             count_col = func.count(projects_stars.c.project_id)

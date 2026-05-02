@@ -17,6 +17,15 @@
       <input type="hidden" name="sort" value="${q.get('sort', 'project_name')}">
       <input type="hidden" name="order" value="${q.get('order', 'asc')}">
       <div class="mb-3">
+        <label for="prices-filter-object-category" class="form-label">${_("Object category")}</label>
+        <select id="prices-filter-object-category" class="form-select" name="object_category">
+          <option value="">${_("All")}</option>
+          % for v, l in object_categories.items():
+          <option value="${v}" ${"selected" if q.get("object_category") == v else ""}>${l}</option>
+          % endfor
+        </select>
+      </div>
+      <div class="mb-3">
         <label for="prices-filter-stage" class="form-label">${_("Stage")}</label>
         <select id="prices-filter-stage" class="form-select" name="stage">
           <option value="">${_("All")}</option>
@@ -35,6 +44,7 @@
         </select>
       </div>
       <div class="mb-3">
+
         <label for="prices-filter-currency" class="form-label">${_("Currency")}</label>
         <select id="prices-filter-currency" class="form-select" name="currency">
           % for v, l in currency_choices:
