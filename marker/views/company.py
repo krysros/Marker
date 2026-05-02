@@ -46,7 +46,7 @@ from ..models import (
 from ..subscribers import get_subdivision_name
 from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
-from ..utils.website_autofill import company_autofill_from_website
+from ..utils.website_autofill import company_autofill_from_website, contacts_autofill_from_website
 from . import (
     Filter,
     apply_order,
@@ -1827,6 +1827,26 @@ class CompanyView:
             company.created_by = self.request.identity
             self.request.dbsession.add(company)
             self.request.dbsession.flush()
+
+            # Extract and save contacts from the website
+            try:
+                extracted_contacts = contacts_autofill_from_website(form.website.data)
+                for c_data in extracted_contacts:
+                    name = (c_data.get("name") or "").strip()
+                    if not name:
+                        continue
+                    contact = Contact(
+                        name=name,
+                        role=c_data.get("role") or None,
+                        phone=c_data.get("phone") or None,
+                        email=c_data.get("email") or None,
+                        color=None,
+                    )
+                    contact.created_by = self.request.identity
+                    company.contacts.append(contact)
+            except Exception as e:
+                log.warning("Failed to extract contacts via AI for company %s: %s", company.id, e)
+
             self.request.session.flash(_("success:Added to the database"))
             log.info(
                 _("The user %s added a company using AI autofill")

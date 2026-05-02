@@ -82,6 +82,72 @@ def project_autofill_from_website(website):
     return _autofill_from_website(website, prompt)
 
 
+def contacts_autofill_from_website(website):
+    """
+    Extract a list of contacts (people) from the given website URL.
+    In addition to the main URL, tries common contact sub-pages
+    (/kontakt, /contact, etc.) to improve extraction quality.
+    Returns a list of dicts with keys: name, role, phone, email.
+    """
+    from urllib.parse import urljoin, urlparse
+
+    parsed = urlparse(website)
+    root = f"{parsed.scheme}://{parsed.netloc}"
+
+    content_parts = []
+
+    # Load the main page
+    try:
+        docs = WebBaseLoader(website).load()
+        if docs and docs[0].page_content.strip():
+            content_parts.append(docs[0].page_content)
+    except Exception:
+        pass
+
+    # Also try a contact-like sub-page for better people extraction
+    contact_paths = ["/kontakt", "/contact", "/zespol", "/team", "/o-nas", "/about"]
+    for path in contact_paths:
+        url = urljoin(root, path)
+        if url.rstrip("/") == website.rstrip("/"):
+            continue
+        try:
+            docs = WebBaseLoader(url).load()
+            if docs and len(docs[0].page_content.strip()) > 200:
+                content_parts.append(docs[0].page_content)
+                break
+        except Exception:
+            continue
+
+    if not content_parts:
+        raise ValueError(str(_("Could not load content from %(url)s")) % {"url": website})
+
+    content = "\n\n---\n\n".join(content_parts[:2])
+
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        response_mime_type="application/json",
+    )
+
+    prompt = (
+        "Extract a list of contacts (people) from the context. "
+        "For each contact provide: name, role, phone, email. "
+        'Return a JSON array of objects, e.g. [{"name": "...", "role": "...", "phone": "...", "email": "..."}]. '
+        "If no contacts are found, return an empty array []."
+    )
+
+    response = llm.invoke(f"{prompt}:\n\n{content}")
+    result = json.loads(response.content)
+
+    if isinstance(result, list):
+        return result
+    # Gemini sometimes wraps the array in a dict
+    if isinstance(result, dict):
+        for key in ("contacts", "people", "results", "data"):
+            if key in result and isinstance(result[key], list):
+                return result[key]
+    return []
+
+
 def _subdivision_code_from_value(value, country_code):
     value = _normalize_whitespace(value)
     if not value or not country_code:

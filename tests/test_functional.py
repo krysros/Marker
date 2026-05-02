@@ -2682,3 +2682,72 @@ def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monke
     )
     assert resp.json["error"].startswith("x")
     assert resp.json["fields"] == {}
+
+
+def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import company as company_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "Acme Corp Jan Kowalski CEO"})()],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract a list of contacts" in prompt:
+            return type(
+                "Resp",
+                (),
+                {
+                    "content": '[{"name": "Jan Kowalski", "role": "CEO", "phone": "+48123456789", "email": "jan@acme.com"}]'
+                },
+            )()
+        return type("Resp", (), {"content": '{"name": "Acme Corp", "city": "Warszawa", "country": "PL"}'})()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        mock_invoke,
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="company-add-ai-contacts-editor",
+        password="admin",
+        fullname="Company Add AI Contacts Editor",
+        email="company.add.ai.contacts@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-add-ai-contacts-editor", "admin")
+
+    ai_page = testapp.get("/company/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_input = soup.find("input", {"name": "csrf_token"})
+    assert csrf_input is not None
+    csrf_token = csrf_input["value"]
+
+    resp = testapp.post(
+        "/company/add/ai",
+        params={"website": "https://acme.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    company = dbsession.execute(
+        select(models.company.Company).where(
+            models.company.Company.name == "Acme Corp"
+        )
+    ).scalar_one_or_none()
+    assert company is not None
+    assert len(company.contacts) == 1
+    contact = company.contacts[0]
+    assert contact.name == "Jan Kowalski"
+    assert contact.role == "CEO"
+    assert contact.phone == "+48123456789"
+    assert contact.email == "jan@acme.com"
