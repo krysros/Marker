@@ -38,13 +38,16 @@
       ${form.color(class_="form-control")}
     </div>
     <div class="mb-3">
-      ${form.date_from.label(class_="form-label")}
-      ${form.date_from(class_="form-control")}
+      <label class="form-label">${_("Date")}</label>
+      <div class="input-group">
+        ${form.date_from(class_="form-control", placeholder=_("From"))}
+        ${form.date_to(class_="form-control", placeholder=_("To"))}
+      </div>
     </div>
-    <div class="mb-3">
-      ${form.date_to.label(class_="form-label")}
-      ${form.date_to(class_="form-control")}
+    <div class="hstack gap-2">
+      <button type="submit" class="btn btn-primary">${_("Submit")}</button>
+      <% clear_q = {k: v for k, v in q.items() if k in ('sort', 'order')} %>
+      <a class="btn btn-outline-secondary" href="${request.current_route_url(_query=clear_q)}">${_("Clear")}</a>
     </div>
-    <button type="submit" class="btn btn-primary">${_("Submit")}</button>
   </form>
 </div>
