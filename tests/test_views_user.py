@@ -1987,6 +1987,55 @@ def test_user_delete_selected_tags(dbsession):
 
 
 # ===========================================================================
+# deselect_*
+# ===========================================================================
+
+
+def test_user_deselect_companies(dbsession):
+    user = _user(dbsession, "deselco")
+    co = _company(dbsession, user, "DeselCo")
+    user.selected_companies.append(co)
+    transaction.commit()
+    request = _req(dbsession, user, method="POST")
+    view = UserView(request)
+    result = view.deselect_companies()
+    assert result.status_code == 303
+
+
+def test_user_deselect_projects(dbsession):
+    user = _user(dbsession, "deselproj")
+    proj = _project(dbsession, user, "DeselProj")
+    user.selected_projects.append(proj)
+    transaction.commit()
+    request = _req(dbsession, user, method="POST")
+    view = UserView(request)
+    result = view.deselect_projects()
+    assert result.status_code == 303
+
+
+def test_user_deselect_contacts(dbsession):
+    user = _user(dbsession, "deselcont")
+    contact = _contact(dbsession, user, "DeselCont")
+    user.selected_contacts.append(contact)
+    transaction.commit()
+    request = _req(dbsession, user, method="POST")
+    view = UserView(request)
+    result = view.deselect_contacts()
+    assert result.status_code == 303
+
+
+def test_user_deselect_tags(dbsession):
+    user = _user(dbsession, "deseltag")
+    tag = _tag(dbsession, user, "DeselTag")
+    user.selected_tags.append(tag)
+    transaction.commit()
+    request = _req(dbsession, user, method="POST")
+    view = UserView(request)
+    result = view.deselect_tags()
+    assert result.status_code == 303
+
+
+# ===========================================================================
 # merge_selected_tags()
 # ===========================================================================
 

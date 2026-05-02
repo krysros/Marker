@@ -6,8 +6,7 @@
     <i class="bi bi-people"></i> ${_("Selected contacts")}
     <span class="badge bg-secondary">${counter}</span>
   </h2>
-  <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
-    ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
+  <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">    ${button.deselect_selected(url=request.route_url('user_deselect_contacts', username=user.name), confirm_text=_('Deselect all selected contacts?'))}    ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
     ${button.dropdown_download(url_xlsx=request.route_url('user_export_selected_contacts', username=user.name, _query=q), url_ods=request.route_url('user_export_selected_contacts', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
   </div>

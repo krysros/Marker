@@ -48,6 +48,8 @@ from ..models import (
 )
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
+from zope.sqlalchemy import mark_changed
+
 from . import (
     Filter,
     apply_order,
@@ -3466,6 +3468,102 @@ class UserView:
             self.request.dbsession.execute(delete(Tag).where(Tag.id.in_(selected_ids)))
         self.request.session.flash(_("success:Selected tags deleted"))
         log.info(_("The user %s deleted selected tags") % self.request.identity.name)
+        next_url = self.request.route_url("user_selected_tags", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_deselect_companies",
+        request_method="POST",
+        permission="view",
+    )
+    def deselect_companies(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        self.request.dbsession.execute(
+            delete(selected_companies).where(
+                selected_companies.c.user_id == user.id
+            )
+        )
+        mark_changed(self.request.dbsession)
+        self.request.session.flash(_("success:Selected companies deselected"))
+        log.info(
+            _("The user %s deselected all companies") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_companies", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_deselect_projects",
+        request_method="POST",
+        permission="view",
+    )
+    def deselect_projects(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        self.request.dbsession.execute(
+            delete(selected_projects).where(
+                selected_projects.c.user_id == user.id
+            )
+        )
+        mark_changed(self.request.dbsession)
+        self.request.session.flash(_("success:Selected projects deselected"))
+        log.info(
+            _("The user %s deselected all projects") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_projects", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_deselect_contacts",
+        request_method="POST",
+        permission="view",
+    )
+    def deselect_contacts(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        self.request.dbsession.execute(
+            delete(selected_contacts).where(
+                selected_contacts.c.user_id == user.id
+            )
+        )
+        mark_changed(self.request.dbsession)
+        self.request.session.flash(_("success:Selected contacts deselected"))
+        log.info(
+            _("The user %s deselected all contacts") % self.request.identity.name
+        )
+        next_url = self.request.route_url("user_selected_contacts", username=user.name)
+        response = self.request.response
+        response.headers = {"HX-Redirect": next_url}
+        response.status_code = 303
+        return response
+
+    @view_config(
+        route_name="user_deselect_tags",
+        request_method="POST",
+        permission="view",
+    )
+    def deselect_tags(self):
+        _ = self.request.translate
+        user = self.request.context.user
+        self.request.dbsession.execute(
+            delete(selected_tags).where(
+                selected_tags.c.user_id == user.id
+            )
+        )
+        mark_changed(self.request.dbsession)
+        self.request.session.flash(_("success:Selected tags deselected"))
+        log.info(
+            _("The user %s deselected all tags") % self.request.identity.name
+        )
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}

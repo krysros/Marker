@@ -1881,6 +1881,46 @@ msgstr "success:Wybrane tagi zostały usunięte"
 msgid "The user %s deleted selected tags"
 msgstr "Użytkownik %s usunął wybrane tagi"
 
+msgid "success:Selected companies deselected"
+msgstr "success:Zaznaczenie firm zostało wyczyszczone"
+
+#, python-format
+msgid "The user %s deselected all companies"
+msgstr "Użytkownik %s odznaczył wszystkie firmy"
+
+msgid "success:Selected projects deselected"
+msgstr "success:Zaznaczenie projektów zostało wyczyszczone"
+
+#, python-format
+msgid "The user %s deselected all projects"
+msgstr "Użytkownik %s odznaczył wszystkie projekty"
+
+msgid "success:Selected contacts deselected"
+msgstr "success:Zaznaczenie kontaktów zostało wyczyszczone"
+
+#, python-format
+msgid "The user %s deselected all contacts"
+msgstr "Użytkownik %s odznaczył wszystkie kontakty"
+
+msgid "success:Selected tags deselected"
+msgstr "success:Zaznaczenie tagów zostało wyczyszczone"
+
+#, python-format
+msgid "The user %s deselected all tags"
+msgstr "Użytkownik %s odznaczył wszystkie tagi"
+
+msgid "Deselect all selected companies?"
+msgstr "Odznaczyć wszystkie zaznaczone firmy?"
+
+msgid "Deselect all selected projects?"
+msgstr "Odznaczyć wszystkie zaznaczone projekty?"
+
+msgid "Deselect all selected contacts?"
+msgstr "Odznaczyć wszystkie zaznaczone kontakty?"
+
+msgid "Deselect all selected tags?"
+msgstr "Odznaczyć wszystkie zaznaczone tagi?"
+
 #: marker/views/user.py:3472
 msgid "warning:Please provide a name and select tags"
 msgstr "warning:Proszę podać nazwę i wybrać tagi"
