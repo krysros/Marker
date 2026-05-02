@@ -925,6 +925,29 @@ msgstr "Zamknij okno modalne"
 msgid "Contractors"
 msgstr "Kontrahenci"
 
+#: marker/templates/base/navbar.mako
+#: marker/templates/prices/prices_all.mako
+msgid "Prices"
+msgstr "Ceny"
+
+#: marker/templates/prices/prices_all.mako
+msgid "Project Prices"
+msgstr "Ceny projektów"
+
+#: marker/templates/prices/prices_all.mako
+#: marker/templates/prices/prices_more.mako
+msgid "Net / m²"
+msgstr "Netto / m²"
+
+#: marker/templates/prices/prices_all.mako
+#: marker/templates/prices/prices_more.mako
+msgid "Gross / m²"
+msgstr "Brutto / m²"
+
+#: marker/templates/prices/prices_more.mako
+msgid "Usable area"
+msgstr "Powierzchnia użytkowa"
+
 #: marker/templates/base/navbar.mako:40 marker/templates/user/user_all.mako:5
 msgid "Users"
 msgstr "Użytkownicy"
