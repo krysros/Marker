@@ -870,6 +870,7 @@ class TagView:
         stmt = select(
             Project.id,
             Project.name,
+            Project.object_category,
             Project.street,
             Project.postcode,
             Project.city,
@@ -919,6 +920,7 @@ class TagView:
 
         header_row = [
             _("Name"),
+            _("Object category"),
             _("Street"),
             _("Post code"),
             _("City"),
@@ -939,7 +941,7 @@ class TagView:
 
         rows = []
         for project in projects:
-            row = [project.name, project.street, project.postcode,
+            row = [project.name, project.object_category or "", project.street, project.postcode,
                    project.city, project.subdivision, project.country,
                    project.website, project.deadline, project.stage,
                    project.delivery_method]

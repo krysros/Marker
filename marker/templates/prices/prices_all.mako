@@ -86,6 +86,7 @@
     <thead>
       <tr>
         <th>${_("Project")}</th>
+        <th>${_("Object category")}</th>
         <th>${_("Company")}</th>
         <th>${_("Stage")}</th>
         <th>${_("Role")}</th>

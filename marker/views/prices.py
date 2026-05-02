@@ -6,7 +6,7 @@ from decimal import Decimal, InvalidOperation
 from pyramid.view import view_config
 from sqlalchemy import case as sa_case, func, select
 
-from ..forms.select import COMPANY_ROLES, ORDER_CRITERIA, STAGES, select_currencies
+from ..forms.select import COMPANY_ROLES, OBJECT_CATEGORIES, ORDER_CRITERIA, STAGES, select_currencies
 from ..models import Activity, Company, Project
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
@@ -55,6 +55,7 @@ class PricesView:
 
         stages = dict(STAGES)
         roles = dict(COMPANY_ROLES)
+        object_categories = dict(OBJECT_CATEGORIES)
         stage_choices = [(v, l) for v, l in STAGES if v]
         role_choices = [(v, l) for v, l in COMPANY_ROLES if v]
         currency_choices = select_currencies()
@@ -226,6 +227,7 @@ class PricesView:
             "q": q,
             "stages": stages,
             "roles": roles,
+            "object_categories": object_categories,
             "stage_choices": stage_choices,
             "role_choices": role_choices,
             "currency_choices": currency_choices,
@@ -325,6 +327,7 @@ class PricesView:
 
         stages_map = dict(STAGES)
         roles_map = dict(COMPANY_ROLES)
+        object_categories_map = dict(OBJECT_CATEGORIES)
         raw_rows = self.request.dbsession.execute(stmt).all()
 
         rows = []
@@ -338,6 +341,7 @@ class PricesView:
                     unit_price_gross = round(float(activity.value_gross / project.usable_area), 2)
             rows.append((
                 project.name,
+                object_categories_map.get(project.object_category, project.object_category or ""),
                 company.name,
                 str(_(stages_map.get(activity.stage, activity.stage or ""))),
                 str(_(roles_map.get(activity.role, activity.role or ""))),
@@ -350,6 +354,7 @@ class PricesView:
 
         header_row = [
             _("Project"),
+            _("Object category"),
             _("Company"),
             _("Stage"),
             _("Role"),

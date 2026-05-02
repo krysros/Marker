@@ -10,6 +10,7 @@
     <br><small class="text-body-secondary">${_("Usable area")}: ${"{:,.2f}".format(row.project.usable_area)} m2</small>
     % endif
   </td>
+  <td><small>${object_categories.get(row.project.object_category, row.project.object_category or "---")}</small></td>
   <td>
     <a href="${request.route_url('company_view', company_id=row.company.id, slug=row.company.slug)}">${row.company.name}</a>
   </td>
