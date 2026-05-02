@@ -1881,6 +1881,190 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_selected_companies_similar",
+        renderer="user_selected_companies_similar.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_companies_similar",
+        renderer="company_more.mako",
+        permission="view",
+    )
+    def selected_companies_similar(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
+        if tag_operator not in {"or", "and"}:
+            tag_operator = "or"
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "shared_tags")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = {"shared_tags": _("Tags"), **dict(SORT_CRITERIA_EXT)}
+        sort_criteria["name"] = self.request.translate("Company")
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        q = {"tag_operator": tag_operator}
+
+        allowed_sorts = set(sort_criteria.keys())
+        if _sort not in allowed_sorts:
+            _sort = "shared_tags"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        selected_company_ids_sq = (
+            select(selected_companies.c.company_id)
+            .where(selected_companies.c.user_id == user.id)
+            .subquery()
+        )
+
+        if tag_operator == "and":
+            n_selected_sq = (
+                select(func.count())
+                .select_from(selected_company_ids_sq)
+                .scalar_subquery()
+            )
+            pool_tags_sq = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .group_by(companies_tags.c.tag_id)
+                .having(func.count(func.distinct(companies_tags.c.company_id)) == n_selected_sq)
+                .subquery()
+            )
+        else:
+            pool_tags_sq = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .distinct()
+                .subquery()
+            )
+
+        other_tags = companies_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.company_id.label("company_id"),
+                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
+            )
+            .where(
+                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                other_tags.c.company_id.notin_(
+                    select(selected_company_ids_sq.c.company_id)
+                ),
+            )
+            .group_by(other_tags.c.company_id)
+            .subquery()
+        )
+
+        stmt = select(Company).join(similarity, similarity.c.company_id == Company.id)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if _sort == "shared_tags":
+            if _order == "asc":
+                stmt = stmt.order_by(similarity.c.shared_tags.asc(), Company.id)
+            else:
+                stmt = stmt.order_by(similarity.c.shared_tags.desc(), Company.id)
+        else:
+            stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_companies
+            )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        shared_tag_counts = {}
+        shared_tag_labels = {}
+        if paginator:
+            similar_ids = [item.id for item in paginator]
+            shared_rows = self.request.dbsession.execute(
+                select(similarity.c.company_id, similarity.c.shared_tags).where(
+                    similarity.c.company_id.in_(similar_ids)
+                )
+            ).all()
+            shared_tag_counts = {
+                company_id: int(shared_tags or 0)
+                for company_id, shared_tags in shared_rows
+            }
+
+            shared_tag_name_rows = self.request.dbsession.execute(
+                select(other_tags.c.company_id, Tag.name)
+                .select_from(other_tags.join(Tag, Tag.id == other_tags.c.tag_id))
+                .where(
+                    other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                    other_tags.c.company_id.in_(similar_ids),
+                )
+                .distinct()
+            ).all()
+
+            tag_names_by_company = {}
+            for similar_company_id, tag_name in shared_tag_name_rows:
+                if not tag_name:
+                    continue
+                tag_names_by_company.setdefault(similar_company_id, set()).add(tag_name)
+
+            shared_tag_labels = {
+                similar_company_id: ", ".join(
+                    sorted(names, key=normalize_ci_value)
+                )
+                for similar_company_id, names in tag_names_by_company.items()
+            }
+
+        next_page = self.request.route_url(
+            "user_more_selected_companies_similar",
+            username=user.name,
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "counter": counter,
+            "form": form,
+            "tag_operator": tag_operator,
+            "show_shared_tags": True,
+            "shared_tag_counts": shared_tag_counts,
+            "shared_tag_labels": shared_tag_labels,
+        }
+
+    @view_config(
         route_name="user_json_selected_companies",
         renderer="json",
         permission="view",
@@ -2166,6 +2350,205 @@ class UserView:
             "colors": colors,
             "counter": counter,
             "form": form,
+        }
+
+    @view_config(
+        route_name="user_selected_projects_similar",
+        renderer="user_selected_projects_similar.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_projects_similar",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def selected_projects_similar(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
+        if tag_operator not in {"or", "and"}:
+            tag_operator = "or"
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        stage = self.request.params.get("stage", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
+        _sort = self.request.params.get("sort", "shared_tags")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = {"shared_tags": _("Tags"), **dict(SORT_CRITERIA_PROJECTS)}
+        sort_criteria["name"] = self.request.translate("Project")
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        q = {"tag_operator": tag_operator}
+
+        allowed_sorts = set(sort_criteria.keys())
+        if _sort not in allowed_sorts:
+            _sort = "shared_tags"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        selected_project_ids_sq = (
+            select(selected_projects.c.project_id)
+            .where(selected_projects.c.user_id == user.id)
+            .subquery()
+        )
+
+        if tag_operator == "and":
+            n_selected_sq = (
+                select(func.count())
+                .select_from(selected_project_ids_sq)
+                .scalar_subquery()
+            )
+            pool_tags_sq = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .group_by(projects_tags.c.tag_id)
+                .having(func.count(func.distinct(projects_tags.c.project_id)) == n_selected_sq)
+                .subquery()
+            )
+        else:
+            pool_tags_sq = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .distinct()
+                .subquery()
+            )
+
+        other_tags = projects_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.project_id.label("project_id"),
+                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
+            )
+            .where(
+                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                other_tags.c.project_id.notin_(
+                    select(selected_project_ids_sq.c.project_id)
+                ),
+            )
+            .group_by(other_tags.c.project_id)
+            .subquery()
+        )
+
+        stmt = select(Project).join(similarity, similarity.c.project_id == Project.id)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if _sort == "shared_tags":
+            if _order == "asc":
+                stmt = stmt.order_by(similarity.c.shared_tags.asc(), Project.id)
+            else:
+                stmt = stmt.order_by(similarity.c.shared_tags.desc(), Project.id)
+        else:
+            stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_projects
+            )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        shared_tag_counts = {}
+        shared_tag_labels = {}
+        if paginator:
+            similar_ids = [item.id for item in paginator]
+            shared_rows = self.request.dbsession.execute(
+                select(similarity.c.project_id, similarity.c.shared_tags).where(
+                    similarity.c.project_id.in_(similar_ids)
+                )
+            ).all()
+            shared_tag_counts = {
+                project_id: int(shared_tags or 0)
+                for project_id, shared_tags in shared_rows
+            }
+
+            shared_tag_name_rows = self.request.dbsession.execute(
+                select(other_tags.c.project_id, Tag.name)
+                .select_from(other_tags.join(Tag, Tag.id == other_tags.c.tag_id))
+                .where(
+                    other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                    other_tags.c.project_id.in_(similar_ids),
+                )
+                .distinct()
+            ).all()
+
+            tag_names_by_project = {}
+            for similar_project_id, tag_name in shared_tag_name_rows:
+                if not tag_name:
+                    continue
+                tag_names_by_project.setdefault(similar_project_id, set()).add(tag_name)
+
+            shared_tag_labels = {
+                similar_project_id: ", ".join(
+                    sorted(names, key=normalize_ci_value)
+                )
+                for similar_project_id, names in tag_names_by_project.items()
+            }
+
+        next_page = self.request.route_url(
+            "user_more_selected_projects_similar",
+            username=user.name,
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "counter": counter,
+            "form": form,
+            "tag_operator": tag_operator,
+            "show_shared_tags": True,
+            "shared_tag_counts": shared_tag_counts,
+            "shared_tag_labels": shared_tag_labels,
         }
 
     @view_config(

@@ -1449,6 +1449,60 @@ def test_user_selected_companies_invalid_sort(dbsession):
 
 
 # ===========================================================================
+# selected_companies_similar()
+# ===========================================================================
+
+
+def test_user_selected_companies_similar_default(dbsession):
+    user = _user(dbsession, "simcodef")
+    tag = _tag(dbsession, user, "SimTag")
+    selected_co = _company(dbsession, user, "SimCoSelected")
+    other_co = _company(dbsession, user, "SimCoOther")
+    selected_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(selected_co)
+    transaction.commit()
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert "paginator" in result
+    assert result["tag_operator"] == "or"
+    assert other_co in result["paginator"]
+    assert selected_co not in result["paginator"]
+    assert result["show_shared_tags"] is True
+
+
+def test_user_selected_companies_similar_and_operator(dbsession):
+    user = _user(dbsession, "simcoand")
+    tag1 = _tag(dbsession, user, "SimTagA1")
+    tag2 = _tag(dbsession, user, "SimTagA2")
+    sel_co1 = _company(dbsession, user, "SimCoAndSel1")
+    sel_co2 = _company(dbsession, user, "SimCoAndSel2")
+    other_co_both = _company(dbsession, user, "SimCoAndBoth")
+    other_co_one = _company(dbsession, user, "SimCoAndOne")
+    sel_co1.tags.extend([tag1, tag2])
+    sel_co2.tags.extend([tag1, tag2])
+    other_co_both.tags.extend([tag1, tag2])
+    other_co_one.tags.append(tag1)
+    user.selected_companies.extend([sel_co1, sel_co2])
+    transaction.commit()
+    request = _req(dbsession, user, params={"tag_operator": "and"})
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert result["tag_operator"] == "and"
+    assert "paginator" in result
+
+
+def test_user_selected_companies_similar_invalid_sort(dbsession):
+    user = _user(dbsession, "simcoinvsort")
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "bad", "order": "bad"})
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert result["q"]["sort"] == "shared_tags"
+
+
+# ===========================================================================
 # json_selected_companies() / map_selected_companies()
 # ===========================================================================
 
@@ -1571,6 +1625,58 @@ def test_user_selected_projects_status_completed(dbsession):
     view = UserView(request)
     result = view.selected_projects()
     assert result["q"]["status"] == "completed"
+
+
+# ===========================================================================
+# selected_projects_similar()
+# ===========================================================================
+
+
+def test_user_selected_projects_similar_default(dbsession):
+    user = _user(dbsession, "simprojdef")
+    tag = _tag(dbsession, user, "SimProjTag")
+    selected_proj = _project(dbsession, user, "SimProjSelected")
+    other_proj = _project(dbsession, user, "SimProjOther")
+    selected_proj.tags.append(tag)
+    other_proj.tags.append(tag)
+    user.selected_projects.append(selected_proj)
+    transaction.commit()
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert "paginator" in result
+    assert result["tag_operator"] == "or"
+    assert other_proj in result["paginator"]
+    assert selected_proj not in result["paginator"]
+    assert result["show_shared_tags"] is True
+
+
+def test_user_selected_projects_similar_and_operator(dbsession):
+    user = _user(dbsession, "simprojand")
+    tag1 = _tag(dbsession, user, "SimProjTagB1")
+    tag2 = _tag(dbsession, user, "SimProjTagB2")
+    sel_proj1 = _project(dbsession, user, "SimProjAndSel1")
+    sel_proj2 = _project(dbsession, user, "SimProjAndSel2")
+    other_proj = _project(dbsession, user, "SimProjAndOther")
+    sel_proj1.tags.extend([tag1, tag2])
+    sel_proj2.tags.extend([tag1, tag2])
+    other_proj.tags.extend([tag1, tag2])
+    user.selected_projects.extend([sel_proj1, sel_proj2])
+    transaction.commit()
+    request = _req(dbsession, user, params={"tag_operator": "and"})
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result["tag_operator"] == "and"
+    assert "paginator" in result
+
+
+def test_user_selected_projects_similar_invalid_sort(dbsession):
+    user = _user(dbsession, "simprojinvsort")
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "bad", "order": "bad"})
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result["q"]["sort"] == "shared_tags"
 
 
 # ===========================================================================
