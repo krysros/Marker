@@ -148,6 +148,83 @@ def contacts_autofill_from_website(website):
     return []
 
 
+def tags_autofill_from_website(website, existing_tags=None):
+    """
+    Extract a list of tags (core business activities or project types) from the
+    given website URL.  When *existing_tags* (a list of tag name strings already
+    present in the database) is supplied, the LLM is instructed to prefer those
+    exact names over inventing new ones.
+    Returns a list of up to 20 tag name strings.
+    """
+    from urllib.parse import urljoin, urlparse
+
+    parsed = urlparse(website)
+    root = f"{parsed.scheme}://{parsed.netloc}"
+    content_parts = []
+
+    # Load the main page
+    try:
+        docs = WebBaseLoader(website).load()
+        if docs and docs[0].page_content.strip():
+            content_parts.append(docs[0].page_content)
+    except Exception:
+        pass
+
+    # Also try an "about" or "offer" sub-page for richer activity descriptions
+    extra_paths = ["/oferta", "/offer", "/uslugi", "/services", "/o-nas", "/about"]
+    for path in extra_paths:
+        url = urljoin(root, path)
+        if url.rstrip("/") == website.rstrip("/"):
+            continue
+        try:
+            docs = WebBaseLoader(url).load()
+            if docs and len(docs[0].page_content.strip()) > 200:
+                content_parts.append(docs[0].page_content)
+                break
+        except Exception:
+            continue
+
+    if not content_parts:
+        raise ValueError(str(_("Could not load content from %(url)s")) % {"url": website})
+
+    content = "\n\n---\n\n".join(content_parts[:2])
+
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        response_mime_type="application/json",
+    )
+
+    existing_section = ""
+    if existing_tags:
+        # Pass at most 500 existing names to keep the prompt manageable
+        sample = existing_tags[:500]
+        existing_section = (
+            f" The following tags already exist in the database: {json.dumps(sample, ensure_ascii=False)}."
+            " Where possible, reuse an existing tag name exactly (same spelling) instead of creating a new one."
+            " Only propose a new name when none of the existing tags adequately describes the activity or type."
+        )
+
+    prompt = (
+        "Extract up to 20 tags that best describe the core business activities (for a company) "
+        "or project types (for a project) based on the context."
+        + existing_section
+        + ' Return a JSON array of strings, e.g. ["Construction", "Real estate", "Project management"].'
+        " Return at most 20 items. If nothing can be determined, return an empty array []."
+    )
+
+    response = llm.invoke(f"{prompt}:\n\n{content}")
+    result = json.loads(response.content)
+
+    if isinstance(result, list):
+        return [str(t).strip() for t in result if str(t).strip()][:20]
+    # Gemini sometimes wraps in a dict
+    if isinstance(result, dict):
+        for key in ("tags", "items", "results", "data"):
+            if key in result and isinstance(result[key], list):
+                return [str(t).strip() for t in result[key] if str(t).strip()][:20]
+    return []
+
+
 def _subdivision_code_from_value(value, country_code):
     value = _normalize_whitespace(value)
     if not value or not country_code:
