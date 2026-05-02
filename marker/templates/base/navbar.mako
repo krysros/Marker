@@ -57,6 +57,11 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <li><h6 class="dropdown-header">${_("Selected")}</h6></li>
             <li>
+              <a class="dropdown-item" role="button" href="${request.route_url('user_selected_tags', username=request.identity.name)}">
+                <i class="bi bi-tags"></i> ${_("Tags")}
+              </a>
+            </li>
+            <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_selected_companies', username=request.identity.name)}">
                 <i class="bi bi-buildings"></i> ${_("Companies")}
               </a>
@@ -64,11 +69,6 @@
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_selected_projects', username=request.identity.name)}">
                 <i class="bi bi-briefcase"></i> ${_("Projects")}
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" role="button" href="${request.route_url('user_selected_tags', username=request.identity.name)}">
-                <i class="bi bi-tags"></i> ${_("Tags")}
               </a>
             </li>
             <li>

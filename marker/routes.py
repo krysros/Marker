@@ -768,6 +768,26 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_selected_contacts_companies",
+        "/user/{username}/selected_contacts_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_contacts_companies",
+        "/user/{username}/more_selected_contacts_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts_projects",
+        "/user/{username}/selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_contacts_projects",
+        "/user/{username}/more_selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_export_selected_contacts",
         "/user/{username}/export_selected_contacts",
         factory=user_factory,

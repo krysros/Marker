@@ -3028,6 +3028,176 @@ class UserView:
         return response
 
     @view_config(
+        route_name="user_selected_contacts_companies",
+        renderer="user_selected_contacts_companies.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_contacts_companies",
+        renderer="company_more.mako",
+        permission="view",
+    )
+    def selected_contacts_companies(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        sort_criteria = dict(SORT_CRITERIA_COMPANIES)
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "name"
+        if _order not in {"asc", "desc"}:
+            _order = "asc"
+
+        stmt = (
+            select(Company)
+            .join(Company.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(selected_contacts.c.user_id == user.id)
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_more_selected_contacts_companies",
+            username=user.name,
+            _query={**q, "page": page + 1},
+        )
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "counter": counter,
+            "form": form,
+        }
+
+    @view_config(
+        route_name="user_selected_contacts_projects",
+        renderer="user_selected_contacts_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_more_selected_contacts_projects",
+        renderer="project_more.mako",
+        permission="view",
+    )
+    def selected_contacts_projects(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "name"
+        if _order not in {"asc", "desc"}:
+            _order = "asc"
+
+        stmt = (
+            select(Project)
+            .join(Project.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(selected_contacts.c.user_id == user.id)
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "user_more_selected_contacts_projects",
+            username=user.name,
+            _query={**q, "page": page + 1},
+        )
+
+        return {
+            "q": q,
+            "user": user,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "counter": counter,
+            "form": form,
+        }
+
+    @view_config(
         route_name="user_selected_contacts",
         renderer="user_selected_contacts.mako",
         permission="view",
