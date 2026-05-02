@@ -19,6 +19,7 @@
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <%include file="project_filter.mako"/>
+  <div>${button.dropdown_filter('role', _("Role"), role_choices)}</div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
 </div>
