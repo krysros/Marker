@@ -127,6 +127,14 @@ msgstr "Data od"
 msgid "Date to"
 msgstr "Data do"
 
+#: marker/templates/comment/comment_filter.mako
+#: marker/templates/company/company_filter.mako
+#: marker/templates/contact/contact_filter.mako
+#: marker/templates/project/project_filter.mako
+#: marker/templates/tag/tag_filter.mako
+msgid "Date"
+msgstr "Data"
+
 #: marker/forms/company.py:54 marker/forms/company.py:185
 #: marker/forms/company.py:201 marker/forms/company.py:244
 #: marker/forms/company.py:269 marker/forms/contact.py:24
