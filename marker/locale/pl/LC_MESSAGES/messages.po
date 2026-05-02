@@ -762,6 +762,10 @@ msgstr "Komentarze dotyczące firm i projektów."
 msgid "Reports"
 msgstr "Raporty"
 
+#: marker/templates/report/report_all.mako
+msgid "Search reports..."
+msgstr "Szukaj raportów..."
+
 #: marker/templates/home.mako:93
 msgid "Summary of the database content."
 msgstr "Podsumowanie zawartości bazy danych."
