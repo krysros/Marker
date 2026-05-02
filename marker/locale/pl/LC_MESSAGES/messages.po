@@ -1272,6 +1272,14 @@ msgstr "Wybrane kontakty"
 msgid "Delete all selected contacts?"
 msgstr "Usunąć wszystkie wybrane kontakty?"
 
+#: marker/templates/user/user_selected_contacts_companies.mako
+msgid "Companies of selected contacts"
+msgstr "Firmy wybranych kontaktów"
+
+#: marker/templates/user/user_selected_contacts_projects.mako
+msgid "Projects of selected contacts"
+msgstr "Projekty wybranych kontaktów"
+
 #: marker/templates/user/user_selected_projects.mako:10
 msgid "Delete all selected projects?"
 msgstr "Usunąć wszystkie wybrane projekty"
