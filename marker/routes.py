@@ -542,6 +542,7 @@ def includeme(config):
 
     config.add_route("prices_all", "/prices", factory=default_factory)
     config.add_route("prices_more", "/prices/more", factory=default_factory)
+    config.add_route("prices_export", "/prices/export", factory=default_factory)
 
     config.add_route("user_all", "/user", factory=default_factory)
     config.add_route("user_more", "/user/more", factory=default_factory)

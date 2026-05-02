@@ -78,6 +78,7 @@
   </div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
+  <div>${button.dropdown_download(url_xlsx=request.route_url('prices_export', _query=q), url_ods=request.route_url('prices_export', _query={**q, 'format': 'ods'}))}</div>
 </div>
 
 <div class="table-responsive">
