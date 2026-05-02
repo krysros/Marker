@@ -304,6 +304,7 @@ class UserView:
             _("Project deadline"),
             _("Project stage"),
             _("Project delivery method"),
+            _("Project object category"),
             _("Tags"),
         ]
 
@@ -323,6 +324,7 @@ class UserView:
                 _("Project deadline"),
                 _("Project stage"),
                 _("Project delivery method"),
+                _("Project object category"),
                 _("Tags"),
             ]
 
@@ -395,6 +397,7 @@ class UserView:
             project.deadline,
             project.stage,
             project.delivery_method,
+            project.object_category,
         ]
 
     def _selected_contacts_export_header(self, category):
@@ -1294,6 +1297,7 @@ class UserView:
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -1357,6 +1361,9 @@ class UserView:
             stmt = stmt.filter(Project.deadline > now)
         elif status == "completed":
             stmt = stmt.filter(Project.deadline < now)
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
 
         if _sort == "stars":
             count_col = func.count(projects_stars.c.project_id)
@@ -4242,6 +4249,7 @@ class UserView:
         subdivision = [
             value for value in self.request.params.getall("subdivision") if value
         ]
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -4279,6 +4287,9 @@ class UserView:
 
         if subdivision:
             stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
 
         if _order == "asc":
             stmt = stmt.order_by(sort_column(Project, _sort).asc())

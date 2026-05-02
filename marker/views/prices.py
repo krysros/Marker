@@ -247,7 +247,8 @@ class PricesView:
                              value_net_from, value_net_to,
                              value_gross_from, value_gross_to,
                              unit_price_net_from, unit_price_net_to,
-                             unit_price_gross_from, unit_price_gross_to):
+                             unit_price_gross_from, unit_price_gross_to,
+                             object_category=""):
         stmt = (
             select(Activity, Project, Company)
             .join(Project, Activity.project_id == Project.id)
@@ -281,6 +282,8 @@ class PricesView:
                     stmt = stmt.filter(Project.usable_area > 0, expr_fn(Decimal(val)))
                 except (InvalidOperation, ValueError):
                     pass
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
         return stmt
 
     @view_config(route_name="prices_export", permission="view")
@@ -297,6 +300,7 @@ class PricesView:
         unit_price_net_to = self.request.params.get("unit_price_net_to", "")
         unit_price_gross_from = self.request.params.get("unit_price_gross_from", "")
         unit_price_gross_to = self.request.params.get("unit_price_gross_to", "")
+        object_category = self.request.params.get("object_category", "")
         _sort = self.request.params.get("sort", "project_name")
         _order = self.request.params.get("order", "asc")
         if _order not in {"asc", "desc"}:
@@ -308,6 +312,7 @@ class PricesView:
             value_gross_from, value_gross_to,
             unit_price_net_from, unit_price_net_to,
             unit_price_gross_from, unit_price_gross_to,
+            object_category,
         )
 
         stage_case = sa_case(
@@ -320,6 +325,7 @@ class PricesView:
         ).collate("POLISH_CI")
         _sort_map = {
             "project_name": polish_sort_expression(Project.name),
+            "object_category": Project.object_category,
             "company_name": polish_sort_expression(Company.name),
             "stage": stage_case,
             "role": role_case,

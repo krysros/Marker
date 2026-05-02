@@ -332,7 +332,7 @@ def test_project_row_values(dbsession):
     view = UserView(request)
     vals = view._project_row_values(project)
     assert vals[0] == "TestProj"
-    assert len(vals) == 10
+    assert len(vals) == 11
 
 
 def test_selected_contacts_export_header(dbsession):
