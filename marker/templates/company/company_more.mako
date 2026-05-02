@@ -1,10 +1,20 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
+<%!
+  def fmt_decimal(value):
+      if value is None:
+          return "---"
+      formatted = f"{value:,.2f}"
+      formatted = formatted.replace(",", "\u202f")
+      return formatted
+%>
+
 <%
   show_shared_tags = bool(context.get("show_shared_tags", False))
   shared_tag_counts = context.get("shared_tag_counts", {})
   shared_tag_labels = context.get("shared_tag_labels", {})
+  activity_values = context.get("activity_values")
 %>
 
 % for company in paginator:
@@ -46,6 +56,13 @@
       <span class="badge text-bg-secondary" role="button">${company.count_projects}</span>
     </a>
   </td>
+  % if activity_values is not None:
+  <%
+    av = activity_values.get(company.id)
+  %>
+  <td class="text-end">${fmt_decimal(av.value_net if av else None)}</td>
+  <td class="text-end">${fmt_decimal(av.value_gross if av else None)}</td>
+  % endif
   <td>
     <a href="${request.route_url('company_stars', company_id=company.id, slug=company.slug)}"
       <div hx-get="${request.route_url('company_count_stars', company_id=company.id, slug=company.slug)}"

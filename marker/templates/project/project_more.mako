@@ -1,10 +1,20 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
+<%!
+  def fmt_decimal(value):
+      if value is None:
+          return "---"
+      formatted = f"{value:,.2f}"
+      formatted = formatted.replace(",", "\u202f")
+      return formatted
+%>
+
 <%
   show_shared_tags = bool(context.get("show_shared_tags", False))
   shared_tag_counts = context.get("shared_tag_counts", {})
   shared_tag_labels = context.get("shared_tag_labels", {})
+  activity_values = context.get("activity_values")
 %>
 
 % for project in paginator:
@@ -47,6 +57,18 @@
       <span class="badge text-bg-secondary" role="button">${project.count_companies}</span>
     </a>
   </td>
+  % if activity_values is not None:
+  <%
+    av = activity_values.get(project.id)
+    vn = av.value_net if av else None
+    vg = av.value_gross if av else None
+    ua = project.usable_area
+  %>
+  <td class="text-end">${fmt_decimal(vn)}</td>
+  <td class="text-end">${fmt_decimal(vg)}</td>
+  <td class="text-end">${fmt_decimal(vn / ua) if vn is not None and ua else '---'}</td>
+  <td class="text-end">${fmt_decimal(vg / ua) if vg is not None and ua else '---'}</td>
+  % endif
   <td>
     <a href="${request.route_url('project_stars', project_id=project.id, slug=project.slug)}"
       <div hx-get="${request.route_url('project_count_stars', project_id=project.id, slug=project.slug)}"

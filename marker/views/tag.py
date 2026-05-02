@@ -17,12 +17,14 @@ from ..forms import (
 from ..forms.select import (
     CATEGORIES,
     COLORS,
+    COMPANY_ROLES,
     ORDER_CRITERIA,
     SORT_CRITERIA,
     SORT_CRITERIA_COMPANIES,
     SORT_CRITERIA_PROJECTS,
 )
 from ..models import (
+    Activity,
     Company,
     Project,
     Tag,
@@ -472,6 +474,7 @@ class TagView:
     def companies(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
+        role = self.request.params.get("role", None)
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
         subdivision = [
@@ -484,9 +487,13 @@ class TagView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_COMPANIES)
         order_criteria = dict(ORDER_CRITERIA)
+        role_choices = {k: v for k, v in COMPANY_ROLES if k}
         q = {}
 
         stmt = select(Company)
+
+        if role:
+            q["role"] = role
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -567,12 +574,31 @@ class TagView:
             },
         )
 
+        activity_values = {}
+        if role and paginator:
+            company_ids = [c.id for c in paginator]
+            rows = self.request.dbsession.execute(
+                select(
+                    Activity.company_id,
+                    func.sum(Activity.value_net).label("value_net"),
+                    func.sum(Activity.value_gross).label("value_gross"),
+                )
+                .filter(
+                    Activity.company_id.in_(company_ids),
+                    Activity.role == role,
+                )
+                .group_by(Activity.company_id)
+            ).all()
+            activity_values = {row.company_id: row for row in rows}
+
         return {
             "q": q,
             "tag": tag,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
             "colors": colors,
+            "role_choices": role_choices,
+            "activity_values": activity_values if role else None,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
@@ -648,6 +674,7 @@ class TagView:
     def projects(self):
         tag = self.request.context.tag
         page = int(self.request.params.get("page", 1))
+        role = self.request.params.get("role", None)
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
         delivery_method = self.request.params.get("delivery_method", None)
@@ -664,9 +691,13 @@ class TagView:
         colors = dict(COLORS)
         sort_criteria = dict(SORT_CRITERIA_PROJECTS)
         order_criteria = dict(ORDER_CRITERIA)
+        role_choices = {k: v for k, v in COMPANY_ROLES if k}
         q = {}
 
         stmt = select(Project)
+
+        if role:
+            q["role"] = role
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
@@ -762,12 +793,31 @@ class TagView:
         obj = Filter(**q)
         form = ProjectFilterForm(self.request.GET, obj, request=self.request)
 
+        activity_values = {}
+        if role and paginator:
+            project_ids = [p.id for p in paginator]
+            rows = self.request.dbsession.execute(
+                select(
+                    Activity.project_id,
+                    func.sum(Activity.value_net).label("value_net"),
+                    func.sum(Activity.value_gross).label("value_gross"),
+                )
+                .filter(
+                    Activity.project_id.in_(project_ids),
+                    Activity.role == role,
+                )
+                .group_by(Activity.project_id)
+            ).all()
+            activity_values = {row.project_id: row for row in rows}
+
         return {
             "q": q,
             "tag": tag,
             "sort_criteria": sort_criteria,
             "order_criteria": order_criteria,
             "colors": colors,
+            "role_choices": role_choices,
+            "activity_values": activity_values if role else None,
             "paginator": paginator,
             "next_page": next_page,
             "title": tag.name,
