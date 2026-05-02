@@ -22,6 +22,10 @@
       ${form.city(class_="form-control")}
     % endif
       <div class="mb-3">
+      ${form.object_category.label(class_="form-label")}
+      ${form.object_category(class_="form-control")}
+    </div>
+    <div class="mb-3">
       ${form.country.label(class_="form-label")}
       ${form.country(class_="form-control", **{"hx-get": f"{request.route_url('subdivision')}", "hx-target": "#subdivision"})}
     </div>

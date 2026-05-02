@@ -48,6 +48,7 @@ class PricesView:
         unit_price_net_to = self.request.params.get("unit_price_net_to", "")
         unit_price_gross_from = self.request.params.get("unit_price_gross_from", "")
         unit_price_gross_to = self.request.params.get("unit_price_gross_to", "")
+        object_category = self.request.params.get("object_category", "")
         _sort = self.request.params.get("sort", "project_name")
         _order = self.request.params.get("order", "asc")
         if _order not in {"asc", "desc"}:
@@ -61,6 +62,7 @@ class PricesView:
         currency_choices = select_currencies()
         sort_criteria = {
             "project_name": _("Project"),
+            "object_category": _("Object category"),
             "company_name": _("Company"),
             "stage": _("Stage"),
             "role": _("Role"),
@@ -160,6 +162,10 @@ class PricesView:
             except (InvalidOperation, ValueError):
                 pass
 
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
+
         q["sort"] = _sort
         q["order"] = _order
 
@@ -174,6 +180,7 @@ class PricesView:
 
         _sort_map = {
             "project_name": polish_sort_expression(Project.name),
+            "object_category": Project.object_category,
             "company_name": polish_sort_expression(Company.name),
             "stage": stage_case,
             "role": role_case,

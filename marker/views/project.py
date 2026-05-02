@@ -209,6 +209,7 @@ class ProjectView:
         cubic_volume_to = self.request.params.get("cubic_volume_to", None)
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -345,6 +346,10 @@ class ProjectView:
             date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
             stmt = stmt.filter(Project.created_at <= date_to_dt)
             q["date_to"] = date_to
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         if view_mode == "contacts":
             q["view"] = "contacts"
@@ -963,6 +968,7 @@ class ProjectView:
         cubic_volume_to = self.request.params.get("cubic_volume_to", None)
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
+        object_category = self.request.params.get("object_category", None)
         _sort = self.request.params.get("sort", "shared_tags")
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
@@ -1079,6 +1085,10 @@ class ProjectView:
                 q["cubic_volume_to"] = cubic_volume_to
             except InvalidOperation:
                 pass
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
 
         q["sort"] = _sort
         q["order"] = _order
