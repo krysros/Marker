@@ -23,6 +23,19 @@
           <%include file="contact_tag_input_row.mako" args="row_id='tag-1', value=''"/>
         % endif
       </div>
+      <div class="mb-3 mt-3">
+        <label class="form-label">${_("Search mode")}</label>
+        <div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="tag_operator" id="op-or" value="or" ${'checked' if not tag_operator or tag_operator == 'or' else ''}>
+            <label class="form-check-label" for="op-or">${_("Any tag (OR)")}</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="tag_operator" id="op-and" value="and" ${'checked' if tag_operator == 'and' else ''}>
+            <label class="form-check-label" for="op-and">${_("All tags (AND)")}</label>
+          </div>
+        </div>
+      </div>
       <div class="hstack gap-2 mt-3">
         <button type="button"
                 class="btn btn-secondary"

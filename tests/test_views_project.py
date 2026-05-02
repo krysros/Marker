@@ -1532,6 +1532,29 @@ def test_project_all_filter_tags(dbsession):
     assert "ProjFiltTag" in result["q"]["tag"]
 
 
+def test_project_all_filter_tags_and_operator(dbsession):
+    user = _make_user(dbsession, "projfilttagand")
+    tag1 = Tag(name="ProjANDTag1")
+    tag1.created_by = user
+    tag2 = Tag(name="ProjANDTag2")
+    tag2.created_by = user
+    dbsession.add_all([tag1, tag2])
+    proj_both = _make_project(dbsession, user, "ProjANDBoth")
+    proj_both.tags.append(tag1)
+    proj_both.tags.append(tag2)
+    proj_one = _make_project(dbsession, user, "ProjANDOne")
+    proj_one.tags.append(tag1)
+    transaction.commit()
+    params = MultiDict([("tag", "ProjANDTag1"), ("tag", "ProjANDTag2"), ("tag_operator", "and")])
+    request = _make_request(dbsession, user, params=params)
+    view = ProjectView(request)
+    result = view.all()
+    projects = list(result["paginator"])
+    assert any(p.name == "ProjANDBoth" for p in projects)
+    assert not any(p.name == "ProjANDOne" for p in projects)
+    assert result["q"]["tag_operator"] == "and"
+
+
 def test_project_all_filter_name(dbsession):
     user = _make_user(dbsession, "projfiltname")
     _make_project(dbsession, user, "ProjFiltNameP")

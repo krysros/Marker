@@ -1178,6 +1178,18 @@ msgstr ""
 msgid "Search in"
 msgstr "Szukaj w"
 
+#: marker/templates/contact/contact_search_tags.mako
+msgid "Search mode"
+msgstr "Tryb wyszukiwania"
+
+#: marker/templates/contact/contact_search_tags.mako
+msgid "Any tag (OR)"
+msgstr "Dowolny tag (OR)"
+
+#: marker/templates/contact/contact_search_tags.mako
+msgid "All tags (AND)"
+msgstr "Wszystkie tagi (AND)"
+
 #: marker/templates/contact/contact_view.mako:8
 #: marker/templates/contact/contact_view.mako:20
 msgid "Contact"

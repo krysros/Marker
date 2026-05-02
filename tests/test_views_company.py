@@ -2462,6 +2462,30 @@ def test_company_all_filter_tags(dbsession):
     assert "CoFiltTag" in result["q"]["tag"]
 
 
+def test_company_all_filter_tags_and_operator(dbsession):
+    user = _co_user(dbsession, "cofilttagand")
+    tag1 = Tag(name="CoANDTag1")
+    tag1.created_by = user
+    tag2 = Tag(name="CoANDTag2")
+    tag2.created_by = user
+    dbsession.add_all([tag1, tag2])
+    co_both = _co_company(dbsession, user, "CoANDCoBoth")
+    co_both.tags.append(tag1)
+    co_both.tags.append(tag2)
+    co_one = _co_company(dbsession, user, "CoANDCoOne")
+    co_one.tags.append(tag1)
+    transaction.commit()
+    params = MultiDict([("tag", "CoANDTag1"), ("tag", "CoANDTag2"), ("tag_operator", "and")])
+    request = _co_request(dbsession, user, params=params)
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    companies = list(result["paginator"])
+    assert any(c.name == "CoANDCoBoth" for c in companies)
+    assert not any(c.name == "CoANDCoOne" for c in companies)
+    assert result["q"]["tag_operator"] == "and"
+
+
 def test_company_all_filter_website(dbsession):
     user = _co_user(dbsession, "cofiltws")
     _co_company(dbsession, user, "CoFiltWsCo")
