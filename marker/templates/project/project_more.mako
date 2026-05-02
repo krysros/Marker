@@ -29,6 +29,9 @@
   <td>${checkbox.checkbox(project, selected_ids=selected_ids('selected_projects'), url=request.route_url('project_check', project_id=project.id, slug=project.slug))}</td>
   <td>
     <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a><br>
+    % if project.object_category:
+    <small class="text-body-secondary">${_("Object category")}: ${project.object_category}</small><br>
+    % endif
     ${_("Deadline")}: ${project.deadline or "---"}<br>
     <small class="text-body-secondary">${_("Created at")}: ${project.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
     <small class="text-body-secondary">${_("Updated at")}: ${project.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
