@@ -2035,6 +2035,23 @@ def test_user_deselect_tags(dbsession):
     assert result.status_code == 303
 
 
+def test_user_deselect_all(dbsession):
+    user = _user(dbsession, "deselall")
+    co = _company(dbsession, user, "DeselAllCo")
+    proj = _project(dbsession, user, "DeselAllProj")
+    tag = _tag(dbsession, user, "DeselAllTag")
+    contact = _contact(dbsession, user, "DeselAllCont")
+    user.selected_companies.append(co)
+    user.selected_projects.append(proj)
+    user.selected_tags.append(tag)
+    user.selected_contacts.append(contact)
+    transaction.commit()
+    request = _req(dbsession, user, method="POST")
+    view = UserView(request)
+    result = view.deselect_all()
+    assert result.status_code == 303
+
+
 # ===========================================================================
 # merge_selected_tags()
 # ===========================================================================

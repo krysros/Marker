@@ -73,6 +73,11 @@
                 <i class="bi bi-people"></i> ${_("Contacts")}
               </a>
             </li>
+            <li>
+              <button class="dropdown-item" type="button" hx-post="${request.route_url('user_deselect_all', username=request.identity.name)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Deselect all selected items?")}'>
+                <i class="bi bi-x-circle"></i> ${_("Deselect all")}
+              </button>
+            </li>
             <li><h6 class="dropdown-header">${_("Stars")}</h6></li>
             <li>
               <a class="dropdown-item" role="button" href="${request.route_url('user_companies_stars', username=request.identity.name)}">

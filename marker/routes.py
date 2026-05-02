@@ -779,6 +779,11 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_deselect_all",
+        "/user/{username}/deselect_all",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_companies_stars", "/user/{username}/companies_stars", factory=user_factory
     )
     config.add_route(
