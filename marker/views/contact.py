@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, or_, select
+from sqlalchemy import and_, func, or_, select
 
 from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
@@ -44,28 +44,47 @@ class ContactView:
             target = "companies"
         return target
 
+    def _tag_operator(self):
+        op = (self.request.params.get("tag_operator") or "or").strip().lower()
+        return op if op in {"or", "and"} else "or"
+
     def _normalized_tags(self):
         return normalized_tags_from_request(self.request)
 
-    def _stmt_contacts_by_tags(self, tags):
+    def _stmt_contacts_by_tags(self, tags, operator="or"):
         stmt = select(Contact).distinct()
 
         if tags:
             normalized_tags = [normalize_ci_value(tag) for tag in tags]
-            stmt = stmt.filter(
-                or_(
+            if operator == "and" and len(normalized_tags) > 1:
+                company_conditions = and_(*[
                     Contact.company.has(
-                        Company.tags.any(
-                            normalize_ci_expression(Tag.name).in_(normalized_tags)
-                        )
-                    ),
+                        Company.tags.any(normalize_ci_expression(Tag.name) == nt)
+                    )
+                    for nt in normalized_tags
+                ])
+                project_conditions = and_(*[
                     Contact.project.has(
-                        Project.tags.any(
-                            normalize_ci_expression(Tag.name).in_(normalized_tags)
-                        )
-                    ),
+                        Project.tags.any(normalize_ci_expression(Tag.name) == nt)
+                    )
+                    for nt in normalized_tags
+                ])
+                stmt = stmt.filter(or_(company_conditions, project_conditions))
+            else:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(
+                            Company.tags.any(
+                                normalize_ci_expression(Tag.name).in_(normalized_tags)
+                            )
+                        ),
+                        Contact.project.has(
+                            Project.tags.any(
+                                normalize_ci_expression(Tag.name).in_(normalized_tags)
+                            )
+                        ),
+                    )
                 )
-            )
 
         return stmt
 
@@ -391,9 +410,11 @@ class ContactView:
         _ = self.request.translate
         tags = self._normalized_tags()
         target = self._search_target()
+        tag_operator = self._tag_operator()
         q = {}
 
         q["target"] = target
+        q["tag_operator"] = tag_operator
         if tags:
             q["tag"] = tags
 
@@ -405,6 +426,7 @@ class ContactView:
         return {
             "tags": tags,
             "target": target,
+            "tag_operator": tag_operator,
             "heading": _("Search contacts"),
         }
 
@@ -436,14 +458,16 @@ class ContactView:
         if not tags:
             return HTTPSeeOther(location=self.request.route_url("search_tags"))
 
+        tag_operator = self._tag_operator()
+
         if target == "companies":
-            q = {"tag": tags}
+            q = {"tag": tags, "tag_operator": tag_operator}
             return HTTPSeeOther(
                 location=self.request.route_url("company_all", _query=q)
             )
 
         if target == "projects":
-            q = {"tag": tags}
+            q = {"tag": tags, "tag_operator": tag_operator}
             return HTTPSeeOther(
                 location=self.request.route_url("project_all", _query=q)
             )
@@ -477,8 +501,9 @@ class ContactView:
 
         q["target"] = target
         q["tag"] = tags
+        q["tag_operator"] = tag_operator
 
-        stmt = self._stmt_contacts_by_tags(tags)
+        stmt = self._stmt_contacts_by_tags(tags, operator=tag_operator)
 
         if date_from:
             date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")

@@ -223,11 +223,23 @@ class ProjectView:
         stmt = select(Project)
 
         if tags:
+            tag_operator = (
+                self.request.params.get("tag_operator") or "or"
+            ).strip().lower()
+            if tag_operator not in {"or", "and"}:
+                tag_operator = "or"
             normalized_tags = [normalize_ci_value(tag) for tag in tags]
-            stmt = stmt.filter(
-                Project.tags.any(normalize_ci_expression(Tag.name).in_(normalized_tags))
-            )
+            if tag_operator == "and":
+                for nt in normalized_tags:
+                    stmt = stmt.filter(
+                        Project.tags.any(normalize_ci_expression(Tag.name) == nt)
+                    )
+            else:
+                stmt = stmt.filter(
+                    Project.tags.any(normalize_ci_expression(Tag.name).in_(normalized_tags))
+                )
             q["tag"] = tags
+            q["tag_operator"] = tag_operator
 
         if name:
             normalized_name = normalize_ci_value(name)

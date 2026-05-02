@@ -519,6 +519,57 @@ def test_contact_search_tags_results_sort_city(dbsession):
     assert result["q"]["sort"] == "city"
 
 
+def test_contact_search_tags_get_with_operator(dbsession):
+    user = _make_user(dbsession, "contsearchtagsop")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        method="GET",
+        params={"target": "contacts", "tag": "TagX", "tag_operator": "and"},
+    )
+    view = ContactView(request)
+    result = view.search_tags()
+    assert result["tag_operator"] == "and"
+
+
+def test_contact_search_tags_results_and_operator_companies_redirect(dbsession):
+    user = _make_user(dbsession, "contstrandcored")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        params={"target": "companies", "tag": "T1", "tag_operator": "and"},
+    )
+    view = ContactView(request)
+    result = view.search_tags_results()
+    assert isinstance(result, HTTPSeeOther)
+
+
+def test_contact_search_tags_results_and_operator_contacts(dbsession):
+    user = _make_user(dbsession, "contstrandcon")
+    tag1 = Tag(name="ANDTag1")
+    tag1.created_by = user
+    tag2 = Tag(name="ANDTag2")
+    tag2.created_by = user
+    dbsession.add_all([tag1, tag2])
+    company_both = _make_company(dbsession, user, "ANDCoBoth")
+    company_both.tags.append(tag1)
+    company_both.tags.append(tag2)
+    company_one = _make_company(dbsession, user, "ANDCoOne")
+    company_one.tags.append(tag1)
+    contact_both = _make_contact(dbsession, user, "ANDContactBoth", company=company_both)
+    _make_contact(dbsession, user, "ANDContactOne", company=company_one)
+    transaction.commit()
+    params = MultiDict([("target", "contacts"), ("tag", "ANDTag1"), ("tag", "ANDTag2"), ("tag_operator", "and")])
+    request = _make_request(dbsession, user, params=params)
+    view = ContactView(request)
+    result = view.search_tags_results()
+    contacts = list(result["paginator"])
+    assert any(c.name == "ANDContactBoth" for c in contacts)
+    assert not any(c.name == "ANDContactOne" for c in contacts)
+
+
 # --- search_tags_input() ---
 
 
