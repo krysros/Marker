@@ -610,9 +610,11 @@ class TagView:
     def export_companies(self):
         _ = self.request.translate
         tag = self.request.context.tag
+        role = self.request.params.get("role", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         stmt = select(
+            Company.id,
             Company.name,
             Company.street,
             Company.postcode,
@@ -639,6 +641,24 @@ class TagView:
             )
 
         companies = self.request.dbsession.execute(stmt).all()
+
+        activity_values = {}
+        if role and companies:
+            company_ids = [c.id for c in companies]
+            av_rows = self.request.dbsession.execute(
+                select(
+                    Activity.company_id,
+                    func.sum(Activity.value_net).label("value_net"),
+                    func.sum(Activity.value_gross).label("value_gross"),
+                )
+                .filter(
+                    Activity.company_id.in_(company_ids),
+                    Activity.role == role,
+                )
+                .group_by(Activity.company_id)
+            ).all()
+            activity_values = {row.company_id: row for row in av_rows}
+
         header_row = [
             _("Name"),
             _("Street"),
@@ -648,7 +668,22 @@ class TagView:
             _("Country"),
             _("Website"),
         ]
-        response = make_export_response(self.request, companies, header_row)
+        if role:
+            header_row += [_("Value net"), _("Value gross")]
+
+        rows = []
+        for company in companies:
+            row = [company.name, company.street, company.postcode,
+                   company.city, company.subdivision, company.country, company.website]
+            if role:
+                av = activity_values.get(company.id)
+                row += [
+                    float(av.value_net) if av and av.value_net is not None else None,
+                    float(av.value_gross) if av and av.value_gross is not None else None,
+                ]
+            rows.append(row)
+
+        response = make_export_response(self.request, rows, header_row)
         log.info(_("The user %s exported company data") % self.request.identity.name)
         return response
 
@@ -829,9 +864,11 @@ class TagView:
     def export_projects(self):
         _ = self.request.translate
         tag = self.request.context.tag
+        role = self.request.params.get("role", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         stmt = select(
+            Project.id,
             Project.name,
             Project.street,
             Project.postcode,
@@ -842,6 +879,7 @@ class TagView:
             Project.deadline,
             Project.stage,
             Project.delivery_method,
+            Project.usable_area,
         )
 
         if _sort == "stars":
@@ -861,6 +899,24 @@ class TagView:
             )
 
         projects = self.request.dbsession.execute(stmt).all()
+
+        activity_values = {}
+        if role and projects:
+            project_ids = [p.id for p in projects]
+            av_rows = self.request.dbsession.execute(
+                select(
+                    Activity.project_id,
+                    func.sum(Activity.value_net).label("value_net"),
+                    func.sum(Activity.value_gross).label("value_gross"),
+                )
+                .filter(
+                    Activity.project_id.in_(project_ids),
+                    Activity.role == role,
+                )
+                .group_by(Activity.project_id)
+            ).all()
+            activity_values = {row.project_id: row for row in av_rows}
+
         header_row = [
             _("Name"),
             _("Street"),
@@ -873,7 +929,34 @@ class TagView:
             _("Stage"),
             _("Project delivery method"),
         ]
-        response = make_export_response(self.request, projects, header_row)
+        if role:
+            header_row += [
+                _("Value net"),
+                _("Value gross"),
+                _("Net / m\u00b2"),
+                _("Gross / m\u00b2"),
+            ]
+
+        rows = []
+        for project in projects:
+            row = [project.name, project.street, project.postcode,
+                   project.city, project.subdivision, project.country,
+                   project.website, project.deadline, project.stage,
+                   project.delivery_method]
+            if role:
+                av = activity_values.get(project.id)
+                vn = float(av.value_net) if av and av.value_net is not None else None
+                vg = float(av.value_gross) if av and av.value_gross is not None else None
+                ua = project.usable_area
+                row += [
+                    vn,
+                    vg,
+                    round(vn / float(ua), 2) if vn is not None and ua else None,
+                    round(vg / float(ua), 2) if vg is not None and ua else None,
+                ]
+            rows.append(row)
+
+        response = make_export_response(self.request, rows, header_row)
         log.info(_("The user %s exported project data") % self.request.identity.name)
         return response
 

@@ -1709,6 +1709,11 @@ msgstr "Użytkownik %s eksportował dane firmy"
 msgid "The user %s exported project data"
 msgstr "Użytkownik %s eksportował dane projektu"
 
+#: marker/views/prices.py
+#, python-format
+msgid "The user %s exported prices data"
+msgstr "Użytkownik %s eksportował dane cenowe"
+
 #: marker/views/tag.py:848
 #, python-format
 msgid "The user %s has added a company to the tag"

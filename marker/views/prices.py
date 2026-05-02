@@ -1,4 +1,5 @@
 """Prices view — project activity prices (unit prices per m²)."""
+import logging
 from collections import namedtuple
 from decimal import Decimal, InvalidOperation
 
@@ -7,8 +8,11 @@ from sqlalchemy import case as sa_case, func, select
 
 from ..forms.select import COMPANY_ROLES, ORDER_CRITERIA, STAGES, select_currencies
 from ..models import Activity, Company, Project
+from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
 from . import apply_order, polish_sort_expression
+
+log = logging.getLogger(__name__)
 
 PriceRow = namedtuple(
     "PriceRow",
@@ -229,3 +233,132 @@ class PricesView:
             "order_criteria": order_criteria,
             "next_page": next_page,
         }
+
+    def _build_filtered_stmt(self, stage, role, currency,
+                             value_net_from, value_net_to,
+                             value_gross_from, value_gross_to,
+                             unit_price_net_from, unit_price_net_to,
+                             unit_price_gross_from, unit_price_gross_to):
+        stmt = (
+            select(Activity, Project, Company)
+            .join(Project, Activity.project_id == Project.id)
+            .join(Company, Activity.company_id == Company.id)
+        )
+        if stage:
+            stmt = stmt.filter(Activity.stage == stage)
+        if role:
+            stmt = stmt.filter(Activity.role == role)
+        if currency:
+            stmt = stmt.filter(Activity.currency == currency)
+        for col, val in (
+            (Activity.value_net.__ge__, value_net_from),
+            (Activity.value_net.__le__, value_net_to),
+            (Activity.value_gross.__ge__, value_gross_from),
+            (Activity.value_gross.__le__, value_gross_to),
+        ):
+            if val:
+                try:
+                    stmt = stmt.filter(col(Decimal(val)))
+                except (InvalidOperation, ValueError):
+                    pass
+        for expr_fn, val in (
+            (lambda d: Activity.value_net / Project.usable_area >= d, unit_price_net_from),
+            (lambda d: Activity.value_net / Project.usable_area <= d, unit_price_net_to),
+            (lambda d: Activity.value_gross / Project.usable_area >= d, unit_price_gross_from),
+            (lambda d: Activity.value_gross / Project.usable_area <= d, unit_price_gross_to),
+        ):
+            if val:
+                try:
+                    stmt = stmt.filter(Project.usable_area > 0, expr_fn(Decimal(val)))
+                except (InvalidOperation, ValueError):
+                    pass
+        return stmt
+
+    @view_config(route_name="prices_export", permission="view")
+    def export(self):
+        _ = self.request.translate
+        stage = self.request.params.get("stage", "")
+        role = self.request.params.get("role", "")
+        currency = self.request.params.get("currency", "")
+        value_net_from = self.request.params.get("value_net_from", "")
+        value_net_to = self.request.params.get("value_net_to", "")
+        value_gross_from = self.request.params.get("value_gross_from", "")
+        value_gross_to = self.request.params.get("value_gross_to", "")
+        unit_price_net_from = self.request.params.get("unit_price_net_from", "")
+        unit_price_net_to = self.request.params.get("unit_price_net_to", "")
+        unit_price_gross_from = self.request.params.get("unit_price_gross_from", "")
+        unit_price_gross_to = self.request.params.get("unit_price_gross_to", "")
+        _sort = self.request.params.get("sort", "project_name")
+        _order = self.request.params.get("order", "asc")
+        if _order not in {"asc", "desc"}:
+            _order = "asc"
+
+        stmt = self._build_filtered_stmt(
+            stage, role, currency,
+            value_net_from, value_net_to,
+            value_gross_from, value_gross_to,
+            unit_price_net_from, unit_price_net_to,
+            unit_price_gross_from, unit_price_gross_to,
+        )
+
+        stage_case = sa_case(
+            *[(Activity.stage == v, str(_(l))) for v, l in STAGES if v],
+            else_=Activity.stage,
+        ).collate("POLISH_CI")
+        role_case = sa_case(
+            *[(Activity.role == v, str(_(l))) for v, l in COMPANY_ROLES if v],
+            else_=Activity.role,
+        ).collate("POLISH_CI")
+        _sort_map = {
+            "project_name": polish_sort_expression(Project.name),
+            "company_name": polish_sort_expression(Company.name),
+            "stage": stage_case,
+            "role": role_case,
+            "currency": Activity.currency,
+            "value_net": Activity.value_net,
+            "value_gross": Activity.value_gross,
+            "unit_price_net": Activity.value_net / Project.usable_area,
+            "unit_price_gross": Activity.value_gross / Project.usable_area,
+        }
+        sort_col = _sort_map.get(_sort, polish_sort_expression(Project.name))
+        stmt = apply_order(stmt, sort_col, _order, Activity.project_id, Activity.company_id)
+
+        stages_map = dict(STAGES)
+        roles_map = dict(COMPANY_ROLES)
+        raw_rows = self.request.dbsession.execute(stmt).all()
+
+        rows = []
+        for activity, project, company in raw_rows:
+            unit_price_net = None
+            unit_price_gross = None
+            if project.usable_area and project.usable_area > 0:
+                if activity.value_net is not None:
+                    unit_price_net = round(float(activity.value_net / project.usable_area), 2)
+                if activity.value_gross is not None:
+                    unit_price_gross = round(float(activity.value_gross / project.usable_area), 2)
+            rows.append((
+                project.name,
+                company.name,
+                str(_(stages_map.get(activity.stage, activity.stage or ""))),
+                str(_(roles_map.get(activity.role, activity.role or ""))),
+                activity.currency or "",
+                float(activity.value_net) if activity.value_net is not None else None,
+                float(activity.value_gross) if activity.value_gross is not None else None,
+                unit_price_net,
+                unit_price_gross,
+            ))
+
+        header_row = [
+            _("Project"),
+            _("Company"),
+            _("Stage"),
+            _("Role"),
+            _("Currency"),
+            _("Net value"),
+            _("Gross value"),
+            _("Net / m\u00b2"),
+            _("Gross / m\u00b2"),
+        ]
+        response = make_export_response(self.request, rows, header_row)
+        log.info(_("The user %s exported prices data") % self.request.identity.name)
+        return response
