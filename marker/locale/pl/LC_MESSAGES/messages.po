@@ -948,6 +948,14 @@ msgstr "Netto / m²"
 msgid "Gross / m²"
 msgstr "Brutto / m²"
 
+#: marker/templates/prices/prices_all.mako
+msgid "From"
+msgstr "Od"
+
+#: marker/templates/prices/prices_all.mako
+msgid "To"
+msgstr "Do"
+
 #: marker/templates/prices/prices_more.mako
 msgid "Usable area"
 msgstr "Powierzchnia użytkowa"

@@ -42,6 +42,34 @@
           % endfor
         </select>
       </div>
+      <div class="mb-3">
+        <label class="form-label">${_("Net value")}</label>
+        <div class="input-group">
+          <input type="number" class="form-control" name="value_net_from" placeholder="${_('From')}" value="${q.get('value_net_from', '')}" min="0" step="0.01">
+          <input type="number" class="form-control" name="value_net_to" placeholder="${_('To')}" value="${q.get('value_net_to', '')}" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">${_("Gross value")}</label>
+        <div class="input-group">
+          <input type="number" class="form-control" name="value_gross_from" placeholder="${_('From')}" value="${q.get('value_gross_from', '')}" min="0" step="0.01">
+          <input type="number" class="form-control" name="value_gross_to" placeholder="${_('To')}" value="${q.get('value_gross_to', '')}" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">${_("Net / m\u00b2")}</label>
+        <div class="input-group">
+          <input type="number" class="form-control" name="unit_price_net_from" placeholder="${_('From')}" value="${q.get('unit_price_net_from', '')}" min="0" step="0.01">
+          <input type="number" class="form-control" name="unit_price_net_to" placeholder="${_('To')}" value="${q.get('unit_price_net_to', '')}" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">${_("Gross / m\u00b2")}</label>
+        <div class="input-group">
+          <input type="number" class="form-control" name="unit_price_gross_from" placeholder="${_('From')}" value="${q.get('unit_price_gross_from', '')}" min="0" step="0.01">
+          <input type="number" class="form-control" name="unit_price_gross_to" placeholder="${_('To')}" value="${q.get('unit_price_gross_to', '')}" min="0" step="0.01">
+        </div>
+      </div>
       <div class="hstack gap-2">
         <button type="submit" class="btn btn-primary">${_("Submit")}</button>
         <a class="btn btn-outline-secondary" href="${request.route_url('prices_all')}">${_("Clear")}</a>
