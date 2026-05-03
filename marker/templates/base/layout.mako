@@ -30,12 +30,14 @@
   </head>
   <body>
     <%include file="navbar.mako"/>
-    <main role="main">
-      <div class="container">
-        <%include file="svg_icons.mako"/>
-        <%include file="flash_messages.mako"/>
-        ${self.body()}
-        <%include file="footer.mako"/>
+    <main role="main" class="container-fluid px-4 px-md-5">
+      <div class="row">
+        <div class="col-12">
+          <%include file="svg_icons.mako"/>
+          <%include file="flash_messages.mako"/>
+          ${self.body()}
+          <%include file="footer.mako"/>
+        </div>
       </div>
       <!-- Search Selection Modal -->
       <div class="modal fade" id="searchSelectModal" tabindex="-1" aria-labelledby="searchSelectModalLabel" aria-hidden="true">
