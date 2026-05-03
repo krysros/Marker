@@ -1652,3 +1652,133 @@ def test_tag_projects_date_to(dbsession):
     view = TagView(request)
     result = view.projects()
     assert result["q"]["date_to"] == "2030-01-01T00:00"
+
+
+# ===========================================================================
+# Role parameter tests (activity_values coverage)
+# ===========================================================================
+
+
+def test_tag_companies_role_param(dbsession):
+    """Cover line 496: if role: q['role'] = role and lines 579-592 activity_values."""
+    from decimal import Decimal
+    from marker.models.association import Activity
+
+    user = _make_user(dbsession, "tagcorole1")
+    tag = _make_tag(dbsession, user, "CoRoleTag1")
+    company = _make_company(dbsession, user, "CoRoleCo1")
+    proj = _make_project(dbsession, user, "CoRoleProj1")
+    tag.companies.append(company)
+    dbsession.flush()
+    activity = Activity(
+        company_id=company.id,
+        project_id=proj.id,
+        role="investor",
+        value_net=Decimal("100.00"),
+        value_gross=Decimal("123.00"),
+    )
+    dbsession.add(activity)
+    transaction.commit()
+    request = _make_request(dbsession, user, tag=tag, params={"role": "investor"})
+    view = TagView(request)
+    result = view.companies()
+    assert result["q"]["role"] == "investor"
+    assert result["activity_values"] is not None
+
+
+def test_tag_export_companies_role(dbsession):
+    """Cover lines 647-660, 672, 679-680: role in export_companies."""
+    from decimal import Decimal
+    from marker.models.association import Activity
+
+    user = _make_user(dbsession, "tagcoexprole")
+    tag = _make_tag(dbsession, user, "CoExpRoleTag")
+    company = _make_company(dbsession, user, "CoExpRoleCo")
+    proj = _make_project(dbsession, user, "CoExpRoleProj")
+    tag.companies.append(company)
+    dbsession.flush()
+    activity = Activity(
+        company_id=company.id,
+        project_id=proj.id,
+        role="investor",
+        value_net=Decimal("200.00"),
+        value_gross=Decimal("246.00"),
+    )
+    dbsession.add(activity)
+    transaction.commit()
+    request = _make_request(dbsession, user, tag=tag, params={"role": "investor"})
+    view = TagView(request)
+    result = view.export_companies()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_tag_projects_role_param(dbsession):
+    """Cover line 736: if role: q['role'] = role and lines 838-851 activity_values."""
+    from decimal import Decimal
+    from marker.models.association import Activity
+
+    user = _make_user(dbsession, "tagprrole1")
+    tag = _make_tag(dbsession, user, "PrRoleTag1")
+    proj = _make_project(dbsession, user, "PrRoleProj1")
+    company = _make_company(dbsession, user, "PrRoleCo1")
+    tag.projects.append(proj)
+    dbsession.flush()
+    activity = Activity(
+        company_id=company.id,
+        project_id=proj.id,
+        role="investor",
+        value_net=Decimal("100.00"),
+        value_gross=Decimal("123.00"),
+    )
+    dbsession.add(activity)
+    transaction.commit()
+    request = _make_request(dbsession, user, tag=tag, params={"role": "investor"})
+    view = TagView(request)
+    result = view.projects()
+    assert result["q"]["role"] == "investor"
+    assert result["activity_values"] is not None
+
+
+def test_tag_projects_object_category(dbsession):
+    """Cover lines 776-777: object_category filter in projects()."""
+    user = _make_user(dbsession, "tagprobcat")
+    tag = _make_tag(dbsession, user, "PrObCatTag")
+    proj = _make_project(dbsession, user, "PrObCatProj")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    tag.projects.append(proj)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, tag=tag, params={"object_category": "uslugi"}
+    )
+    view = TagView(request)
+    result = view.projects()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+def test_tag_export_projects_role(dbsession):
+    """Cover lines 911-924, 940, 954-958: role in export_projects with usable_area."""
+    from decimal import Decimal
+    from marker.models.association import Activity
+
+    user = _make_user(dbsession, "tagprexprole")
+    tag = _make_tag(dbsession, user, "PrExpRoleTag")
+    proj = _make_project(dbsession, user, "PrExpRoleProj")
+    proj.usable_area = Decimal("500.00")
+    dbsession.flush()
+    company = _make_company(dbsession, user, "PrExpRoleCo")
+    tag.projects.append(proj)
+    dbsession.flush()
+    activity = Activity(
+        company_id=company.id,
+        project_id=proj.id,
+        role="investor",
+        value_net=Decimal("100000.00"),
+        value_gross=Decimal("123000.00"),
+    )
+    dbsession.add(activity)
+    transaction.commit()
+    request = _make_request(dbsession, user, tag=tag, params={"role": "investor"})
+    view = TagView(request)
+    result = view.export_projects()
+    assert "vnd.openxmlformats-officedocument" in result.content_type

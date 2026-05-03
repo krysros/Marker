@@ -2911,6 +2911,88 @@ def test_company_add_post_with_tags(mock_loc, dbsession):
     request.params["tag"] = "NewTestTag"
     view = CompanyView(request)
     result = view.add()
+
+
+# ===========================================================================
+# tag_operator invalid fallback in all() (line 216)
+# ===========================================================================
+
+
+def test_company_all_invalid_tag_operator(dbsession):
+    """Cover line 216: invalid tag_operator falls back to 'or'."""
+    from marker.models.tag import Tag
+
+    user = _co_user(dbsession, "coinvtop")
+    tag = Tag(name="InvTopTag")
+    tag.created_by = user
+    co = _co_company(dbsession, user, "InvTopCo")
+    co.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    params = MultiDict([("tag", "InvTopTag"), ("tag_operator", "invalid")])
+    request = _co_request(dbsession, user, params=params)
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["tag_operator"] == "or"
+
+
+# ===========================================================================
+# add_ai() contacts_autofill exception handler (line 1843)
+# ===========================================================================
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    return_value=[],
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    side_effect=Exception("contacts fail"),
+)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "ContExcCo", "country": "PL"},
+)
+def test_company_add_ai_contacts_exception(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover line 1843: exception in contacts_autofill_from_website is handled."""
+    user = _co_user(dbsession, "coaicontexc")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    # Company was still saved despite contacts failure — redirects
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    return_value=[],
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    return_value=[{"name": "John Smith", "role": "CEO", "phone": "123", "email": "j@e.com"}],
+)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "ContactReturnCo", "country": "PL"},
+)
+def test_company_add_ai_contacts_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover lines 1841-1852: contacts_autofill returns contact data that is saved."""
+    user = _co_user(dbsession, "coaicontret")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
     assert isinstance(result, HTTPSeeOther)
 
 
@@ -3211,3 +3293,123 @@ def test_company_similar_bulk_select(dbsession):
     view = CompanyView(request)
     result = view.similar()
     assert result is request.response
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    return_value=[],
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    return_value=[{"name": "", "role": None}, {"name": "John Smith", "role": "CEO"}],
+)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "BlankContactCo", "country": "PL"},
+)
+def test_company_add_ai_contacts_blank_name(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover line 1843: continue when contact name is blank."""
+    user = _co_user(dbsession, "coaiblankname")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.company.company_autofill_from_website")
+def test_company_website_autofill_long_error_with_response(mock_autofill, dbsession):
+    """Cover lines 1339, 1345: long error with 'Response:' in message."""
+    long_msg = "Some error. Response: " + "x" * 400
+    mock_autofill.side_effect = RuntimeError(long_msg)
+    user = _co_user(dbsession, "coaflongresp")
+    company = _co_company(dbsession, user, "LongRespCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, params={"website": "http://x.com"}
+    )
+    view = CompanyView(request)
+    result = view.website_autofill()
+    assert result["fields"] == {}
+    assert result["error"] is not None
+    assert request.response.status_code == 502
+
+
+@patch("marker.views.company.company_autofill_from_website")
+def test_company_website_autofill_long_flash_truncation(mock_autofill, dbsession):
+    """Cover lines 1352-1356: flash message truncated when longer than 500 bytes."""
+    # Create a very long error to make flash_msg > 500 bytes
+    long_msg = "x" * 600
+    mock_autofill.side_effect = RuntimeError(long_msg)
+    user = _co_user(dbsession, "coaflongflash")
+    company = _co_company(dbsession, user, "LongFlashCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, params={"website": "http://x.com"}
+    )
+    view = CompanyView(request)
+    result = view.website_autofill()
+    assert result["fields"] == {}
+    assert request.response.status_code == 502
+
+
+def test_company_all_filter_name(dbsession):
+    """Cover lines 231-235: name filter in all()."""
+    user = _co_user(dbsession, "conamefilter")
+    _co_company(dbsession, user, "FilterNameCo")
+    transaction.commit()
+    from webob.multidict import MultiDict as WMultiDict
+    request = _co_request(dbsession, user, params={"name": "FilterNameCo"})
+    request.matched_route.name = "company_all"
+    view = CompanyView(request)
+    result = view.all()
+    assert result["q"]["name"] == "FilterNameCo"
+
+
+@patch("marker.views.company.location_details", return_value=None)
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    return_value=["ExistCoTag", "NewCoTag"],
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    return_value=[],
+)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={"name": "CoTagsRetCo", "country": "PL"},
+)
+def test_company_add_ai_tags_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover lines 1865-1876: tags returned from autofill including pre-existing tag."""
+    from marker.models.tag import Tag
+    user = _co_user(dbsession, "coaitagsret")
+    existing_tag = Tag(name="ExistCoTag")
+    existing_tag.created_by = user
+    dbsession.add(existing_tag)
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = CompanyView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.company.company_autofill_from_website")
+def test_company_website_autofill_success(mock_autofill, dbsession):
+    """Cover lines 1352-1356: success path of website_autofill."""
+    mock_autofill.return_value = {"name": "Test Co", "country": "PL"}
+    user = _co_user(dbsession, "coafsucc")
+    company = _co_company(dbsession, user, "WsAutofillSuccCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, params={"website": "http://x.com"}
+    )
+    view = CompanyView(request)
+    result = view.website_autofill()
+    assert result["fields"] == {"name": "Test Co", "country": "PL"}

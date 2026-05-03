@@ -573,3 +573,221 @@ def test_sort_unit_price_gross_desc(dbsession):
     result = PricesView(request).all()
     unit_prices = [r.unit_price_gross for r in result["paginator"]]
     assert unit_prices == sorted(unit_prices, reverse=True)
+
+
+# ===========================================================================
+# Filter branches in all() – lines 55, 98-167
+# ===========================================================================
+
+
+def test_prices_all_filter_stage(dbsession):
+    user = _user(dbsession, "filterstage")
+    _make_activity(dbsession, user, "FiltStCo", "FiltStProj", stage="tender")
+    transaction.commit()
+    request = _req(dbsession, user, params={"stage": "tender"})
+    result = PricesView(request).all()
+    assert result["q"]["stage"] == "tender"
+
+
+def test_prices_all_filter_role(dbsession):
+    user = _user(dbsession, "filterrole")
+    _make_activity(dbsession, user, "FiltRoCo", "FiltRoProj", role="investor")
+    transaction.commit()
+    request = _req(dbsession, user, params={"role": "investor"})
+    result = PricesView(request).all()
+    assert result["q"]["role"] == "investor"
+
+
+def test_prices_all_filter_currency(dbsession):
+    user = _user(dbsession, "filtercurr")
+    _make_activity(dbsession, user, "FiltCurrCo", "FiltCurrProj", currency="EUR")
+    transaction.commit()
+    request = _req(dbsession, user, params={"currency": "EUR"})
+    result = PricesView(request).all()
+    assert result["q"]["currency"] == "EUR"
+
+
+def test_prices_all_filter_value_net_range(dbsession):
+    user = _user(dbsession, "filtervnrange")
+    _make_activity(
+        dbsession, user, "FiltVNCo", "FiltVNProj",
+        value_net=Decimal("500"), value_gross=Decimal("615")
+    )
+    transaction.commit()
+    request = _req(
+        dbsession, user,
+        params={"value_net_from": "100", "value_net_to": "1000"}
+    )
+    result = PricesView(request).all()
+    assert result["q"]["value_net_from"] == "100"
+    assert result["q"]["value_net_to"] == "1000"
+
+
+def test_prices_all_filter_value_gross_range(dbsession):
+    user = _user(dbsession, "filtervgrange")
+    _make_activity(
+        dbsession, user, "FiltVGCo", "FiltVGProj",
+        value_net=Decimal("500"), value_gross=Decimal("615")
+    )
+    transaction.commit()
+    request = _req(
+        dbsession, user,
+        params={"value_gross_from": "100", "value_gross_to": "1000"}
+    )
+    result = PricesView(request).all()
+    assert result["q"]["value_gross_from"] == "100"
+    assert result["q"]["value_gross_to"] == "1000"
+
+
+def test_prices_all_filter_unit_price_net_range(dbsession):
+    user = _user(dbsession, "filtrupnrange")
+    _make_activity(
+        dbsession, user, "FiltUPNCo", "FiltUPNProj",
+        value_net=Decimal("1000"), usable_area=Decimal("100")
+    )
+    transaction.commit()
+    request = _req(
+        dbsession, user,
+        params={"unit_price_net_from": "5", "unit_price_net_to": "50"}
+    )
+    result = PricesView(request).all()
+    assert result["q"]["unit_price_net_from"] == "5"
+    assert result["q"]["unit_price_net_to"] == "50"
+
+
+def test_prices_all_filter_unit_price_gross_range(dbsession):
+    user = _user(dbsession, "filtrupgrange")
+    _make_activity(
+        dbsession, user, "FiltUPGCo", "FiltUPGProj",
+        value_gross=Decimal("1230"), usable_area=Decimal("100")
+    )
+    transaction.commit()
+    request = _req(
+        dbsession, user,
+        params={"unit_price_gross_from": "5", "unit_price_gross_to": "50"}
+    )
+    result = PricesView(request).all()
+    assert result["q"]["unit_price_gross_from"] == "5"
+    assert result["q"]["unit_price_gross_to"] == "50"
+
+
+def test_prices_all_filter_object_category(dbsession):
+    user = _user(dbsession, "filtrobcat")
+    _, proj, _ = _make_activity(dbsession, user, "FiltObCatCo", "FiltObCatProj")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    result = PricesView(request).all()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# export() – lines 252-382
+# ===========================================================================
+
+
+def test_prices_export_basic(dbsession):
+    user = _user(dbsession, "exportbasic")
+    _make_activity(
+        dbsession, user, "ExportBasicCo", "ExportBasicProj",
+        value_net=Decimal("100"), value_gross=Decimal("123"),
+        usable_area=Decimal("50")
+    )
+    transaction.commit()
+    request = _req(dbsession, user)
+    result = PricesView(request).export()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_prices_export_with_filters(dbsession):
+    user = _user(dbsession, "exportfilt")
+    _, proj, _ = _make_activity(
+        dbsession, user, "ExportFiltCo", "ExportFiltProj",
+        value_net=Decimal("200"), value_gross=Decimal("246"),
+        currency="PLN", role="investor", stage="tender",
+        usable_area=Decimal("100")
+    )
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    transaction.commit()
+    request = _req(
+        dbsession, user,
+        params={
+            "stage": "tender",
+            "role": "investor",
+            "currency": "PLN",
+            "value_net_from": "100",
+            "value_net_to": "500",
+            "value_gross_from": "100",
+            "value_gross_to": "500",
+            "unit_price_net_from": "0",
+            "unit_price_net_to": "50",
+            "unit_price_gross_from": "0",
+            "unit_price_gross_to": "50",
+            "object_category": "uslugi",
+            "sort": "value_net",
+            "order": "desc",
+        }
+    )
+    result = PricesView(request).export()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_prices_export_ods(dbsession):
+    user = _user(dbsession, "exportods")
+    _make_activity(dbsession, user, "ExportOdsCo", "ExportOdsProj")
+    transaction.commit()
+    request = _req(dbsession, user, params={"format": "ods"})
+    result = PricesView(request).export()
+    assert "oasis.opendocument" in result.content_type
+
+
+def test_prices_all_invalid_order(dbsession):
+    """Cover line 55: _order reset when invalid value passed."""
+    user = _user(dbsession, "invalidorder")
+    transaction.commit()
+    request = _req(dbsession, user, params={"order": "invalid"})
+    result = PricesView(request).all()
+    assert result["q"]["order"] == "asc"
+
+
+def test_prices_all_invalid_decimal_filters(dbsession):
+    """Cover except/pass branches (lines 101-102, 108-109, 115-116, 122-123,
+    132-133, 142-143, 152-153, 162-163): invalid decimal values are silently ignored."""
+    user = _user(dbsession, "invaliddec")
+    transaction.commit()
+    request = _req(dbsession, user, params={
+        "value_net_from": "abc",
+        "value_net_to": "abc",
+        "value_gross_from": "abc",
+        "value_gross_to": "abc",
+        "unit_price_net_from": "abc",
+        "unit_price_net_to": "abc",
+        "unit_price_gross_from": "abc",
+        "unit_price_gross_to": "abc",
+    })
+    result = PricesView(request).all()
+    assert "value_net_from" not in result["q"]
+
+
+def test_prices_export_invalid_order(dbsession):
+    """Cover line 307 in export(): _order reset when invalid value passed."""
+    user = _user(dbsession, "exportinvord")
+    transaction.commit()
+    request = _req(dbsession, user, params={"order": "invalid"})
+    result = PricesView(request).export()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_prices_export_invalid_decimal_filters(dbsession):
+    """Cover except/pass branches 272-273, 283-284 in export()."""
+    user = _user(dbsession, "exportinvdec")
+    _make_activity(dbsession, user, "ExpInvDecCo", "ExpInvDecProj")
+    transaction.commit()
+    request = _req(dbsession, user, params={
+        "value_net_from": "bad",
+        "unit_price_net_from": "bad",
+    })
+    result = PricesView(request).export()
+    assert "vnd.openxmlformats-officedocument" in result.content_type

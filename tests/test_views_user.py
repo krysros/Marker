@@ -4894,3 +4894,498 @@ def test_user_export_projects_stars_ods(dbsession):
     view = UserView(request)
     result = view.export_projects_stars()
     assert result.content_type == "application/vnd.oasis.opendocument.spreadsheet"
+
+
+# ===========================================================================
+# projects() – object_category filter (lines 1203-1204)
+# ===========================================================================
+
+
+def test_user_projects_object_category(dbsession):
+    """Cover the object_category filter in projects()."""
+    user = _user(dbsession, "projobcat")
+    proj = _project(dbsession, user, "ProjObCat")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.projects()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# export_projects() – object_category filter (line 1366)
+# ===========================================================================
+
+
+def test_user_export_projects_object_category(dbsession):
+    """Cover the object_category filter in export_projects()."""
+    user = _user(dbsession, "exprojobcat")
+    proj = _project(dbsession, user, "ExprojObCat")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.export_projects()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+# ===========================================================================
+# selected_companies_similar() – uncovered filter branches (lines 1965-1988, 2029)
+# ===========================================================================
+
+
+def test_user_selected_companies_similar_invalid_order(dbsession):
+    """Cover the tag_operator-invalid fallback (line 1898)."""
+    user = _user(dbsession, "simcoinvord")
+    transaction.commit()
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert result["tag_operator"] == "or"
+
+
+def test_user_selected_companies_similar_filters(dbsession):
+    """Cover color/country/subdivision filter branches in selected_companies_similar()."""
+    user = _user(dbsession, "simcofilt")
+    tag = _tag(dbsession, user, "SimCoFiltTag")
+    selected_co = _company(dbsession, user, "SimCoFiltSel", color="red")
+    other_co = _company(dbsession, user, "SimCoFiltOther", color="red", country="PL")
+    selected_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(selected_co)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={"color": "red", "country": "PL", "subdivision": "PL-14"},
+    )
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert "paginator" in result
+    assert result["q"].get("color") == "red"
+    assert result["q"].get("country") == "PL"
+    assert "PL-14" in result["q"].get("subdivision", [])
+
+
+def test_user_selected_companies_similar_tag_name_blank(dbsession):
+    """Cover the 'if not tag_name: continue' branch (line 2029)."""
+    user = _user(dbsession, "simcoblank")
+    tag = _tag(dbsession, user, "")  # empty tag name
+    selected_co = _company(dbsession, user, "SimCoBlankSel")
+    other_co = _company(dbsession, user, "SimCoBlankOther")
+    selected_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(selected_co)
+    transaction.commit()
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert "paginator" in result
+
+
+# ===========================================================================
+# selected_projects() – object_category filter (lines 2305-2306)
+# ===========================================================================
+
+
+def test_user_selected_projects_object_category(dbsession):
+    """Cover the object_category filter in selected_projects()."""
+    user = _user(dbsession, "selprojobcat")
+    proj = _project(dbsession, user, "SelProjObCat")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    user.selected_projects.append(proj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.selected_projects()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# export_selected_projects() – object_category filter (line 2370)
+# ===========================================================================
+
+
+def test_user_export_selected_projects_object_category(dbsession):
+    """Cover the object_category filter in export_selected_projects()."""
+    user = _user(dbsession, "expselprojobcat")
+    proj = _project(dbsession, user, "ExpSelProjObCat")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    user.selected_projects.append(proj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.export_selected_projects()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+# ===========================================================================
+# selected_projects_similar() – uncovered filter branches (2440-2516)
+# ===========================================================================
+
+
+def test_user_selected_projects_similar_invalid_order(dbsession):
+    """Cover the tag_operator invalid fallback in selected_projects_similar()."""
+    user = _user(dbsession, "simprojinvord")
+    transaction.commit()
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result["tag_operator"] == "or"
+
+
+def test_user_selected_projects_similar_filters(dbsession):
+    """Cover color/country/subdivision/stage/delivery/object_category branches."""
+    user = _user(dbsession, "simprojfilt")
+    tag = _tag(dbsession, user, "SimProjFiltTag")
+    sel_proj = _project(dbsession, user, "SimProjFiltSel", color="red", stage="tender")
+    other_proj = _project(
+        dbsession, user, "SimProjFiltOther", color="red", stage="tender"
+    )
+    sel_proj.tags.append(tag)
+    other_proj.tags.append(tag)
+    other_proj.object_category = "uslugi"
+    dbsession.flush()
+    user.selected_projects.append(sel_proj)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+            "stage": "tender",
+            "object_category": "uslugi",
+        },
+    )
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert "paginator" in result
+    assert result["q"].get("color") == "red"
+    assert result["q"].get("stage") == "tender"
+    assert result["q"].get("object_category") == "uslugi"
+
+
+def test_user_selected_projects_similar_delivery_method(dbsession):
+    """Cover delivery_method filter branch."""
+    user = _user(dbsession, "simprojdeliv")
+    tag = _tag(dbsession, user, "SimProjDelivTag")
+    sel_proj = _project(
+        dbsession, user, "SimProjDelivSel", delivery_method="design_build"
+    )
+    other_proj = _project(
+        dbsession, user, "SimProjDelivOther", delivery_method="design_build"
+    )
+    sel_proj.tags.append(tag)
+    other_proj.tags.append(tag)
+    user.selected_projects.append(sel_proj)
+    transaction.commit()
+    request = _req(
+        dbsession, user, params={"delivery_method": "design_build"}
+    )
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result["q"].get("delivery_method") == "design_build"
+
+
+def test_user_selected_projects_similar_tag_name_blank(dbsession):
+    """Cover 'if not tag_name: continue' branch in selected_projects_similar()."""
+    user = _user(dbsession, "simprojblank")
+    tag = _tag(dbsession, user, "")  # empty tag name
+    sel_proj = _project(dbsession, user, "SimProjBlankSel")
+    other_proj = _project(dbsession, user, "SimProjBlankOther")
+    sel_proj.tags.append(tag)
+    other_proj.tags.append(tag)
+    user.selected_projects.append(sel_proj)
+    transaction.commit()
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert "paginator" in result
+
+
+# ===========================================================================
+# selected_tags_projects() – object_category filter (lines 3025-3026)
+# ===========================================================================
+
+
+def test_user_selected_tags_projects_object_category(dbsession):
+    """Cover the object_category filter in selected_tags_projects()."""
+    user = _user(dbsession, "seltagprojobcat")
+    tag = _tag(dbsession, user, "SelTagProjObCatTag")
+    proj = _project(dbsession, user, "SelTagProjObCatProj")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    tag.projects.append(proj)
+    user.selected_tags.append(tag)
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.selected_tags_projects()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# selected_contacts_companies() (lines 3446-3508)
+# ===========================================================================
+
+
+def test_user_selected_contacts_companies_basic(dbsession):
+    """Cover selected_contacts_companies() basic path."""
+    user = _user(dbsession, "selcontco")
+    co = _company(dbsession, user, "SelContCoCo")
+    c1 = _contact(dbsession, user, "SelContCoC1", company=co)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.selected_contacts_companies()
+    assert "paginator" in result
+    assert "counter" in result
+
+
+def test_user_selected_contacts_companies_filters(dbsession):
+    """Cover color/country/subdivision filter branches in selected_contacts_companies()."""
+    user = _user(dbsession, "selcontcofilt")
+    co = _company(
+        dbsession, user, "SelContCoFiltCo", color="red", country="PL"
+    )
+    c1 = _contact(dbsession, user, "SelContCoFiltC1", company=co)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+            "sort": "city",
+            "order": "asc",
+        },
+    )
+    view = UserView(request)
+    result = view.selected_contacts_companies()
+    assert result["q"].get("color") == "red"
+    assert result["q"].get("country") == "PL"
+    assert "PL-14" in result["q"].get("subdivision", [])
+
+
+def test_user_selected_contacts_companies_invalid_sort(dbsession):
+    """Cover invalid sort fallback in selected_contacts_companies()."""
+    user = _user(dbsession, "selcontcoinvsort")
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "invalid_col", "order": "bad"})
+    view = UserView(request)
+    result = view.selected_contacts_companies()
+    assert result["q"]["sort"] == "name"
+
+
+# ===========================================================================
+# selected_contacts_projects() (lines 3531-3597)
+# ===========================================================================
+
+
+def test_user_selected_contacts_projects_basic(dbsession):
+    """Cover selected_contacts_projects() basic path."""
+    user = _user(dbsession, "selcontprjbasic")
+    proj = _project(dbsession, user, "SelContPrjBasicP")
+    c1 = _contact(dbsession, user, "SelContPrjBasicC1", project=proj)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.selected_contacts_projects()
+    assert "paginator" in result
+    assert "counter" in result
+
+
+def test_user_selected_contacts_projects_filters(dbsession):
+    """Cover color/country/subdivision/object_category in selected_contacts_projects()."""
+    user = _user(dbsession, "selcontprjfilt")
+    proj = _project(dbsession, user, "SelContPrjFiltP", color="red")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    c1 = _contact(dbsession, user, "SelContPrjFiltC1", project=proj)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+            "object_category": "uslugi",
+        },
+    )
+    view = UserView(request)
+    result = view.selected_contacts_projects()
+    assert result["q"].get("color") == "red"
+    assert result["q"].get("object_category") == "uslugi"
+
+
+def test_user_selected_contacts_projects_invalid_sort(dbsession):
+    """Cover invalid sort fallback in selected_contacts_projects()."""
+    user = _user(dbsession, "selcontprjinvsrt")
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "bad_col", "order": "bad"})
+    view = UserView(request)
+    result = view.selected_contacts_projects()
+    assert result["q"]["sort"] == "name"
+
+
+# ===========================================================================
+# projects_stars() – object_category filter (lines 4572-4573)
+# ===========================================================================
+
+
+def test_user_projects_stars_object_category(dbsession):
+    """Cover the object_category filter in projects_stars()."""
+    user = _user(dbsession, "prjstarobcat")
+    proj = _project(dbsession, user, "PrjStarObCat")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    user.projects_stars.append(proj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.projects_stars()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# export_projects_stars() – object_category filter (line 4675)
+# ===========================================================================
+
+
+def test_user_export_projects_stars_object_category(dbsession):
+    """Cover the object_category filter in export_projects_stars()."""
+    user = _user(dbsession, "expprjstarobcat")
+    proj = _project(dbsession, user, "ExpPrjStarObCat")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    user.projects_stars.append(proj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"object_category": "uslugi"})
+    view = UserView(request)
+    result = view.export_projects_stars()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+# ===========================================================================
+# selected_companies_similar() – sort asc, non-shared_tags sort, bulk select
+# ===========================================================================
+
+
+def test_user_selected_companies_similar_sort_asc(dbsession):
+    """Cover line 1981: shared_tags sort with asc order."""
+    user = _user(dbsession, "simcoasc")
+    tag = _tag(dbsession, user, "SimCoAscTag")
+    sel_co = _company(dbsession, user, "SimCoAscSel")
+    other_co = _company(dbsession, user, "SimCoAscOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "shared_tags", "order": "asc"})
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert result["q"]["order"] == "asc"
+
+
+def test_user_selected_companies_similar_sort_name(dbsession):
+    """Cover line 1985: apply_order used when sort != shared_tags."""
+    user = _user(dbsession, "simconame")
+    tag = _tag(dbsession, user, "SimCoNameTag")
+    sel_co = _company(dbsession, user, "SimCoNameSel")
+    other_co = _company(dbsession, user, "SimCoNameOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "name", "order": "asc"})
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert result["q"]["sort"] == "name"
+
+
+def test_user_selected_companies_similar_bulk_select(dbsession):
+    """Cover line 1988: handle_bulk_selection in selected_companies_similar."""
+    user = _user(dbsession, "simcobulk")
+    tag = _tag(dbsession, user, "SimCoBulkTag")
+    sel_co = _company(dbsession, user, "SimCoBulkSel")
+    other_co = _company(dbsession, user, "SimCoBulkOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+    request = _req(
+        dbsession, user, method="POST", params={"_select_all": "1", "checked": "1"}
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    view = UserView(request)
+    result = view.selected_companies_similar()
+    assert result is request.response
+
+
+# ===========================================================================
+# selected_projects_similar() – sort asc, non-shared_tags sort, bulk select
+# ===========================================================================
+
+
+def test_user_selected_projects_similar_sort_asc(dbsession):
+    """Cover line 2468: shared_tags sort with asc order for projects."""
+    user = _user(dbsession, "simprjasc")
+    tag = _tag(dbsession, user, "SimPrjAscTag")
+    sel_prj = _project(dbsession, user, "SimPrjAscSel")
+    other_prj = _project(dbsession, user, "SimPrjAscOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "shared_tags", "order": "asc"})
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result["q"]["order"] == "asc"
+
+
+def test_user_selected_projects_similar_sort_name(dbsession):
+    """Cover line 2472: apply_order used when sort != shared_tags for projects."""
+    user = _user(dbsession, "simprjname")
+    tag = _tag(dbsession, user, "SimPrjNameTag")
+    sel_prj = _project(dbsession, user, "SimPrjNameSel")
+    other_prj = _project(dbsession, user, "SimPrjNameOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+    request = _req(dbsession, user, params={"sort": "name", "order": "asc"})
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result["q"]["sort"] == "name"
+
+
+def test_user_selected_projects_similar_bulk_select(dbsession):
+    """Cover line 2475: handle_bulk_selection in selected_projects_similar."""
+    user = _user(dbsession, "simprjbulk")
+    tag = _tag(dbsession, user, "SimPrjBulkTag")
+    sel_prj = _project(dbsession, user, "SimPrjBulkSel")
+    other_prj = _project(dbsession, user, "SimPrjBulkOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+    request = _req(
+        dbsession, user, method="POST", params={"_select_all": "1", "checked": "1"}
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    view = UserView(request)
+    result = view.selected_projects_similar()
+    assert result is request.response
