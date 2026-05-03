@@ -353,3 +353,19 @@ def test_prompt_post_with_mock_llm(dbsession, monkeypatch):
             assert result["columns"] is not None
             assert result["error"] is None
 
+
+def test_prompt_post_exception(dbsession, monkeypatch):
+    from unittest.mock import patch
+
+    monkeypatch.setenv("GEMINI_API_KEY", "fake-key")
+    with patch(
+        "marker.utils.llm_report.generate_report_sql",
+        side_effect=RuntimeError("LLM call failed"),
+    ):
+        request = _make_post_request(dbsession, {"prompt": "show all companies"})
+        view = ReportView(request)
+        result = view.prompt()
+        assert result["error"] == "LLM call failed"
+        assert result["columns"] is None
+        assert result["rows"] is None
+

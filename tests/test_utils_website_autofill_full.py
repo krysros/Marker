@@ -9,7 +9,9 @@ from marker.utils.website_autofill import (
     _normalize_whitespace,
     _subdivision_code_from_value,
     company_autofill_from_website,
+    contacts_autofill_from_website,
     project_autofill_from_website,
+    tags_autofill_from_website,
 )
 
 
@@ -167,3 +169,331 @@ def test_autofill_geo_provides_postcode(mock_loader, mock_llm, mock_geo):
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
     assert result["postcode"] == "00-001"
+
+
+# ===========================================================================
+# contacts_autofill_from_website
+# ===========================================================================
+
+
+def _make_loader_side_effect(*url_content_pairs):
+    """Return a side_effect callable for WebBaseLoader class mock.
+
+    *url_content_pairs* is a sequence of (url_fragment, content | Exception).
+    Falls back to an Exception for unrecognised URLs.
+    """
+    call_count = {"n": 0}
+
+    def factory(url):
+        idx = call_count["n"]
+        call_count["n"] += 1
+        if idx < len(url_content_pairs):
+            content_or_exc = url_content_pairs[idx]
+        else:
+            content_or_exc = Exception("unexpected call")
+
+        instance = MagicMock()
+        if isinstance(content_or_exc, Exception):
+            instance.load.side_effect = content_or_exc
+        else:
+            instance.load.return_value = [
+                MagicMock(page_content=content_or_exc)
+            ]
+        return instance
+
+    return factory
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_contacts_autofill_list_result(mock_loader_class, mock_llm_class):
+    """Happy path: main page + subpage load, LLM returns a list."""
+    # Call 0: main page
+    # Call 1: /kontakt fails → continue
+    # Call 2: /contact returns > 200 chars → break
+    long_content = "x" * 300
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("not found"),
+        long_content,
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='[{"name": "Alice", "role": "CEO", "phone": "123", "email": "a@e.com"}]'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = contacts_autofill_from_website("https://example.com")
+
+    assert len(result) == 1
+    assert result[0]["name"] == "Alice"
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_contacts_autofill_dict_contacts_key(mock_loader_class, mock_llm_class):
+    """LLM returns dict with 'contacts' key → unwrap it."""
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='{"contacts": [{"name": "Bob", "role": "CTO"}]}'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = contacts_autofill_from_website("https://example.com")
+
+    assert result[0]["name"] == "Bob"
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_contacts_autofill_dict_people_key(mock_loader_class, mock_llm_class):
+    """LLM returns dict with 'people' key → unwrap it."""
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='{"people": [{"name": "Carol", "role": "Dev"}]}'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = contacts_autofill_from_website("https://example.com")
+
+    assert result[0]["name"] == "Carol"
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_contacts_autofill_dict_no_matching_key(mock_loader_class, mock_llm_class):
+    """LLM returns dict with no recognised key → returns []."""
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='{"unknown_key": [{"name": "Nobody"}]}'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = contacts_autofill_from_website("https://example.com")
+
+    assert result == []
+
+
+@patch("marker.forms.ts.get_current_request")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_contacts_autofill_all_loads_fail(mock_loader_class, mock_get_request):
+    """All page loads fail → ValueError."""
+    mock_req = MagicMock()
+    mock_req.translate.side_effect = lambda msg: msg
+    mock_get_request.return_value = mock_req
+
+    instance = MagicMock()
+    instance.load.side_effect = Exception("connection refused")
+    mock_loader_class.return_value = instance
+
+    with pytest.raises(ValueError):
+        contacts_autofill_from_website("https://example.com")
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_contacts_autofill_url_skip(mock_loader_class, mock_llm_class):
+    """When website URL matches a contact sub-path, that path is skipped."""
+    # website = "https://example.com/kontakt" → /kontakt sub-path will be skipped
+    # Call 0: main page (https://example.com/kontakt) → main page content
+    # Call 1: /contact → 404
+    # Call 2-5: remaining paths → 404
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='[{"name": "Dave", "role": "PM"}]'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = contacts_autofill_from_website("https://example.com/kontakt")
+
+    assert result[0]["name"] == "Dave"
+
+
+# ===========================================================================
+# tags_autofill_from_website
+# ===========================================================================
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_tags_autofill_list_result(mock_loader_class, mock_llm_class):
+    """Happy path: main page + subpage load, LLM returns a tag list."""
+    long_content = "y" * 300
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        long_content,
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='["Construction", "Real estate"]'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = tags_autofill_from_website("https://example.com")
+
+    assert "Construction" in result
+    assert "Real estate" in result
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_tags_autofill_with_existing_tags(mock_loader_class, mock_llm_class):
+    """existing_tags are passed to the LLM prompt."""
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='["Construction"]'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = tags_autofill_from_website(
+        "https://example.com",
+        existing_tags=["Construction", "IT", "Finance"],
+    )
+
+    assert result == ["Construction"]
+    # Verify the invoke call included the existing tags
+    call_args = mock_llm_instance.invoke.call_args[0][0]
+    assert "Construction" in call_args
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_tags_autofill_dict_tags_key(mock_loader_class, mock_llm_class):
+    """LLM returns dict with 'tags' key → unwrap it."""
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='{"tags": ["BIM", "Architecture"]}'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = tags_autofill_from_website("https://example.com")
+
+    assert "BIM" in result
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_tags_autofill_dict_no_matching_key(mock_loader_class, mock_llm_class):
+    """LLM returns dict with no recognised key → returns []."""
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='{"other": ["BIM"]}'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = tags_autofill_from_website("https://example.com")
+
+    assert result == []
+
+
+@patch("marker.forms.ts.get_current_request")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_tags_autofill_all_loads_fail(mock_loader_class, mock_get_request):
+    """All page loads fail → ValueError."""
+    mock_req = MagicMock()
+    mock_req.translate.side_effect = lambda msg: msg
+    mock_get_request.return_value = mock_req
+
+    instance = MagicMock()
+    instance.load.side_effect = Exception("connection refused")
+    mock_loader_class.return_value = instance
+
+    with pytest.raises(ValueError):
+        tags_autofill_from_website("https://example.com")
+
+
+@patch("marker.utils.website_autofill.ChatGoogleGenerativeAI")
+@patch("marker.utils.website_autofill.WebBaseLoader")
+def test_tags_autofill_url_skip(mock_loader_class, mock_llm_class):
+    """When website URL matches a sub-path, that path is skipped."""
+    # website = "https://example.com/oferta" → /oferta will be skipped
+    mock_loader_class.side_effect = _make_loader_side_effect(
+        "main page content",
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+        Exception("404"),
+    )
+
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.invoke.return_value = MagicMock(
+        content='["Design"]'
+    )
+    mock_llm_class.return_value = mock_llm_instance
+
+    result = tags_autofill_from_website("https://example.com/oferta")
+
+    assert result == ["Design"]

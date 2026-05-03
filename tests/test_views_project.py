@@ -3029,3 +3029,206 @@ def test_project_add_ai_get(dbsession):
     view = ProjectView(request)
     result = view.add_ai()
     assert "form" in result
+
+
+# ===========================================================================
+# tag_operator invalid fallback in all() (line 231)
+# ===========================================================================
+
+
+def test_project_all_invalid_tag_operator(dbsession):
+    """Cover line 231: invalid tag_operator falls back to 'or'."""
+    from marker.models.tag import Tag
+
+    user = _make_user(dbsession, "projinvtop")
+    tag = Tag(name="ProjInvTopTag")
+    tag.created_by = user
+    proj = _make_project(dbsession, user, "ProjInvTopProj")
+    proj.tags.append(tag)
+    dbsession.add(tag)
+    transaction.commit()
+    params = MultiDict([("tag", "ProjInvTopTag"), ("tag_operator", "bad")])
+    request = _make_request(dbsession, user, params=params)
+    request.matched_route.name = "project_all"
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["tag_operator"] == "or"
+
+
+# ===========================================================================
+# object_category filter in all() (lines 351-352)
+# ===========================================================================
+
+
+def test_project_all_object_category(dbsession):
+    """Cover lines 351-352: object_category filter in all()."""
+    user = _make_user(dbsession, "projobcatall")
+    proj = _make_project(dbsession, user, "ProjObCatAll")
+    proj.object_category = "uslugi"
+    dbsession.flush()
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"object_category": "uslugi"})
+    request.matched_route.name = "project_all"
+    view = ProjectView(request)
+    result = view.all()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# object_category filter in similar() (lines 1090-1091)
+# ===========================================================================
+
+
+def test_project_similar_object_category(dbsession):
+    """Cover lines 1090-1091: object_category filter in similar()."""
+    from marker.models.tag import Tag
+
+    user = _make_user(dbsession, "projsimobcat")
+    tag = Tag(name="ProjSimObCatTag")
+    tag.created_by = user
+    proj1 = _make_project(dbsession, user, "ProjSimObCatP1")
+    proj2 = _make_project(dbsession, user, "ProjSimObCatP2")
+    proj1.tags.append(tag)
+    proj2.tags.append(tag)
+    proj2.object_category = "uslugi"
+    dbsession.add(tag)
+    dbsession.flush()
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, project=proj1, params={"object_category": "uslugi"}
+    )
+    request.matched_route.name = "project_similar"
+    view = ProjectView(request)
+    result = view.similar()
+    assert result["q"]["object_category"] == "uslugi"
+
+
+# ===========================================================================
+# add_ai() contacts_autofill exception handler (line 1973)
+# ===========================================================================
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    side_effect=Exception("contacts fail"),
+)
+@patch("marker.views.project.tags_autofill_from_website", return_value=[])
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ProjContExcP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_contacts_exception(mock_autofill, mock_tags, mock_contacts, mock_geo, dbsession):
+    """Cover line 1973: exception in contacts_autofill_from_website is handled."""
+    user = _make_user(dbsession, "projaicontexc")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch("marker.views.project.tags_autofill_from_website", return_value=[])
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    return_value=[{"name": "Jane Doe", "role": "PM", "phone": "999", "email": "j@x.com"}],
+)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ProjContRetP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_contacts_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover contact loop body in contacts_autofill_from_website branch."""
+    user = _make_user(dbsession, "projaicontret")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch("marker.views.project.tags_autofill_from_website", return_value=[])
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    return_value=[{"name": "", "role": None}, {"name": "Jane Doe2", "role": "PM"}],
+)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ProjContBlankP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_contacts_blank_name(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover 'continue' branch when contact name is blank (line 1973)."""
+    user = _make_user(dbsession, "projaicontblank")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+# ===========================================================================
+# add_ai() tags_autofill exception handler (line 2001)
+# ===========================================================================
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    side_effect=Exception("tags fail"),
+)
+@patch("marker.views.project.contacts_autofill_from_website", return_value=[])
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ProjTagsExcP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_tags_exception(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover line 2001: exception in tags_autofill_from_website is handled."""
+    user = _make_user(dbsession, "projaitagsexc")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
+
+
+@patch("marker.views.project.location_details", return_value=None)
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    return_value=["ExistingTestTag", "NewTagFromAI"],
+)
+@patch("marker.views.project.contacts_autofill_from_website", return_value=[])
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={"name": "ProjTagsRetP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+)
+def test_project_add_ai_tags_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+    """Cover tags loop body including existing tag branch (line 2001)."""
+    from marker.models.tag import Tag
+
+    user = _make_user(dbsession, "projaitagsret")
+    # Pre-create a tag so the "existing_tag" branch is taken
+    existing_tag = Tag(name="ExistingTestTag")
+    existing_tag.created_by = user
+    dbsession.add(existing_tag)
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert isinstance(result, HTTPSeeOther)
