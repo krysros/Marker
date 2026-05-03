@@ -1,3 +1,17 @@
+2.9
+---
+
+- Added Prompt view for Gemini/LangChain-powered SQL generation, with Gemini model configurable from INI settings
+- Added fullscreen mode for selected views
+- Added Similar view for selected companies and projects based on shared tags
+- Added object category support across projects (model, list views, filtering, sorting and XLSX/ODS exports)
+- Added Project Prices view with role-aware value/price columns, numeric range filters and XLSX/ODS export
+- Added report name filtering with autocomplete in reports list
+- Added selected-contact related Companies/Projects views and improved bulk actions with Deselect all controls
+- Unified filter UX with consistent from/to input groups and Clear buttons across filter forms
+- Improved AI-assisted add/autofill flows by extracting contacts and tags from websites, improving validation and hardening error handling
+- Refactored bulk selection to a dynamic database-driven approach and expanded automated test coverage
+
 2.8
 ---
 
