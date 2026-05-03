@@ -2035,3 +2035,72 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 msgid "The user %s cleared projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
+#: marker/templates/report/prompt.mako marker/templates/report/report_all.mako
+msgid "AI"
+msgstr "Prompt"
+
+#: marker/templates/report/prompt.mako marker/views/report.py
+msgid "AI Reports"
+msgstr "Prompt"
+
+#: marker/templates/report/prompt.mako marker/templates/base/navbar.mako
+msgid "Prompt"
+msgstr "Prompt"
+
+#: marker/templates/report/prompt.mako
+msgid ""
+"GEMINI_API_KEY is not set. AI reports require a valid Gemini API key "
+"configured on the server."
+msgstr ""
+"Klucz GEMINI_API_KEY nie jest ustawiony. Raporty AI wymagają prawidłowego "
+"klucza API Gemini skonfigurowanego na serwerze."
+
+#: marker/templates/report/prompt.mako
+msgid "Describe the report you want:"
+msgstr "Opisz raport, który chcesz uzyskać:"
+
+#: marker/templates/report/prompt.mako
+msgid "e.g. Show top 10 companies by number of projects"
+msgstr "np. Pokaż 10 firm z największą liczbą projektów"
+
+#: marker/templates/report/prompt.mako
+msgid "Generate"
+msgstr "Generuj"
+
+#: marker/templates/report/prompt.mako
+msgid "Error"
+msgstr "Błąd"
+
+#: marker/templates/report/prompt.mako
+msgid "Generated SQL"
+msgstr "Wygenerowany SQL"
+
+#: marker/templates/report/prompt.mako
+msgid "Results"
+msgstr "Wyniki"
+
+#: marker/templates/report/prompt.mako
+msgid "No results."
+msgstr "Brak wyników."
+
+#: marker/views/report.py
+msgid "Please enter a prompt."
+msgstr "Proszę wpisać treść zapytania."
+
+#: marker/views/report.py
+msgid "GEMINI_API_KEY is not configured on this server."
+msgstr "Klucz GEMINI_API_KEY nie jest skonfigurowany na tym serwerze."
+
+#: marker/utils/llm_report.py
+msgid "Only SELECT statements are allowed."
+msgstr "Dozwolone są wyłącznie zapytania SELECT."
+
+#: marker/utils/llm_report.py
+msgid "Multiple SQL statements are not allowed."
+msgstr "Wiele instrukcji SQL w jednym zapytaniu jest niedozwolone."
+
+#: marker/utils/llm_report.py
+#, python-format
+msgid "Keyword '%(kw)s' is not permitted in AI reports."
+msgstr "Słowo kluczowe '%(kw)s' jest niedozwolone w raportach AI."
+
