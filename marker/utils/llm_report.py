@@ -45,8 +45,8 @@ _FORBIDDEN_KEYWORDS = (
 )
 
 
-def generate_report_sql(prompt: str) -> str:
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
+def generate_report_sql(prompt: str, model: str = "gemini-2.5-flash-lite") -> str:
+    llm = ChatGoogleGenerativeAI(model=model)
     response = llm.invoke(f"{_SCHEMA_CONTEXT}\nUser request: {prompt}")
     sql = response.content.strip()
     # Strip markdown code fences if Gemini wraps them anyway

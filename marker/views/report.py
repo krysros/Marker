@@ -55,7 +55,10 @@ class ReportView:
                 )
             else:
                 try:
-                    raw_sql = generate_report_sql(prompt)
+                    model = (getattr(self.request.registry, "settings", None) or {}).get(
+                        "gemini.model", "gemini-2.5-flash-lite"
+                    )
+                    raw_sql = generate_report_sql(prompt, model=model)
                     sql_generated = validate_sql(raw_sql)
                     result = self.request.dbsession.execute(text(sql_generated))
                     columns = list(result.keys())

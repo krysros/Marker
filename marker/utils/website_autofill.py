@@ -13,7 +13,7 @@ from ..forms.ts import TranslationString as _
 from .geo import location_details
 
 
-def _autofill_from_website(url, prompt):
+def _autofill_from_website(url, prompt, model="gemini-2.5-flash-lite"):
     """
     Shared logic for autofilling company or project data from a website.
     """
@@ -27,7 +27,7 @@ def _autofill_from_website(url, prompt):
 
     # Initialize Gemini model with forced JSON output
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model=model,
         response_mime_type="application/json",
     )
 
@@ -72,17 +72,17 @@ def _autofill_from_website(url, prompt):
     return result
 
 
-def company_autofill_from_website(website):
+def company_autofill_from_website(website, model="gemini-2.5-flash-lite"):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(website, prompt)
+    return _autofill_from_website(website, prompt, model=model)
 
 
-def project_autofill_from_website(website):
+def project_autofill_from_website(website, model="gemini-2.5-flash-lite"):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(website, prompt)
+    return _autofill_from_website(website, prompt, model=model)
 
 
-def contacts_autofill_from_website(website):
+def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
     """
     Extract a list of contacts (people) from the given website URL.
     In addition to the main URL, tries common contact sub-pages
@@ -124,7 +124,7 @@ def contacts_autofill_from_website(website):
     content = "\n\n---\n\n".join(content_parts[:2])
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model=model,
         response_mime_type="application/json",
     )
 
@@ -148,7 +148,7 @@ def contacts_autofill_from_website(website):
     return []
 
 
-def tags_autofill_from_website(website, existing_tags=None):
+def tags_autofill_from_website(website, existing_tags=None, model="gemini-2.5-flash-lite"):
     """
     Extract a list of tags (core business activities or project types) from the
     given website URL.  When *existing_tags* (a list of tag name strings already
@@ -190,7 +190,7 @@ def tags_autofill_from_website(website, existing_tags=None):
     content = "\n\n---\n\n".join(content_parts[:2])
 
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model=model,
         response_mime_type="application/json",
     )
 

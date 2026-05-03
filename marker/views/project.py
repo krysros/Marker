@@ -1296,8 +1296,11 @@ class ProjectView:
     def website_autofill(self):
         _ = self.request.translate
         website = self.request.params.get("website", "")
+        model = (getattr(self.request.registry, "settings", None) or {}).get(
+            "gemini.model", "gemini-2.5-flash-lite"
+        )
         try:
-            fields = project_autofill_from_website(website)
+            fields = project_autofill_from_website(website, model=model)
         except Exception as e:
             log.error("project_website_autofill error: %s", e)
             error_msg = str(e)
@@ -1851,8 +1854,11 @@ class ProjectView:
             self.request.POST if self.request.method == "POST" else None
         )
         if self.request.method == "POST" and form.validate():
+            model = (getattr(self.request.registry, "settings", None) or {}).get(
+                "gemini.model", "gemini-2.5-flash-lite"
+            )
             try:
-                autofill = dict(project_autofill_from_website(form.website.data))
+                autofill = dict(project_autofill_from_website(form.website.data, model=model))
                 autofill["website"] = form.website.data
             except Exception as e:
                 self.request.session.flash(
@@ -1960,7 +1966,7 @@ class ProjectView:
 
             # Extract and save contacts from the website
             try:
-                extracted_contacts = contacts_autofill_from_website(form.website.data)
+                extracted_contacts = contacts_autofill_from_website(form.website.data, model=model)
                 for c_data in extracted_contacts:
                     name = (c_data.get("name") or "").strip()
                     if not name:
@@ -1983,7 +1989,7 @@ class ProjectView:
                     self.request.dbsession.execute(select(Tag.name)).scalars().all()
                 )
                 extracted_tags = tags_autofill_from_website(
-                    form.website.data, existing_tag_names
+                    form.website.data, existing_tag_names, model=model
                 )
                 for tag_name in extracted_tags[:20]:
                     existing_tag = self.request.dbsession.execute(
