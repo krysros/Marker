@@ -288,3 +288,68 @@ def test_report_view_not_found(dbsession):
         assert False, "Should have raised HTTPNotFound"
     except HTTPNotFound:
         pass
+
+
+# ===========================================================================
+# prompt()
+# ===========================================================================
+
+
+def _make_post_request(dbsession, post_data=None):
+    request = _make_request(dbsession)
+    request.method = "POST"
+    request.POST = MultiDict(post_data or {})
+    return request
+
+
+def test_prompt_get(dbsession):
+    request = _make_request(dbsession)
+    view = ReportView(request)
+    result = view.prompt()
+    assert result["prompt"] == ""
+    assert result["columns"] is None
+    assert result["rows"] is None
+    assert result["error"] is None
+    assert result["sql_generated"] is None
+
+
+def test_prompt_post_empty_prompt(dbsession):
+    request = _make_post_request(dbsession, {"prompt": ""})
+    view = ReportView(request)
+    result = view.prompt()
+    assert result["error"] is not None
+    assert result["columns"] is None
+
+
+def test_prompt_post_no_api_key(dbsession, monkeypatch):
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    request = _make_post_request(dbsession, {"prompt": "show all companies"})
+    view = ReportView(request)
+    result = view.prompt()
+    assert result["error"] is not None
+    assert result["columns"] is None
+
+
+def test_prompt_post_with_mock_llm(dbsession, monkeypatch):
+    from unittest.mock import patch
+
+    monkeypatch.setenv("GEMINI_API_KEY", "fake-key")
+    sql = "SELECT name FROM companies LIMIT 10"
+    with patch(
+        "marker.views.report.ReportView.prompt.__wrapped__"
+        if hasattr(ReportView.prompt, "__wrapped__")
+        else "marker.utils.llm_report.generate_report_sql",
+        return_value=sql,
+    ):
+        with patch(
+            "marker.utils.llm_report.generate_report_sql", return_value=sql
+        ):
+            request = _make_post_request(
+                dbsession, {"prompt": "show all companies"}
+            )
+            view = ReportView(request)
+            result = view.prompt()
+            assert result["sql_generated"] == sql
+            assert result["columns"] is not None
+            assert result["error"] is None
+

@@ -36,6 +36,9 @@
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('report_all')}"><i class="bi bi-bar-chart"></i> ${_("Reports")}</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" href="${request.route_url('prompt')}"><i class="bi bi-robot"></i> ${_("Prompt")}</a>
+        </li>
         <li class="nav-item d-none d-md-flex align-items-center">
           <span class="nav-link disabled px-1" aria-hidden="true">|</span>
         </li>

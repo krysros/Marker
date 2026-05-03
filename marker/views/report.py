@@ -1,5 +1,8 @@
+import os
+
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.view import view_config
+from sqlalchemy import text
 from sqlalchemy.sql import func, select
 from sqlalchemy.sql.expression import desc
 
@@ -30,6 +33,42 @@ class ReportView:
             "heading": _("Report"),
             "reports": REPORTS,
             "counter": len(REPORTS),
+        }
+
+    @view_config(route_name="prompt", renderer="prompt.mako", permission="view")
+    def prompt(self):
+        from ..utils.llm_report import generate_report_sql, validate_sql
+
+        prompt = ""
+        columns = None
+        rows = None
+        error = None
+        sql_generated = None
+
+        if self.request.method == "POST":
+            prompt = self.request.POST.get("prompt", "").strip()
+            if not prompt:
+                error = self.request.translate("Please enter a prompt.")
+            elif not os.environ.get("GEMINI_API_KEY"):
+                error = self.request.translate(
+                    "GEMINI_API_KEY is not configured on this server."
+                )
+            else:
+                try:
+                    raw_sql = generate_report_sql(prompt)
+                    sql_generated = validate_sql(raw_sql)
+                    result = self.request.dbsession.execute(text(sql_generated))
+                    columns = list(result.keys())
+                    rows = result.fetchall()
+                except Exception as exc:
+                    error = str(exc)
+
+        return {
+            "prompt": prompt,
+            "columns": columns,
+            "rows": rows,
+            "error": error,
+            "sql_generated": sql_generated,
         }
 
     @view_config(
