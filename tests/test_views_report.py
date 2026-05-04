@@ -1,10 +1,12 @@
 """Tests for marker/views/report.py"""
 
+from decimal import Decimal
 from unittest.mock import MagicMock
 
 import transaction
 from webob.multidict import MultiDict
 
+from marker.models.association import Activity
 from marker.models.company import Company
 from marker.models.project import Project
 from marker.models.tag import Tag
@@ -368,4 +370,160 @@ def test_prompt_post_exception(dbsession, monkeypatch):
         assert result["error"] == "LLM call failed"
         assert result["columns"] is None
         assert result["rows"] is None
+
+
+# ===========================================================================
+# chart data (matched_route == "report_view" branch, lines 370-386)
+# ===========================================================================
+
+
+def _make_request_with_route(dbsession, route_name, matchdict=None):
+    request = _make_request(dbsession, matchdict=matchdict)
+    request.matched_route = MagicMock()
+    request.matched_route.name = route_name
+    return request
+
+
+def test_report_view_chart_no_data(dbsession):
+    """Enter chart block with empty result set (covers lines 370-374, 386)."""
+    request = _make_request_with_route(
+        dbsession, "report_view", matchdict={"rel": "companies-tags"}
+    )
+    view = ReportView(request)
+    result = view.view()
+    assert result["chart_data_json"] != "null"
+
+
+def test_report_view_chart_long_label(dbsession):
+    """Chart loop body: int value, label > 35 chars truncated (covers 375-385)."""
+    user = User(
+        name="rptchart1", fullname="C1", email="rc1@e.com", role="admin", password="pw"
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    tag = Tag(name="T" * 40)
+    tag.created_by = user
+    dbsession.add(tag)
+    company = Company(
+        name="ChartCo1",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+    dbsession.add(company)
+    dbsession.flush()
+    company.tags.append(tag)
+    transaction.commit()
+
+    request = _make_request_with_route(
+        dbsession, "report_view", matchdict={"rel": "companies-tags"}
+    )
+    view = ReportView(request)
+    result = view.view()
+    import json
+
+    data = json.loads(result["chart_data_json"])
+    assert len(data["labels"]) > 0
+    assert len(data["labels"][0]) <= 35
+
+
+def test_report_view_chart_subdivisions(dbsession):
+    """Chart loop body: get_subdivision_name called for subdivisions rel (line 377)."""
+    user = User(
+        name="rptchart2", fullname="C2", email="rc2@e.com", role="admin", password="pw"
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    company = Company(
+        name="SubdivCo",
+        street="",
+        postcode="",
+        city="",
+        subdivision="PL-DS",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+    dbsession.add(company)
+    transaction.commit()
+
+    request = _make_request_with_route(
+        dbsession, "report_view", matchdict={"rel": "companies-subdivisions"}
+    )
+    view = ReportView(request)
+    result = view.view()
+    import json
+
+    data = json.loads(result["chart_data_json"])
+    assert len(data["labels"]) > 0
+
+
+def test_report_view_chart_decimal_value(dbsession):
+    """Chart loop body: Decimal value converted to float (lines 383-384)."""
+    user = User(
+        name="rptchart3", fullname="C3", email="rc3@e.com", role="admin", password="pw"
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    company = Company(
+        name="DecimalCo",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+    project = Project(
+        name="DecimalProj",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+    dbsession.add(company)
+    dbsession.add(project)
+    dbsession.flush()
+    activity = Activity(
+        company_id=company.id,
+        project_id=project.id,
+        value_gross=Decimal("12345.67"),
+    )
+    dbsession.add(activity)
+    transaction.commit()
+
+    request = _make_request_with_route(
+        dbsession, "report_view", matchdict={"rel": "projects-highest-value"}
+    )
+    view = ReportView(request)
+    result = view.view()
+    import json
+
+    data = json.loads(result["chart_data_json"])
+    assert len(data["values"]) > 0
+    assert data["is_decimal"] is True
 
