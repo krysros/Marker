@@ -2,7 +2,7 @@
   <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     <i class="bi bi-filter"></i> ${_("Filter")}
   </button>
-  <form class="dropdown-menu p-4" style="min-width: 420px;">
+  <form class="dropdown-menu p-4" style="min-width: 400px;">
     % for tag in q.get("tag", []):
       <input type="hidden" name="tag" value="${tag}">
     % endfor
