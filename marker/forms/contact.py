@@ -107,3 +107,7 @@ class ContactFilterForm(Form):
 
 class ContactImportForm(Form):
     csv_file = FileField(_("CSV file"), validators=[DataRequired()])
+
+
+class ContactImportVcardForm(Form):
+    vcf_file = FileField(_("vCard file (.vcf)"), validators=[DataRequired()])
