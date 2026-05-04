@@ -1057,10 +1057,27 @@ msgstr "Przejdź do formularza i dodaj..."
 #: marker/templates/user/user_selected_related_contacts.mako:49
 #: marker/templates/user/user_selected_related_contacts.mako:55
 #: marker/templates/user/user_selected_tags.mako:38
+#: marker/templates/report/report_view.mako
 #: marker/templates/user/user_selected_tags_companies.mako:15
 #: marker/templates/user/user_selected_tags_projects.mako:15
 msgid "View mode"
 msgstr "Tryb widoku"
+
+#: marker/templates/report/report_view.mako
+msgid "Table"
+msgstr "Tabela"
+
+#: marker/templates/report/report_view.mako
+msgid "Chart"
+msgstr "Wykres"
+
+#: marker/templates/report/report_view.mako
+msgid "Chart shows top"
+msgstr "Wykres pokazuje top"
+
+#: marker/templates/report/report_view.mako
+msgid "results"
+msgstr "wyników"
 
 #: marker/templates/company/company_form.mako:78
 #: marker/templates/company/company_form.mako:79

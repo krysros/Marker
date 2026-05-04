@@ -1,4 +1,6 @@
+import json as _json
 import os
+from decimal import Decimal
 
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.view import view_config
@@ -20,6 +22,7 @@ from ..models import (
     projects_tags,
 )
 from ..utils.paginator import get_paginator
+from ..subscribers import get_subdivision_name
 
 
 class ReportView:
@@ -355,9 +358,42 @@ class ReportView:
             rel=rel,
             _query={"page": page + 1},
         )
+
+        _DECIMAL_REPORTS = {
+            "projects-highest-value",
+            "projects-highest-usable-area",
+            "projects-highest-cubic-volume",
+        }
+        chart_data_json = "null"
+        if self.request.matched_route.name == "report_view":
+            _CHART_LIMIT = 25
+            chart_rows = self.request.dbsession.execute(stmt.limit(_CHART_LIMIT)).all()
+            chart_labels = []
+            chart_values = []
+            for row in chart_rows:
+                raw_label = row[0] or "---"
+                if "subdivisions" in rel:
+                    raw_label = get_subdivision_name(raw_label, "---")
+                label = str(raw_label)
+                if len(label) > 35:
+                    label = label[:33] + "…"
+                chart_labels.append(label)
+                value = row[1]
+                if isinstance(value, Decimal):
+                    value = float(value)
+                chart_values.append(float(value) if value is not None else 0)
+            chart_data_json = _json.dumps(
+                {
+                    "labels": chart_labels,
+                    "values": chart_values,
+                    "is_decimal": rel in _DECIMAL_REPORTS,
+                }
+            ).replace("</", "<\\/")
+
         return {
             "rel": rel,
             "lead": reports[rel],
             "paginator": paginator,
             "next_page": next_page,
+            "chart_data_json": chart_data_json,
         }
