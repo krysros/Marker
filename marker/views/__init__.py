@@ -270,6 +270,25 @@ def toggle_selected_item(request, selection_table, selected_column, item_id):
     return True
 
 
+def selected_ids_for_items(request, selection_table, selected_column, item_ids):
+    """Return selected item IDs (for current user) intersecting with item_ids."""
+    ids = [item_id for item_id in item_ids if item_id is not None]
+    if not ids:
+        return set()
+
+    rows = (
+        request.dbsession.execute(
+            select(selected_column).where(
+                selection_table.c.user_id == request.identity.id,
+                selected_column.in_(ids),
+            )
+        )
+        .scalars()
+        .all()
+    )
+    return set(rows)
+
+
 def clear_selected_rows(request, selection_table, selected_column, item_ids):
     """Remove selected rows for the given item_ids from the selection table for the current user."""
     ids = {item_id for item_id in item_ids if item_id is not None}

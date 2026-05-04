@@ -22,11 +22,13 @@ class LazyMarkerLoader {
     this.zoomThreshold = options.zoomThreshold || 12;
     this.debounceDelay = options.debounceDelay || 500;
     this.autoLoad = options.autoLoad !== false;
+    this.csrfToken = options.csrfToken || '';
     
     this.debounceTimer = null;
     
     // Add markers to map
     this.map.addLayer(this.markers);
+    this._attachPopupCheckboxHandler();
   }
   
   /**
@@ -128,12 +130,65 @@ class LazyMarkerLoader {
    * Create HTML content for marker popup
    */
   _createMarkerTitle(item) {
+    const checkbox = this._createPopupCheckbox(item);
     const title = `<a href="${item.url}"><b>${this._escapeHtml(item.name)}</b></a>`;
     const street = item.street ? `<br>${this._escapeHtml(item.street)}` : '';
     const city = item.city ? `<br>${this._escapeHtml(item.city)}` : '';
     const country = item.country ? `<br>${this._escapeHtml(item.country)}` : '';
-    
-    return title + street + city + country;
+
+    return `${checkbox}${title}${street}${city}${country}`;
+  }
+
+  _createPopupCheckbox(item) {
+    if (!item.check_url) return '';
+
+    const checked = item.checked ? ' checked' : '';
+    const checkUrl = this._escapeHtml(item.check_url);
+    return `<input class="marker-popup-select me-2" type="checkbox" data-check-url="${checkUrl}" aria-label="Select item"${checked}>`;
+  }
+
+  _attachPopupCheckboxHandler() {
+    this.map.getContainer().addEventListener('change', async (event) => {
+      const checkbox = event.target;
+      if (!checkbox.matches('input.marker-popup-select[data-check-url]')) {
+        return;
+      }
+
+      const checkUrl = checkbox.dataset.checkUrl;
+      if (!checkUrl) {
+        return;
+      }
+
+      const previousChecked = !checkbox.checked;
+      checkbox.disabled = true;
+      try {
+        const headers = {
+          'X-Requested-With': 'XMLHttpRequest'
+        };
+        if (this.csrfToken) {
+          headers['X-CSRF-Token'] = this.csrfToken;
+        }
+
+        const response = await fetch(checkUrl, {
+          method: 'POST',
+          headers
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result && typeof result.checked === 'boolean') {
+          checkbox.checked = result.checked;
+        }
+      } catch (error) {
+        checkbox.checked = previousChecked;
+        console.error('Error toggling marker selection:', error);
+      } finally {
+        checkbox.disabled = false;
+      }
+    });
   }
   
   /**

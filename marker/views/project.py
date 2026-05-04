@@ -62,6 +62,7 @@ from . import (
     normalize_ci_value,
     normalized_tags_from_request,
     polish_sort_expression,
+    selected_ids_for_items,
     sort_column,
     toggle_selected_item,
 )
@@ -655,7 +656,13 @@ class ProjectView:
             deadline_dt = datetime.datetime.strptime(deadline, "%Y-%m-%d %H:%M:%S")
             stmt = stmt.filter(Project.deadline <= deadline_dt)
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
 
         res = [
             {
@@ -670,6 +677,10 @@ class ProjectView:
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
             }
             for project in projects
         ]

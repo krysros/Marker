@@ -4,6 +4,16 @@
   const fallbackZoom = 5;
 
   let map = L.map('map').setView(fallbackCenter, fallbackZoom);
+  let userInteractedWithMap = false;
+
+  const markUserInteraction = () => {
+    userInteractedWithMap = true;
+  };
+
+  map.on('movestart', markUserInteraction);
+  map.on('zoomstart', markUserInteraction);
+  map.on('dragstart', markUserInteraction);
+
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
@@ -15,7 +25,8 @@
       maxClusterRadius: 50,
     },
     debounceDelay: 500,
-    autoLoad: true
+    autoLoad: true,
+    csrfToken: "${get_csrf_token()}"
   });
 
   lazyLoader.init();
@@ -23,6 +34,9 @@
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        if (userInteractedWithMap) {
+          return;
+        }
         let latitude = position.coords.latitude;
         let longitude = position.coords.longitude;
         map.setView([latitude, longitude], fallbackZoom);

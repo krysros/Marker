@@ -32,6 +32,8 @@ from ..models import (
     companies_tags,
     projects_stars,
     projects_tags,
+    selected_companies,
+    selected_projects,
     selected_tags,
 )
 from ..utils.export import make_export_response
@@ -43,6 +45,7 @@ from . import (
     contains_ci,
     handle_bulk_selection,
     is_bulk_select_request,
+    selected_ids_for_items,
     sort_column,
     toggle_selected_item,
 )
@@ -365,7 +368,13 @@ class TagView:
             except (ValueError, TypeError):
                 pass  # Invalid coordinates, ignore filtering
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
         res = [
             {
                 "id": company.id,
@@ -379,6 +388,10 @@ class TagView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
             }
             for company in companies
         ]
@@ -442,7 +455,13 @@ class TagView:
             except (ValueError, TypeError):
                 pass  # Invalid coordinates, ignore filtering
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
         res = [
             {
                 "id": project.id,
@@ -456,6 +475,10 @@ class TagView:
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
             }
             for project in projects
         ]
