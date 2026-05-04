@@ -132,11 +132,16 @@ class LazyMarkerLoader {
   _createMarkerTitle(item) {
     const checkbox = this._createPopupCheckbox(item);
     const title = `<a href="${item.url}"><b>${this._escapeHtml(item.name)}</b></a>`;
-    const street = item.street ? `<br>${this._escapeHtml(item.street)}` : '';
-    const city = item.city ? `<br>${this._escapeHtml(item.city)}` : '';
-    const country = item.country ? `<br>${this._escapeHtml(item.country)}` : '';
+    const details = [item.street, item.city, item.country]
+      .filter((value) => value)
+      .map((value) => this._escapeHtml(value))
+      .join('<br>');
 
-    return `${checkbox}${title}${street}${city}${country}`;
+    const detailsHtml = details
+      ? `<div class="marker-popup-details">${details}</div>`
+      : '';
+
+    return `${checkbox}${title}${detailsHtml}`;
   }
 
   _createPopupCheckbox(item) {
