@@ -230,12 +230,12 @@ def test_upsert_vcard_returns_existing_contact(dbsession):
     assert contact.id == existing.id
 
 
-def test_upsert_vcard_no_org_uses_contact_name_as_company(dbsession):
+def test_upsert_vcard_no_org_creates_standalone_contact(dbsession):
     user = _make_user(dbsession, "uvc4")
     card = _card(org=None, name="Dave Solo")
     contact = upsert_vcard(dbsession, user, card)
     assert contact.name == "Dave Solo"
-    assert contact.company.name == "Dave Solo"
+    assert contact.company is None
 
 
 # ---------------------------------------------------------------------------
