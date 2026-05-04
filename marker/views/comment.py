@@ -25,7 +25,7 @@ class CommentView:
     )
     @view_config(
         route_name="comment_more",
-        renderer="comment_more.mako",
+        renderer="comment_all#rows.mako",
         permission="view",
     )
     def all(self):

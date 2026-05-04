@@ -97,7 +97,7 @@ class TagView:
     @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
     @view_config(
         route_name="tag_more",
-        renderer="tag_more.mako",
+        renderer="tag_table#rows.mako",
         permission="view",
     )
     def all(self):
@@ -491,7 +491,7 @@ class TagView:
     )
     @view_config(
         route_name="tag_more_companies",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def companies(self):
@@ -726,7 +726,7 @@ class TagView:
     )
     @view_config(
         route_name="tag_more_projects",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def projects(self):

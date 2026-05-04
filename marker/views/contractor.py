@@ -47,7 +47,7 @@ class ContractorView:
     )
     @view_config(
         route_name="contractor_more",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def all(self):

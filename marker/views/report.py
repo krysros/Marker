@@ -82,7 +82,7 @@ class ReportView:
     )
     @view_config(
         route_name="report_more",
-        renderer="report_more.mako",
+        renderer="report_table#rows.mako",
         permission="view",
     )
     def view(self):
@@ -365,7 +365,8 @@ class ReportView:
             "projects-highest-cubic-volume",
         }
         chart_data_json = "null"
-        if self.request.matched_route.name == "report_view":
+        matched_route = getattr(self.request, "matched_route", None)
+        if matched_route and matched_route.name == "report_view":
             _CHART_LIMIT = 25
             chart_rows = self.request.dbsession.execute(stmt.limit(_CHART_LIMIT)).all()
             chart_labels = []

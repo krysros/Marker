@@ -2,6 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
+<%namespace name="ct" file="contact_table.mako"/>
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(company_pills)}</div>
@@ -36,7 +37,7 @@
       </tr>
     </thead>
     <tbody id="new-contact">
-      <%include file="contact_more.mako" args="paginator=contacts"/>
+      ${ct.rows(paginator=contacts)}
     </tbody>
   </table>
 </div>
