@@ -63,7 +63,7 @@
           <div class="mb-3">
             <label for="mergeTagName" class="form-label">${_("New tag name")}</label>
             <input type="text" class="form-control" id="mergeTagName" name="merge_tag_name" required>
-            <small class="form-text text-muted">${_("The new name can be the same as one of the selected tags")}</small>
+            <small class="form-text text-body-secondary">${_("The new name can be the same as one of the selected tags")}</small>
           </div>
         </div>
         <div class="modal-footer">

@@ -16,7 +16,7 @@
   <td>${checkbox.checkbox(assoc.project, selected_ids=selected_ids('selected_projects'), url=request.route_url('project_check', project_id=assoc.project.id, slug=assoc.project.slug))}</td>
   <td>
     <a href="${request.route_url('project_view', project_id=assoc.project.id, slug=assoc.project.slug)}">${assoc.project.name}</a>
-    <div class="small text-muted">
+    <div class="small text-body-secondary">
       ${_("Created at")}: ${assoc.project.created_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.created_at else '---'}<br/>
       ${_("Updated at")}: ${assoc.project.updated_at.strftime('%Y-%m-%d %H:%M:%S') if assoc.project.updated_at else '---'}
     </div>

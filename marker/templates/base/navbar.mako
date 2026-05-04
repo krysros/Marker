@@ -146,7 +146,7 @@
             </svg>
             <span class="d-lg-none ms-2" id="bd-theme-text">${_("Toggle theme")}</span> 
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme">
             <li>
               <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
                 <svg class="bi me-2 opacity-50" aria-hidden="true">
