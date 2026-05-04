@@ -183,6 +183,7 @@ def upsert_vcard(dbsession, identity, card: ParsedVCard) -> Contact:
     1. Company + contact match → return existing contact unchanged.
     2. Company exists, no matching contact → create contact, attach to company.
     3. Company doesn't exist → create company + contact.
+    4. No ORG field → create standalone contact (no company).
     """
     company: Optional[Company] = None
 
@@ -193,7 +194,7 @@ def upsert_vcard(dbsession, identity, card: ParsedVCard) -> Contact:
             )
         ).scalar_one_or_none()
 
-    if company is not None:
+    if card.org and company is not None:
         # Check for an existing identical contact
         for c in company.contacts:
             if _contacts_equal(c, card):
@@ -211,24 +212,38 @@ def upsert_vcard(dbsession, identity, card: ParsedVCard) -> Contact:
         dbsession.flush()
         return contact
 
-    # Create company + contact from scratch
-    company = Company(
-        name=card.org or card.name,
-        street=card.street or "",
-        postcode=card.postcode or "",
-        city=card.city or "",
-        subdivision=card.subdivision or "",
-        country=card.country or "",
-        website=card.website or "",
-        color="",
-        NIP=card.nip or "",
-        REGON=card.regon or "",
-        KRS=card.krs or "",
-    )
-    company.created_by = identity
-    dbsession.add(company)
-    dbsession.flush()
+    if card.org:
+        # ORG given but company not found → create company + contact
+        company = Company(
+            name=card.org,
+            street=card.street or "",
+            postcode=card.postcode or "",
+            city=card.city or "",
+            subdivision=card.subdivision or "",
+            country=card.country or "",
+            website=card.website or "",
+            color="",
+            NIP=card.nip or "",
+            REGON=card.regon or "",
+            KRS=card.krs or "",
+        )
+        company.created_by = identity
+        dbsession.add(company)
+        dbsession.flush()
 
+        contact = Contact(
+            name=card.name,
+            role=card.role,
+            phone=card.phone,
+            email=card.email,
+            color="",
+        )
+        contact.created_by = identity
+        company.contacts.append(contact)
+        dbsession.flush()
+        return contact
+
+    # No ORG → standalone contact without a company
     contact = Contact(
         name=card.name,
         role=card.role,
@@ -237,6 +252,6 @@ def upsert_vcard(dbsession, identity, card: ParsedVCard) -> Contact:
         color="",
     )
     contact.created_by = identity
-    company.contacts.append(contact)
+    dbsession.add(contact)
     dbsession.flush()
     return contact
