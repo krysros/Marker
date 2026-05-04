@@ -93,7 +93,7 @@ class ContactView:
     )
     @view_config(
         route_name="contact_more",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def all(self):
@@ -442,12 +442,12 @@ class ContactView:
     )
     @view_config(
         route_name="search_tags_results_more",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     @view_config(
         route_name="contact_search_tags_results_more",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def search_tags_results(self):

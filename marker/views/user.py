@@ -551,7 +551,7 @@ class UserView:
         return rows, row_colors
 
     @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
-    @view_config(route_name="user_more", renderer="user_more.mako", permission="view")
+    @view_config(route_name="user_more", renderer="user_table#rows.mako", permission="view")
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
@@ -651,7 +651,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_comments",
-        renderer="comment_more.mako",
+        renderer="user_comments#rows.mako",
         permission="view",
     )
     def comments(self):
@@ -728,7 +728,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_tags",
-        renderer="tag_more.mako",
+        renderer="tag_table#rows.mako",
         permission="view",
     )
     def tags(self):
@@ -842,7 +842,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_companies",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def companies(self):
@@ -1094,7 +1094,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_projects",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def projects(self):
@@ -1406,7 +1406,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_contacts",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def contacts(self):
@@ -1783,7 +1783,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_companies",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def selected_companies(self):
@@ -1888,7 +1888,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_companies_similar",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def selected_companies_similar(self):
@@ -2241,7 +2241,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_projects",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def selected_projects(self):
@@ -2370,7 +2370,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_projects_similar",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def selected_projects_similar(self):
@@ -2775,7 +2775,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_tags",
-        renderer="tag_more.mako",
+        renderer="tag_table#rows.mako",
         permission="view",
     )
     def selected_tags(self):
@@ -2851,7 +2851,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_tags_companies",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def selected_tags_companies(self):
@@ -2962,7 +2962,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_tags_projects",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def selected_tags_projects(self):
@@ -3391,7 +3391,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_companies_contacts",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def selected_companies_contacts(self):
@@ -3414,7 +3414,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_projects_contacts",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def selected_projects_contacts(self):
@@ -3437,7 +3437,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_tags_contacts",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def selected_tags_contacts(self):
@@ -3460,7 +3460,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_contacts_companies",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def selected_contacts_companies(self):
@@ -3545,7 +3545,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_contacts_projects",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def selected_contacts_projects(self):
@@ -3634,7 +3634,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_selected_contacts",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def selected_contacts(self):
@@ -4308,7 +4308,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_companies_stars",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def companies_stars(self):
@@ -4545,7 +4545,7 @@ class UserView:
     )
     @view_config(
         route_name="user_more_projects_stars",
-        renderer="project_more.mako",
+        renderer="project_table#rows.mako",
         permission="view",
     )
     def projects_stars(self):

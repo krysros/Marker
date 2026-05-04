@@ -31,7 +31,7 @@ class PricesView:
     )
     @view_config(
         route_name="prices_more",
-        renderer="prices_more.mako",
+        renderer="prices_all#rows.mako",
         permission="view",
     )
     def all(self):

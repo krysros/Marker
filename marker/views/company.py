@@ -168,12 +168,12 @@ class CompanyView:
     )
     @view_config(
         route_name="company_more",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     @view_config(
         route_name="company_more_contacts",
-        renderer="contact_more.mako",
+        renderer="contact_table#rows.mako",
         permission="view",
     )
     def all(self):
@@ -815,7 +815,7 @@ class CompanyView:
     )
     @view_config(
         route_name="company_more_stars",
-        renderer="user_more.mako",
+        renderer="user_table#rows.mako",
         permission="view",
     )
     def companies_stars(self):
@@ -1002,7 +1002,7 @@ class CompanyView:
     )
     @view_config(
         route_name="company_more_comments",
-        renderer="comment_more.mako",
+        renderer="company_comments#rows.mako",
         permission="view",
     )
     def comments(self):
@@ -1066,7 +1066,7 @@ class CompanyView:
     )
     @view_config(
         route_name="company_more_similar",
-        renderer="company_more.mako",
+        renderer="company_table#rows.mako",
         permission="view",
     )
     def similar(self):
