@@ -16,7 +16,7 @@
   <button id="btn-start-stop" class="btn btn-success" onclick="toggleCheck()">
     <i class="bi bi-play-fill"></i> Start
   </button>
-  <span id="progress-info" class="ms-2 text-muted"></span>
+  <span id="progress-info" class="ms-2 text-body-secondary"></span>
 </div>
 
 <div class="table-responsive">

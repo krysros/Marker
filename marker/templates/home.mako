@@ -2,101 +2,96 @@
 <%namespace name="button" file="button.mako"/>
 
 <div class="p-4 mb-4 border rounded-3">
-  <div class="container">
-    <h1>${project} <small class="text-body-secondary">${_("App for General Contractors")}</small></h1>
-    <p class="fs-4">
-      ${_("Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting.")}
-    </p>
-    <div>
-      ${button.a(title=_("Search"), icon='search', color='primary', size='lg', url=request.route_url('search_tags'))}
-    </div>
+  <h1>${project} <small class="text-body-secondary">${_("App for General Contractors")}</small></h1>
+  <p class="fs-4">
+    ${_("Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting.")}
+  </p>
+  <div>
+    ${button.a(title=_("Search"), icon='search', color='primary', size='lg', url=request.route_url('search_tags'))}
   </div>
 </div>
-
-<div class="container">
-  <div class="row">
-    <div class="col">
-      <h2><i class="bi bi-buildings"></i> ${_("Companies")}</h2>
-      <p>
-        ${_("Companies, corporations, organizations.")}
-      </p>
-      <p>
-        <div class="d-flex flex-wrap gap-2">
-          ${button.a(icon='folder', color='secondary', url=request.route_url('company_all'))}
-          ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
-          ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
-          % if gemini_api_key_set:
-          ${button.a(icon='robot', color='success', url=request.route_url('company_add_ai'))}
-          % endif
-        </div>
-      </p>
-    </div>
-    <div class="col">
-      <h2><i class="bi bi-briefcase"></i> ${_("Projects")}</h2>
-      <p>
-        ${_("Currently implemented or completed projects.")}
-      </p>
-      <p>
-        <div class="d-flex flex-wrap gap-2">
-          ${button.a(icon='folder', color='secondary', url=request.route_url('project_all'))}
-          ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
-          ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
-          % if gemini_api_key_set:
-          ${button.a(icon='robot', color='success', url=request.route_url('project_add_ai'))}
-          % endif
-        </div>
-        </p>
-    </div>
-    <div class="col">
-      <h2><i class="bi bi-tags"></i> ${_("Tags")}</h2>
-      <p>
-        ${_("Business profiles of companies and types of projects.")}
-      </p>
-      <p>
-        <div class="d-flex flex-wrap gap-2">
-          ${button.a(icon='folder', color='secondary', url=request.route_url('tag_all'))}
-          ${button.a(icon='search', color='primary', url=request.route_url('tag_search'))}
-          ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
-        </div>
-      </p>
-    </div>
+<div class="row">
+  <div class="col">
+    <h2><i class="bi bi-buildings"></i> ${_("Companies")}</h2>
+    <p>
+      ${_("Companies, corporations, organizations.")}
+    </p>
+    <p>
+      <div class="d-flex flex-wrap gap-2">
+        ${button.a(icon='folder', color='secondary', url=request.route_url('company_all'))}
+        ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
+        ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
+        % if gemini_api_key_set:
+        ${button.a(icon='robot', color='success', url=request.route_url('company_add_ai'))}
+        % endif
+      </div>
+    </p>
   </div>
-  <div class="row">
-    <div class="col">
-      <h2><i class="bi bi-people"></i> ${_("Contacts")}</h2>
-      <p>
-        ${_("Contacts assigned to companies and projects.")}
+  <div class="col">
+    <h2><i class="bi bi-briefcase"></i> ${_("Projects")}</h2>
+    <p>
+      ${_("Currently implemented or completed projects.")}
+    </p>
+    <p>
+      <div class="d-flex flex-wrap gap-2">
+        ${button.a(icon='folder', color='secondary', url=request.route_url('project_all'))}
+        ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
+        ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
+        % if gemini_api_key_set:
+        ${button.a(icon='robot', color='success', url=request.route_url('project_add_ai'))}
+        % endif
+      </div>
       </p>
-      <p>
-        <div class="d-flex flex-wrap gap-2">
-          ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
-          ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
-          ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
-        </div>
-      </p>
-    </div>
-    <div class="col">
-      <h2><i class="bi bi-chat-left-text"></i> ${_("Comments")}</h2>
-      <p>
-        ${_("Comments on companies and projects.")}
-      </p>
-      <p>
-        <div class="d-flex flex-wrap gap-2">
-          ${button.a(icon='folder', color='secondary', url=request.route_url('comment_all'))}
-          ${button.a(icon='search', color='primary', url=request.route_url('comment_search'))}
-        </div>
-      </p>
-    </div>
-    <div class="col">
-      <h2><i class="bi bi-bar-chart"></i> ${_("Reports")}</h2>
-      <p>
-        ${_("Summary of the database content.")}
-      </p>
-      <p>
-        <div class="d-flex flex-wrap gap-2">
-          ${button.a(icon='folder', color='secondary', url=request.route_url('report_all'))}
-        </div>
-      </p>
-    </div>
+  </div>
+  <div class="col">
+    <h2><i class="bi bi-tags"></i> ${_("Tags")}</h2>
+    <p>
+      ${_("Business profiles of companies and types of projects.")}
+    </p>
+    <p>
+      <div class="d-flex flex-wrap gap-2">
+        ${button.a(icon='folder', color='secondary', url=request.route_url('tag_all'))}
+        ${button.a(icon='search', color='primary', url=request.route_url('tag_search'))}
+        ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
+      </div>
+    </p>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h2><i class="bi bi-people"></i> ${_("Contacts")}</h2>
+    <p>
+      ${_("Contacts assigned to companies and projects.")}
+    </p>
+    <p>
+      <div class="d-flex flex-wrap gap-2">
+        ${button.a(icon='folder', color='secondary', url=request.route_url('contact_all'))}
+        ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
+        ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
+      </div>
+    </p>
+  </div>
+  <div class="col">
+    <h2><i class="bi bi-chat-left-text"></i> ${_("Comments")}</h2>
+    <p>
+      ${_("Comments on companies and projects.")}
+    </p>
+    <p>
+      <div class="d-flex flex-wrap gap-2">
+        ${button.a(icon='folder', color='secondary', url=request.route_url('comment_all'))}
+        ${button.a(icon='search', color='primary', url=request.route_url('comment_search'))}
+      </div>
+    </p>
+  </div>
+  <div class="col">
+    <h2><i class="bi bi-bar-chart"></i> ${_("Reports")}</h2>
+    <p>
+      ${_("Summary of the database content.")}
+    </p>
+    <p>
+      <div class="d-flex flex-wrap gap-2">
+        ${button.a(icon='folder', color='secondary', url=request.route_url('report_all'))}
+      </div>
+    </p>
   </div>
 </div>

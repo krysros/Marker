@@ -41,7 +41,7 @@
 
 % if sql_generated:
 <div class="mt-4">
-  <h5 class="text-muted"><i class="bi bi-code-slash"></i> ${_("Generated SQL")}</h5>
+  <h5 class="text-body-secondary"><i class="bi bi-code-slash"></i> ${_("Generated SQL")}</h5>
   <pre class="bg-body-secondary p-3 rounded small"><code>${sql_generated | h}</code></pre>
 </div>
 % endif
@@ -74,6 +74,6 @@
     </table>
   </div>
   % else:
-  <p class="text-muted">${_("No results.")}</p>
+  <p class="text-body-secondary">${_("No results.")}</p>
   % endif
 % endif
