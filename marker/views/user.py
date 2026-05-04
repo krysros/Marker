@@ -60,6 +60,7 @@ from . import (
     normalize_ci_expression,
     normalize_ci_value,
     polish_sort_expression,
+    selected_ids_for_items,
     sort_column,
 )
 
@@ -2091,7 +2092,13 @@ class UserView:
         if subdivision:
             stmt = stmt.filter(Company.subdivision.in_(subdivision))
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
         res = [
             {
                 "id": company.id,
@@ -2105,6 +2112,10 @@ class UserView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
             }
             for company in companies
         ]
@@ -2595,7 +2606,13 @@ class UserView:
         if delivery_method:
             stmt = stmt.filter(Project.delivery_method == delivery_method)
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
 
         res = [
             {
@@ -2610,6 +2627,10 @@ class UserView:
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
             }
             for project in projects
         ]
@@ -4470,7 +4491,13 @@ class UserView:
             .join(companies_stars)
             .filter(user.id == companies_stars.c.user_id)
         )
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
         res = [
             {
                 "id": company.id,
@@ -4484,6 +4511,10 @@ class UserView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
             }
             for company in companies
         ]
@@ -4722,7 +4753,13 @@ class UserView:
             .join(projects_stars)
             .filter(user.id == projects_stars.c.user_id)
         )
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
         res = [
             {
                 "id": project.id,
@@ -4736,6 +4773,10 @@ class UserView:
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
             }
             for project in projects
         ]
@@ -4852,7 +4893,13 @@ class UserView:
             except (ValueError, TypeError):
                 pass  # Invalid coordinates, ignore filtering
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
         res = [
             {
                 "id": company.id,
@@ -4866,6 +4913,10 @@ class UserView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
             }
             for company in companies
         ]
@@ -4899,7 +4950,13 @@ class UserView:
             except (ValueError, TypeError):
                 pass  # Invalid coordinates, ignore filtering
 
-        projects = self.request.dbsession.execute(stmt).scalars()
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
         res = [
             {
                 "id": project.id,
@@ -4913,6 +4970,10 @@ class UserView:
                 "url": self.request.route_url(
                     "project_view", project_id=project.id, slug=project.slug
                 ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
             }
             for project in projects
         ]

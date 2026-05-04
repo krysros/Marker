@@ -59,6 +59,7 @@ from . import (
     normalize_ci_value,
     normalized_tags_from_request,
     polish_sort_expression,
+    selected_ids_for_items,
     sort_column,
     toggle_selected_item,
 )
@@ -680,7 +681,13 @@ class CompanyView:
         if KRS:
             stmt = stmt.filter(Company.KRS == KRS)
 
-        companies = self.request.dbsession.execute(stmt).scalars()
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
 
         res = [
             {
@@ -695,6 +702,10 @@ class CompanyView:
                 "url": self.request.route_url(
                     "company_view", company_id=company.id, slug=company.slug
                 ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
             }
             for company in companies
         ]
