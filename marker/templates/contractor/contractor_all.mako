@@ -13,7 +13,7 @@
     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       <i class="bi bi-filter"></i> ${_("Filter")}
     </button>
-    <form class="dropdown-menu p-4" style="min-width: 420px;" method="get">
+    <form class="dropdown-menu p-4" style="min-width: 400px;" method="get">
       <input type="hidden" name="sort" value="${q.get('sort', 'created_at')}">
       <input type="hidden" name="order" value="${q.get('order', 'desc')}">
       <div class="mb-3">
