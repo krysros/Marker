@@ -78,3 +78,7 @@ tr.htmx-swapping td {
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+.leaflet-popup-content .marker-popup-details {
+  margin-left: 1.5rem;
+}
