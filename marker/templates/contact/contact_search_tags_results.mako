@@ -7,6 +7,7 @@
   <div class="float-end">
     ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
     ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
+    ${button.a(icon='person-vcard', color='success', url=request.route_url('contact_import_vcard'))}
   </div>
 </h2>
 

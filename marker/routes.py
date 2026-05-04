@@ -493,6 +493,9 @@ def includeme(config):
         "contact_import_csv", "/contacts/import_csv", factory=default_factory
     )
     config.add_route(
+        "contact_import_vcard", "/contacts/import_vcard", factory=default_factory
+    )
+    config.add_route(
         "contact_view",
         r"/contact/{contact_id:\d+}/{slug}",
         factory=contact_factory,

@@ -6,7 +6,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, or_, select
 
-from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactSearchForm
+from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactImportVcardForm, ContactSearchForm
 from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
 from ..models import Company, Contact, Project, Tag, selected_contacts
 from ..utils.contact_csv_import import (
@@ -16,6 +16,7 @@ from ..utils.contact_csv_import import (
 )
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
+from ..utils.vcard_import import parse_vcard, upsert_vcard
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
@@ -778,3 +779,52 @@ class ContactView:
             identity=self.request.identity,
             geocode=location,
         )
+
+    @view_config(
+        route_name="contact_import_vcard",
+        renderer="contact_import_vcard.mako",
+        permission="edit",
+    )
+    def contact_import_vcard(self):
+        _ = self.request.translate
+        form = ContactImportVcardForm(self.request.POST)
+        if self.request.method == "POST":
+            referrer = self.request.referrer or self.request.route_url("home")
+            vcf_file = self.request.POST.get("vcf_file")
+            raw = getattr(vcf_file, "file", None)
+            if raw is None:
+                return HTTPFound(location=referrer)
+
+            data = raw.read()
+            if isinstance(data, bytes):
+                try:
+                    text = data.decode("utf-8-sig")
+                except UnicodeDecodeError:
+                    text = data.decode("utf-8", errors="replace")
+            else:
+                text = str(data)
+
+            card = parse_vcard(text)
+            if card is None:
+                self.request.session.flash(
+                    _("warning:Could not read vCard file. Please upload a valid .vcf file.")
+                )
+                return HTTPFound(location=referrer)
+
+            contact = upsert_vcard(
+                self.request.dbsession,
+                self.request.identity,
+                card,
+            )
+            log.info(
+                _("User %s imported vCard: %s") % (self.request.identity.name, card.name)
+            )
+            return HTTPFound(
+                location=self.request.route_url(
+                    "contact_view",
+                    contact_id=contact.id,
+                    slug=contact.slug,
+                )
+            )
+        return {"heading": _("Import vCard"), "form": form}
+
