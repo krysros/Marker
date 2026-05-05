@@ -5389,3 +5389,239 @@ def test_user_selected_projects_similar_bulk_select(dbsession):
     view = UserView(request)
     result = view.selected_projects_similar()
     assert result is request.response
+
+
+# ===========================================================================
+# json/map selected_*_similar endpoints (uncovered ranges)
+# ===========================================================================
+
+
+def test_user_json_selected_companies_similar_and_filters(dbsession):
+    user = _user(dbsession, "jsonsimcoand")
+    tag = _tag(dbsession, user, "JsonSimCoTag")
+    sel_co = _company(dbsession, user, "JsonSimCoSel", color="red", country="PL")
+    other_co = _company(
+        dbsession, user, "JsonSimCoOther", color="red", country="PL"
+    )
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "tag_operator": "and",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+        },
+    )
+    view = UserView(request)
+    result = view.json_selected_companies_similar()
+
+    assert isinstance(result, list)
+    assert any(row["name"] == "JsonSimCoOther" for row in result)
+
+
+def test_user_json_selected_companies_similar_invalid_operator_fallback(dbsession):
+    user = _user(dbsession, "jsonsimcoinv")
+    tag = _tag(dbsession, user, "JsonSimCoInvTag")
+    sel_co = _company(dbsession, user, "JsonSimCoInvSel")
+    other_co = _company(dbsession, user, "JsonSimCoInvOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.json_selected_companies_similar()
+
+    assert isinstance(result, list)
+
+
+def test_user_map_selected_companies_similar_filters(dbsession):
+    user = _user(dbsession, "mapsimco")
+    tag = _tag(dbsession, user, "MapSimCoTag")
+    sel_co = _company(dbsession, user, "MapSimCoSel", color="red", country="PL")
+    other_co = _company(
+        dbsession, user, "MapSimCoOther", color="red", country="PL"
+    )
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "tag_operator": "and",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+        },
+    )
+    view = UserView(request)
+    result = view.map_selected_companies_similar()
+
+    assert result["q"]["tag_operator"] == "and"
+    assert result["q"]["color"] == "red"
+    assert result["q"]["country"] == "PL"
+    assert "PL-14" in result["q"]["subdivision"]
+    assert isinstance(result["counter"], int)
+
+
+def test_user_json_selected_projects_similar_and_filters(dbsession):
+    user = _user(dbsession, "jsonsimprjand")
+    tag = _tag(dbsession, user, "JsonSimPrjTag")
+    sel_prj = _project(
+        dbsession,
+        user,
+        "JsonSimPrjSel",
+        color="red",
+        stage="tender",
+        delivery_method="design_build",
+    )
+    other_prj = _project(
+        dbsession,
+        user,
+        "JsonSimPrjOther",
+        color="red",
+        stage="tender",
+        delivery_method="design_build",
+    )
+    sel_prj.object_category = "uslugi"
+    other_prj.object_category = "uslugi"
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    dbsession.flush()
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "tag_operator": "and",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+            "stage": "tender",
+            "delivery_method": "design_build",
+            "object_category": "uslugi",
+        },
+    )
+    view = UserView(request)
+    result = view.json_selected_projects_similar()
+
+    assert isinstance(result, list)
+    assert any(row["name"] == "JsonSimPrjOther" for row in result)
+
+
+def test_user_json_selected_projects_similar_invalid_operator_fallback(dbsession):
+    user = _user(dbsession, "jsonsimprjinv")
+    tag = _tag(dbsession, user, "JsonSimPrjInvTag")
+    sel_prj = _project(dbsession, user, "JsonSimPrjInvSel")
+    other_prj = _project(dbsession, user, "JsonSimPrjInvOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.json_selected_projects_similar()
+
+    assert isinstance(result, list)
+
+
+def test_user_map_selected_projects_similar_filters(dbsession):
+    user = _user(dbsession, "mapsimprj")
+    tag = _tag(dbsession, user, "MapSimPrjTag")
+    sel_prj = _project(
+        dbsession,
+        user,
+        "MapSimPrjSel",
+        color="red",
+        stage="tender",
+        delivery_method="design_build",
+    )
+    other_prj = _project(
+        dbsession,
+        user,
+        "MapSimPrjOther",
+        color="red",
+        stage="tender",
+        delivery_method="design_build",
+    )
+    sel_prj.object_category = "uslugi"
+    other_prj.object_category = "uslugi"
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    dbsession.flush()
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "tag_operator": "and",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "PL-14",
+            "stage": "tender",
+            "delivery_method": "design_build",
+            "object_category": "uslugi",
+        },
+    )
+    view = UserView(request)
+    result = view.map_selected_projects_similar()
+
+    assert result["q"]["tag_operator"] == "and"
+    assert result["q"]["color"] == "red"
+    assert result["q"]["country"] == "PL"
+    assert "PL-14" in result["q"]["subdivision"]
+    assert result["q"]["stage"] == "tender"
+    assert result["q"]["delivery_method"] == "design_build"
+    assert result["q"]["object_category"] == "uslugi"
+    assert isinstance(result["counter"], int)
+
+
+def test_user_map_selected_companies_similar_invalid_operator_fallback(dbsession):
+    user = _user(dbsession, "mapsimcoinvalid")
+    tag = _tag(dbsession, user, "MapSimCoInvalidTag")
+    sel_co = _company(dbsession, user, "MapSimCoInvalidSel")
+    other_co = _company(dbsession, user, "MapSimCoInvalidOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.map_selected_companies_similar()
+
+    assert result["q"]["tag_operator"] == "or"
+    assert isinstance(result["counter"], int)
+
+
+def test_user_map_selected_projects_similar_invalid_operator_fallback(dbsession):
+    user = _user(dbsession, "mapsimprjinvalid")
+    tag = _tag(dbsession, user, "MapSimPrjInvalidTag")
+    sel_prj = _project(dbsession, user, "MapSimPrjInvalidSel")
+    other_prj = _project(dbsession, user, "MapSimPrjInvalidOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.map_selected_projects_similar()
+
+    assert result["q"]["tag_operator"] == "or"
+    assert isinstance(result["counter"], int)

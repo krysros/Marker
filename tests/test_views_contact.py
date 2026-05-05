@@ -988,6 +988,89 @@ def test_contact_search_tags_results_color_filter(dbsession):
     assert result["q"]["color"] == "red"
 
 
+# ===========================================================================
+# unassigned() – full branch coverage
+# ===========================================================================
+
+
+def test_contact_unassigned_with_filters_and_asc_sort(dbsession):
+    import datetime
+
+    user = _make_user(dbsession, "contunassfilt")
+    unassigned = _make_contact(dbsession, user, "UnassignedMatch")
+    unassigned.role = "manager"
+    unassigned.phone = "555"
+    unassigned.email = "u@x.com"
+    unassigned.color = "red"
+
+    co = _make_company(dbsession, user, "AssignedCo")
+    _make_contact(dbsession, user, "AssignedContact", company=co)
+    transaction.commit()
+
+    now = datetime.datetime.now()
+    date_from = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
+    date_to = (now + datetime.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
+
+    request = _make_request(
+        dbsession,
+        user,
+        params={
+            "name": "Unassigned",
+            "role": "manager",
+            "phone": "555",
+            "email": "u@x.com",
+            "color": "red",
+            "date_from": date_from,
+            "date_to": date_to,
+            "sort": "name",
+            "order": "asc",
+        },
+    )
+    view = ContactView(request)
+    result = view.unassigned()
+
+    assert result["q"]["sort"] == "name"
+    assert result["q"]["order"] == "asc"
+    assert result["counter"] >= 1
+    assert all(c.company_id is None and c.project_id is None for c in result["paginator"])
+
+
+def test_contact_unassigned_invalid_sort_and_order_fallback(dbsession):
+    user = _make_user(dbsession, "contunassinv")
+    _make_contact(dbsession, user, "FallbackContact")
+    transaction.commit()
+
+    request = _make_request(
+        dbsession,
+        user,
+        params={"sort": "bad_sort", "order": "bad_order"},
+    )
+    view = ContactView(request)
+    result = view.unassigned()
+
+    assert result["q"]["sort"] == "created_at"
+    assert result["q"]["order"] == "desc"
+
+
+def test_contact_unassigned_bulk_selection_request(dbsession):
+    user = _make_user(dbsession, "contunassbulk")
+    _make_contact(dbsession, user, "BulkUnassigned")
+    transaction.commit()
+
+    request = _make_request(
+        dbsession,
+        user,
+        method="POST",
+        params={"_select_all": "1", "checked": "1"},
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    view = ContactView(request)
+    result = view.unassigned()
+
+    assert result is request.response
+    assert result.headers.get("HX-Refresh") == "true"
+
+
 def test_contact_search_tags_results_name_role_phone_email(dbsession):
     user = _make_user(dbsession, "contstrnrpe")
     tag = Tag(name="NRPETag")

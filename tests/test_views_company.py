@@ -3112,6 +3112,17 @@ def test_company_uptime_check_generic_error(dbsession):
     assert "Connection refused" in result.text
 
 
+def test_company_uptime_rows(dbsession):
+    user = _co_user(dbsession, "couptimerows")
+    _co_company(dbsession, user, "UptimeRowsCo")
+    transaction.commit()
+    request = _co_request(dbsession, user, params={"page": "2"})
+    view = CompanyView(request)
+    result = view.uptime_rows()
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
 # ===========================================================================
 # Date range filtering tests
 # ===========================================================================
