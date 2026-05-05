@@ -109,5 +109,25 @@ class ContactImportForm(Form):
     csv_file = FileField(_("CSV file"), validators=[DataRequired()])
 
 
+class ContactUnassignedFilterForm(Form):
+    name = HiddenField(_("Name"), filters=[strip_filter])
+    role = HiddenField(_("Role"), filters=[strip_filter])
+    phone = HiddenField(_("Phone"), filters=[strip_filter])
+    email = HiddenField(_("Email"), filters=[strip_filter])
+    color = SelectField(_("Color"), choices=COLORS)
+    date_from = DateTimeLocalField(
+        _("Date from"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+    date_to = DateTimeLocalField(
+        _("Date to"),
+        format="%Y-%m-%dT%H:%M",
+        validators=[Optional()],
+        widget=DateTimeLocalInput(),
+    )
+
+
 class ContactImportVcardForm(Form):
     vcf_file = FileField(_("vCard file (.vcf)"), validators=[DataRequired()])
