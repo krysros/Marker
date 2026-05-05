@@ -28,6 +28,7 @@ def includeme(config):
         "/company/uptime/check",
         factory=default_factory,
     )
+    config.add_route("company_uptime_rows", "/company/uptime/rows", factory=default_factory)
     config.add_route("company_more", "/company/more", factory=default_factory)
     config.add_route(
         "company_more_contacts",
@@ -187,6 +188,7 @@ def includeme(config):
         "/project/uptime/check",
         factory=default_factory,
     )
+    config.add_route("project_uptime_rows", "/project/uptime/rows", factory=default_factory)
     config.add_route("project_more", "/project/more", factory=default_factory)
     config.add_route(
         "project_more_contacts",

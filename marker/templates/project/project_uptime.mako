@@ -3,7 +3,6 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> ${_("Projects")}
-  <span class="badge bg-secondary">${len(items)}</span>
   <div class="float-end">
     ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
@@ -30,18 +29,7 @@
     </tr>
   </thead>
   <tbody id="uptime-tbody">
-    % for i, item in enumerate(items, 1):
-    <tr>
-      <td>${i}</td>
-      <td>${item['name']}</td>
-      <td class="text-break"><a href="${item['website'] if item['website'].startswith(('http://', 'https://')) else 'https://' + item['website']}" target="_blank" rel="noopener">${item['website']}</a></td>
-      <td hx-get="${request.route_url('project_uptime_check', _query={'url': item['website']})}"
-          hx-trigger="load"
-          hx-swap="innerHTML">
-        <div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>
-      </td>
-    </tr>
-    % endfor
+    <%include file="project_uptime_rows.mako"/>
   </tbody>
 </table>
 </div>
