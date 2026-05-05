@@ -93,8 +93,8 @@ class LazyMarkerLoader {
       }
       
       const items = await response.json();
-      this._addMarkersToMap(items);
-      
+      await this._addMarkersToMap(items);
+
       this.loadedBounds = bounds;
     } catch (error) {
       console.error('Error loading markers:', error);
@@ -106,25 +106,38 @@ class LazyMarkerLoader {
   }
   
   /**
-   * Add markers to the map, avoiding duplicates
+   * Add markers to the map in chunks, yielding between each chunk so the
+   * browser can repaint and the progress bar stays responsive.
    */
-  _addMarkersToMap(items) {
-    for (const item of items) {
-      if (item.latitude == null || item.longitude == null) continue;
-      
-      const cacheKey = `${item.id}`;
-      if (this.markerCache.has(cacheKey)) continue;
-      
-      const title = this._createMarkerTitle(item);
-      const marker = L.marker(
-        new L.LatLng(item.latitude, item.longitude),
-        { title: this._stripHtml(title) }
-      );
-      
-      marker.bindPopup(title);
-      this.markers.addLayer(marker);
-      this.markerCache.set(cacheKey, marker);
-      this.itemCache.set(cacheKey, item);
+  async _addMarkersToMap(items) {
+    const newItems = items.filter(
+      (item) =>
+        item.latitude != null &&
+        item.longitude != null &&
+        !this.markerCache.has(`${item.id}`)
+    );
+
+    const total = newItems.length;
+    if (total === 0) return;
+
+    const CHUNK_SIZE = 50;
+
+    for (let i = 0; i < total; i += CHUNK_SIZE) {
+      const chunk = newItems.slice(i, i + CHUNK_SIZE);
+      for (const item of chunk) {
+        const cacheKey = `${item.id}`;
+        const title = this._createMarkerTitle(item);
+        const marker = L.marker(new L.LatLng(item.latitude, item.longitude), {
+          title: this._stripHtml(title),
+        });
+        marker.bindPopup(title);
+        this.markers.addLayer(marker);
+        this.markerCache.set(cacheKey, marker);
+        this.itemCache.set(cacheKey, item);
+      }
+      this._updateLoadingProgress(Math.min(i + CHUNK_SIZE, total), total);
+      // Yield to the browser so it can repaint the progress bar
+      await new Promise((resolve) => setTimeout(resolve, 0));
     }
   }
   
@@ -227,25 +240,46 @@ class LazyMarkerLoader {
   }
   
   /**
-   * Show loading indicator
+   * Show loading indicator with progress bar
    */
   _showLoadingIndicator() {
-    if (document.getElementById('marker-loading')) return;
-    
-    const loader = document.createElement('div');
-    loader.id = 'marker-loading';
-    loader.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div> Loading markers...';
-    loader.style.cssText = 'position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background: white; padding: 10px 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);';
-    
-    this.map.getContainer().parentElement.insertBefore(loader, this.map.getContainer());
+    const el = document.getElementById('marker-loading');
+    if (el) {
+      const bar = document.getElementById('marker-loading-bar');
+      const label = document.getElementById('marker-loading-label');
+      if (bar) {
+        bar.style.width = '0%';
+        bar.style.transition = 'none';
+        bar.setAttribute('aria-valuenow', 0);
+        bar.classList.add('progress-bar-striped', 'progress-bar-animated');
+      }
+      if (label) label.textContent = 'Loading markers…';
+      el.removeAttribute('hidden');
+    }
   }
-  
+
+  /**
+   * Update loading progress
+   */
+  _updateLoadingProgress(current, total) {
+    const bar = document.getElementById('marker-loading-bar');
+    const label = document.getElementById('marker-loading-label');
+    if (!bar || !label) return;
+    const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+    bar.style.width = pct + '%';
+    bar.setAttribute('aria-valuenow', pct);
+    label.textContent = `Loaded ${current} / ${total} markers`;
+  }
+
   /**
    * Hide loading indicator
    */
   _hideLoadingIndicator() {
-    const loader = document.getElementById('marker-loading');
-    if (loader) loader.remove();
+    // Small delay so the completed bar is visible before hiding
+    setTimeout(() => {
+      const el = document.getElementById('marker-loading');
+      if (el) el.setAttribute('hidden', '');
+    }, 600);
   }
   
   /**
