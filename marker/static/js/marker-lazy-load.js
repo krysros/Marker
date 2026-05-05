@@ -143,7 +143,10 @@ class LazyMarkerLoader {
       ? `<div class="marker-popup-details">${details}</div>`
       : '';
 
-    return `${checkbox}${title}${detailsHtml}`;
+    if (checkbox) {
+      return `<div style="display:flex;align-items:flex-start;gap:4px"><div style="flex-shrink:0;padding-top:2px">${checkbox}</div><div>${title}${detailsHtml}</div></div>`;
+    }
+    return `${title}${detailsHtml}`;
   }
 
   _createPopupCheckbox(item) {
