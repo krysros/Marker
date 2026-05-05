@@ -54,6 +54,13 @@ SORT_CRITERIA_CONTACTS = [
     ("updated_at", _("Date modified")),
 ]
 
+SORT_CRITERIA_CONTACTS_UNASSIGNED = [
+    ("name", _("Name")),
+    ("role", _("Role")),
+    ("created_at", _("Date created")),
+    ("updated_at", _("Date modified")),
+]
+
 
 SORT_CRITERIA_EXT = [
     ("name", _("Name")),

@@ -1843,6 +1843,15 @@ msgstr "Użytkownik %s usunął kontakt"
 msgid "Find a contact"
 msgstr "Znajdź kontakt"
 
+#: marker/templates/contact/contact_all.mako
+#: marker/templates/contact/contact_unassigned.mako
+msgid "Unassigned"
+msgstr "Nieprzypisane"
+
+#: marker/templates/contact/contact_unassigned.mako
+msgid "Unassigned contacts"
+msgstr "Nieprzypisane kontakty"
+
 #: marker/views/contact.py:431 marker/views/contact.py:663
 msgid "Search contacts"
 msgstr "Szukaj za pomocą tagów"

@@ -15,6 +15,7 @@ from .contact import ContactForm  # flaske8: noqa
 from .contact import ContactImportForm  # flake8: noqa
 from .contact import ContactImportVcardForm  # flake8: noqa
 from .contact import ContactSearchForm  # flake8: noqa
+from .contact import ContactUnassignedFilterForm  # flake8: noqa
 from .contractor import ContractorFilterForm  # flake8: noqa
 from .login import LoginForm  # flake8: noqa
 from .project import ProjectActivityForm  # flake8: noqa

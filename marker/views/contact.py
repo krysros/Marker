@@ -6,8 +6,8 @@ from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, or_, select
 
-from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactImportVcardForm, ContactSearchForm
-from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS
+from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactImportVcardForm, ContactSearchForm, ContactUnassignedFilterForm
+from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS, SORT_CRITERIA_CONTACTS_UNASSIGNED
 from ..models import Company, Contact, Project, Tag, selected_contacts
 from ..utils.contact_csv_import import (
     GoogleContactsCsvImporter,
@@ -276,6 +276,113 @@ class ContactView:
             "next_page": next_page,
             "counter": counter,
             "categories": categories,
+            "form": form,
+        }
+
+    @view_config(
+        route_name="contact_unassigned",
+        renderer="contact_unassigned.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="contact_unassigned_more",
+        renderer="contact_table#rows.mako",
+        permission="view",
+    )
+    def unassigned(self):
+        page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        color = self.request.params.get("color", None)
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS_UNASSIGNED)
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {}
+
+        allowed_sorts = set(sort_criteria)
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        stmt = select(Contact).filter(
+            Contact.company_id.is_(None),
+            Contact.project_id.is_(None),
+        )
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Contact.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Contact.created_at <= date_to_dt)
+            q["date_to"] = date_to
+
+        if name:
+            stmt = stmt.filter(contains_ci(Contact.name, name))
+            q["name"] = name
+
+        if role:
+            stmt = stmt.filter(contains_ci(Contact.role, role))
+            q["role"] = role
+
+        if phone:
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
+            q["phone"] = phone
+
+        if email:
+            stmt = stmt.filter(contains_ci(Contact.email, email))
+            q["email"] = email
+
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)
+        else:
+            stmt = stmt.order_by(sort_column(Contact, _sort).desc(), Contact.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_contacts
+            )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "contact_unassigned_more",
+            _query={**q, "page": page + 1},
+        )
+
+        obj = Filter(**q)
+        form = ContactUnassignedFilterForm(self.request.GET, obj)
+
+        return {
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
             "form": form,
         }
 

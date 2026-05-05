@@ -443,6 +443,12 @@ def includeme(config):
 
     config.add_route("contact_all", "/contact", factory=default_factory)
     config.add_route("contact_more", "/contact/more", factory=default_factory)
+    config.add_route(
+        "contact_unassigned", "/contact/unassigned", factory=default_factory
+    )
+    config.add_route(
+        "contact_unassigned_more", "/contact/unassigned/more", factory=default_factory
+    )
     config.add_route("contact_search", "/contact/search", factory=default_factory)
     config.add_route("search_tags", "/search/tags", factory=default_factory)
     config.add_route(
