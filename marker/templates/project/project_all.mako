@@ -22,7 +22,7 @@
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
   % if show_contacts_toggle:
-  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn ${'btn-primary' if view_mode == 'projects' else 'btn-outline-primary'}" href="${request.current_route_url(_query={**q, 'view': 'projects'})}">
       ${_("Projects")}
     </a>

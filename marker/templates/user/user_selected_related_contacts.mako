@@ -41,18 +41,18 @@
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
   % if switch_mode == "selected_companies":
-  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${switch_url}">${_("Companies")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_companies_contacts', username=user.name, _query=q)}">${_("Contacts")}</a>
   </div>
   % elif switch_mode == "selected_projects":
-  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${switch_url}">${_("Projects")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_projects_contacts', username=user.name, _query=q)}">${_("Contacts")}</a>
   </div>
   % elif switch_mode == "selected_tags":
   <% selected_category = q.get("category", "") %>
-  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${switch_url}">${_("Tags")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_companies', username=user.name)}">${_("Companies")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_projects', username=user.name)}">${_("Projects")}</a>
