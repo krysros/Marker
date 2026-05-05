@@ -2483,6 +2483,17 @@ def test_project_uptime_check_generic_error(dbsession):
     assert "Connection refused" in result.text
 
 
+def test_project_uptime_rows(dbsession):
+    user = _make_user(dbsession, "projuptimerows")
+    _make_project(dbsession, user, "UptimeRowsProj")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"page": "2"})
+    view = ProjectView(request)
+    result = view.uptime_rows()
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
 # ===========================================================================
 # Date range filtering tests
 # ===========================================================================

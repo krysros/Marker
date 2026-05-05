@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+from webob.multidict import MultiDict
 
 from marker.utils import export
 
@@ -80,3 +81,55 @@ def test_response_xlsx_row_color_formats_not_applied():
     color_formats = [fmt for fmt in captured_formats if fmt.get("bg_color")]
 
     assert not color_formats
+
+
+def test_apply_column_selection_unknown_keys_returns_original():
+    rows = [["a", "b"]]
+    header = ["Col1", "Col2"]
+    filtered_rows, filtered_header, _ = export._apply_column_selection(
+        rows, header, ["missing"]
+    )
+    assert filtered_rows == rows
+    assert filtered_header == header
+
+
+def test_apply_column_selection_subset_and_short_row_padding():
+    rows = [["a"], ["x", "y"]]
+    header = ["Col1", "Col2"]
+    filtered_rows, filtered_header, _ = export._apply_column_selection(
+        rows, header, ["Col2"]
+    )
+    assert filtered_header == ["Col2"]
+    assert filtered_rows == [[None], ["y"]]
+
+
+def test_make_export_response_csv_columns_to_ods():
+    class DummyRequest:
+        params = MultiDict({"format": "ods", "columns": "Col2,Col1"})
+
+    rows = [["a", "b"]]
+    header = ["Col1", "Col2"]
+
+    with patch.object(export, "response_ods") as mock_ods:
+        mock_ods.return_value = "ODS"
+        result = export.make_export_response(DummyRequest(), rows, header)
+
+    assert result == "ODS"
+    called_rows, called_header = mock_ods.call_args[0]
+    assert called_header == ["Col2", "Col1"]
+    assert called_rows == [["b", "a"]]
+
+
+def test_make_export_response_without_getall_uses_xlsx():
+    class ParamsNoGetall(dict):
+        def get(self, key, default=None):
+            return super().get(key, default)
+
+    class DummyRequest:
+        params = ParamsNoGetall({"format": "xlsx"})
+
+    with patch.object(export, "response_xlsx") as mock_xlsx:
+        mock_xlsx.return_value = "XLSX"
+        result = export.make_export_response(DummyRequest(), [[1]], ["A"])
+
+    assert result == "XLSX"
