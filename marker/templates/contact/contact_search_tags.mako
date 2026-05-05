@@ -1,8 +1,14 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+  <h2 class="mb-0 text-nowrap flex-grow-1 flex-shrink-1">
+    <i class="bi bi-search"></i> ${heading}
+  </h2>
+</div>
+<hr>
+
 <div class="card mt-4 mb-4">
-  <div class="card-header">${heading}</div>
   <div class="card-body">
     <form action="${request.route_url('search_tags_results')}" method="get">
       <div class="mb-3">

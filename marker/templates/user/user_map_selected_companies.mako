@@ -7,11 +7,23 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
-    ${button.a(icon='table', color='secondary', url=request.route_url('user_selected_companies', username=user.name, _query=q))}
     ${button.dropdown_download(url_xlsx=request.route_url('user_export_selected_companies', username=user.name, _query=q), url_ods=request.route_url('user_export_selected_companies', username=user.name, _query={**q, 'format': 'ods'}))}
   </div>
 </div>
 <hr>
+
+<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn btn-primary" href="${request.route_url('user_map_selected_companies', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
+  </div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
+    <a class="btn btn-primary" href="${request.route_url('user_selected_companies', username=user.name, _query=q)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_contacts', username=user.name)}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
+  </div>
+</div>
 
 <div id="map"></div>
 

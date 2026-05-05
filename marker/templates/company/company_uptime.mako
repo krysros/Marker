@@ -5,12 +5,19 @@
   <i class="bi bi-buildings"></i> ${_("Companies")}
   <span class="badge bg-secondary">${len(items)}</span>
   <div class="float-end">
-    ${button.a(icon='table', color='secondary', url=request.route_url('company_all'))}
     ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
   </div>
 </h2>
 <hr>
+
+<div class="hstack gap-2 mb-3 d-flex flex-wrap align-items-center">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
+    <a class="btn btn-outline-primary" href="${request.route_url('company_all')}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('company_map')}"><i class="bi bi-map"></i> ${_("Map")}</a>
+    <a class="btn btn-primary" href="${request.route_url('company_uptime')}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
+  </div>
+</div>
 
 <div class="mb-3 d-flex align-items-center gap-3">
   <button id="btn-start-stop" class="btn btn-success" onclick="toggleCheck()">

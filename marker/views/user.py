@@ -2066,6 +2066,187 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_json_selected_companies_similar",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_companies_similar(self):
+        user = self.request.context.user
+        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
+        if tag_operator not in {"or", "and"}:
+            tag_operator = "or"
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+
+        selected_company_ids_sq = (
+            select(selected_companies.c.company_id)
+            .where(selected_companies.c.user_id == user.id)
+            .subquery()
+        )
+
+        if tag_operator == "and":
+            n_selected_sq = (
+                select(func.count())
+                .select_from(selected_company_ids_sq)
+                .scalar_subquery()
+            )
+            pool_tags_sq = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .group_by(companies_tags.c.tag_id)
+                .having(func.count(func.distinct(companies_tags.c.company_id)) == n_selected_sq)
+                .subquery()
+            )
+        else:
+            pool_tags_sq = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .distinct()
+                .subquery()
+            )
+
+        other_tags = companies_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.company_id.label("company_id"),
+                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
+            )
+            .where(
+                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                other_tags.c.company_id.notin_(
+                    select(selected_company_ids_sq.c.company_id)
+                ),
+            )
+            .group_by(other_tags.c.company_id)
+            .subquery()
+        )
+
+        stmt = select(Company).join(similarity, similarity.c.company_id == Company.id)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
+        return [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "city": company.city,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "color": company.color,
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
+            }
+            for company in companies
+        ]
+
+    @view_config(
+        route_name="user_map_selected_companies_similar",
+        renderer="user_map_selected_companies_similar.mako",
+        permission="view",
+    )
+    def map_selected_companies_similar(self):
+        user = self.request.context.user
+        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
+        if tag_operator not in {"or", "and"}:
+            tag_operator = "or"
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        q = {"tag_operator": tag_operator}
+
+        selected_company_ids_sq = (
+            select(selected_companies.c.company_id)
+            .where(selected_companies.c.user_id == user.id)
+            .subquery()
+        )
+
+        if tag_operator == "and":
+            n_selected_sq = (
+                select(func.count())
+                .select_from(selected_company_ids_sq)
+                .scalar_subquery()
+            )
+            pool_tags_sq = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .group_by(companies_tags.c.tag_id)
+                .having(func.count(func.distinct(companies_tags.c.company_id)) == n_selected_sq)
+                .subquery()
+            )
+        else:
+            pool_tags_sq = (
+                select(companies_tags.c.tag_id)
+                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .distinct()
+                .subquery()
+            )
+
+        other_tags = companies_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.company_id.label("company_id"),
+                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
+            )
+            .where(
+                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                other_tags.c.company_id.notin_(
+                    select(selected_company_ids_sq.c.company_id)
+                ),
+            )
+            .group_by(other_tags.c.company_id)
+            .subquery()
+        )
+
+        stmt = select(Company).join(similarity, similarity.c.company_id == Company.id)
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        url = self.request.route_url(
+            "user_json_selected_companies_similar", username=user.name, _query=q
+        )
+        return {"user": user, "url": url, "q": q, "counter": counter}
+
+    @view_config(
         route_name="user_json_selected_companies",
         renderer="json",
         permission="view",
@@ -2561,6 +2742,214 @@ class UserView:
             "shared_tag_counts": shared_tag_counts,
             "shared_tag_labels": shared_tag_labels,
         }
+
+    @view_config(
+        route_name="user_json_selected_projects_similar",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_projects_similar(self):
+        user = self.request.context.user
+        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
+        if tag_operator not in {"or", "and"}:
+            tag_operator = "or"
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        stage = self.request.params.get("stage", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
+
+        selected_project_ids_sq = (
+            select(selected_projects.c.project_id)
+            .where(selected_projects.c.user_id == user.id)
+            .subquery()
+        )
+
+        if tag_operator == "and":
+            n_selected_sq = (
+                select(func.count())
+                .select_from(selected_project_ids_sq)
+                .scalar_subquery()
+            )
+            pool_tags_sq = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .group_by(projects_tags.c.tag_id)
+                .having(func.count(func.distinct(projects_tags.c.project_id)) == n_selected_sq)
+                .subquery()
+            )
+        else:
+            pool_tags_sq = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .distinct()
+                .subquery()
+            )
+
+        other_tags = projects_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.project_id.label("project_id"),
+                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
+            )
+            .where(
+                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                other_tags.c.project_id.notin_(
+                    select(selected_project_ids_sq.c.project_id)
+                ),
+            )
+            .group_by(other_tags.c.project_id)
+            .subquery()
+        )
+
+        stmt = select(Project).join(similarity, similarity.c.project_id == Project.id)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
+        return [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "city": project.city,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "color": project.color,
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
+            }
+            for project in projects
+        ]
+
+    @view_config(
+        route_name="user_map_selected_projects_similar",
+        renderer="user_map_selected_projects_similar.mako",
+        permission="view",
+    )
+    def map_selected_projects_similar(self):
+        user = self.request.context.user
+        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
+        if tag_operator not in {"or", "and"}:
+            tag_operator = "or"
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        stage = self.request.params.get("stage", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
+        q = {"tag_operator": tag_operator}
+
+        selected_project_ids_sq = (
+            select(selected_projects.c.project_id)
+            .where(selected_projects.c.user_id == user.id)
+            .subquery()
+        )
+
+        if tag_operator == "and":
+            n_selected_sq = (
+                select(func.count())
+                .select_from(selected_project_ids_sq)
+                .scalar_subquery()
+            )
+            pool_tags_sq = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .group_by(projects_tags.c.tag_id)
+                .having(func.count(func.distinct(projects_tags.c.project_id)) == n_selected_sq)
+                .subquery()
+            )
+        else:
+            pool_tags_sq = (
+                select(projects_tags.c.tag_id)
+                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .distinct()
+                .subquery()
+            )
+
+        other_tags = projects_tags.alias("other_tags")
+        similarity = (
+            select(
+                other_tags.c.project_id.label("project_id"),
+                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
+            )
+            .where(
+                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
+                other_tags.c.project_id.notin_(
+                    select(selected_project_ids_sq.c.project_id)
+                ),
+            )
+            .group_by(other_tags.c.project_id)
+            .subquery()
+        )
+
+        stmt = select(Project).join(similarity, similarity.c.project_id == Project.id)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        url = self.request.route_url(
+            "user_json_selected_projects_similar", username=user.name, _query=q
+        )
+        return {"user": user, "url": url, "q": q, "counter": counter}
 
     @view_config(
         route_name="user_json_selected_projects",
