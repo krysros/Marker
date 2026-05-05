@@ -19,6 +19,7 @@ class LazyMarkerLoader {
     this.loadedBounds = null;
     this.isLoading = false;
     this.markerCache = new Map();
+    this.itemCache = new Map();
     this.zoomThreshold = options.zoomThreshold || 12;
     this.debounceDelay = options.debounceDelay || 500;
     this.autoLoad = options.autoLoad !== false;
@@ -123,6 +124,7 @@ class LazyMarkerLoader {
       marker.bindPopup(title);
       this.markers.addLayer(marker);
       this.markerCache.set(cacheKey, marker);
+      this.itemCache.set(cacheKey, item);
     }
   }
   
@@ -149,7 +151,7 @@ class LazyMarkerLoader {
 
     const checked = item.checked ? ' checked' : '';
     const checkUrl = this._escapeHtml(item.check_url);
-    return `<input class="marker-popup-select me-2" type="checkbox" data-check-url="${checkUrl}" aria-label="Select item"${checked}>`;
+    return `<input class="marker-popup-select me-2" type="checkbox" data-check-url="${checkUrl}" data-item-id="${item.id}" aria-label="Select item"${checked}>`;
   }
 
   _attachPopupCheckboxHandler() {
@@ -186,6 +188,17 @@ class LazyMarkerLoader {
         const result = await response.json();
         if (result && typeof result.checked === 'boolean') {
           checkbox.checked = result.checked;
+        }
+        const itemId = checkbox.dataset.itemId;
+        if (itemId) {
+          const item = this.itemCache.get(itemId);
+          if (item) {
+            item.checked = checkbox.checked;
+            const marker = this.markerCache.get(itemId);
+            if (marker) {
+              marker.setPopupContent(this._createMarkerTitle(item));
+            }
+          }
         }
       } catch (error) {
         checkbox.checked = previousChecked;
