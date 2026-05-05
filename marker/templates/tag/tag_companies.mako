@@ -5,7 +5,7 @@
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(tag_pills, active_url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug))}</div>
   <div>${button.a(icon='map', color='secondary', url=request.route_url('tag_map_companies', tag_id=tag.id, slug=tag.slug, _query=q))}</div>
-  <% _contact_cols = [_('Contact name'), _('Contact role'), _('Contact phone'), _('Contact email')]; _export_cols = _contact_cols + [_('Tag')] + [_('Company name'), _('Company street'), _('Company post code'), _('Company city'), _('Company subdivision'), _('Company country'), _('Company website'), _('Company NIP'), _('Company REGON'), _('Company KRS'), _('Tags')] %>
+  <% from marker.utils.export_columns import tag_company_cols; _export_cols = tag_company_cols(_) %>
   <div>${button.dropdown_download_cols(request.route_url('tag_export_companies', tag_id=tag.id, slug=tag.slug, _query=q), _export_cols)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':

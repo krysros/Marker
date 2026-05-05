@@ -12,7 +12,7 @@
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
     </button>
-    <% _contact_cols = [_('Contact name'), _('Contact role'), _('Contact phone'), _('Contact email')]; _company_cols = _contact_cols + [_('Tag')] + [_('Company name'), _('Company street'), _('Company post code'), _('Company city'), _('Company subdivision'), _('Company country'), _('Company website'), _('Company NIP'), _('Company REGON'), _('Company KRS'), _('Tags')]; _project_cols = _contact_cols + [_('Tag')] + [_('Project name'), _('Project street'), _('Project post code'), _('Project city'), _('Project subdivision'), _('Project country'), _('Project website'), _('Project deadline'), _('Project stage'), _('Project delivery method'), _('Project object category'), _('Tags')]; _export_cols = _project_cols if q.get('category') == 'projects' else _company_cols %>
+    <% from marker.utils.export_columns import tag_company_cols, tag_project_cols; _export_cols = tag_project_cols(_) if q.get('category') == 'projects' else tag_company_cols(_) %>
     ${button.dropdown_download_cols(request.route_url('user_export_selected_tags', username=user.name, _query=q), _export_cols)}
   </div>
 </div>
