@@ -707,27 +707,53 @@ class ProjectView:
 
     @view_config(
         route_name="project_uptime_check",
-        renderer="json",
         permission="view",
     )
     def uptime_check(self):
+        import html as html_mod
         import urllib.error
         import urllib.request
 
+        from pyramid.response import Response
+
+        def badge_class(code):
+            if code is None:
+                return "bg-dark"
+            if 200 <= code < 300:
+                return "bg-success"
+            if 300 <= code < 400:
+                return "bg-info"
+            if code == 403:
+                return "bg-warning"
+            if code == 404:
+                return "bg-dark"
+            if 400 <= code < 500:
+                return "bg-warning"
+            if code >= 500:
+                return "bg-danger"
+            return "bg-secondary"
+
         url = self.request.params.get("url", "")
         if not url:
-            return {"status_code": None, "error": "No URL"}
+            return Response('<span class="badge bg-secondary">—</span>', content_type="text/html")
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
         try:
             req = urllib.request.Request(url, method="HEAD")
             req.add_header("User-Agent", "Marker/1.0")
             with urllib.request.urlopen(req, timeout=10) as resp:
-                return {"status_code": resp.status}
+                code = resp.status
         except urllib.error.HTTPError as exc:
-            return {"status_code": exc.code}
+            code = exc.code
         except Exception as exc:
-            return {"status_code": None, "error": str(exc)}
+            return Response(
+                f'<span class="badge bg-dark" title="{html_mod.escape(str(exc))}">Error</span>',
+                content_type="text/html",
+            )
+        return Response(
+            f'<span class="badge {badge_class(code)}">{code}</span>',
+            content_type="text/html",
+        )
 
     @view_config(
         route_name="project_count_companies",
