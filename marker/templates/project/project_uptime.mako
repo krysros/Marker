@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 
 <h2>
-  <i class="bi bi-briefcase"></i> ${_("Projects")} — ${_("Website check")}
+  <i class="bi bi-briefcase"></i> ${_("Projects")}
   <span class="badge bg-secondary">${len(items)}</span>
   <div class="float-end">
     ${button.a(icon='table', color='secondary', url=request.route_url('project_all'))}
@@ -12,11 +12,11 @@
 </h2>
 <hr>
 
-<div class="mb-3">
+<div class="mb-3 d-flex align-items-center gap-3">
   <button id="btn-start-stop" class="btn btn-success" onclick="toggleCheck()">
     <i class="bi bi-play-fill"></i> Start
   </button>
-  <span id="progress-info" class="ms-2 text-body-secondary"></span>
+  <span id="progress-info" class="text-body-secondary"></span>
 </div>
 
 <div class="table-responsive">

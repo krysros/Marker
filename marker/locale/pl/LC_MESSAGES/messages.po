@@ -1235,11 +1235,6 @@ msgstr "Wartość netto"
 msgid "Value gross"
 msgstr "Wartość brutto"
 
-#: marker/templates/company/company_uptime.mako:5
-#: marker/templates/project/project_uptime.mako:5
-msgid "Website check"
-msgstr "Sprawdzanie stron"
-
 #: marker/templates/company/company_uptime.mako:29
 #: marker/templates/project/project_uptime.mako:29
 msgid "HTTP response code"
