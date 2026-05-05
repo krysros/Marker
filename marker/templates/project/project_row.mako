@@ -24,12 +24,12 @@
   <td>${stages.get(assoc.stage)}</td>
   <td>${company_roles.get(assoc.role)}</td>
   <td>
-    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net)}</span>
-    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross)}</span>
+    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net)}${' ' + assoc.currency if assoc.value_net is not None and assoc.currency else ''}</span>
+    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross)}${' ' + assoc.currency if assoc.value_gross is not None and assoc.currency else ''}</span>
   </td>
   <td>
-    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}</span>
-    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}</span>
+    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}${' ' + assoc.currency if assoc.value_net and assoc.project.usable_area and assoc.currency else ''}</span>
+    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}${' ' + assoc.currency if assoc.value_gross and assoc.project.usable_area and assoc.currency else ''}</span>
   </td>
   <td>
     <div class="hstack gap-2 mx-2">
