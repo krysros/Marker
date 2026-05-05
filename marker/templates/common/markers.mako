@@ -1,3 +1,10 @@
+<div id="marker-loading" hidden class="mt-2">
+  <div class="progress" style="height:6px">
+    <div id="marker-loading-bar" class="progress-bar progress-bar-striped progress-bar-animated"
+         role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+  <div id="marker-loading-label" class="text-muted small mt-1">Loading markers…</div>
+</div>
 <script src="${request.static_url('marker:static/js/marker-lazy-load.js')}"></script>
 <script>
   const fallbackCenter = [52.2297, 21.0122];
