@@ -16,6 +16,7 @@ from marker.models.contact import Contact
 from marker.models.project import Project
 from marker.models.tag import Tag
 from marker.models.user import User
+from marker.utils.uptime import clear_uptime_cache
 from marker.views.project import ProjectView
 from tests.conftest import DummyRequestWithIdentity
 
@@ -25,6 +26,12 @@ def patch_translationstring_str(monkeypatch):
     monkeypatch.setattr(
         marker.forms.ts.TranslationString, "__str__", lambda self: self.msg
     )
+    yield
+
+
+@pytest.fixture(autouse=True)
+def clear_uptime_cache_before_each_test():
+    clear_uptime_cache()
     yield
 
 
@@ -2393,8 +2400,8 @@ def test_project_uptime(dbsession):
     request = _make_request(dbsession, user)
     view = ProjectView(request)
     result = view.uptime()
-    assert "items" in result
-    names = [item["name"] for item in result["items"]]
+    assert "paginator" in result
+    names = [item.name for item in result["paginator"]]
     assert "UptimeProj1" in names
     assert "UptimeProj2" not in names
 
@@ -2405,7 +2412,8 @@ def test_project_uptime_check_no_url(dbsession):
     request = _make_request(dbsession, user, params={})
     view = ProjectView(request)
     result = view.uptime_check()
-    assert result == {"status_code": None, "error": "No URL"}
+    assert result.status_code == 200
+    assert 'class="badge bg-secondary"' in result.text
 
 
 def test_project_uptime_check_success(dbsession):
@@ -2419,7 +2427,9 @@ def test_project_uptime_check_success(dbsession):
     mock_resp.__exit__ = MagicMock(return_value=False)
     with patch("urllib.request.urlopen", return_value=mock_resp):
         result = view.uptime_check()
-    assert result == {"status_code": 200}
+    assert result.status_code == 200
+    assert 'class="badge bg-success"' in result.text
+    assert ">200<" in result.text
 
 
 def test_project_uptime_check_prepends_https(dbsession):
@@ -2433,7 +2443,8 @@ def test_project_uptime_check_prepends_https(dbsession):
     mock_resp.__exit__ = MagicMock(return_value=False)
     with patch("urllib.request.urlopen", return_value=mock_resp) as mock_open:
         result = view.uptime_check()
-    assert result == {"status_code": 200}
+    assert result.status_code == 200
+    assert 'class="badge bg-success"' in result.text
     called_req = mock_open.call_args[0][0]
     assert called_req.full_url.startswith("https://")
 
@@ -2452,7 +2463,9 @@ def test_project_uptime_check_http_error(dbsession):
         ),
     ):
         result = view.uptime_check()
-    assert result == {"status_code": 404}
+    assert result.status_code == 200
+    assert 'class="badge bg-dark"' in result.text
+    assert ">404<" in result.text
 
 
 def test_project_uptime_check_generic_error(dbsession):
@@ -2465,8 +2478,9 @@ def test_project_uptime_check_generic_error(dbsession):
         side_effect=OSError("Connection refused"),
     ):
         result = view.uptime_check()
-    assert result["status_code"] is None
-    assert "Connection refused" in result["error"]
+    assert result.status_code == 200
+    assert ">Error<" in result.text
+    assert "Connection refused" in result.text
 
 
 # ===========================================================================
