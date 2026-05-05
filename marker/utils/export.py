@@ -302,9 +302,49 @@ def response_ods_contacts_project(rows):
     return _response_ods_contacts(rows, "project", _("Project"))
 
 
+def _apply_column_selection(rows, header_row, selected_keys, row_colors=None):
+    """Filter header and rows to only the requested column keys (header names).
+
+    ``selected_keys`` is an ordered list of strings that must match header_row
+    entries (case-insensitive).  Unknown keys are ignored.  When the list is
+    empty the full set of columns is returned unchanged.
+    """
+    if not selected_keys:
+        return rows, header_row, row_colors
+
+    # Build index mapping (lower-case header → position)
+    lower_headers = [str(h).lower() for h in header_row]
+    indices = []
+    filtered_header = []
+    for key in selected_keys:
+        key_lower = key.lower()
+        if key_lower in lower_headers:
+            idx = lower_headers.index(key_lower)
+            indices.append(idx)
+            filtered_header.append(header_row[idx])
+
+    if not indices:
+        return rows, header_row, row_colors
+
+    filtered_rows = [[row[i] if i < len(row) else None for i in indices] for row in rows]
+    return filtered_rows, filtered_header, row_colors
+
+
 def make_export_response(request, rows, header_row, row_colors=None):
-    """Return an export response (XLSX or ODS) based on the request's 'format' param."""
+    """Return an export response (XLSX or ODS) based on the request's 'format' param.
+
+    Optionally filter columns via the ``columns`` query param (multi-value list of
+    header names, or comma-separated string).  When absent all columns are exported.
+    """
     fmt = request.params.get("format", "xlsx")
+
+    # Accept both repeated ?columns=A&columns=B and comma-separated ?columns=A,B
+    raw_cols = request.params.getall("columns") if hasattr(request.params, "getall") else []
+    if len(raw_cols) == 1 and "," in raw_cols[0]:
+        raw_cols = [c.strip() for c in raw_cols[0].split(",") if c.strip()]
+
+    rows, header_row, row_colors = _apply_column_selection(rows, header_row, raw_cols, row_colors)
+
     if fmt == "ods":
         return response_ods(rows, header_row, row_colors=row_colors)
     return response_xlsx(rows, header_row, row_colors=row_colors)

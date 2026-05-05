@@ -140,6 +140,46 @@
 </div>
 </%def>
 
+<%def name="dropdown_download_cols(base_url, columns)">
+<%
+  import json as _json
+  uid = abs(hash(base_url)) % 100000
+%>
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button"
+          data-bs-toggle="dropdown" data-bs-auto-close="outside"
+          aria-expanded="false">
+    <i class="bi bi-download"></i>
+  </button>
+  <div class="dropdown-menu dropdown-menu-end p-2" style="min-width:260px">
+    <form id="export-form-${uid}" method="get" action="${base_url}">
+      <div class="mb-2 fw-semibold small">${_("Columns")}</div>
+      <div style="max-height:260px;overflow-y:auto">
+        % for col in columns:
+        <div class="form-check form-check-sm">
+          <input class="form-check-input" type="checkbox" name="columns"
+                 value="${col}" checked id="ec-${uid}-${loop.index}">
+          <label class="form-check-label small" for="ec-${uid}-${loop.index}">${col}</label>
+        </div>
+        % endfor
+      </div>
+      <hr class="my-2">
+      <div class="mb-2 fw-semibold small">${_("Format")}</div>
+      <div class="btn-group btn-group-sm w-100" role="group">
+        <input type="radio" class="btn-check" name="format" value="xlsx" id="fmt-xlsx-${uid}" checked autocomplete="off">
+        <label class="btn btn-outline-primary" for="fmt-xlsx-${uid}">XLSX</label>
+        <input type="radio" class="btn-check" name="format" value="ods" id="fmt-ods-${uid}" autocomplete="off">
+        <label class="btn btn-outline-primary" for="fmt-ods-${uid}">ODS</label>
+      </div>
+      <hr class="my-2">
+      <button type="submit" class="btn btn-primary btn-sm w-100">
+        <i class="bi bi-download me-1"></i>${_("Export")}
+      </button>
+    </form>
+  </div>
+</div>
+</%def>
+
 <%def name="dropdown_order(items)">
 <div class="btn-group">
   <div class="dropdown">

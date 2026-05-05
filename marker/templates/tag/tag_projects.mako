@@ -5,7 +5,8 @@
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(tag_pills, active_url=request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug))}</div>
   <div>${button.a(icon='map', color='secondary', url=request.route_url('tag_map_projects', tag_id=tag.id, slug=tag.slug, _query=q))}</div>
-  <div>${button.dropdown_download(url_xlsx=request.route_url('tag_export_projects', tag_id=tag.id, slug=tag.slug, _query=q), url_ods=request.route_url('tag_export_projects', tag_id=tag.id, slug=tag.slug, _query={**q, 'format': 'ods'}))}</div>
+  <% _contact_cols = [_('Contact name'), _('Contact role'), _('Contact phone'), _('Contact email')]; _export_cols = _contact_cols + [_('Tag')] + [_('Project name'), _('Project street'), _('Project post code'), _('Project city'), _('Project subdivision'), _('Project country'), _('Project website'), _('Project deadline'), _('Project stage'), _('Project delivery method'), _('Project object category'), _('Tags')] %>
+  <div>${button.dropdown_download_cols(request.route_url('tag_export_projects', tag_id=tag.id, slug=tag.slug, _query=q), _export_cols)}</div>
   <div>
     % if request.identity.role == 'editor' or 'admin':
     ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add_project', tag_id=tag.id, slug=tag.slug))}

@@ -7,7 +7,8 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
-    ${button.dropdown_download(url_xlsx=request.route_url('prices_export', _query=q), url_ods=request.route_url('prices_export', _query={**q, 'format': 'ods'}))}
+    <% _export_cols = [_('Project'), _('Object category'), _('Company'), _('Stage'), _('Role'), _('Currency'), _('Net value'), _('Gross value'), _('Net / m\u00b2'), _('Gross / m\u00b2')] %>
+    ${button.dropdown_download_cols(request.route_url('prices_export', _query=q), _export_cols)}
   </div>
 </div>
 
