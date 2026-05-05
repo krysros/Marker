@@ -692,18 +692,39 @@ class ProjectView:
         permission="view",
     )
     def uptime(self):
+        page = int(self.request.params.get("page", 1))
         stmt = select(Project).filter(
             Project.website.isnot(None), Project.website != ""
+        ).order_by(Project.name)
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
         )
-        projects = self.request.dbsession.execute(stmt).scalars()
-        items = [
-            {
-                "name": project.name,
-                "website": project.website,
-            }
-            for project in projects
-        ]
-        return {"items": items}
+        next_page = self.request.route_url(
+            "project_uptime_rows", _query={"page": page + 1}
+        )
+        return {"paginator": paginator, "next_page": next_page, "page": page}
+
+    @view_config(
+        route_name="project_uptime_rows",
+        renderer="project_uptime_rows.mako",
+        permission="view",
+    )
+    def uptime_rows(self):
+        page = int(self.request.params.get("page", 1))
+        stmt = select(Project).filter(
+            Project.website.isnot(None), Project.website != ""
+        ).order_by(Project.name)
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "project_uptime_rows", _query={"page": page + 1}
+        )
+        return {"paginator": paginator, "next_page": next_page, "page": page}
 
     @view_config(
         route_name="project_uptime_check",

@@ -717,18 +717,39 @@ class CompanyView:
         permission="view",
     )
     def uptime(self):
+        page = int(self.request.params.get("page", 1))
         stmt = select(Company).filter(
             Company.website.isnot(None), Company.website != ""
+        ).order_by(Company.name)
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
         )
-        companies = self.request.dbsession.execute(stmt).scalars()
-        items = [
-            {
-                "name": company.name,
-                "website": company.website,
-            }
-            for company in companies
-        ]
-        return {"items": items}
+        next_page = self.request.route_url(
+            "company_uptime_rows", _query={"page": page + 1}
+        )
+        return {"paginator": paginator, "next_page": next_page, "page": page}
+
+    @view_config(
+        route_name="company_uptime_rows",
+        renderer="company_uptime_rows.mako",
+        permission="view",
+    )
+    def uptime_rows(self):
+        page = int(self.request.params.get("page", 1))
+        stmt = select(Company).filter(
+            Company.website.isnot(None), Company.website != ""
+        ).order_by(Company.name)
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "company_uptime_rows", _query={"page": page + 1}
+        )
+        return {"paginator": paginator, "next_page": next_page, "page": page}
 
     @view_config(
         route_name="company_uptime_check",
