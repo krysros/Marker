@@ -13,7 +13,7 @@
   <%include file="company_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
-  <a class="btn btn-secondary" href="${request.route_url('user_selected_companies_similar', username=user.name, _query=q)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
+  <a class="btn btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group" role="group" aria-label="${_('Tag mode')}">
     <a class="btn ${'btn-primary' if tag_operator == 'or' else 'btn-outline-primary'}"
        href="${request.route_url('user_selected_companies_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>
@@ -22,7 +22,7 @@
   </div>
   <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags', username=user.name)}">${_("Tags")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies', username=user.name)}">${_("Companies")}</a>
+    <a class="btn btn-primary" href="${request.route_url('user_selected_companies', username=user.name)}">${_("Companies")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects', username=user.name)}">${_("Projects")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_contacts', username=user.name)}">${_("Contacts")}</a>
   </div>
