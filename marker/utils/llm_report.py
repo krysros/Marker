@@ -24,6 +24,16 @@ Database schema:
   companies_tags (company_id, tag_id)
   projects_tags  (project_id, tag_id)
 
+Relationships:
+- companies ↔ projects is many-to-many via the activity table:
+    JOIN activity ON companies.id = activity.company_id
+    JOIN projects ON activity.project_id = projects.id
+  There is NO company_id column in the projects table.
+- companies ↔ tags via companies_tags
+- projects  ↔ tags via projects_tags
+- contacts belong to a company (contacts.company_id) or a project (contacts.project_id)
+- comments  belong to a company (comments.company_id)  or a project (comments.project_id)
+
 Rules:
 - Output ONLY a SELECT statement (no INSERT, UPDATE, DELETE, DROP, etc.)
 - Do not include semicolons inside the query
