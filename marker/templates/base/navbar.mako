@@ -25,13 +25,16 @@
           <span class="nav-link disabled px-1" aria-hidden="true">|</span>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('search_tags')}"><i class="bi bi-search"></i> ${_("Search")}</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('contractor_all')}"><i class="bi bi-diagram-3"></i> ${_("Contractors")}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('prices_all')}"><i class="bi bi-currency-exchange"></i> ${_("Prices")}</a>
+        </li>
+        <li class="nav-item d-none d-md-flex align-items-center">
+          <span class="nav-link disabled px-1" aria-hidden="true">|</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" href="${request.route_url('search_tags')}"><i class="bi bi-search"></i> ${_("Search")}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('report_all')}"><i class="bi bi-bar-chart"></i> ${_("Reports")}</a>
