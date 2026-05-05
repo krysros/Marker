@@ -10,19 +10,16 @@
 <hr>
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
-  <%include file="project_filter.mako"/>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
   <a class="btn btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
-    <a class="btn ${'btn-primary' if tag_operator == 'or' else 'btn-outline-primary'}"
-       href="${request.route_url('user_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>
-    <a class="btn ${'btn-primary' if tag_operator == 'and' else 'btn-outline-primary'}"
-       href="${request.route_url('user_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'and'})}">AND</a>
+    <a class="btn ${'btn-primary' if q.get('tag_operator') == 'or' else 'btn-outline-primary'}"
+       href="${request.route_url('user_map_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>
+    <a class="btn ${'btn-primary' if q.get('tag_operator') == 'and' else 'btn-outline-primary'}"
+       href="${request.route_url('user_map_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'and'})}">AND</a>
   </div>
   <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
-    <a class="btn btn-primary" href="${request.route_url('user_selected_projects_similar', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('user_map_selected_projects_similar', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_similar', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn btn-primary" href="${request.route_url('user_map_selected_projects_similar', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
   </div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
@@ -32,4 +29,6 @@
   </div>
 </div>
 
-<%include file="project_table.mako"/>
+<div id="map"></div>
+
+<%include file="markers.mako"/>
