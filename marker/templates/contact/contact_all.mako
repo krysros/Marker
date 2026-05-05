@@ -18,7 +18,7 @@
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
   <div class="ms-auto">
-    <div class="btn-group" role="group">
+    <div class="btn-group btn-group-sm" role="group">
       <a class="btn btn-primary btn-sm" href="${request.route_url('contact_all')}">${_("All")}</a>
       <a class="btn btn-outline-primary btn-sm" href="${request.route_url('contact_unassigned')}">${_("Unassigned")}</a>
     </div>

@@ -3,7 +3,7 @@
 
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-0">
   <h2 class="mb-0"><i class="bi bi-bar-chart"></i> ${_("Reports")}</h2>
-  <div class="btn-group" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <input type="radio" class="btn-check" name="reportViewToggle" id="toggleTable" autocomplete="off" checked>
     <label class="btn btn-outline-secondary btn-sm" for="toggleTable">
       <i class="bi bi-table"></i> ${_("Table")}

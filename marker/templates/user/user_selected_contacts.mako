@@ -16,7 +16,7 @@
   <%include file="contact_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
-  <div class="btn-group ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags', username=user.name)}">${_("Tags")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies', username=user.name)}">${_("Companies")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects', username=user.name)}">${_("Projects")}</a>
