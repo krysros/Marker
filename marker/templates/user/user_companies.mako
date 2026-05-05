@@ -1,10 +1,8 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
-<%
-  _contact_cols = [_('Contact name'), _('Contact role'), _('Contact phone'), _('Contact email')]
-  _export_cols = _contact_cols + [_('Company name'), _('Company street'), _('Company post code'), _('Company city'), _('Company subdivision'), _('Company country'), _('Company website'), _('Company NIP'), _('Company REGON'), _('Company KRS'), _('Tags')]
-%>
+<%! from marker.utils.export_columns import company_cols %>
+<% _export_cols = company_cols(_) %>
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_companies', username=user.name))}</div>
   <div>${button.dropdown_download_cols(request.route_url('user_export_companies', username=user.name, _query=q), _export_cols)}</div>

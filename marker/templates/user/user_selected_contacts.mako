@@ -7,7 +7,7 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">    ${button.deselect_selected(url=request.route_url('user_deselect_contacts', username=user.name), confirm_text=_('Deselect all selected contacts?'))}    ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
-    <% _contact_cols = [_('Contact name'), _('Contact role'), _('Contact phone'), _('Contact email')]; _company_cols = _contact_cols + [_('Company name'), _('Company street'), _('Company post code'), _('Company city'), _('Company subdivision'), _('Company country'), _('Company website'), _('Company NIP'), _('Company REGON'), _('Company KRS'), _('Tags')]; _project_cols = _contact_cols + [_('Project name'), _('Project street'), _('Project post code'), _('Project city'), _('Project subdivision'), _('Project country'), _('Project website'), _('Project deadline'), _('Project stage'), _('Project delivery method'), _('Project object category'), _('Tags')]; _export_cols = _project_cols if q.get('category') == 'projects' else _company_cols %>
+    <% from marker.utils.export_columns import company_cols, project_cols; _export_cols = project_cols(_) if q.get('category') == 'projects' else company_cols(_) %>
     ${button.dropdown_download_cols(request.route_url('user_export_selected_contacts', username=user.name, _query=q), _export_cols)}
   </div>
   </div>
