@@ -126,6 +126,20 @@
 </div>
 </%def>
 
+<%def name="dropdown_import(url_csv='#', url_vcard='#')">
+<div class="btn-group">
+  <div class="dropdown">
+    <a class="btn btn-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-upload"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="${url_csv}">CSV</a></li>
+      <li><a class="dropdown-item" href="${url_vcard}">vCard</a></li>
+    </ul>
+  </div>
+</div>
+</%def>
+
 <%def name="dropdown_download(url_xlsx='#', url_ods='#')">
 <div class="btn-group">
   <div class="dropdown">
