@@ -1331,9 +1331,7 @@ class ProjectView:
         model = settings.get("gemini.model", "gemini-2.5-flash-lite")
         from ..utils.website_autofill import _country_from_locale
 
-        default_country = _country_from_locale(
-            settings.get("pyramid.default_locale_name", "")
-        )
+        default_country = _country_from_locale(self.request.locale_name)
         try:
             fields = project_autofill_from_website(
                 website, model=model, default_country=default_country
