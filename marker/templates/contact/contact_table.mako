@@ -46,14 +46,14 @@
     ${contact.company.city or "---"}<br>
     <small class="text-body-secondary">${get_subdivision_name(contact.company.subdivision, "---")}</small><br>
     <small class="text-body-secondary">${get_country_name(contact.company.country, "---")}</small>
-  </td>
-  % elif contact.project:
-  <td>
+    % elif contact.project:
     ${contact.project.city or "---"}<br>
     <small class="text-body-secondary">${get_subdivision_name(contact.project.subdivision, "---")}</small><br>
     <small class="text-body-secondary">${get_country_name(contact.project.country, "---")}</small>
+    % else:
+    ---
+    % endif
   </td>
-  % endif
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.a(icon='person-vcard', color='primary', size='sm', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}

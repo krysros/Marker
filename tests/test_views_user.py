@@ -3212,6 +3212,83 @@ def test_user_export_selected_contacts_color_filter(dbsession):
     assert "vnd.openxmlformats-officedocument" in result.content_type
 
 
+def test_user_export_selected_contacts_all_country_filter(dbsession):
+    """Cover else-branch country/subdivision filter when category='' (all)."""
+    user = _user(dbsession, "tesallctry")
+    co = _company(dbsession, user, "TEsAllCtryComp")
+    co.country = "PL"
+    from marker.models.contact import Contact
+
+    c = Contact(name="TEsAllCtryCont", role="r", phone="1", email="a@b.com", color="")
+    c.created_by = user
+    c.company = co
+    dbsession.add(c)
+    user.selected_contacts.append(c)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "country": "PL",
+            "subdivision": "PL-14",
+        },
+    )
+    view = UserView(request)
+    result = view.export_selected_contacts()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_user_export_selected_contacts_all_sort_country(dbsession):
+    """Cover else-branch sort by country when category='' (all), asc and desc."""
+    user = _user(dbsession, "tesallsrtc")
+    co = _company(dbsession, user, "TEsAllSrtcComp")
+    from marker.models.contact import Contact
+
+    c = Contact(name="TEsAllSrtcCont", role="r", phone="1", email="a@b.com", color="")
+    c.created_by = user
+    c.company = co
+    dbsession.add(c)
+    user.selected_contacts.append(c)
+    transaction.commit()
+    for order in ("asc", "desc"):
+        request = _req(
+            dbsession,
+            user,
+            params={
+                "sort": "country",
+                "order": order,
+            },
+        )
+        view = UserView(request)
+        result = view.export_selected_contacts()
+        assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_user_export_selected_contacts_all_sort_category_name(dbsession):
+    """Cover category_name sort when category='' (all)."""
+    user = _user(dbsession, "tesallcatn")
+    co = _company(dbsession, user, "TEsAllCatnComp")
+    from marker.models.contact import Contact
+
+    c = Contact(name="TEsAllCatnCont", role="r", phone="1", email="a@b.com", color="")
+    c.created_by = user
+    c.company = co
+    dbsession.add(c)
+    user.selected_contacts.append(c)
+    transaction.commit()
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "sort": "category_name",
+            "order": "desc",
+        },
+    )
+    view = UserView(request)
+    result = view.export_selected_contacts()
+    assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
 # --- tags bulk selection (line 785) ---
 
 
