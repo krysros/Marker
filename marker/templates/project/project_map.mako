@@ -7,6 +7,9 @@
   <div class="float-end">
     ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
+    % if gemini_api_key_set:
+    ${button.a(icon='robot', color='success', url=request.route_url('project_add_ai'))}
+    % endif
   </div>
 </h2>
 <hr>
