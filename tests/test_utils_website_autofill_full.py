@@ -160,7 +160,9 @@ def test_subdivision_code_partial_match():
 def test_autofill_country_full_name_normalized(mock_loader, mock_llm, mock_geo):
     """LLM returns full country name (e.g. 'Poland') — should be normalized to alpha_2 'PL'."""
     mock_loader.return_value = [MagicMock(page_content="test page content")]
-    mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Warsaw", "country": "Poland"}')
+    mock_llm.return_value = MagicMock(
+        content='{"name": "Co", "city": "Warsaw", "country": "Poland"}'
+    )
     mock_geo.return_value = None
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
@@ -176,7 +178,9 @@ def test_autofill_country_empty_defaults_to_pl(mock_loader, mock_llm, mock_geo):
     mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Warsaw"}')
     mock_geo.return_value = None
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
-        result = company_autofill_from_website("https://example.com", default_country="PL")
+        result = company_autofill_from_website(
+            "https://example.com", default_country="PL"
+        )
     assert result["country"] == "PL"
 
 
@@ -199,11 +203,15 @@ def test_autofill_country_empty_no_default(mock_loader, mock_llm, mock_geo):
 def test_autofill_country_lookup_error_defaults_to_pl(mock_loader, mock_llm, mock_geo):
     """LLM returns unrecognizable country and fuzzy search raises LookupError — falls back to default_country."""
     mock_loader.return_value = [MagicMock(page_content="test page content")]
-    mock_llm.return_value = MagicMock(content='{"name": "Co", "country": "xyzzy_not_a_country"}')
+    mock_llm.return_value = MagicMock(
+        content='{"name": "Co", "country": "xyzzy_not_a_country"}'
+    )
     mock_geo.return_value = None
     with patch("pycountry.countries.search_fuzzy", side_effect=LookupError):
         with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
-            result = company_autofill_from_website("https://example.com", default_country="PL")
+            result = company_autofill_from_website(
+                "https://example.com", default_country="PL"
+            )
     assert result["country"] == "PL"
 
 
@@ -268,9 +276,7 @@ def _make_loader_side_effect(*url_content_pairs):
         if isinstance(content_or_exc, Exception):
             instance.load.side_effect = content_or_exc
         else:
-            instance.load.return_value = [
-                MagicMock(page_content=content_or_exc)
-            ]
+            instance.load.return_value = [MagicMock(page_content=content_or_exc)]
         return instance
 
     return factory
@@ -464,9 +470,7 @@ def test_tags_autofill_with_existing_tags(mock_loader_class, mock_llm_class):
     )
 
     mock_llm_instance = MagicMock()
-    mock_llm_instance.invoke.return_value = MagicMock(
-        content='["Construction"]'
-    )
+    mock_llm_instance.invoke.return_value = MagicMock(content='["Construction"]')
     mock_llm_class.return_value = mock_llm_instance
 
     result = tags_autofill_from_website(
@@ -520,9 +524,7 @@ def test_tags_autofill_dict_no_matching_key(mock_loader_class, mock_llm_class):
     )
 
     mock_llm_instance = MagicMock()
-    mock_llm_instance.invoke.return_value = MagicMock(
-        content='{"other": ["BIM"]}'
-    )
+    mock_llm_instance.invoke.return_value = MagicMock(content='{"other": ["BIM"]}')
     mock_llm_class.return_value = mock_llm_instance
 
     result = tags_autofill_from_website("https://example.com")
@@ -561,9 +563,7 @@ def test_tags_autofill_url_skip(mock_loader_class, mock_llm_class):
     )
 
     mock_llm_instance = MagicMock()
-    mock_llm_instance.invoke.return_value = MagicMock(
-        content='["Design"]'
-    )
+    mock_llm_instance.invoke.return_value = MagicMock(content='["Design"]')
     mock_llm_class.return_value = mock_llm_instance
 
     result = tags_autofill_from_website("https://example.com/oferta")

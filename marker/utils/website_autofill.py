@@ -13,7 +13,9 @@ from ..forms.ts import TranslationString as _
 from .geo import location_details
 
 
-def _autofill_from_website(url, prompt, model="gemini-2.5-flash-lite", default_country=""):
+def _autofill_from_website(
+    url, prompt, model="gemini-2.5-flash-lite", default_country=""
+):
     """
     Shared logic for autofilling company or project data from a website.
     """
@@ -101,6 +103,7 @@ def _country_from_locale(locale_str):
         return ""
     try:
         from babel import Locale
+
         locale = Locale.parse(locale_str, sep="_")
         if locale.territory:
             return locale.territory
@@ -113,14 +116,22 @@ def _country_from_locale(locale_str):
     return ""
 
 
-def company_autofill_from_website(website, model="gemini-2.5-flash-lite", default_country=""):
+def company_autofill_from_website(
+    website, model="gemini-2.5-flash-lite", default_country=""
+):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(website, prompt, model=model, default_country=default_country)
+    return _autofill_from_website(
+        website, prompt, model=model, default_country=default_country
+    )
 
 
-def project_autofill_from_website(website, model="gemini-2.5-flash-lite", default_country=""):
+def project_autofill_from_website(
+    website, model="gemini-2.5-flash-lite", default_country=""
+):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(website, prompt, model=model, default_country=default_country)
+    return _autofill_from_website(
+        website, prompt, model=model, default_country=default_country
+    )
 
 
 def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
@@ -160,7 +171,9 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
             continue
 
     if not content_parts:
-        raise ValueError(str(_("Could not load content from %(url)s")) % {"url": website})
+        raise ValueError(
+            str(_("Could not load content from %(url)s")) % {"url": website}
+        )
 
     content = "\n\n---\n\n".join(content_parts[:2])
 
@@ -189,7 +202,9 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
     return []
 
 
-def tags_autofill_from_website(website, existing_tags=None, model="gemini-2.5-flash-lite"):
+def tags_autofill_from_website(
+    website, existing_tags=None, model="gemini-2.5-flash-lite"
+):
     """
     Extract a list of tags (core business activities or project types) from the
     given website URL.  When *existing_tags* (a list of tag name strings already
@@ -226,7 +241,9 @@ def tags_autofill_from_website(website, existing_tags=None, model="gemini-2.5-fl
             continue
 
     if not content_parts:
-        raise ValueError(str(_("Could not load content from %(url)s")) % {"url": website})
+        raise ValueError(
+            str(_("Could not load content from %(url)s")) % {"url": website}
+        )
 
     content = "\n\n---\n\n".join(content_parts[:2])
 

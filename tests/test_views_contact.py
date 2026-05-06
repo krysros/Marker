@@ -558,10 +558,19 @@ def test_contact_search_tags_results_and_operator_contacts(dbsession):
     company_both.tags.append(tag2)
     company_one = _make_company(dbsession, user, "ANDCoOne")
     company_one.tags.append(tag1)
-    contact_both = _make_contact(dbsession, user, "ANDContactBoth", company=company_both)
+    contact_both = _make_contact(
+        dbsession, user, "ANDContactBoth", company=company_both
+    )
     _make_contact(dbsession, user, "ANDContactOne", company=company_one)
     transaction.commit()
-    params = MultiDict([("target", "contacts"), ("tag", "ANDTag1"), ("tag", "ANDTag2"), ("tag_operator", "and")])
+    params = MultiDict(
+        [
+            ("target", "contacts"),
+            ("tag", "ANDTag1"),
+            ("tag", "ANDTag2"),
+            ("tag_operator", "and"),
+        ]
+    )
     request = _make_request(dbsession, user, params=params)
     view = ContactView(request)
     result = view.search_tags_results()
@@ -1032,7 +1041,9 @@ def test_contact_unassigned_with_filters_and_asc_sort(dbsession):
     assert result["q"]["sort"] == "name"
     assert result["q"]["order"] == "asc"
     assert result["counter"] >= 1
-    assert all(c.company_id is None and c.project_id is None for c in result["paginator"])
+    assert all(
+        c.company_id is None and c.project_id is None for c in result["paginator"]
+    )
 
 
 def test_contact_unassigned_invalid_sort_and_order_fallback(dbsession):

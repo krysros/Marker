@@ -21,8 +21,8 @@ from ..models import (
     projects_stars,
     projects_tags,
 )
-from ..utils.paginator import get_paginator
 from ..subscribers import get_subdivision_name
+from ..utils.paginator import get_paginator
 
 
 class ReportView:
@@ -58,9 +58,9 @@ class ReportView:
                 )
             else:
                 try:
-                    model = (getattr(self.request.registry, "settings", None) or {}).get(
-                        "gemini.model", "gemini-2.5-flash-lite"
-                    )
+                    model = (
+                        getattr(self.request.registry, "settings", None) or {}
+                    ).get("gemini.model", "gemini-2.5-flash-lite")
                     raw_sql = generate_report_sql(prompt, model=model)
                     sql_generated = validate_sql(raw_sql)
                     result = self.request.dbsession.execute(text(sql_generated))

@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # generate_report_sql
 # ---------------------------------------------------------------------------
@@ -108,7 +107,9 @@ def test_validate_sql_raises_for_non_select():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="Only SELECT"):
             validate_sql("DELETE FROM companies")
 
@@ -118,7 +119,9 @@ def test_validate_sql_raises_for_update():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="Only SELECT"):
             validate_sql("UPDATE companies SET name='x'")
 
@@ -128,7 +131,9 @@ def test_validate_sql_raises_for_semicolon_in_body():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="Multiple SQL"):
             validate_sql("SELECT 1; DELETE FROM companies")
 
@@ -138,7 +143,9 @@ def test_validate_sql_raises_for_insert_keyword():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="INSERT"):
             validate_sql("SELECT * FROM (INSERT INTO companies VALUES (1))")
 
@@ -148,7 +155,9 @@ def test_validate_sql_raises_for_drop_keyword():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="DROP"):
             validate_sql("SELECT DROP FROM companies")
 
@@ -158,7 +167,9 @@ def test_validate_sql_raises_for_alter_keyword():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="ALTER"):
             validate_sql("SELECT ALTER FROM tables")
 
@@ -168,6 +179,8 @@ def test_validate_sql_raises_for_pragma_keyword():
 
     from marker.utils.llm_report import validate_sql
 
-    with patch("marker.forms.ts.get_current_request", return_value=_make_mock_request()):
+    with patch(
+        "marker.forms.ts.get_current_request", return_value=_make_mock_request()
+    ):
         with pytest.raises(ValueError, match="PRAGMA"):
             validate_sql("SELECT PRAGMA FROM info")

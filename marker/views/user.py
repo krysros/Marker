@@ -5,6 +5,7 @@ from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import delete, false, func, or_, select
 from sqlalchemy.orm import selectinload
+from zope.sqlalchemy import mark_changed
 
 from ..forms import (
     CommentFilterForm,
@@ -48,8 +49,6 @@ from ..models import (
 )
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
-from zope.sqlalchemy import mark_changed
-
 from . import (
     Filter,
     apply_order,
@@ -551,7 +550,9 @@ class UserView:
         return rows, row_colors
 
     @view_config(route_name="user_all", renderer="user_all.mako", permission="view")
-    @view_config(route_name="user_more", renderer="user_table#rows.mako", permission="view")
+    @view_config(
+        route_name="user_more", renderer="user_table#rows.mako", permission="view"
+    )
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
@@ -1931,15 +1932,26 @@ class UserView:
             )
             pool_tags_sq = (
                 select(companies_tags.c.tag_id)
-                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .where(
+                    companies_tags.c.company_id.in_(
+                        select(selected_company_ids_sq.c.company_id)
+                    )
+                )
                 .group_by(companies_tags.c.tag_id)
-                .having(func.count(func.distinct(companies_tags.c.company_id)) == n_selected_sq)
+                .having(
+                    func.count(func.distinct(companies_tags.c.company_id))
+                    == n_selected_sq
+                )
                 .subquery()
             )
         else:
             pool_tags_sq = (
                 select(companies_tags.c.tag_id)
-                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .where(
+                    companies_tags.c.company_id.in_(
+                        select(selected_company_ids_sq.c.company_id)
+                    )
+                )
                 .distinct()
                 .subquery()
             )
@@ -2031,9 +2043,7 @@ class UserView:
                 tag_names_by_company.setdefault(similar_company_id, set()).add(tag_name)
 
             shared_tag_labels = {
-                similar_company_id: ", ".join(
-                    sorted(names, key=normalize_ci_value)
-                )
+                similar_company_id: ", ".join(sorted(names, key=normalize_ci_value))
                 for similar_company_id, names in tag_names_by_company.items()
             }
 
@@ -2095,15 +2105,26 @@ class UserView:
             )
             pool_tags_sq = (
                 select(companies_tags.c.tag_id)
-                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .where(
+                    companies_tags.c.company_id.in_(
+                        select(selected_company_ids_sq.c.company_id)
+                    )
+                )
                 .group_by(companies_tags.c.tag_id)
-                .having(func.count(func.distinct(companies_tags.c.company_id)) == n_selected_sq)
+                .having(
+                    func.count(func.distinct(companies_tags.c.company_id))
+                    == n_selected_sq
+                )
                 .subquery()
             )
         else:
             pool_tags_sq = (
                 select(companies_tags.c.tag_id)
-                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .where(
+                    companies_tags.c.company_id.in_(
+                        select(selected_company_ids_sq.c.company_id)
+                    )
+                )
                 .distinct()
                 .subquery()
             )
@@ -2194,15 +2215,26 @@ class UserView:
             )
             pool_tags_sq = (
                 select(companies_tags.c.tag_id)
-                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .where(
+                    companies_tags.c.company_id.in_(
+                        select(selected_company_ids_sq.c.company_id)
+                    )
+                )
                 .group_by(companies_tags.c.tag_id)
-                .having(func.count(func.distinct(companies_tags.c.company_id)) == n_selected_sq)
+                .having(
+                    func.count(func.distinct(companies_tags.c.company_id))
+                    == n_selected_sq
+                )
                 .subquery()
             )
         else:
             pool_tags_sq = (
                 select(companies_tags.c.tag_id)
-                .where(companies_tags.c.company_id.in_(select(selected_company_ids_sq.c.company_id)))
+                .where(
+                    companies_tags.c.company_id.in_(
+                        select(selected_company_ids_sq.c.company_id)
+                    )
+                )
                 .distinct()
                 .subquery()
             )
@@ -2597,15 +2629,26 @@ class UserView:
             )
             pool_tags_sq = (
                 select(projects_tags.c.tag_id)
-                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .where(
+                    projects_tags.c.project_id.in_(
+                        select(selected_project_ids_sq.c.project_id)
+                    )
+                )
                 .group_by(projects_tags.c.tag_id)
-                .having(func.count(func.distinct(projects_tags.c.project_id)) == n_selected_sq)
+                .having(
+                    func.count(func.distinct(projects_tags.c.project_id))
+                    == n_selected_sq
+                )
                 .subquery()
             )
         else:
             pool_tags_sq = (
                 select(projects_tags.c.tag_id)
-                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .where(
+                    projects_tags.c.project_id.in_(
+                        select(selected_project_ids_sq.c.project_id)
+                    )
+                )
                 .distinct()
                 .subquery()
             )
@@ -2709,9 +2752,7 @@ class UserView:
                 tag_names_by_project.setdefault(similar_project_id, set()).add(tag_name)
 
             shared_tag_labels = {
-                similar_project_id: ", ".join(
-                    sorted(names, key=normalize_ci_value)
-                )
+                similar_project_id: ", ".join(sorted(names, key=normalize_ci_value))
                 for similar_project_id, names in tag_names_by_project.items()
             }
 
@@ -2776,15 +2817,26 @@ class UserView:
             )
             pool_tags_sq = (
                 select(projects_tags.c.tag_id)
-                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .where(
+                    projects_tags.c.project_id.in_(
+                        select(selected_project_ids_sq.c.project_id)
+                    )
+                )
                 .group_by(projects_tags.c.tag_id)
-                .having(func.count(func.distinct(projects_tags.c.project_id)) == n_selected_sq)
+                .having(
+                    func.count(func.distinct(projects_tags.c.project_id))
+                    == n_selected_sq
+                )
                 .subquery()
             )
         else:
             pool_tags_sq = (
                 select(projects_tags.c.tag_id)
-                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .where(
+                    projects_tags.c.project_id.in_(
+                        select(selected_project_ids_sq.c.project_id)
+                    )
+                )
                 .distinct()
                 .subquery()
             )
@@ -2887,15 +2939,26 @@ class UserView:
             )
             pool_tags_sq = (
                 select(projects_tags.c.tag_id)
-                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .where(
+                    projects_tags.c.project_id.in_(
+                        select(selected_project_ids_sq.c.project_id)
+                    )
+                )
                 .group_by(projects_tags.c.tag_id)
-                .having(func.count(func.distinct(projects_tags.c.project_id)) == n_selected_sq)
+                .having(
+                    func.count(func.distinct(projects_tags.c.project_id))
+                    == n_selected_sq
+                )
                 .subquery()
             )
         else:
             pool_tags_sq = (
                 select(projects_tags.c.tag_id)
-                .where(projects_tags.c.project_id.in_(select(selected_project_ids_sq.c.project_id)))
+                .where(
+                    projects_tags.c.project_id.in_(
+                        select(selected_project_ids_sq.c.project_id)
+                    )
+                )
                 .distinct()
                 .subquery()
             )
@@ -4472,15 +4535,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         self.request.dbsession.execute(
-            delete(selected_companies).where(
-                selected_companies.c.user_id == user.id
-            )
+            delete(selected_companies).where(selected_companies.c.user_id == user.id)
         )
         mark_changed(self.request.dbsession)
         self.request.session.flash(_("success:Selected companies deselected"))
-        log.info(
-            _("The user %s deselected all companies") % self.request.identity.name
-        )
+        log.info(_("The user %s deselected all companies") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_companies", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -4496,15 +4555,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         self.request.dbsession.execute(
-            delete(selected_projects).where(
-                selected_projects.c.user_id == user.id
-            )
+            delete(selected_projects).where(selected_projects.c.user_id == user.id)
         )
         mark_changed(self.request.dbsession)
         self.request.session.flash(_("success:Selected projects deselected"))
-        log.info(
-            _("The user %s deselected all projects") % self.request.identity.name
-        )
+        log.info(_("The user %s deselected all projects") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_projects", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -4520,15 +4575,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         self.request.dbsession.execute(
-            delete(selected_contacts).where(
-                selected_contacts.c.user_id == user.id
-            )
+            delete(selected_contacts).where(selected_contacts.c.user_id == user.id)
         )
         mark_changed(self.request.dbsession)
         self.request.session.flash(_("success:Selected contacts deselected"))
-        log.info(
-            _("The user %s deselected all contacts") % self.request.identity.name
-        )
+        log.info(_("The user %s deselected all contacts") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_contacts", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -4544,15 +4595,11 @@ class UserView:
         _ = self.request.translate
         user = self.request.context.user
         self.request.dbsession.execute(
-            delete(selected_tags).where(
-                selected_tags.c.user_id == user.id
-            )
+            delete(selected_tags).where(selected_tags.c.user_id == user.id)
         )
         mark_changed(self.request.dbsession)
         self.request.session.flash(_("success:Selected tags deselected"))
-        log.info(
-            _("The user %s deselected all tags") % self.request.identity.name
-        )
+        log.info(_("The user %s deselected all tags") % self.request.identity.name)
         next_url = self.request.route_url("user_selected_tags", username=user.name)
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}
@@ -4582,9 +4629,7 @@ class UserView:
         )
         mark_changed(dbsession)
         self.request.session.flash(_("success:All selections cleared"))
-        log.info(
-            _("The user %s cleared all selections") % self.request.identity.name
-        )
+        log.info(_("The user %s cleared all selections") % self.request.identity.name)
         next_url = self.request.route_url("home")
         response = self.request.response
         response.headers = {"HX-Redirect": next_url}

@@ -1552,7 +1552,9 @@ def test_project_all_filter_tags_and_operator(dbsession):
     proj_one = _make_project(dbsession, user, "ProjANDOne")
     proj_one.tags.append(tag1)
     transaction.commit()
-    params = MultiDict([("tag", "ProjANDTag1"), ("tag", "ProjANDTag2"), ("tag_operator", "and")])
+    params = MultiDict(
+        [("tag", "ProjANDTag1"), ("tag", "ProjANDTag2"), ("tag_operator", "and")]
+    )
     request = _make_request(dbsession, user, params=params)
     view = ProjectView(request)
     result = view.all()
@@ -3141,9 +3143,17 @@ def test_project_similar_object_category(dbsession):
 @patch("marker.views.project.tags_autofill_from_website", return_value=[])
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "ProjContExcP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "ProjContExcP",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
-def test_project_add_ai_contacts_exception(mock_autofill, mock_tags, mock_contacts, mock_geo, dbsession):
+def test_project_add_ai_contacts_exception(
+    mock_autofill, mock_tags, mock_contacts, mock_geo, dbsession
+):
     """Cover line 1973: exception in contacts_autofill_from_website is handled."""
     user = _make_user(dbsession, "projaicontexc")
     transaction.commit()
@@ -3160,13 +3170,23 @@ def test_project_add_ai_contacts_exception(mock_autofill, mock_tags, mock_contac
 @patch("marker.views.project.tags_autofill_from_website", return_value=[])
 @patch(
     "marker.views.project.contacts_autofill_from_website",
-    return_value=[{"name": "Jane Doe", "role": "PM", "phone": "999", "email": "j@x.com"}],
+    return_value=[
+        {"name": "Jane Doe", "role": "PM", "phone": "999", "email": "j@x.com"}
+    ],
 )
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "ProjContRetP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "ProjContRetP",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
-def test_project_add_ai_contacts_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_project_add_ai_contacts_returned(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover contact loop body in contacts_autofill_from_website branch."""
     user = _make_user(dbsession, "projaicontret")
     transaction.commit()
@@ -3187,9 +3207,17 @@ def test_project_add_ai_contacts_returned(mock_autofill, mock_contacts, mock_tag
 )
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "ProjContBlankP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "ProjContBlankP",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
-def test_project_add_ai_contacts_blank_name(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_project_add_ai_contacts_blank_name(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover 'continue' branch when contact name is blank (line 1973)."""
     user = _make_user(dbsession, "projaicontblank")
     transaction.commit()
@@ -3215,9 +3243,17 @@ def test_project_add_ai_contacts_blank_name(mock_autofill, mock_contacts, mock_t
 @patch("marker.views.project.contacts_autofill_from_website", return_value=[])
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "ProjTagsExcP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "ProjTagsExcP",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
-def test_project_add_ai_tags_exception(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_project_add_ai_tags_exception(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover line 2001: exception in tags_autofill_from_website is handled."""
     user = _make_user(dbsession, "projaitagsexc")
     transaction.commit()
@@ -3238,9 +3274,17 @@ def test_project_add_ai_tags_exception(mock_autofill, mock_contacts, mock_tags, 
 @patch("marker.views.project.contacts_autofill_from_website", return_value=[])
 @patch(
     "marker.views.project.project_autofill_from_website",
-    return_value={"name": "ProjTagsRetP", "country": "PL", "stage": "", "delivery_method": "", "object_category": ""},
+    return_value={
+        "name": "ProjTagsRetP",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
 )
-def test_project_add_ai_tags_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_project_add_ai_tags_returned(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover tags loop body including existing tag branch (line 2001)."""
     from marker.models.tag import Tag
 

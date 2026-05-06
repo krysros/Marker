@@ -21,10 +21,10 @@ from sqlalchemy import func, select
 
 from ..models import Company, Contact
 
-
 # ---------------------------------------------------------------------------
 # Low-level vCard line unfolding and property parser
 # ---------------------------------------------------------------------------
+
 
 def _unfold(text: str) -> str:
     """Unfold vCard lines (RFC 6350 §3.2)."""
@@ -34,8 +34,7 @@ def _unfold(text: str) -> str:
 def _unescape(value: str) -> str:
     """Reverse RFC 6350 TEXT escaping."""
     return (
-        value
-        .replace("\\n", "\n")
+        value.replace("\\n", "\n")
         .replace("\\N", "\n")
         .replace("\\;", ";")
         .replace("\\,", ",")
@@ -71,6 +70,7 @@ def _parse_lines(text: str) -> list[tuple[str, dict, str]]:
 # ---------------------------------------------------------------------------
 # High-level parsed card dataclass
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class ParsedVCard:
@@ -136,8 +136,10 @@ def parse_vcard(text: str) -> Optional[ParsedVCard]:
         elif name == "ADR":
             # ADR:pobox;ext;street;city;region;postal;country
             adr_parts = [_unescape(p) for p in value.split(";")]
+
             def _adr(i):
                 return adr_parts[i] if i < len(adr_parts) else ""
+
             if not card.street:
                 card.street = _adr(2) or None
             if not card.city:
@@ -166,6 +168,7 @@ def parse_vcard(text: str) -> Optional[ParsedVCard]:
 # DB upsert logic
 # ---------------------------------------------------------------------------
 
+
 def _contacts_equal(contact: Contact, card: ParsedVCard) -> bool:
     """Return True when the DB contact matches all vCard contact fields."""
     return (
@@ -189,9 +192,7 @@ def upsert_vcard(dbsession, identity, card: ParsedVCard) -> Contact:
 
     if card.org:
         company = dbsession.execute(
-            select(Company).filter(
-                func.lower(Company.name) == func.lower(card.org)
-            )
+            select(Company).filter(func.lower(Company.name) == func.lower(card.org))
         ).scalar_one_or_none()
 
     if card.org and company is not None:

@@ -6,8 +6,20 @@ from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, or_, select
 
-from ..forms import ContactFilterForm, ContactForm, ContactImportForm, ContactImportVcardForm, ContactSearchForm, ContactUnassignedFilterForm
-from ..forms.select import CATEGORIES, ORDER_CRITERIA, SORT_CRITERIA_CONTACTS, SORT_CRITERIA_CONTACTS_UNASSIGNED
+from ..forms import (
+    ContactFilterForm,
+    ContactForm,
+    ContactImportForm,
+    ContactImportVcardForm,
+    ContactSearchForm,
+    ContactUnassignedFilterForm,
+)
+from ..forms.select import (
+    CATEGORIES,
+    ORDER_CRITERIA,
+    SORT_CRITERIA_CONTACTS,
+    SORT_CRITERIA_CONTACTS_UNASSIGNED,
+)
 from ..models import Company, Contact, Project, Tag, selected_contacts
 from ..utils.contact_csv_import import (
     GoogleContactsCsvImporter,
@@ -16,8 +28,8 @@ from ..utils.contact_csv_import import (
 )
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
-from ..utils.vcard_import import parse_vcard, upsert_vcard
 from ..utils.paginator import get_paginator
+from ..utils.vcard_import import parse_vcard, upsert_vcard
 from . import (
     Filter,
     clear_selected_rows,
@@ -58,18 +70,22 @@ class ContactView:
         if tags:
             normalized_tags = [normalize_ci_value(tag) for tag in tags]
             if operator == "and" and len(normalized_tags) > 1:
-                company_conditions = and_(*[
-                    Contact.company.has(
-                        Company.tags.any(normalize_ci_expression(Tag.name) == nt)
-                    )
-                    for nt in normalized_tags
-                ])
-                project_conditions = and_(*[
-                    Contact.project.has(
-                        Project.tags.any(normalize_ci_expression(Tag.name) == nt)
-                    )
-                    for nt in normalized_tags
-                ])
+                company_conditions = and_(
+                    *[
+                        Contact.company.has(
+                            Company.tags.any(normalize_ci_expression(Tag.name) == nt)
+                        )
+                        for nt in normalized_tags
+                    ]
+                )
+                project_conditions = and_(
+                    *[
+                        Contact.project.has(
+                            Project.tags.any(normalize_ci_expression(Tag.name) == nt)
+                        )
+                        for nt in normalized_tags
+                    ]
+                )
                 stmt = stmt.filter(or_(company_conditions, project_conditions))
             else:
                 stmt = stmt.filter(
@@ -914,7 +930,9 @@ class ContactView:
             card = parse_vcard(text)
             if card is None:
                 self.request.session.flash(
-                    _("warning:Could not read vCard file. Please upload a valid .vcf file.")
+                    _(
+                        "warning:Could not read vCard file. Please upload a valid .vcf file."
+                    )
                 )
                 return HTTPFound(location=referrer)
 
@@ -924,7 +942,8 @@ class ContactView:
                 card,
             )
             log.info(
-                _("User %s imported vCard: %s") % (self.request.identity.name, card.name)
+                _("User %s imported vCard: %s")
+                % (self.request.identity.name, card.name)
             )
             return HTTPFound(
                 location=self.request.route_url(
@@ -934,4 +953,3 @@ class ContactView:
                 )
             )
         return {"heading": _("Import vCard"), "form": form}
-

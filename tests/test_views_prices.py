@@ -312,12 +312,8 @@ def test_sort_currency_asc(dbsession):
 
 def test_sort_currency_desc(dbsession):
     user = _user(dbsession, "sortcurdesc")
-    _make_activity(
-        dbsession, user, "SortCurDesc_Co1", "SortCurDesc_P1", currency="USD"
-    )
-    _make_activity(
-        dbsession, user, "SortCurDesc_Co2", "SortCurDesc_P2", currency="EUR"
-    )
+    _make_activity(dbsession, user, "SortCurDesc_Co1", "SortCurDesc_P1", currency="USD")
+    _make_activity(dbsession, user, "SortCurDesc_Co2", "SortCurDesc_P2", currency="EUR")
     transaction.commit()
     request = _req(dbsession, user, params={"sort": "currency", "order": "desc"})
     result = PricesView(request).all()
@@ -333,9 +329,7 @@ def test_sort_stage_asc(dbsession):
     _make_activity(
         dbsession, user, "SortStAsc_Co1", "SortStAsc_P1", stage="construction"
     )
-    _make_activity(
-        dbsession, user, "SortStAsc_Co2", "SortStAsc_P2", stage="tender"
-    )
+    _make_activity(dbsession, user, "SortStAsc_Co2", "SortStAsc_P2", stage="tender")
     transaction.commit()
     request = _req(dbsession, user, params={"sort": "stage", "order": "asc"})
     result = PricesView(request).all()
@@ -348,9 +342,7 @@ def test_sort_stage_desc(dbsession):
     _make_activity(
         dbsession, user, "SortStDesc_Co1", "SortStDesc_P1", stage="construction"
     )
-    _make_activity(
-        dbsession, user, "SortStDesc_Co2", "SortStDesc_P2", stage="tender"
-    )
+    _make_activity(dbsession, user, "SortStDesc_Co2", "SortStDesc_P2", stage="tender")
     transaction.commit()
     request = _req(dbsession, user, params={"sort": "stage", "order": "desc"})
     result = PricesView(request).all()
@@ -363,12 +355,8 @@ def test_sort_role_asc(dbsession):
     # English msgids (used by test translate stub): "Designer", "Investor"
     # Alphabetical: Designer (D) < Investor (I) → designer first when asc
     user = _user(dbsession, "sortroleasc")
-    _make_activity(
-        dbsession, user, "SortRoAsc_Co1", "SortRoAsc_P1", role="designer"
-    )
-    _make_activity(
-        dbsession, user, "SortRoAsc_Co2", "SortRoAsc_P2", role="investor"
-    )
+    _make_activity(dbsession, user, "SortRoAsc_Co1", "SortRoAsc_P1", role="designer")
+    _make_activity(dbsession, user, "SortRoAsc_Co2", "SortRoAsc_P2", role="investor")
     transaction.commit()
     request = _req(dbsession, user, params={"sort": "role", "order": "asc"})
     result = PricesView(request).all()
@@ -378,12 +366,8 @@ def test_sort_role_asc(dbsession):
 
 def test_sort_role_desc(dbsession):
     user = _user(dbsession, "sortroledesc")
-    _make_activity(
-        dbsession, user, "SortRoDesc_Co1", "SortRoDesc_P1", role="designer"
-    )
-    _make_activity(
-        dbsession, user, "SortRoDesc_Co2", "SortRoDesc_P2", role="investor"
-    )
+    _make_activity(dbsession, user, "SortRoDesc_Co1", "SortRoDesc_P1", role="designer")
+    _make_activity(dbsession, user, "SortRoDesc_Co2", "SortRoDesc_P2", role="investor")
     transaction.commit()
     request = _req(dbsession, user, params={"sort": "role", "order": "desc"})
     result = PricesView(request).all()
@@ -539,9 +523,7 @@ def test_sort_unit_price_gross_asc(dbsession):
         usable_area=Decimal("100"),
     )
     transaction.commit()
-    request = _req(
-        dbsession, user, params={"sort": "unit_price_gross", "order": "asc"}
-    )
+    request = _req(dbsession, user, params={"sort": "unit_price_gross", "order": "asc"})
     result = PricesView(request).all()
     unit_prices = [r.unit_price_gross for r in result["paginator"]]
     assert unit_prices == sorted(unit_prices)
@@ -610,13 +592,16 @@ def test_prices_all_filter_currency(dbsession):
 def test_prices_all_filter_value_net_range(dbsession):
     user = _user(dbsession, "filtervnrange")
     _make_activity(
-        dbsession, user, "FiltVNCo", "FiltVNProj",
-        value_net=Decimal("500"), value_gross=Decimal("615")
+        dbsession,
+        user,
+        "FiltVNCo",
+        "FiltVNProj",
+        value_net=Decimal("500"),
+        value_gross=Decimal("615"),
     )
     transaction.commit()
     request = _req(
-        dbsession, user,
-        params={"value_net_from": "100", "value_net_to": "1000"}
+        dbsession, user, params={"value_net_from": "100", "value_net_to": "1000"}
     )
     result = PricesView(request).all()
     assert result["q"]["value_net_from"] == "100"
@@ -626,13 +611,16 @@ def test_prices_all_filter_value_net_range(dbsession):
 def test_prices_all_filter_value_gross_range(dbsession):
     user = _user(dbsession, "filtervgrange")
     _make_activity(
-        dbsession, user, "FiltVGCo", "FiltVGProj",
-        value_net=Decimal("500"), value_gross=Decimal("615")
+        dbsession,
+        user,
+        "FiltVGCo",
+        "FiltVGProj",
+        value_net=Decimal("500"),
+        value_gross=Decimal("615"),
     )
     transaction.commit()
     request = _req(
-        dbsession, user,
-        params={"value_gross_from": "100", "value_gross_to": "1000"}
+        dbsession, user, params={"value_gross_from": "100", "value_gross_to": "1000"}
     )
     result = PricesView(request).all()
     assert result["q"]["value_gross_from"] == "100"
@@ -642,13 +630,16 @@ def test_prices_all_filter_value_gross_range(dbsession):
 def test_prices_all_filter_unit_price_net_range(dbsession):
     user = _user(dbsession, "filtrupnrange")
     _make_activity(
-        dbsession, user, "FiltUPNCo", "FiltUPNProj",
-        value_net=Decimal("1000"), usable_area=Decimal("100")
+        dbsession,
+        user,
+        "FiltUPNCo",
+        "FiltUPNProj",
+        value_net=Decimal("1000"),
+        usable_area=Decimal("100"),
     )
     transaction.commit()
     request = _req(
-        dbsession, user,
-        params={"unit_price_net_from": "5", "unit_price_net_to": "50"}
+        dbsession, user, params={"unit_price_net_from": "5", "unit_price_net_to": "50"}
     )
     result = PricesView(request).all()
     assert result["q"]["unit_price_net_from"] == "5"
@@ -658,13 +649,18 @@ def test_prices_all_filter_unit_price_net_range(dbsession):
 def test_prices_all_filter_unit_price_gross_range(dbsession):
     user = _user(dbsession, "filtrupgrange")
     _make_activity(
-        dbsession, user, "FiltUPGCo", "FiltUPGProj",
-        value_gross=Decimal("1230"), usable_area=Decimal("100")
+        dbsession,
+        user,
+        "FiltUPGCo",
+        "FiltUPGProj",
+        value_gross=Decimal("1230"),
+        usable_area=Decimal("100"),
     )
     transaction.commit()
     request = _req(
-        dbsession, user,
-        params={"unit_price_gross_from": "5", "unit_price_gross_to": "50"}
+        dbsession,
+        user,
+        params={"unit_price_gross_from": "5", "unit_price_gross_to": "50"},
     )
     result = PricesView(request).all()
     assert result["q"]["unit_price_gross_from"] == "5"
@@ -690,9 +686,13 @@ def test_prices_all_filter_object_category(dbsession):
 def test_prices_export_basic(dbsession):
     user = _user(dbsession, "exportbasic")
     _make_activity(
-        dbsession, user, "ExportBasicCo", "ExportBasicProj",
-        value_net=Decimal("100"), value_gross=Decimal("123"),
-        usable_area=Decimal("50")
+        dbsession,
+        user,
+        "ExportBasicCo",
+        "ExportBasicProj",
+        value_net=Decimal("100"),
+        value_gross=Decimal("123"),
+        usable_area=Decimal("50"),
     )
     transaction.commit()
     request = _req(dbsession, user)
@@ -703,16 +703,23 @@ def test_prices_export_basic(dbsession):
 def test_prices_export_with_filters(dbsession):
     user = _user(dbsession, "exportfilt")
     _, proj, _ = _make_activity(
-        dbsession, user, "ExportFiltCo", "ExportFiltProj",
-        value_net=Decimal("200"), value_gross=Decimal("246"),
-        currency="PLN", role="investor", stage="tender",
-        usable_area=Decimal("100")
+        dbsession,
+        user,
+        "ExportFiltCo",
+        "ExportFiltProj",
+        value_net=Decimal("200"),
+        value_gross=Decimal("246"),
+        currency="PLN",
+        role="investor",
+        stage="tender",
+        usable_area=Decimal("100"),
     )
     proj.object_category = "uslugi"
     dbsession.flush()
     transaction.commit()
     request = _req(
-        dbsession, user,
+        dbsession,
+        user,
         params={
             "stage": "tender",
             "role": "investor",
@@ -728,7 +735,7 @@ def test_prices_export_with_filters(dbsession):
             "object_category": "uslugi",
             "sort": "value_net",
             "order": "desc",
-        }
+        },
     )
     result = PricesView(request).export()
     assert "vnd.openxmlformats-officedocument" in result.content_type
@@ -757,16 +764,20 @@ def test_prices_all_invalid_decimal_filters(dbsession):
     132-133, 142-143, 152-153, 162-163): invalid decimal values are silently ignored."""
     user = _user(dbsession, "invaliddec")
     transaction.commit()
-    request = _req(dbsession, user, params={
-        "value_net_from": "abc",
-        "value_net_to": "abc",
-        "value_gross_from": "abc",
-        "value_gross_to": "abc",
-        "unit_price_net_from": "abc",
-        "unit_price_net_to": "abc",
-        "unit_price_gross_from": "abc",
-        "unit_price_gross_to": "abc",
-    })
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "value_net_from": "abc",
+            "value_net_to": "abc",
+            "value_gross_from": "abc",
+            "value_gross_to": "abc",
+            "unit_price_net_from": "abc",
+            "unit_price_net_to": "abc",
+            "unit_price_gross_from": "abc",
+            "unit_price_gross_to": "abc",
+        },
+    )
     result = PricesView(request).all()
     assert "value_net_from" not in result["q"]
 
@@ -785,9 +796,13 @@ def test_prices_export_invalid_decimal_filters(dbsession):
     user = _user(dbsession, "exportinvdec")
     _make_activity(dbsession, user, "ExpInvDecCo", "ExpInvDecProj")
     transaction.commit()
-    request = _req(dbsession, user, params={
-        "value_net_from": "bad",
-        "unit_price_net_from": "bad",
-    })
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "value_net_from": "bad",
+            "unit_price_net_from": "bad",
+        },
+    )
     result = PricesView(request).export()
     assert "vnd.openxmlformats-officedocument" in result.content_type
