@@ -7,11 +7,10 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
-    ${button.deselect_selected(url=request.route_url('user_deselect_tags', username=user.name), confirm_text=_("Deselect all selected tags?"))}
-    ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">
       <i class="bi bi-diagram-2"></i>
     </button>
+    ${button.delete_selected(url=request.route_url('user_delete_selected_tags', username=user.name))}
     <% from marker.utils.export_columns import tag_company_cols, tag_project_cols; _export_cols = tag_project_cols(_) if q.get('category') == 'projects' else tag_company_cols(_) %>
     ${button.dropdown_download_cols(request.route_url('user_export_selected_tags', username=user.name, _query=q), _export_cols)}
   </div>

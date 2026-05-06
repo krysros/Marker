@@ -84,7 +84,7 @@
             </li>
             <li>
               <button class="dropdown-item" type="button" hx-post="${request.route_url('user_deselect_all', username=request.identity.name)}" hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}' hx-confirm='${_("Deselect all selected items?")}'>
-                <i class="bi bi-x-circle"></i> ${_("Deselect all")}
+                <i class="bi bi-x-circle"></i> ${_("Deselect selected")}
               </button>
             </li>
             <li><h6 class="dropdown-header">${_("Stars")}</h6></li>
