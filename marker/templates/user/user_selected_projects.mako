@@ -6,7 +6,8 @@
     <i class="bi bi-briefcase"></i> ${_("Selected projects")}
     <span class="badge bg-secondary">${counter}</span>
   </h2>
-  <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">    ${button.deselect_selected(url=request.route_url('user_deselect_projects', username=user.name), confirm_text=_('Deselect all selected projects?'))}    ${button.delete_selected(url=request.route_url('user_delete_selected_projects', username=user.name, _query=q), confirm_text=_("Delete all selected projects?"))}
+  <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
+    ${button.delete_selected(url=request.route_url('user_delete_selected_projects', username=user.name, _query=q), confirm_text=_("Delete all selected projects?"))}
     <% from marker.utils.export_columns import project_cols; _export_cols = project_cols(_) %>
     ${button.dropdown_download_cols(request.route_url('user_export_selected_projects', username=user.name, _query=q), _export_cols)}
   </div>

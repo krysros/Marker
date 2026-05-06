@@ -7,12 +7,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-05 23:23+0200\n"
+"POT-Creation-Date: 2026-05-06 20:38+0200\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
 "Language-Team: pl <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,8 +24,8 @@ msgstr ""
 #: marker/templates/contact/contact_view.mako:25
 #: marker/templates/project/project_contacts.mako:30
 #: marker/templates/user/user_table.mako:27
-#: marker/templates/user/user_view.mako:51 marker/views/company.py:876
-#: marker/views/project.py:1566
+#: marker/templates/user/user_view.mako:51 marker/views/company.py:849
+#: marker/views/project.py:1543
 msgid "Fullname"
 msgstr "Imię i nazwisko"
 
@@ -37,8 +38,8 @@ msgstr "Imię i nazwisko"
 #: marker/templates/project/project_contacts.mako:33
 #: marker/templates/user/user_table.mako:28
 #: marker/templates/user/user_view.mako:54 marker/utils/export.py:141
-#: marker/utils/export.py:248 marker/views/company.py:877
-#: marker/views/project.py:1567
+#: marker/utils/export.py:248 marker/views/company.py:850
+#: marker/views/project.py:1544
 msgid "Email"
 msgstr "Email"
 
@@ -58,14 +59,14 @@ msgstr "Hasło jest zbyt proste"
 #: marker/forms/project.py:141 marker/forms/project.py:196
 #: marker/templates/company/company_projects.mako:20
 #: marker/templates/company/company_projects.mako:32
-#: marker/templates/prices/prices_all.mako:35
-#: marker/templates/prices/prices_all.mako:158
+#: marker/templates/prices/prices_all.mako:56
+#: marker/templates/prices/prices_all.mako:197
 #: marker/templates/project/project_companies.mako:20
 #: marker/templates/project/project_companies.mako:32
 #: marker/templates/project/project_view.mako:61 marker/utils/export.py:58
-#: marker/utils/export_columns.py:71 marker/views/company.py:419
-#: marker/views/prices.py:67 marker/views/prices.py:372
-#: marker/views/project.py:887 marker/views/tag.py:959
+#: marker/utils/export_columns.py:71 marker/views/company.py:426
+#: marker/views/prices.py:75 marker/views/prices.py:429
+#: marker/views/project.py:860 marker/views/tag.py:970
 msgid "Stage"
 msgstr "Etap"
 
@@ -79,9 +80,10 @@ msgstr "Etap"
 #: marker/templates/company/company_projects.mako:33
 #: marker/templates/contact/contact_table.mako:74
 #: marker/templates/contact/contact_view.mako:38
-#: marker/templates/contractor/contractor_all.mako:20
-#: marker/templates/prices/prices_all.mako:44
-#: marker/templates/prices/prices_all.mako:159
+#: marker/templates/contractor/contractor_all.mako:36
+#: marker/templates/contractor/contractor_all.mako:41
+#: marker/templates/prices/prices_all.mako:65
+#: marker/templates/prices/prices_all.mako:198
 #: marker/templates/project/project_companies.mako:21
 #: marker/templates/project/project_companies.mako:33
 #: marker/templates/project/project_contacts.mako:31
@@ -90,29 +92,29 @@ msgstr "Etap"
 #: marker/templates/user/user_table.mako:12
 #: marker/templates/user/user_view.mako:61 marker/utils/export.py:139
 #: marker/utils/export.py:246 marker/utils/export_columns.py:72
-#: marker/views/company.py:420 marker/views/prices.py:68
-#: marker/views/prices.py:373 marker/views/project.py:888
+#: marker/views/company.py:427 marker/views/prices.py:76
+#: marker/views/prices.py:430 marker/views/project.py:861
 msgid "Role"
 msgstr "Rola"
 
-#: marker/forms/association.py:14 marker/templates/prices/prices_all.mako:54
-#: marker/templates/prices/prices_all.mako:160
-#: marker/utils/export_columns.py:73 marker/views/prices.py:69
-#: marker/views/prices.py:374
+#: marker/forms/association.py:14 marker/templates/prices/prices_all.mako:92
+#: marker/templates/prices/prices_all.mako:199
+#: marker/utils/export_columns.py:73 marker/views/prices.py:77
+#: marker/views/prices.py:431
 msgid "Currency"
 msgstr "Waluta"
 
-#: marker/forms/association.py:16 marker/templates/prices/prices_all.mako:62
-#: marker/templates/prices/prices_all.mako:161
-#: marker/utils/export_columns.py:74 marker/views/prices.py:70
-#: marker/views/prices.py:375
+#: marker/forms/association.py:16 marker/templates/prices/prices_all.mako:100
+#: marker/templates/prices/prices_all.mako:200
+#: marker/utils/export_columns.py:74 marker/views/prices.py:78
+#: marker/views/prices.py:432
 msgid "Net value"
 msgstr "Wartość netto"
 
-#: marker/forms/association.py:21 marker/templates/prices/prices_all.mako:69
-#: marker/templates/prices/prices_all.mako:162
-#: marker/utils/export_columns.py:75 marker/views/prices.py:71
-#: marker/views/prices.py:376
+#: marker/forms/association.py:21 marker/templates/prices/prices_all.mako:107
+#: marker/templates/prices/prices_all.mako:201
+#: marker/utils/export_columns.py:75 marker/views/prices.py:79
+#: marker/views/prices.py:433
 msgid "Gross value"
 msgstr "Wartość brutto"
 
@@ -123,8 +125,13 @@ msgstr "Komentarz"
 
 #: marker/forms/comment.py:29 marker/forms/contact.py:74
 #: marker/forms/select.py:49 marker/forms/tag.py:54
+#: marker/templates/comment/comment_filter.mako:25
+#: marker/templates/contact/contact_filter.mako:53
 #: marker/templates/contact/contact_table.mako:82
-#: marker/templates/user/user_selected_tags.mako:30
+#: marker/templates/prices/prices_all.mako:42
+#: marker/templates/project/project_filter.mako:53
+#: marker/templates/tag/tag_filter.mako:25
+#: marker/templates/user/user_selected_tags.mako:29
 #: marker/templates/user/user_tags.mako:23
 msgid "Category"
 msgstr "Kategoria"
@@ -153,16 +160,16 @@ msgstr "Data do"
 #: marker/forms/select.py:76 marker/forms/select.py:88 marker/forms/tag.py:16
 #: marker/forms/tag.py:49 marker/forms/tag.py:53 marker/forms/tag.py:71
 #: marker/forms/user.py:21 marker/forms/user.py:73 marker/forms/user.py:80
-#: marker/templates/company/company_uptime.mako:26
+#: marker/templates/company/company_uptime.mako:29
 #: marker/templates/company/company_view.mako:30
 #: marker/templates/contact/contact_table.mako:73
-#: marker/templates/project/project_uptime.mako:26
+#: marker/templates/project/project_uptime.mako:29
 #: marker/templates/project/project_view.mako:35
 #: marker/templates/tag/tag_view.mako:19
 #: marker/templates/user/user_table.mako:26
 #: marker/templates/user/user_view.mako:48 marker/utils/export.py:138
-#: marker/utils/export.py:245 marker/views/company.py:875
-#: marker/views/project.py:1565 marker/views/tag.py:686 marker/views/tag.py:950
+#: marker/utils/export.py:245 marker/views/company.py:848
+#: marker/views/project.py:1542 marker/views/tag.py:686 marker/views/tag.py:961
 msgid "Name"
 msgstr "Nazwa"
 
@@ -171,7 +178,7 @@ msgstr "Nazwa"
 #: marker/forms/project.py:121 marker/forms/project.py:175
 #: marker/templates/company/company_view.mako:40
 #: marker/templates/project/project_view.mako:45 marker/views/tag.py:687
-#: marker/views/tag.py:952
+#: marker/views/tag.py:963
 msgid "Street"
 msgstr "Ulica"
 
@@ -180,7 +187,7 @@ msgstr "Ulica"
 #: marker/forms/project.py:122 marker/forms/project.py:176
 #: marker/templates/company/company_view.mako:42
 #: marker/templates/project/project_view.mako:47 marker/views/tag.py:688
-#: marker/views/tag.py:953
+#: marker/views/tag.py:964
 msgid "Post code"
 msgstr "Kod pocztowy"
 
@@ -196,7 +203,7 @@ msgstr "Kod pocztowy"
 #: marker/templates/project/project_contacts.mako:35
 #: marker/templates/project/project_table.mako:112
 #: marker/templates/project/project_view.mako:49 marker/utils/export.py:143
-#: marker/utils/export.py:250 marker/views/tag.py:689 marker/views/tag.py:954
+#: marker/utils/export.py:250 marker/views/tag.py:689 marker/views/tag.py:965
 msgid "City"
 msgstr "Miasto"
 
@@ -208,7 +215,7 @@ msgstr "Miasto"
 #: marker/forms/select.py:90 marker/templates/company/company_view.mako:46
 #: marker/templates/project/project_view.mako:51 marker/utils/export.py:49
 #: marker/utils/export.py:144 marker/utils/export.py:251
-#: marker/views/tag.py:690 marker/views/tag.py:955
+#: marker/views/tag.py:690 marker/views/tag.py:966
 msgid "Subdivision"
 msgstr "Województwo"
 
@@ -220,16 +227,16 @@ msgstr "Województwo"
 #: marker/forms/select.py:91 marker/templates/company/company_view.mako:48
 #: marker/templates/project/project_view.mako:53 marker/utils/export.py:53
 #: marker/utils/export.py:145 marker/utils/export.py:252
-#: marker/views/tag.py:691 marker/views/tag.py:956
+#: marker/views/tag.py:691 marker/views/tag.py:967
 msgid "Country"
 msgstr "Kraj"
 
 #: marker/forms/company.py:82 marker/forms/company.py:193
 #: marker/forms/company.py:209 marker/forms/project.py:61
 #: marker/forms/project.py:128 marker/forms/project.py:182
-#: marker/templates/company/company_uptime.mako:27
-#: marker/templates/project/project_uptime.mako:27 marker/views/tag.py:692
-#: marker/views/tag.py:957
+#: marker/templates/company/company_uptime.mako:30
+#: marker/templates/project/project_uptime.mako:30 marker/views/tag.py:692
+#: marker/views/tag.py:968
 msgid "Website"
 msgstr "Strona internetowa"
 
@@ -238,6 +245,10 @@ msgstr "Strona internetowa"
 #: marker/forms/contact.py:66 marker/forms/contact.py:79
 #: marker/forms/contact.py:117 marker/forms/project.py:65
 #: marker/forms/project.py:165 marker/forms/project.py:201
+#: marker/templates/company/company_filter.mako:79
+#: marker/templates/contact/contact_filter.mako:76
+#: marker/templates/contact/contact_unassigned_filter.mako:25
+#: marker/templates/project/project_filter.mako:88
 msgid "Color"
 msgstr "Kolor"
 
@@ -327,35 +338,35 @@ msgid "Password"
 msgstr "Hasło"
 
 #: marker/forms/project.py:67 marker/forms/project.py:183
-#: marker/templates/project/project_filter.mako:44
+#: marker/templates/project/project_filter.mako:149
 #: marker/templates/project/project_table.mako:35
-#: marker/templates/project/project_view.mako:59 marker/views/tag.py:958
+#: marker/templates/project/project_view.mako:59 marker/views/tag.py:969
 msgid "Deadline"
 msgstr "Termin"
 
 #: marker/forms/project.py:74 marker/forms/project.py:167
-#: marker/forms/project.py:235 marker/templates/prices/prices_all.mako:26
-#: marker/templates/prices/prices_all.mako:156
+#: marker/forms/project.py:235 marker/templates/prices/prices_all.mako:47
+#: marker/templates/prices/prices_all.mako:195
 #: marker/templates/project/project_table.mako:33
 #: marker/templates/project/project_view.mako:65
-#: marker/utils/export_columns.py:69 marker/views/prices.py:65
-#: marker/views/prices.py:370 marker/views/tag.py:951
+#: marker/utils/export_columns.py:69 marker/views/prices.py:73
+#: marker/views/prices.py:427 marker/views/tag.py:962
 msgid "Object category"
 msgstr "Kategoria obiektu"
 
 #: marker/forms/project.py:79 marker/forms/project.py:143
 #: marker/forms/project.py:198 marker/templates/project/project_view.mako:63
 #: marker/utils/export.py:67 marker/utils/export_columns.py:50
-#: marker/views/tag.py:960 marker/views/user.py:307 marker/views/user.py:327
+#: marker/views/tag.py:971 marker/views/user.py:306 marker/views/user.py:326
 msgid "Project delivery method"
 msgstr "Sposób realizacji projektu"
 
-#: marker/forms/project.py:82 marker/templates/project/project_filter.mako:59
+#: marker/forms/project.py:82 marker/templates/project/project_filter.mako:116
 #: marker/templates/project/project_view.mako:73
 msgid "Usable area [m²]"
 msgstr "Powierzchnia użytkowa [m²]"
 
-#: marker/forms/project.py:87 marker/templates/project/project_filter.mako:66
+#: marker/forms/project.py:87 marker/templates/project/project_filter.mako:123
 #: marker/templates/project/project_view.mako:75
 msgid "Cubic volume [m³]"
 msgstr "Kubatura [m³]"
@@ -399,28 +410,26 @@ msgstr "Strona internetowa projektu"
 #: marker/forms/select.py:41 marker/forms/select.py:53
 #: marker/forms/select.py:60 marker/forms/select.py:70
 #: marker/forms/select.py:80 marker/forms/select.py:92
-#: marker/views/company.py:483 marker/views/company.py:878
-#: marker/views/company.py:1062 marker/views/project.py:452
-#: marker/views/project.py:951 marker/views/project.py:1568
+#: marker/views/company.py:490 marker/views/company.py:851
+#: marker/views/company.py:1035 marker/views/project.py:459
+#: marker/views/project.py:924 marker/views/project.py:1545
 msgid "Date created"
 msgstr "Data utworzenia"
 
 #: marker/forms/select.py:42 marker/forms/select.py:54
 #: marker/forms/select.py:61 marker/forms/select.py:71
 #: marker/forms/select.py:81 marker/forms/select.py:93
-#: marker/views/company.py:484 marker/views/company.py:879
-#: marker/views/company.py:1063 marker/views/project.py:453
-#: marker/views/project.py:952 marker/views/project.py:1569
+#: marker/views/company.py:491 marker/views/company.py:852
+#: marker/views/company.py:1036 marker/views/project.py:460
+#: marker/views/project.py:925 marker/views/project.py:1546
 msgid "Date modified"
 msgstr "Data modyfikacji"
 
 #: marker/forms/select.py:82 marker/forms/select.py:94
 #: marker/templates/base/navbar.mako:90
 #: marker/templates/company/company_table.mako:112
-#: marker/templates/project/project_table.mako:123
-#: marker/templates/user/user_map_companies_stars.mako:5
-#: marker/templates/user/user_map_projects_stars.mako:5
-#: marker/views/company.py:137 marker/views/project.py:140
+#: marker/templates/project/project_table.mako:123 marker/views/company.py:142
+#: marker/views/project.py:145
 msgid "Stars"
 msgstr "Gwiazdki"
 
@@ -429,8 +438,8 @@ msgstr "Gwiazdki"
 #: marker/templates/comment/comment_all.mako:5
 #: marker/templates/company/company_table.mako:113
 #: marker/templates/home.mako:75
-#: marker/templates/project/project_table.mako:124 marker/views/company.py:125
-#: marker/views/project.py:128 marker/views/user.py:257
+#: marker/templates/project/project_table.mako:124 marker/views/company.py:130
+#: marker/views/project.py:133 marker/views/user.py:256
 msgid "Comments"
 msgstr "Komentarze"
 
@@ -538,13 +547,13 @@ msgstr "Projektuj i buduj"
 msgid "Build"
 msgstr "Buduj"
 
-#: marker/forms/select.py:160 marker/templates/common/button.mako:226
-#: marker/templates/common/button.mako:228
-#: marker/templates/contact/contact_all.mako:22
-#: marker/templates/contact/contact_unassigned.mako:22
-#: marker/templates/prices/prices_all.mako:28
-#: marker/templates/prices/prices_all.mako:37
-#: marker/templates/prices/prices_all.mako:46
+#: marker/forms/select.py:160 marker/templates/common/button.mako:251
+#: marker/templates/common/button.mako:253
+#: marker/templates/contact/contact_all.mako:23
+#: marker/templates/contact/contact_unassigned.mako:23
+#: marker/templates/prices/prices_all.mako:49
+#: marker/templates/prices/prices_all.mako:58
+#: marker/templates/prices/prices_all.mako:67
 msgid "All"
 msgstr "Wszystkie"
 
@@ -559,23 +568,13 @@ msgstr "Wszystkie"
 #: marker/templates/home.mako:15
 #: marker/templates/project/project_table.mako:116
 #: marker/templates/tag/tag_table.mako:61
-#: marker/templates/user/user_map_selected_companies.mako:23
-#: marker/templates/user/user_map_selected_companies_similar.mako:26
-#: marker/templates/user/user_map_selected_projects.mako:23
-#: marker/templates/user/user_map_selected_projects_similar.mako:26
-#: marker/templates/user/user_selected_companies.mako:29
-#: marker/templates/user/user_selected_companies_similar.mako:29
-#: marker/templates/user/user_selected_contacts.mako:22
-#: marker/templates/user/user_selected_contacts_companies.mako:18
-#: marker/templates/user/user_selected_contacts_projects.mako:18
-#: marker/templates/user/user_selected_projects.mako:27
-#: marker/templates/user/user_selected_projects_similar.mako:29
+#: marker/templates/user/user_selected_contacts_companies.mako:22
+#: marker/templates/user/user_selected_contacts_projects.mako:22
 #: marker/templates/user/user_selected_related_contacts.mako:45
 #: marker/templates/user/user_selected_related_contacts.mako:57
-#: marker/templates/user/user_selected_tags.mako:44
 #: marker/templates/user/user_selected_tags_companies.mako:17
 #: marker/templates/user/user_selected_tags_projects.mako:17
-#: marker/views/project.py:92 marker/views/tag.py:72 marker/views/user.py:219
+#: marker/views/project.py:97 marker/views/tag.py:72 marker/views/user.py:218
 msgid "Companies"
 msgstr "Firmy"
 
@@ -590,23 +589,13 @@ msgstr "Firmy"
 #: marker/templates/project/project_map.mako:5
 #: marker/templates/project/project_uptime.mako:5
 #: marker/templates/tag/tag_table.mako:64
-#: marker/templates/user/user_map_selected_companies.mako:24
-#: marker/templates/user/user_map_selected_companies_similar.mako:27
-#: marker/templates/user/user_map_selected_projects.mako:24
-#: marker/templates/user/user_map_selected_projects_similar.mako:27
-#: marker/templates/user/user_selected_companies.mako:30
-#: marker/templates/user/user_selected_companies_similar.mako:30
-#: marker/templates/user/user_selected_contacts.mako:23
-#: marker/templates/user/user_selected_contacts_companies.mako:19
-#: marker/templates/user/user_selected_contacts_projects.mako:19
-#: marker/templates/user/user_selected_projects.mako:28
-#: marker/templates/user/user_selected_projects_similar.mako:30
+#: marker/templates/user/user_selected_contacts_companies.mako:23
+#: marker/templates/user/user_selected_contacts_projects.mako:23
 #: marker/templates/user/user_selected_related_contacts.mako:50
 #: marker/templates/user/user_selected_related_contacts.mako:58
-#: marker/templates/user/user_selected_tags.mako:45
 #: marker/templates/user/user_selected_tags_companies.mako:18
 #: marker/templates/user/user_selected_tags_projects.mako:18
-#: marker/views/company.py:89 marker/views/tag.py:84 marker/views/user.py:229
+#: marker/views/company.py:94 marker/views/tag.py:84 marker/views/user.py:228
 msgid "Projects"
 msgstr "Projekty"
 
@@ -735,8 +724,14 @@ msgid "App for General Contractors"
 msgstr "Aplikacja dla Generalnych Wykonawców"
 
 #: marker/templates/home.mako:7
-msgid "Marker helps general contractors manage market relationships by unifying companies, projects, contacts, and activity data in one place for fast filtering, analysis, and reporting."
-msgstr "Marker pomaga generalnym wykonawcom zarządzać relacjami rynkowymi, integrując dane o firmach, projektach, kontaktach i aktywnościach w jednym miejscu na potrzeby szybkiego filtrowania, analizy i raportowania."
+msgid ""
+"Marker helps general contractors manage market relationships by unifying "
+"companies, projects, contacts, and activity data in one place for fast "
+"filtering, analysis, and reporting."
+msgstr ""
+"Marker pomaga generalnym wykonawcom zarządzać relacjami rynkowymi, "
+"integrując dane o firmach, projektach, kontaktach i aktywnościach w "
+"jednym miejscu na potrzeby szybkiego filtrowania, analizy i raportowania."
 
 #: marker/templates/base/layout.mako:102 marker/templates/base/navbar.mako:37
 #: marker/templates/contact/contact_search_tags.mako:53
@@ -756,27 +751,18 @@ msgstr "Aktualnie realizowane lub zakończone projekty."
 #: marker/templates/base/navbar.mako:67
 #: marker/templates/common/search_criteria.mako:45
 #: marker/templates/contact/contact_search_tags.mako:22
-#: marker/templates/contractor/contractor_all.mako:29
+#: marker/templates/contractor/contractor_all.mako:63
+#: marker/templates/contractor/contractor_all.mako:68
 #: marker/templates/home.mako:47 marker/templates/tag/tag_all.mako:5
-#: marker/templates/user/user_map_selected_companies.mako:22
-#: marker/templates/user/user_map_selected_companies_similar.mako:25
-#: marker/templates/user/user_map_selected_projects.mako:22
-#: marker/templates/user/user_map_selected_projects_similar.mako:25
-#: marker/templates/user/user_selected_companies.mako:28
-#: marker/templates/user/user_selected_companies_similar.mako:28
-#: marker/templates/user/user_selected_contacts.mako:21
-#: marker/templates/user/user_selected_projects.mako:26
-#: marker/templates/user/user_selected_projects_similar.mako:28
 #: marker/templates/user/user_selected_related_contacts.mako:56
-#: marker/templates/user/user_selected_tags.mako:43
 #: marker/templates/user/user_selected_tags_companies.mako:16
 #: marker/templates/user/user_selected_tags_projects.mako:16
 #: marker/utils/export_columns.py:35 marker/utils/export_columns.py:52
-#: marker/views/company.py:101 marker/views/company.py:1134
-#: marker/views/project.py:104 marker/views/project.py:1038
-#: marker/views/user.py:239 marker/views/user.py:291 marker/views/user.py:309
-#: marker/views/user.py:329 marker/views/user.py:345 marker/views/user.py:1907
-#: marker/views/user.py:2573
+#: marker/views/company.py:106 marker/views/company.py:1107
+#: marker/views/project.py:109 marker/views/project.py:1011
+#: marker/views/user.py:238 marker/views/user.py:290 marker/views/user.py:308
+#: marker/views/user.py:328 marker/views/user.py:344 marker/views/user.py:1915
+#: marker/views/user.py:2612
 msgid "Tags"
 msgstr "Tagi"
 
@@ -787,30 +773,20 @@ msgstr "Profile działalności firm i rodzaje projektów."
 #: marker/templates/base/layout.mako:55 marker/templates/base/navbar.mako:19
 #: marker/templates/base/navbar.mako:82
 #: marker/templates/company/company_all.mako:28
-#: marker/templates/contact/contact_all.mako:5
+#: marker/templates/contact/contact_all.mako:6
 #: marker/templates/contact/contact_search_tags.mako:19
 #: marker/templates/contact/contact_search_tags_results.mako:5
 #: marker/templates/home.mako:62 marker/templates/project/project_all.mako:28
-#: marker/templates/user/user_map_selected_companies.mako:25
-#: marker/templates/user/user_map_selected_companies_similar.mako:28
-#: marker/templates/user/user_map_selected_projects.mako:25
-#: marker/templates/user/user_map_selected_projects_similar.mako:28
-#: marker/templates/user/user_selected_companies.mako:31
-#: marker/templates/user/user_selected_companies_similar.mako:31
-#: marker/templates/user/user_selected_contacts.mako:24
-#: marker/templates/user/user_selected_contacts_companies.mako:17
-#: marker/templates/user/user_selected_contacts_projects.mako:17
-#: marker/templates/user/user_selected_projects.mako:29
-#: marker/templates/user/user_selected_projects_similar.mako:31
+#: marker/templates/user/user_selected_contacts_companies.mako:21
+#: marker/templates/user/user_selected_contacts_projects.mako:21
 #: marker/templates/user/user_selected_related_contacts.mako:46
 #: marker/templates/user/user_selected_related_contacts.mako:51
 #: marker/templates/user/user_selected_related_contacts.mako:59
-#: marker/templates/user/user_selected_tags.mako:46
 #: marker/templates/user/user_selected_tags_companies.mako:19
 #: marker/templates/user/user_selected_tags_projects.mako:19
-#: marker/views/company.py:113 marker/views/project.py:116
-#: marker/views/user.py:247 marker/views/user.py:3791 marker/views/user.py:3814
-#: marker/views/user.py:3837
+#: marker/views/company.py:118 marker/views/project.py:121
+#: marker/views/user.py:246 marker/views/user.py:3861 marker/views/user.py:3884
+#: marker/views/user.py:3907
 msgid "Contacts"
 msgstr "Kontakty"
 
@@ -840,7 +816,8 @@ msgstr "Konto"
 
 #: marker/templates/account/account.mako:32
 #: marker/templates/account/password.mako:32
-#: marker/templates/comment/comment_filter.mako:21
+#: marker/templates/comment/comment_filter.mako:34
+#: marker/templates/comment/comment_filter.mako:60
 #: marker/templates/comment/comment_form.mako:16
 #: marker/templates/common/activity_form.mako:52
 #: marker/templates/company/company_activity_form.mako:59
@@ -848,29 +825,42 @@ msgstr "Konto"
 #: marker/templates/company/company_add_comment.mako:25
 #: marker/templates/company/company_add_contact.mako:52
 #: marker/templates/company/company_add_tag.mako:25
-#: marker/templates/company/company_filter.mako:48
+#: marker/templates/company/company_filter.mako:39
+#: marker/templates/company/company_filter.mako:65
+#: marker/templates/company/company_filter.mako:88
 #: marker/templates/company/company_form.mako:135
-#: marker/templates/contact/contact_filter.mako:49
+#: marker/templates/contact/contact_filter.mako:39
+#: marker/templates/contact/contact_filter.mako:62
+#: marker/templates/contact/contact_filter.mako:85
+#: marker/templates/contact/contact_filter.mako:111
 #: marker/templates/contact/contact_form.mako:44
 #: marker/templates/contact/contact_import.mako:70
-#: marker/templates/contact/contact_unassigned_filter.mako:30
-#: marker/templates/contractor/contractor_all.mako:38
-#: marker/templates/prices/prices_all.mako:90
+#: marker/templates/contact/contact_unassigned_filter.mako:34
+#: marker/templates/contact/contact_unassigned_filter.mako:60
+#: marker/templates/contractor/contractor_all.mako:50
+#: marker/templates/contractor/contractor_all.mako:77
+#: marker/templates/prices/prices_all.mako:74
+#: marker/templates/prices/prices_all.mako:128
 #: marker/templates/project/project_activity_form.mako:59
 #: marker/templates/project/project_add_ai.mako:20
 #: marker/templates/project/project_add_comment.mako:25
 #: marker/templates/project/project_add_contact.mako:52
 #: marker/templates/project/project_add_tag.mako:26
-#: marker/templates/project/project_filter.mako:88
+#: marker/templates/project/project_filter.mako:39
+#: marker/templates/project/project_filter.mako:74
+#: marker/templates/project/project_filter.mako:97
+#: marker/templates/project/project_filter.mako:130
+#: marker/templates/project/project_filter.mako:163
 #: marker/templates/project/project_form.mako:252
 #: marker/templates/tag/tag_add_company.mako:25
 #: marker/templates/tag/tag_add_project.mako:25
-#: marker/templates/tag/tag_filter.mako:21
+#: marker/templates/tag/tag_filter.mako:34
+#: marker/templates/tag/tag_filter.mako:60
 #: marker/templates/tag/tag_form.mako:16
 #: marker/templates/user/user_filter.mako:19
 #: marker/templates/user/user_form.mako:44
 #: marker/templates/user/user_search.mako:37
-#: marker/templates/user/user_selected_tags.mako:37
+#: marker/templates/user/user_selected_tags.mako:36
 #: marker/templates/user/user_tags.mako:30
 msgid "Submit"
 msgstr "Prześlij"
@@ -899,12 +889,12 @@ msgstr "Wybierz, co dodać"
 #: marker/templates/company/company_view.mako:24
 #: marker/templates/contact/contact_table.mako:78
 #: marker/templates/contact/contact_view.mako:29
-#: marker/templates/prices/prices_all.mako:157
+#: marker/templates/prices/prices_all.mako:196
 #: marker/templates/project/project_companies.mako:31
 #: marker/utils/export.py:174 marker/utils/export.py:298
-#: marker/utils/export_columns.py:70 marker/views/company.py:81
-#: marker/views/prices.py:66 marker/views/prices.py:371
-#: marker/views/project.py:886
+#: marker/utils/export_columns.py:70 marker/views/company.py:86
+#: marker/views/prices.py:74 marker/views/prices.py:428
+#: marker/views/project.py:859
 msgid "Company"
 msgstr "Firma"
 
@@ -913,11 +903,11 @@ msgstr "Firma"
 #: marker/templates/company/company_projects.mako:31
 #: marker/templates/contact/contact_table.mako:80
 #: marker/templates/contact/contact_view.mako:34
-#: marker/templates/prices/prices_all.mako:155
+#: marker/templates/prices/prices_all.mako:194
 #: marker/templates/project/project_table.mako:111 marker/utils/export.py:178
 #: marker/utils/export.py:302 marker/utils/export_columns.py:68
-#: marker/views/company.py:418 marker/views/prices.py:64
-#: marker/views/prices.py:369 marker/views/project.py:84
+#: marker/views/company.py:425 marker/views/prices.py:72
+#: marker/views/prices.py:426 marker/views/project.py:89
 msgid "Project"
 msgstr "Projekt"
 
@@ -930,8 +920,8 @@ msgstr "Projekt"
 #: marker/templates/project/project_tags.mako:29
 #: marker/templates/tag/tag_table.mako:59 marker/templates/tag/tag_view.mako:14
 #: marker/utils/export_columns.py:58 marker/utils/export_columns.py:63
-#: marker/views/company.py:482 marker/views/project.py:950
-#: marker/views/tag.py:66 marker/views/user.py:317 marker/views/user.py:334
+#: marker/views/company.py:489 marker/views/project.py:923
+#: marker/views/tag.py:66 marker/views/user.py:316 marker/views/user.py:333
 msgid "Tag"
 msgstr "Tag"
 
@@ -1019,8 +1009,8 @@ msgid "Deselect all selected items?"
 msgstr "Odznaczyć wszystkie zaznaczone elementy?"
 
 #: marker/templates/base/navbar.mako:87
-msgid "Deselect all"
-msgstr "Odznacz wszystkie"
+msgid "Deselect selected"
+msgstr "Odznacz wybrane"
 
 #: marker/templates/base/navbar.mako:104
 msgid "Shortcuts"
@@ -1053,71 +1043,77 @@ msgstr "Auto"
 msgid "by"
 msgstr "przez"
 
-#: marker/templates/comment/comment_filter.mako:3
-#: marker/templates/company/company_filter.mako:3
-#: marker/templates/contact/contact_filter.mako:3
-#: marker/templates/contact/contact_unassigned_filter.mako:3
-#: marker/templates/contractor/contractor_all.mako:14
-#: marker/templates/prices/prices_all.mako:20
-#: marker/templates/project/project_filter.mako:3
-#: marker/templates/tag/tag_filter.mako:3
-#: marker/templates/user/user_filter.mako:3
-#: marker/templates/user/user_selected_tags.mako:24
-#: marker/templates/user/user_tags.mako:17
-msgid "Filter"
-msgstr "Filtruj"
-
-#: marker/templates/comment/comment_filter.mako:14
+#: marker/templates/comment/comment_filter.mako:36
+#: marker/templates/comment/comment_filter.mako:62
 #: marker/templates/company/company_filter.mako:41
-#: marker/templates/contact/contact_filter.mako:42
-#: marker/templates/contact/contact_unassigned_filter.mako:23
-#: marker/templates/project/project_filter.mako:81
-#: marker/templates/tag/tag_filter.mako:14
+#: marker/templates/company/company_filter.mako:67
+#: marker/templates/company/company_filter.mako:90
+#: marker/templates/contact/contact_filter.mako:41
+#: marker/templates/contact/contact_filter.mako:64
+#: marker/templates/contact/contact_filter.mako:87
+#: marker/templates/contact/contact_filter.mako:113
+#: marker/templates/contact/contact_unassigned_filter.mako:36
+#: marker/templates/contact/contact_unassigned_filter.mako:62
+#: marker/templates/contractor/contractor_all.mako:52
+#: marker/templates/contractor/contractor_all.mako:79
+#: marker/templates/prices/prices_all.mako:76
+#: marker/templates/prices/prices_all.mako:130
+#: marker/templates/project/project_filter.mako:41
+#: marker/templates/project/project_filter.mako:76
+#: marker/templates/project/project_filter.mako:99
+#: marker/templates/project/project_filter.mako:132
+#: marker/templates/project/project_filter.mako:165
+#: marker/templates/tag/tag_filter.mako:36
+#: marker/templates/tag/tag_filter.mako:62
+msgid "Clear"
+msgstr "Wyczyść"
+
+#: marker/templates/comment/comment_filter.mako:48
+#: marker/templates/comment/comment_filter.mako:53
+#: marker/templates/company/company_filter.mako:53
+#: marker/templates/company/company_filter.mako:58
+#: marker/templates/contact/contact_filter.mako:99
+#: marker/templates/contact/contact_filter.mako:104
+#: marker/templates/contact/contact_unassigned_filter.mako:48
+#: marker/templates/contact/contact_unassigned_filter.mako:53
+#: marker/templates/project/project_filter.mako:144
+#: marker/templates/project/project_filter.mako:156
+#: marker/templates/tag/tag_filter.mako:48
+#: marker/templates/tag/tag_filter.mako:53
 msgid "Date"
 msgstr "Data"
 
-#: marker/templates/comment/comment_filter.mako:16
-#: marker/templates/company/company_filter.mako:43
-#: marker/templates/contact/contact_filter.mako:44
-#: marker/templates/contact/contact_unassigned_filter.mako:25
-#: marker/templates/prices/prices_all.mako:64
-#: marker/templates/prices/prices_all.mako:71
-#: marker/templates/prices/prices_all.mako:78
-#: marker/templates/prices/prices_all.mako:85
-#: marker/templates/project/project_filter.mako:46
-#: marker/templates/project/project_filter.mako:61
-#: marker/templates/project/project_filter.mako:68
-#: marker/templates/project/project_filter.mako:83
-#: marker/templates/tag/tag_filter.mako:16
+#: marker/templates/comment/comment_filter.mako:55
+#: marker/templates/company/company_filter.mako:60
+#: marker/templates/contact/contact_filter.mako:106
+#: marker/templates/contact/contact_unassigned_filter.mako:55
+#: marker/templates/prices/prices_all.mako:102
+#: marker/templates/prices/prices_all.mako:109
+#: marker/templates/prices/prices_all.mako:116
+#: marker/templates/prices/prices_all.mako:123
+#: marker/templates/project/project_filter.mako:118
+#: marker/templates/project/project_filter.mako:125
+#: marker/templates/project/project_filter.mako:151
+#: marker/templates/project/project_filter.mako:158
+#: marker/templates/tag/tag_filter.mako:55
 msgid "From"
 msgstr "Od"
 
-#: marker/templates/comment/comment_filter.mako:17
-#: marker/templates/company/company_filter.mako:44
-#: marker/templates/contact/contact_filter.mako:45
-#: marker/templates/contact/contact_unassigned_filter.mako:26
-#: marker/templates/prices/prices_all.mako:65
-#: marker/templates/prices/prices_all.mako:72
-#: marker/templates/prices/prices_all.mako:79
-#: marker/templates/prices/prices_all.mako:86
-#: marker/templates/project/project_filter.mako:47
-#: marker/templates/project/project_filter.mako:62
-#: marker/templates/project/project_filter.mako:69
-#: marker/templates/project/project_filter.mako:84
-#: marker/templates/tag/tag_filter.mako:17
+#: marker/templates/comment/comment_filter.mako:56
+#: marker/templates/company/company_filter.mako:61
+#: marker/templates/contact/contact_filter.mako:107
+#: marker/templates/contact/contact_unassigned_filter.mako:56
+#: marker/templates/prices/prices_all.mako:103
+#: marker/templates/prices/prices_all.mako:110
+#: marker/templates/prices/prices_all.mako:117
+#: marker/templates/prices/prices_all.mako:124
+#: marker/templates/project/project_filter.mako:119
+#: marker/templates/project/project_filter.mako:126
+#: marker/templates/project/project_filter.mako:152
+#: marker/templates/project/project_filter.mako:159
+#: marker/templates/tag/tag_filter.mako:56
 msgid "To"
 msgstr "Do"
-
-#: marker/templates/comment/comment_filter.mako:23
-#: marker/templates/company/company_filter.mako:50
-#: marker/templates/contact/contact_filter.mako:51
-#: marker/templates/contact/contact_unassigned_filter.mako:32
-#: marker/templates/contractor/contractor_all.mako:39
-#: marker/templates/prices/prices_all.mako:91
-#: marker/templates/project/project_filter.mako:90
-#: marker/templates/tag/tag_filter.mako:23
-msgid "Clear"
-msgstr "Wyczyść"
 
 #: marker/templates/common/button.mako:14
 #: marker/templates/common/button.mako:29
@@ -1132,19 +1128,19 @@ msgstr "Czy jesteś pewien?"
 msgid "Sort"
 msgstr "Sortuj"
 
-#: marker/templates/common/button.mako:156
+#: marker/templates/common/button.mako:181
 msgid "Columns"
 msgstr "Kolumny"
 
-#: marker/templates/common/button.mako:167
+#: marker/templates/common/button.mako:192
 msgid "Format"
 msgstr "Format"
 
-#: marker/templates/common/button.mako:176
+#: marker/templates/common/button.mako:201
 msgid "Export"
 msgstr "Eksportuj"
 
-#: marker/templates/common/button.mako:192
+#: marker/templates/common/button.mako:217
 msgid "Order"
 msgstr "Kolejność"
 
@@ -1164,84 +1160,92 @@ msgstr "Przejdź do formularza i dodaj..."
 
 #: marker/templates/company/company_all.mako:23
 #: marker/templates/company/company_all.mako:32
-#: marker/templates/company/company_map.mako:15
-#: marker/templates/company/company_uptime.mako:14
+#: marker/templates/company/company_map.mako:18
+#: marker/templates/company/company_uptime.mako:17
 #: marker/templates/project/project_all.mako:23
 #: marker/templates/project/project_all.mako:32
-#: marker/templates/project/project_map.mako:15
-#: marker/templates/project/project_uptime.mako:14
+#: marker/templates/project/project_map.mako:18
+#: marker/templates/project/project_uptime.mako:17
 #: marker/templates/report/report_view.mako:6
-#: marker/templates/user/user_map_selected_companies.mako:17
-#: marker/templates/user/user_map_selected_companies.mako:21
+#: marker/templates/user/user_companies.mako:17
+#: marker/templates/user/user_map_companies.mako:14
+#: marker/templates/user/user_map_projects.mako:14
+#: marker/templates/user/user_map_selected_companies.mako:19
 #: marker/templates/user/user_map_selected_companies_similar.mako:20
-#: marker/templates/user/user_map_selected_companies_similar.mako:24
-#: marker/templates/user/user_map_selected_projects.mako:17
-#: marker/templates/user/user_map_selected_projects.mako:21
+#: marker/templates/user/user_map_selected_projects.mako:19
 #: marker/templates/user/user_map_selected_projects_similar.mako:20
-#: marker/templates/user/user_map_selected_projects_similar.mako:24
-#: marker/templates/user/user_selected_companies.mako:23
-#: marker/templates/user/user_selected_companies.mako:27
+#: marker/templates/user/user_projects.mako:17
+#: marker/templates/user/user_selected_companies.mako:22
 #: marker/templates/user/user_selected_companies_similar.mako:23
-#: marker/templates/user/user_selected_companies_similar.mako:27
-#: marker/templates/user/user_selected_contacts.mako:20
-#: marker/templates/user/user_selected_contacts_companies.mako:16
-#: marker/templates/user/user_selected_contacts_projects.mako:16
-#: marker/templates/user/user_selected_projects.mako:21
-#: marker/templates/user/user_selected_projects.mako:25
+#: marker/templates/user/user_selected_contacts_companies.mako:20
+#: marker/templates/user/user_selected_contacts_projects.mako:20
+#: marker/templates/user/user_selected_projects.mako:22
 #: marker/templates/user/user_selected_projects_similar.mako:23
-#: marker/templates/user/user_selected_projects_similar.mako:27
 #: marker/templates/user/user_selected_related_contacts.mako:44
 #: marker/templates/user/user_selected_related_contacts.mako:49
 #: marker/templates/user/user_selected_related_contacts.mako:55
-#: marker/templates/user/user_selected_tags.mako:42
 #: marker/templates/user/user_selected_tags_companies.mako:15
 #: marker/templates/user/user_selected_tags_projects.mako:15
 msgid "View mode"
 msgstr "Tryb widoku"
 
 #: marker/templates/company/company_all.mako:33
-#: marker/templates/company/company_map.mako:16
-#: marker/templates/company/company_uptime.mako:15
+#: marker/templates/company/company_map.mako:19
+#: marker/templates/company/company_uptime.mako:18
 #: marker/templates/project/project_all.mako:33
-#: marker/templates/project/project_map.mako:16
-#: marker/templates/project/project_uptime.mako:15
+#: marker/templates/project/project_map.mako:19
+#: marker/templates/project/project_uptime.mako:18
 #: marker/templates/report/report_view.mako:9
-#: marker/templates/user/user_map_selected_companies.mako:18
+#: marker/templates/user/user_companies.mako:18
+#: marker/templates/user/user_map_companies.mako:15
+#: marker/templates/user/user_map_projects.mako:15
+#: marker/templates/user/user_map_selected_companies.mako:20
 #: marker/templates/user/user_map_selected_companies_similar.mako:21
-#: marker/templates/user/user_map_selected_projects.mako:18
+#: marker/templates/user/user_map_selected_projects.mako:20
 #: marker/templates/user/user_map_selected_projects_similar.mako:21
-#: marker/templates/user/user_selected_companies.mako:24
+#: marker/templates/user/user_projects.mako:18
+#: marker/templates/user/user_selected_companies.mako:23
 #: marker/templates/user/user_selected_companies_similar.mako:24
-#: marker/templates/user/user_selected_projects.mako:22
+#: marker/templates/user/user_selected_projects.mako:23
 #: marker/templates/user/user_selected_projects_similar.mako:24
 msgid "Table"
 msgstr "Tabela"
 
 #: marker/templates/company/company_all.mako:34
-#: marker/templates/company/company_map.mako:17
-#: marker/templates/company/company_uptime.mako:16
+#: marker/templates/company/company_map.mako:20
+#: marker/templates/company/company_uptime.mako:19
 #: marker/templates/project/project_all.mako:34
-#: marker/templates/project/project_map.mako:17
-#: marker/templates/project/project_uptime.mako:16
-#: marker/templates/user/user_map_selected_companies.mako:19
+#: marker/templates/project/project_map.mako:20
+#: marker/templates/project/project_uptime.mako:19
+#: marker/templates/user/user_companies.mako:19
+#: marker/templates/user/user_map_companies.mako:16
+#: marker/templates/user/user_map_projects.mako:16
+#: marker/templates/user/user_map_selected_companies.mako:21
 #: marker/templates/user/user_map_selected_companies_similar.mako:22
-#: marker/templates/user/user_map_selected_projects.mako:19
+#: marker/templates/user/user_map_selected_projects.mako:21
 #: marker/templates/user/user_map_selected_projects_similar.mako:22
-#: marker/templates/user/user_selected_companies.mako:25
+#: marker/templates/user/user_projects.mako:19
+#: marker/templates/user/user_selected_companies.mako:24
 #: marker/templates/user/user_selected_companies_similar.mako:25
-#: marker/templates/user/user_selected_projects.mako:23
+#: marker/templates/user/user_selected_projects.mako:24
 #: marker/templates/user/user_selected_projects_similar.mako:25
 msgid "Map"
 msgstr "Mapa"
 
 #: marker/templates/company/company_all.mako:35
-#: marker/templates/company/company_map.mako:18
-#: marker/templates/company/company_uptime.mako:17
+#: marker/templates/company/company_map.mako:21
+#: marker/templates/company/company_uptime.mako:20
 #: marker/templates/project/project_all.mako:35
-#: marker/templates/project/project_map.mako:18
-#: marker/templates/project/project_uptime.mako:17
+#: marker/templates/project/project_map.mako:21
+#: marker/templates/project/project_uptime.mako:20
 msgid "Uptime"
 msgstr "Uptime"
+
+#: marker/templates/company/company_filter.mako:25
+#: marker/templates/contact/contact_filter.mako:25
+#: marker/templates/project/project_filter.mako:25
+msgid "Location"
+msgstr "Lokalizacja"
 
 #: marker/templates/company/company_form.mako:78
 #: marker/templates/company/company_form.mako:79
@@ -1252,10 +1256,15 @@ msgstr "Odśwież formularz z witryny"
 
 #: marker/templates/company/company_form.mako:89
 #: marker/templates/project/project_form.mako:90
-msgid "Click the refresh button to fill the remaining fields from the website address."
-msgstr "Kliknij przycisk odświeżania, aby uzupełnić pozostałe pola z adresu witryny."
+msgid ""
+"Click the refresh button to fill the remaining fields from the website "
+"address."
+msgstr ""
+"Kliknij przycisk odświeżania, aby uzupełnić pozostałe pola z adresu "
+"witryny."
 
 #: marker/templates/company/company_projects.mako:34
+#: marker/templates/prices/prices_all.mako:87
 #: marker/templates/project/project_companies.mako:34
 msgid "Value"
 msgstr "Wartość"
@@ -1277,8 +1286,8 @@ msgstr "Cena za m²"
 #: marker/templates/project/project_view.mako:87
 #: marker/templates/tag/tag_table.mako:21 marker/templates/tag/tag_view.mako:31
 #: marker/templates/user/user_table.mako:13
-#: marker/templates/user/user_view.mako:71 marker/views/company.py:421
-#: marker/views/project.py:889
+#: marker/templates/user/user_view.mako:71 marker/views/company.py:428
+#: marker/views/project.py:862
 msgid "Created at"
 msgstr "Utworzono"
 
@@ -1294,8 +1303,8 @@ msgstr "Utworzono"
 #: marker/templates/project/project_view.mako:93
 #: marker/templates/tag/tag_table.mako:22 marker/templates/tag/tag_view.mako:37
 #: marker/templates/user/user_table.mako:14
-#: marker/templates/user/user_view.mako:74 marker/views/company.py:422
-#: marker/views/project.py:890
+#: marker/templates/user/user_view.mako:74 marker/views/company.py:429
+#: marker/views/project.py:863
 msgid "Updated at"
 msgstr "Zmodyfikowano"
 
@@ -1322,18 +1331,18 @@ msgstr "Wspólne tagi"
 
 #: marker/templates/company/company_table.mako:109
 #: marker/templates/project/project_table.mako:118 marker/views/tag.py:695
-#: marker/views/tag.py:964
+#: marker/views/tag.py:975
 msgid "Value net"
 msgstr "Wartość netto"
 
 #: marker/templates/company/company_table.mako:110
 #: marker/templates/project/project_table.mako:119 marker/views/tag.py:695
-#: marker/views/tag.py:965
+#: marker/views/tag.py:976
 msgid "Value gross"
 msgstr "Wartość brutto"
 
-#: marker/templates/company/company_uptime.mako:28
-#: marker/templates/project/project_uptime.mako:28
+#: marker/templates/company/company_uptime.mako:31
+#: marker/templates/project/project_uptime.mako:31
 msgid "HTTP response code"
 msgstr "Kod odpowiedzi HTTP"
 
@@ -1345,8 +1354,8 @@ msgstr "Kod odpowiedzi HTTP"
 msgid "Modification date"
 msgstr "Data modyfikacji"
 
-#: marker/templates/contact/contact_all.mako:23
-#: marker/templates/contact/contact_unassigned.mako:23
+#: marker/templates/contact/contact_all.mako:24
+#: marker/templates/contact/contact_unassigned.mako:24
 msgid "Unassigned"
 msgstr "Nieprzypisane"
 
@@ -1375,16 +1384,24 @@ msgid "Contacts without a company (Organization Name) will not be imported."
 msgstr "Kontakty bez firmy (Organization Name) nie zostaną zaimportowane."
 
 #: marker/templates/contact/contact_import.mako:51
-msgid "The file must be UTF-8 encoded and comma-separated. Other separators are not allowed."
-msgstr "Plik musi być zakodowany w UTF-8 i rozdzielony przecinkami. Inne separatory nie są dopuszczalne."
+msgid ""
+"The file must be UTF-8 encoded and comma-separated. Other separators are "
+"not allowed."
+msgstr ""
+"Plik musi być zakodowany w UTF-8 i rozdzielony przecinkami. Inne "
+"separatory nie są dopuszczalne."
 
 #: marker/templates/contact/contact_import.mako:52
 msgid "The file must include at least the following columns: "
 msgstr "Plik musi zawierać co najmniej następujące kolumny: "
 
 #: marker/templates/contact/contact_import.mako:62
-msgid "For more information on the required CSV structure, please refer to the Google Contacts help page: "
-msgstr "Więcej informacji o wymaganej strukturze CSV znajdziesz w pomocy Google Contacts: "
+msgid ""
+"For more information on the required CSV structure, please refer to the "
+"Google Contacts help page: "
+msgstr ""
+"Więcej informacji o wymaganej strukturze CSV znajdziesz w pomocy Google "
+"Contacts: "
 
 #: marker/templates/contact/contact_import_vcard.mako:28
 msgid "vCard file requirements"
@@ -1399,12 +1416,20 @@ msgid "The following fields are imported:"
 msgstr "Importowane są następujące pola:"
 
 #: marker/templates/contact/contact_import_vcard.mako:41
-msgid "If a company with the same name already exists, the contact will be added to it."
-msgstr "Jeśli firma o tej samej nazwie już istnieje w bazie, kontakt zostanie do niej przypisany."
+msgid ""
+"If a company with the same name already exists, the contact will be added"
+" to it."
+msgstr ""
+"Jeśli firma o tej samej nazwie już istnieje w bazie, kontakt zostanie do "
+"niej przypisany."
 
 #: marker/templates/contact/contact_import_vcard.mako:42
-msgid "If the contact already exists in the company, you will be redirected to its view."
-msgstr "Jeśli kontakt o takich samych danych już istnieje w firmie, zostaniesz przekierowany do jego widoku."
+msgid ""
+"If the contact already exists in the company, you will be redirected to "
+"its view."
+msgstr ""
+"Jeśli kontakt o takich samych danych już istnieje w firmie, zostaniesz "
+"przekierowany do jego widoku."
 
 #: marker/templates/contact/contact_import_vcard.mako:50
 msgid "Import"
@@ -1426,7 +1451,7 @@ msgstr "Dowolny tag (OR)"
 msgid "All tags (AND)"
 msgstr "Wszystkie tagi (AND)"
 
-#: marker/templates/contact/contact_unassigned.mako:5
+#: marker/templates/contact/contact_unassigned.mako:6
 msgid "Unassigned contacts"
 msgstr "Nieprzypisane kontakty"
 
@@ -1435,27 +1460,31 @@ msgstr "Nieprzypisane kontakty"
 msgid "Contact"
 msgstr "Kontakt"
 
-#: marker/templates/prices/prices_all.mako:6 marker/views/prices.py:231
+#: marker/templates/prices/prices_all.mako:6 marker/views/prices.py:243
 msgid "Project Prices"
 msgstr "Ceny projektów"
 
-#: marker/templates/prices/prices_all.mako:76
-#: marker/templates/prices/prices_all.mako:163
-#: marker/utils/export_columns.py:76 marker/views/prices.py:72
-#: marker/views/prices.py:377 marker/views/tag.py:966
+#: marker/templates/prices/prices_all.mako:114
+#: marker/templates/prices/prices_all.mako:202
+#: marker/utils/export_columns.py:76 marker/views/prices.py:80
+#: marker/views/prices.py:434 marker/views/tag.py:977
 msgid "Net / m²"
 msgstr "Netto / m²"
 
-#: marker/templates/prices/prices_all.mako:83
-#: marker/templates/prices/prices_all.mako:164
-#: marker/utils/export_columns.py:77 marker/views/prices.py:73
-#: marker/views/prices.py:378 marker/views/tag.py:967
+#: marker/templates/prices/prices_all.mako:121
+#: marker/templates/prices/prices_all.mako:203
+#: marker/utils/export_columns.py:77 marker/views/prices.py:81
+#: marker/views/prices.py:435 marker/views/tag.py:978
 msgid "Gross / m²"
 msgstr "Brutto / m²"
 
-#: marker/templates/prices/prices_all.mako:109
+#: marker/templates/prices/prices_all.mako:148
 msgid "Usable area"
 msgstr "Powierzchnia użytkowa"
+
+#: marker/templates/project/project_filter.mako:111
+msgid "Parameters"
+msgstr "Parametry"
 
 #: marker/templates/project/project_table.mako:120
 msgid "Net / m2"
@@ -1466,8 +1495,12 @@ msgid "Gross / m2"
 msgstr "Brutto / m²"
 
 #: marker/templates/report/prompt.mako:12
-msgid "GEMINI_API_KEY is not set. AI reports require a valid Gemini API key configured on the server."
-msgstr "Klucz GEMINI_API_KEY nie jest ustawiony. Raporty AI wymagają prawidłowego klucza API Gemini skonfigurowanego na serwerze."
+msgid ""
+"GEMINI_API_KEY is not set. AI reports require a valid Gemini API key "
+"configured on the server."
+msgstr ""
+"Klucz GEMINI_API_KEY nie jest ustawiony. Raporty AI wymagają prawidłowego"
+" klucza API Gemini skonfigurowanego na serwerze."
 
 #: marker/templates/report/prompt.mako:20
 msgid "Describe the report you want:"
@@ -1522,13 +1555,34 @@ msgid "results"
 msgstr "wyników"
 
 #: marker/templates/user/user_companies_stars.mako:6
+#: marker/templates/user/user_map_companies_stars.mako:6
 msgid "Companies marked with a star"
 msgstr "Firmy oznaczone gwiazdką"
+
+#: marker/templates/user/user_filter.mako:3
+#: marker/templates/user/user_selected_tags.mako:23
+#: marker/templates/user/user_tags.mako:17
+msgid "Filter"
+msgstr "Filtruj"
+
+#: marker/templates/user/user_map_projects_stars.mako:6
+#: marker/templates/user/user_projects_stars.mako:6
+msgid "Projects marked with a star"
+msgstr "Projekty oznaczone gwiazdką"
 
 #: marker/templates/user/user_map_selected_companies.mako:6
 #: marker/templates/user/user_selected_companies.mako:6
 msgid "Selected companies"
 msgstr "Wybrane firmy"
+
+#: marker/templates/user/user_map_selected_companies.mako:10
+msgid "Deselect all selected companies?"
+msgstr "Odznaczyć wszystkie zaznaczone firmy?"
+
+#: marker/templates/user/user_map_selected_companies.mako:11
+#: marker/templates/user/user_selected_companies.mako:10
+msgid "Delete all selected companies?"
+msgstr "Usunąć wszystkie zaznaczone firmy?"
 
 #: marker/templates/user/user_map_selected_companies_similar.mako:6
 #: marker/templates/user/user_selected_companies_similar.mako:6
@@ -1537,11 +1591,11 @@ msgstr "Podobne firmy"
 
 #: marker/templates/user/user_map_selected_companies_similar.mako:13
 #: marker/templates/user/user_map_selected_projects_similar.mako:13
-#: marker/templates/user/user_selected_companies.mako:22
+#: marker/templates/user/user_selected_companies.mako:21
 #: marker/templates/user/user_selected_companies_similar.mako:16
-#: marker/templates/user/user_selected_projects.mako:20
+#: marker/templates/user/user_selected_projects.mako:21
 #: marker/templates/user/user_selected_projects_similar.mako:16
-#: marker/views/company.py:151 marker/views/project.py:154
+#: marker/views/company.py:156 marker/views/project.py:159
 msgid "Similar"
 msgstr "Podobne"
 
@@ -1557,32 +1611,25 @@ msgstr "Tryb znaczników"
 msgid "Selected projects"
 msgstr "Wybrane projekty"
 
+#: marker/templates/user/user_map_selected_projects.mako:10
+msgid "Deselect all selected projects?"
+msgstr "Odznaczyć wszystkie zaznaczone projekty?"
+
+#: marker/templates/user/user_map_selected_projects.mako:11
+#: marker/templates/user/user_selected_projects.mako:10
+msgid "Delete all selected projects?"
+msgstr "Usunąć wszystkie wybrane projekty"
+
 #: marker/templates/user/user_map_selected_projects_similar.mako:6
 #: marker/templates/user/user_selected_projects_similar.mako:6
 msgid "Similar projects"
 msgstr "Podobne projekty"
 
-#: marker/templates/user/user_projects_stars.mako:6
-msgid "Projects marked with a star"
-msgstr "Projekty oznaczone gwiazdką"
-
-#: marker/templates/user/user_selected_companies.mako:10
-msgid "Deselect all selected companies?"
-msgstr "Odznaczyć wszystkie zaznaczone firmy?"
-
-#: marker/templates/user/user_selected_companies.mako:11
-msgid "Delete all selected companies?"
-msgstr "Usunąć wszystkie zaznaczone firmy?"
-
 #: marker/templates/user/user_selected_contacts.mako:6
 msgid "Selected contacts"
 msgstr "Wybrane kontakty"
 
-#: marker/templates/user/user_selected_contacts.mako:9
-msgid "Deselect all selected contacts?"
-msgstr "Odznaczyć wszystkie zaznaczone kontakty?"
-
-#: marker/templates/user/user_selected_contacts.mako:9
+#: marker/templates/user/user_selected_contacts.mako:10
 msgid "Delete all selected contacts?"
 msgstr "Usunąć wszystkie wybrane kontakty?"
 
@@ -1593,14 +1640,6 @@ msgstr "Firmy wybranych kontaktów"
 #: marker/templates/user/user_selected_contacts_projects.mako:6
 msgid "Projects of selected contacts"
 msgstr "Projekty wybranych kontaktów"
-
-#: marker/templates/user/user_selected_projects.mako:9
-msgid "Deselect all selected projects?"
-msgstr "Odznaczyć wszystkie zaznaczone projekty?"
-
-#: marker/templates/user/user_selected_projects.mako:9
-msgid "Delete all selected projects?"
-msgstr "Usunąć wszystkie wybrane projekty"
 
 #: marker/templates/user/user_selected_related_contacts.mako:11
 msgid "Contacts of selected companies"
@@ -1626,27 +1665,23 @@ msgstr "Kontakty wybranych tagów"
 msgid "Selected tags"
 msgstr "Wybrane tagi"
 
-#: marker/templates/user/user_selected_tags.mako:10
-msgid "Deselect all selected tags?"
-msgstr "Odznaczyć wszystkie zaznaczone tagi?"
-
-#: marker/templates/user/user_selected_tags.mako:58
+#: marker/templates/user/user_selected_tags.mako:51
 msgid "Merge selected tags"
 msgstr "Scal wybrane tagi"
 
-#: marker/templates/user/user_selected_tags.mako:65
+#: marker/templates/user/user_selected_tags.mako:58
 msgid "New tag name"
 msgstr "Nowa nazwa tagu"
 
-#: marker/templates/user/user_selected_tags.mako:67
+#: marker/templates/user/user_selected_tags.mako:60
 msgid "The new name can be the same as one of the selected tags"
 msgstr "Nowa nazwa może być taka sama jak nazwa jednego z wybranych tagów"
 
-#: marker/templates/user/user_selected_tags.mako:71
+#: marker/templates/user/user_selected_tags.mako:64
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: marker/templates/user/user_selected_tags.mako:72
+#: marker/templates/user/user_selected_tags.mako:65
 msgid "Merge"
 msgstr "Scal"
 
@@ -1673,18 +1708,20 @@ msgstr "Przełącz opcje usuwania"
 
 #: marker/templates/user/user_view.mako:34
 msgid "Delete the user account together with all data added by this user?"
-msgstr "Usunąć konto użytkownika wraz ze wszystkimi danymi dodanymi przez tego użytkownika?"
+msgstr ""
+"Usunąć konto użytkownika wraz ze wszystkimi danymi dodanymi przez tego "
+"użytkownika?"
 
 #: marker/templates/user/user_view.mako:35
 msgid "Delete account with all added data"
 msgstr "Usuń konto wraz ze wszystkimi dodanymi danymi"
 
-#: marker/templates/user/user_view.mako:45 marker/views/user.py:213
+#: marker/templates/user/user_view.mako:45 marker/views/user.py:212
 msgid "User"
 msgstr "Użytkownik"
 
 #: marker/utils/export.py:59 marker/utils/export_columns.py:49
-#: marker/views/user.py:306 marker/views/user.py:326
+#: marker/views/user.py:305 marker/views/user.py:325
 msgid "Project stage"
 msgstr "Etap projektu"
 
@@ -1692,141 +1729,141 @@ msgstr "Etap projektu"
 msgid "Delivery method"
 msgstr "Sposób realizacji projektu"
 
-#: marker/utils/export_columns.py:16 marker/views/user.py:271
+#: marker/utils/export_columns.py:16 marker/views/user.py:270
 msgid "Contact name"
 msgstr "Nazwa kontaktu"
 
-#: marker/utils/export_columns.py:17 marker/views/user.py:272
+#: marker/utils/export_columns.py:17 marker/views/user.py:271
 msgid "Contact role"
 msgstr "Rola kontaktu"
 
-#: marker/utils/export_columns.py:18 marker/views/user.py:273
+#: marker/utils/export_columns.py:18 marker/views/user.py:272
 msgid "Contact phone"
 msgstr "Telefon kontaktu"
 
-#: marker/utils/export_columns.py:19 marker/views/user.py:274
+#: marker/utils/export_columns.py:19 marker/views/user.py:273
 msgid "Contact email"
 msgstr "Email kontaktu"
 
-#: marker/utils/export_columns.py:25 marker/views/user.py:281
-#: marker/views/user.py:335
+#: marker/utils/export_columns.py:25 marker/views/user.py:280
+#: marker/views/user.py:334
 msgid "Company name"
 msgstr "Nazwa firmy"
 
-#: marker/utils/export_columns.py:26 marker/views/user.py:282
-#: marker/views/user.py:336
+#: marker/utils/export_columns.py:26 marker/views/user.py:281
+#: marker/views/user.py:335
 msgid "Company street"
 msgstr "Ulica firmy"
 
-#: marker/utils/export_columns.py:27 marker/views/user.py:283
-#: marker/views/user.py:337
+#: marker/utils/export_columns.py:27 marker/views/user.py:282
+#: marker/views/user.py:336
 msgid "Company post code"
 msgstr "Kod pocztowy firmy"
 
-#: marker/utils/export_columns.py:28 marker/views/user.py:284
-#: marker/views/user.py:338
+#: marker/utils/export_columns.py:28 marker/views/user.py:283
+#: marker/views/user.py:337
 msgid "Company city"
 msgstr "Miasto firmy"
 
-#: marker/utils/export_columns.py:29 marker/views/user.py:285
-#: marker/views/user.py:339
+#: marker/utils/export_columns.py:29 marker/views/user.py:284
+#: marker/views/user.py:338
 msgid "Company subdivision"
 msgstr "Województwo firmy"
 
-#: marker/utils/export_columns.py:30 marker/views/user.py:286
-#: marker/views/user.py:340
+#: marker/utils/export_columns.py:30 marker/views/user.py:285
+#: marker/views/user.py:339
 msgid "Company country"
 msgstr "Kraj firmy"
 
-#: marker/utils/export_columns.py:31 marker/views/user.py:287
-#: marker/views/user.py:341
+#: marker/utils/export_columns.py:31 marker/views/user.py:286
+#: marker/views/user.py:340
 msgid "Company website"
 msgstr "Strona internetowa firmy"
 
-#: marker/utils/export_columns.py:32 marker/views/user.py:288
-#: marker/views/user.py:342
+#: marker/utils/export_columns.py:32 marker/views/user.py:287
+#: marker/views/user.py:341
 msgid "Company NIP"
 msgstr "NIP firmy"
 
-#: marker/utils/export_columns.py:33 marker/views/user.py:289
-#: marker/views/user.py:343
+#: marker/utils/export_columns.py:33 marker/views/user.py:288
+#: marker/views/user.py:342
 msgid "Company REGON"
 msgstr "REGON firmy"
 
-#: marker/utils/export_columns.py:34 marker/views/user.py:290
-#: marker/views/user.py:344
+#: marker/utils/export_columns.py:34 marker/views/user.py:289
+#: marker/views/user.py:343
 msgid "Company KRS"
 msgstr "KRS firmy"
 
-#: marker/utils/export_columns.py:41 marker/views/user.py:298
-#: marker/views/user.py:318
+#: marker/utils/export_columns.py:41 marker/views/user.py:297
+#: marker/views/user.py:317
 msgid "Project name"
 msgstr "Nazwa projektu"
 
-#: marker/utils/export_columns.py:42 marker/views/user.py:299
-#: marker/views/user.py:319
+#: marker/utils/export_columns.py:42 marker/views/user.py:298
+#: marker/views/user.py:318
 msgid "Project street"
 msgstr "Ulica projektu"
 
-#: marker/utils/export_columns.py:43 marker/views/user.py:300
-#: marker/views/user.py:320
+#: marker/utils/export_columns.py:43 marker/views/user.py:299
+#: marker/views/user.py:319
 msgid "Project post code"
 msgstr "Kod pocztowy projektu"
 
-#: marker/utils/export_columns.py:44 marker/views/user.py:301
-#: marker/views/user.py:321
+#: marker/utils/export_columns.py:44 marker/views/user.py:300
+#: marker/views/user.py:320
 msgid "Project city"
 msgstr "Miasto projektu"
 
-#: marker/utils/export_columns.py:45 marker/views/user.py:302
-#: marker/views/user.py:322
+#: marker/utils/export_columns.py:45 marker/views/user.py:301
+#: marker/views/user.py:321
 msgid "Project subdivision"
 msgstr "Województwo projektu"
 
-#: marker/utils/export_columns.py:46 marker/views/user.py:303
-#: marker/views/user.py:323
+#: marker/utils/export_columns.py:46 marker/views/user.py:302
+#: marker/views/user.py:322
 msgid "Project country"
 msgstr "Kraj projektu"
 
-#: marker/utils/export_columns.py:47 marker/views/user.py:304
-#: marker/views/user.py:324
+#: marker/utils/export_columns.py:47 marker/views/user.py:303
+#: marker/views/user.py:323
 msgid "Project website"
 msgstr "Strona internetowa projektu"
 
-#: marker/utils/export_columns.py:48 marker/views/user.py:305
-#: marker/views/user.py:325
+#: marker/utils/export_columns.py:48 marker/views/user.py:304
+#: marker/views/user.py:324
 msgid "Project deadline"
 msgstr "Termin projektu"
 
-#: marker/utils/export_columns.py:51 marker/views/user.py:308
-#: marker/views/user.py:328
+#: marker/utils/export_columns.py:51 marker/views/user.py:307
+#: marker/views/user.py:327
 msgid "Project object category"
 msgstr "Kategoria obiektu projektu"
 
-#: marker/utils/llm_report.py:61
+#: marker/utils/llm_report.py:71
 msgid "Only SELECT statements are allowed."
 msgstr "Dozwolone są wyłącznie zapytania SELECT."
 
-#: marker/utils/llm_report.py:64
+#: marker/utils/llm_report.py:74
 msgid "Multiple SQL statements are not allowed."
 msgstr "Wiele instrukcji SQL w jednym zapytaniu jest niedozwolone."
 
-#: marker/utils/llm_report.py:68
+#: marker/utils/llm_report.py:78
 #, python-format
 msgid "Keyword '%(kw)s' is not permitted in AI reports."
 msgstr "Słowo kluczowe '%(kw)s' jest niedozwolone w raportach AI."
 
-#: marker/utils/website_autofill.py:24 marker/utils/website_autofill.py:122
-#: marker/utils/website_autofill.py:188
+#: marker/utils/website_autofill.py:26 marker/utils/website_autofill.py:175
+#: marker/utils/website_autofill.py:245
 #, python-format
 msgid "Could not load content from %(url)s"
 msgstr "Nie można załadować zawartości z %(url)s"
 
 #: marker/views/account.py:23 marker/views/account.py:38
-#: marker/views/company.py:1439 marker/views/company.py:1724
-#: marker/views/contact.py:436 marker/views/project.py:1409
-#: marker/views/project.py:1853 marker/views/tag.py:1102
-#: marker/views/user.py:1719
+#: marker/views/company.py:1416 marker/views/company.py:1701
+#: marker/views/contact.py:452 marker/views/project.py:1386
+#: marker/views/project.py:1830 marker/views/tag.py:1124
+#: marker/views/user.py:1727
 msgid "success:Changes have been saved"
 msgstr "success:Zmiany zostały zapisane"
 
@@ -1875,259 +1912,287 @@ msgstr "Użytkownik %s usunął komentarz"
 msgid "Find a comment"
 msgstr "Znajdź komentarz"
 
-#: marker/views/company.py:960
+#: marker/views/company.py:933
 #, python-format
 msgid "The user %s has added a tag to the company"
 msgstr "Użytkownik %s dodał tag do firmy"
 
-#: marker/views/company.py:963 marker/views/company.py:1007
-#: marker/views/company.py:1033 marker/views/company.py:1366
-#: marker/views/company.py:1678 marker/views/company.py:1938
-#: marker/views/project.py:1336 marker/views/project.py:1657
-#: marker/views/project.py:1737 marker/views/project.py:1781
-#: marker/views/project.py:1807 marker/views/project.py:2068
-#: marker/views/tag.py:1022 marker/views/tag.py:1056 marker/views/tag.py:1086
-#: marker/views/user.py:1702
+#: marker/views/company.py:936 marker/views/company.py:980
+#: marker/views/company.py:1006 marker/views/company.py:1339
+#: marker/views/company.py:1655 marker/views/company.py:1923
+#: marker/views/project.py:1309 marker/views/project.py:1634
+#: marker/views/project.py:1714 marker/views/project.py:1758
+#: marker/views/project.py:1784 marker/views/project.py:2053
+#: marker/views/tag.py:1044 marker/views/tag.py:1078 marker/views/tag.py:1108
+#: marker/views/user.py:1710
 msgid "success:Added to the database"
 msgstr "success:Dodano do bazy danych"
 
-#: marker/views/company.py:969 marker/views/project.py:1743
+#: marker/views/company.py:942 marker/views/project.py:1720
 msgid "Add a tag"
 msgstr "Dodaj tag"
 
-#: marker/views/company.py:1004
+#: marker/views/company.py:977
 #, python-format
 msgid "The user %s has added a contact to the company"
 msgstr "Użytkownik %s dodał kontakt do firmy"
 
-#: marker/views/company.py:1013 marker/views/project.py:1787
+#: marker/views/company.py:986 marker/views/project.py:1764
 msgid "Add a contact"
 msgstr "Dodaj kontakt"
 
-#: marker/views/company.py:1032 marker/views/project.py:1806
+#: marker/views/company.py:1005 marker/views/project.py:1783
 #, python-format
 msgid "The user %s added a comment"
 msgstr "Użytkownik %s dodał komentarz"
 
-#: marker/views/company.py:1039 marker/views/project.py:1813
+#: marker/views/company.py:1012 marker/views/project.py:1790
 msgid "Add a comment"
 msgstr "Dodaj komentarz"
 
-#: marker/views/company.py:1367 marker/views/project.py:1337
+#: marker/views/company.py:1340 marker/views/project.py:1310
 msgid "info:Add tags and contacts"
 msgstr "info:Dodaj tagi i kontakty"
 
-#: marker/views/company.py:1368
+#: marker/views/company.py:1341
 #, python-format
 msgid "The user %s has added a company"
 msgstr "Użytkownik %s dodał firmę"
 
-#: marker/views/company.py:1377 marker/views/company.py:1864
-#: marker/views/project.py:1663 marker/views/tag.py:1030
+#: marker/views/company.py:1350 marker/views/company.py:1843
+#: marker/views/project.py:1640 marker/views/tag.py:1052
 msgid "Add a company"
 msgstr "Dodaj firmę"
 
-#: marker/views/company.py:1411
+#: marker/views/company.py:1388
 #, python-format
 msgid "The user %s used company autofill from website (AI)"
 msgstr "Użytkownik %s użył autouzupełniania firmy ze strony internetowej (AI)"
 
-#: marker/views/company.py:1444
+#: marker/views/company.py:1421
 #, python-format
 msgid "The user %s changed the company details"
 msgstr "Użytkownik %s zmienił dane firmy"
 
-#: marker/views/company.py:1448
+#: marker/views/company.py:1425
 msgid "Edit company details"
 msgstr "Edytuj dane firmy"
 
-#: marker/views/company.py:1480 marker/views/contact.py:455
-#: marker/views/project.py:1456 marker/views/tag.py:1122
-#: marker/views/user.py:1748
+#: marker/views/company.py:1457 marker/views/contact.py:471
+#: marker/views/project.py:1433 marker/views/tag.py:1144
+#: marker/views/user.py:1756
 msgid "success:Removed from the database"
 msgstr "success:Usunięto z bazy danych"
 
-#: marker/views/company.py:1481 marker/views/company.py:1523
-#: marker/views/contact.py:479
+#: marker/views/company.py:1458 marker/views/company.py:1500
+#: marker/views/contact.py:495
 #, python-format
 msgid "The user %s deleted the company"
 msgstr "Użytkownik %s usunął firmę"
 
-#: marker/views/company.py:1606
+#: marker/views/company.py:1583
 msgid "Find a company"
 msgstr "Znajdź firmę"
 
-#: marker/views/company.py:1633
+#: marker/views/company.py:1610
 #, python-format
 msgid "The user %s unlinked the tag from the company"
 msgstr "Użytkownik %s odczepił tag od firmy"
 
-#: marker/views/company.py:1675
+#: marker/views/company.py:1652
 #, python-format
 msgid "The user %s added the project to the company"
 msgstr "Użytkownik %s dodał projekt do firmy"
 
-#: marker/views/company.py:1684 marker/views/project.py:1347
-#: marker/views/project.py:1992 marker/views/tag.py:1064
+#: marker/views/company.py:1661 marker/views/project.py:1320
+#: marker/views/project.py:1971 marker/views/tag.py:1086
 msgid "Add a project"
 msgstr "Dodaj projekt"
 
-#: marker/views/company.py:1729 marker/views/project.py:1858
+#: marker/views/company.py:1706 marker/views/project.py:1835
 #, python-format
 msgid "The user %s changed the activity details"
 msgstr "Użytkownik %s zmienił szczegóły aktywności"
 
-#: marker/views/company.py:1734 marker/views/project.py:1863
+#: marker/views/company.py:1711 marker/views/project.py:1840
 msgid "Edit activity details"
 msgstr "Edytuj szczegóły aktywności"
 
-#: marker/views/company.py:1772
+#: marker/views/company.py:1749
 #, python-format
 msgid "The user %s unlinked the company from the project"
 msgstr "Użytkownik %s odczepił firmę od projektu"
 
-#: marker/views/company.py:1800
+#: marker/views/company.py:1779
 msgid "danger:An error occurred while trying to autofill the company data"
-msgstr "danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych firmy"
+msgstr ""
+"danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych "
+"firmy"
 
-#: marker/views/company.py:1822
-msgid "warning:A company with the name obtained from the provided website address already exists in the database."
-msgstr "warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w bazie."
+#: marker/views/company.py:1801
+msgid ""
+"warning:A company with the name obtained from the provided website "
+"address already exists in the database."
+msgstr ""
+"warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w "
+"bazie."
 
-#: marker/views/company.py:1940
+#: marker/views/company.py:1925
 #, python-format
 msgid "The user %s added a company using AI autofill"
-msgstr "Użytkownik %s dodał firmę korzystając z funkcji automatycznego uzupełniania AI"
+msgstr ""
+"Użytkownik %s dodał firmę korzystając z funkcji automatycznego "
+"uzupełniania AI"
 
-#: marker/views/company.py:1952
+#: marker/views/company.py:1937
 msgid "Add a company using AI autofill"
 msgstr "Dodaj firmę za pomocą automatycznego uzupełniania AI"
 
-#: marker/views/contact.py:440
+#: marker/views/contact.py:456
 #, python-format
 msgid "User %s changed contact details"
 msgstr "Użytkownik %s zmienił dane kontaktowe"
 
-#: marker/views/contact.py:442
+#: marker/views/contact.py:458
 msgid "Edit contact"
 msgstr "Edytuj kontakt"
 
-#: marker/views/contact.py:456
+#: marker/views/contact.py:472
 #, python-format
 msgid "The user %s deleted the contact"
 msgstr "Użytkownik %s usunął kontakt"
 
-#: marker/views/contact.py:505
+#: marker/views/contact.py:521
 msgid "Find a contact"
 msgstr "Znajdź kontakt"
 
-#: marker/views/contact.py:538 marker/views/contact.py:770
+#: marker/views/contact.py:554 marker/views/contact.py:786
 msgid "Search contacts"
 msgstr "Szukaj za pomocą tagów"
 
-#: marker/views/contact.py:843
-msgid "warning:Could not read CSV file. Please upload a valid UTF-8, comma-separated CSV."
-msgstr "warning:Nie udało się odczytać pliku CSV. Prześlij poprawny plik CSV w kodowaniu UTF-8, rozdzielony przecinkami."
+#: marker/views/contact.py:859
+msgid ""
+"warning:Could not read CSV file. Please upload a valid UTF-8, comma-"
+"separated CSV."
+msgstr ""
+"warning:Nie udało się odczytać pliku CSV. Prześlij poprawny plik CSV w "
+"kodowaniu UTF-8, rozdzielony przecinkami."
 
-#: marker/views/contact.py:852
+#: marker/views/contact.py:868
 #, python-format
-msgid "warning:CSV structure is incompatible with Google Contacts. Missing columns: %s"
-msgstr "warning:Struktura CSV jest niezgodna z Google Contacts. Brakujące kolumny: %s"
+msgid ""
+"warning:CSV structure is incompatible with Google Contacts. Missing "
+"columns: %s"
+msgstr ""
+"warning:Struktura CSV jest niezgodna z Google Contacts. Brakujące "
+"kolumny: %s"
 
-#: marker/views/contact.py:870
+#: marker/views/contact.py:886
 #, python-format
 msgid "success:CSV file has been imported. Contacts added: %s. Skipped rows: %s"
-msgstr "success:Plik CSV został zaimportowany. Dodane kontakty: %s. Pominięte wiersze: %s"
+msgstr ""
+"success:Plik CSV został zaimportowany. Dodane kontakty: %s. Pominięte "
+"wiersze: %s"
 
-#: marker/views/contact.py:876
+#: marker/views/contact.py:892
 #, python-format
 msgid "User %s imported CSV file (%s contacts, %s skipped)"
 msgstr "Użytkownik %s zaimportował plik CSV (%s kontaktów, %s pominięto)"
 
-#: marker/views/contact.py:881
+#: marker/views/contact.py:897
 msgid "Import CSV"
 msgstr "Importuj CSV"
 
-#: marker/views/contact.py:917
+#: marker/views/contact.py:934
 msgid "warning:Could not read vCard file. Please upload a valid .vcf file."
 msgstr "warning:Nie udało się odczytać pliku vCard. Prześlij prawidłowy plik .vcf."
 
-#: marker/views/contact.py:927
+#: marker/views/contact.py:945
 #, python-format
 msgid "User %s imported vCard: %s"
 msgstr "Użytkownik %s zaimportował plik vCard: %s"
 
-#: marker/views/contact.py:936
+#: marker/views/contact.py:955
 msgid "Import vCard"
 msgstr "Importuj vCard"
 
-#: marker/views/prices.py:381
+#: marker/views/prices.py:438
 #, python-format
 msgid "The user %s exported prices data"
 msgstr "Użytkownik %s eksportował dane cenowe"
 
-#: marker/views/project.py:1338
+#: marker/views/project.py:1311
 #, python-format
 msgid "The user %s has added a project"
 msgstr "Użytkownik %s dodał projekt"
 
-#: marker/views/project.py:1381
+#: marker/views/project.py:1358
 #, python-format
 msgid "The user %s used project website autofill for: %s"
-msgstr "Użytkownik %s użył funkcji automatycznego wypełniania strony internetowej projektu dla: %s"
+msgstr ""
+"Użytkownik %s użył funkcji automatycznego wypełniania strony internetowej"
+" projektu dla: %s"
 
-#: marker/views/project.py:1416
+#: marker/views/project.py:1393
 #, python-format
 msgid "The user %s changed the project details"
 msgstr "Użytkownik %s zmienił dane projektu"
 
-#: marker/views/project.py:1420
+#: marker/views/project.py:1397
 msgid "Edit project details"
 msgstr "Edytuj dane projektu"
 
-#: marker/views/project.py:1457 marker/views/project.py:1499
+#: marker/views/project.py:1434 marker/views/project.py:1476
 #, python-format
 msgid "The user %s deleted the project"
 msgstr "Użytkownik %s usunął projekt"
 
-#: marker/views/project.py:1529
+#: marker/views/project.py:1506
 msgid "Find a project"
 msgstr "Znajdź projekt"
 
-#: marker/views/project.py:1654
+#: marker/views/project.py:1631
 #, python-format
 msgid "The user %s added the company to the project"
 msgstr "Użytkownik %s dodał firmę do projektu"
 
-#: marker/views/project.py:1734
+#: marker/views/project.py:1711
 #, python-format
 msgid "The user %s has added a tag to the project"
 msgstr "Użytkownik %s dodał tag do projektu"
 
-#: marker/views/project.py:1778
+#: marker/views/project.py:1755
 #, python-format
 msgid "The user %s has added a contact to the project"
 msgstr "Użytkownik %s dodał kontakt do projektu"
 
-#: marker/views/project.py:1896
+#: marker/views/project.py:1873
 #, python-format
 msgid "The user %s unlinked the tag from the project"
 msgstr "Użytkownik %s odpiął tag od projektu"
 
-#: marker/views/project.py:1924
+#: marker/views/project.py:1903
 msgid "danger:An error occurred while trying to autofill the project data"
-msgstr "danger:Wystąpił błąd podczas próby automatycznego wypełnienia danych projektu"
+msgstr ""
+"danger:Wystąpił błąd podczas próby automatycznego wypełnienia danych "
+"projektu"
 
-#: marker/views/project.py:1946
-msgid "warning:A project with the name obtained from the provided website address already exists in the database."
-msgstr "warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w bazie."
+#: marker/views/project.py:1925
+msgid ""
+"warning:A project with the name obtained from the provided website "
+"address already exists in the database."
+msgstr ""
+"warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w "
+"bazie."
 
-#: marker/views/project.py:2070
+#: marker/views/project.py:2055
 #, python-format
 msgid "The user %s has added a project using AI autofill"
-msgstr "Użytkownik %s dodał projekt korzystając z funkcji automatycznego wypełniania AI"
+msgstr ""
+"Użytkownik %s dodał projekt korzystając z funkcji automatycznego "
+"wypełniania AI"
 
-#: marker/views/project.py:2082
+#: marker/views/project.py:2067
 msgid "Add a project using AI autofill"
 msgstr "Dodaj project za pomocą automatycznego uzupełniania AI"
 
@@ -2135,226 +2200,223 @@ msgstr "Dodaj project za pomocą automatycznego uzupełniania AI"
 msgid "Report"
 msgstr "Raport"
 
-#: marker/views/tag.py:710
+#: marker/views/tag.py:721
 #, python-format
 msgid "The user %s exported company data"
 msgstr "Użytkownik %s eksportował dane firmy"
 
-#: marker/views/tag.py:990
+#: marker/views/tag.py:1012
 #, python-format
 msgid "The user %s exported project data"
 msgstr "Użytkownik %s eksportował dane projektu"
 
-#: marker/views/tag.py:1019
+#: marker/views/tag.py:1041
 #, python-format
 msgid "The user %s has added a company to the tag"
 msgstr "Użytkownik %s dodał firmę do tagu"
 
-#: marker/views/tag.py:1053
+#: marker/views/tag.py:1075
 #, python-format
 msgid "The user %s has added a project to the tag"
 msgstr "Użytkownik %s dodał projekt do tagu"
 
-#: marker/views/tag.py:1087
+#: marker/views/tag.py:1109
 #, python-format
 msgid "The user %s has added a tag"
 msgstr "Użytkownik %s dodał tag"
 
-#: marker/views/tag.py:1091
+#: marker/views/tag.py:1113
 msgid "Add tag"
 msgstr "Dodaj tag"
 
-#: marker/views/tag.py:1104
+#: marker/views/tag.py:1126
 #, python-format
 msgid "The user %s changed the name of the tag"
 msgstr "Użytkownik %s zmienił nazwę tagu"
 
-#: marker/views/tag.py:1109
+#: marker/views/tag.py:1131
 msgid "Edit tag"
 msgstr "Edytuj tag"
 
-#: marker/views/tag.py:1123 marker/views/tag.py:1146
+#: marker/views/tag.py:1145 marker/views/tag.py:1168
 #, python-format
 msgid "The user %s removed the tag"
 msgstr "Użytkownik %s usunął tag"
 
-#: marker/views/tag.py:1197
+#: marker/views/tag.py:1219
 msgid "Find the tag"
 msgstr "Znajdź tag"
 
-#: marker/views/user.py:833 marker/views/user.py:3522
+#: marker/views/user.py:841 marker/views/user.py:3592
 #, python-format
 msgid "The user %s exported the data of selected tags"
 msgstr "Użytkownik %s eksportował dane zaznaczonych tagów"
 
-#: marker/views/user.py:1085 marker/views/user.py:2413
+#: marker/views/user.py:1093 marker/views/user.py:2452
 #, python-format
 msgid "The user %s exported the data of selected companies"
 msgstr "Użytkownik %s eksportował dane zaznaczonych firm"
 
-#: marker/views/user.py:1397 marker/views/user.py:3155
+#: marker/views/user.py:1405 marker/views/user.py:3225
 #, python-format
 msgid "The user %s exported the data of selected projects"
 msgstr "Użytkownik %s eksportował dane zaznaczonych projektów"
 
-#: marker/views/user.py:1684 marker/views/user.py:4306
+#: marker/views/user.py:1692 marker/views/user.py:4413
 #, python-format
 msgid "The user %s exported the data of selected contacts"
 msgstr "Użytkownik %s eksportował dane zaznaczonych kontaktów"
 
-#: marker/views/user.py:1703
+#: marker/views/user.py:1711
 #, python-format
 msgid "The user %s has added a user"
 msgstr "Użytkownik %s dodał użytkownika"
 
-#: marker/views/user.py:1706
+#: marker/views/user.py:1714
 msgid "Add user"
 msgstr "Dodaj użytkownika"
 
-#: marker/views/user.py:1721
+#: marker/views/user.py:1729
 #, python-format
 msgid "The user %s has changed the user's data"
 msgstr "Użytkownik %s zmienił dane użytkownika"
 
-#: marker/views/user.py:1726
+#: marker/views/user.py:1734
 msgid "Edit user details"
 msgstr "Edytuj dane użytkownika"
 
-#: marker/views/user.py:1741
+#: marker/views/user.py:1749
 msgid "success:Removed user account with all added data from the database"
-msgstr "success:Usunięto konto użytkownika wraz ze wszystkimi dodanymi danymi z bazy danych"
+msgstr ""
+"success:Usunięto konto użytkownika wraz ze wszystkimi dodanymi danymi z "
+"bazy danych"
 
-#: marker/views/user.py:1744
+#: marker/views/user.py:1752
 #, python-format
 msgid "The user %s deleted the user with all added data"
 msgstr "Użytkownik %s usunął użytkownika wraz ze wszystkimi dodanymi danymi"
 
-#: marker/views/user.py:1749
+#: marker/views/user.py:1757
 #, python-format
 msgid "The user %s deleted the user"
 msgstr "Użytkownik %s usunął użytkownika"
 
-#: marker/views/user.py:1777
+#: marker/views/user.py:1785
 msgid "Find a user"
 msgstr "Znajdź użytkownika"
 
-#: marker/views/user.py:4347
+#: marker/views/user.py:4454
 msgid "success:Selected companies deleted"
 msgstr "success:Wybrane firmy zostały usunięte"
 
-#: marker/views/user.py:4349
+#: marker/views/user.py:4456
 #, python-format
 msgid "The user %s deleted selected companies"
 msgstr "Użytkownik %s usunął zaznaczone firmy"
 
-#: marker/views/user.py:4393
+#: marker/views/user.py:4500
 msgid "success:Selected projects deleted"
 msgstr "success:Wybrane projekty zostały usunięte"
 
-#: marker/views/user.py:4395
+#: marker/views/user.py:4502
 #, python-format
 msgid "The user %s deleted selected projects"
 msgstr "Użytkownik %s usunął wybrane projekty"
 
-#: marker/views/user.py:4423
+#: marker/views/user.py:4530
 msgid "success:Selected contacts deleted"
 msgstr "success:Wybrane kontakty zostały usunięte"
 
-#: marker/views/user.py:4425
+#: marker/views/user.py:4532
 #, python-format
 msgid "The user %s deleted selected contacts"
 msgstr "Użytkownik %s usunął wybrane kontakty"
 
-#: marker/views/user.py:4458
+#: marker/views/user.py:4565
 msgid "success:Selected tags deleted"
 msgstr "success:Wybrane tagi zostały usunięte"
 
-#: marker/views/user.py:4459
+#: marker/views/user.py:4566
 #, python-format
 msgid "The user %s deleted selected tags"
 msgstr "Użytkownik %s usunął wybrane tagi"
 
-#: marker/views/user.py:4480
+#: marker/views/user.py:4585
 msgid "success:Selected companies deselected"
 msgstr "success:Zaznaczenie firm zostało wyczyszczone"
 
-#: marker/views/user.py:4482
+#: marker/views/user.py:4586
 #, python-format
 msgid "The user %s deselected all companies"
 msgstr "Użytkownik %s odznaczył wszystkie firmy"
 
-#: marker/views/user.py:4504
+#: marker/views/user.py:4605
 msgid "success:Selected projects deselected"
 msgstr "success:Zaznaczenie projektów zostało wyczyszczone"
 
-#: marker/views/user.py:4506
+#: marker/views/user.py:4606
 #, python-format
 msgid "The user %s deselected all projects"
 msgstr "Użytkownik %s odznaczył wszystkie projekty"
 
-#: marker/views/user.py:4528
+#: marker/views/user.py:4625
 msgid "success:Selected contacts deselected"
 msgstr "success:Zaznaczenie kontaktów zostało wyczyszczone"
 
-#: marker/views/user.py:4530
+#: marker/views/user.py:4626
 #, python-format
 msgid "The user %s deselected all contacts"
 msgstr "Użytkownik %s odznaczył wszystkie kontakty"
 
-#: marker/views/user.py:4552
+#: marker/views/user.py:4645
 msgid "success:Selected tags deselected"
 msgstr "success:Zaznaczenie tagów zostało wyczyszczone"
 
-#: marker/views/user.py:4554
+#: marker/views/user.py:4646
 #, python-format
 msgid "The user %s deselected all tags"
 msgstr "Użytkownik %s odznaczył wszystkie tagi"
 
-#: marker/views/user.py:4584
+#: marker/views/user.py:4675
 msgid "success:All selections cleared"
 msgstr "success:Wszystkie zaznaczenia zostały wyczyszczone"
 
-#: marker/views/user.py:4586
+#: marker/views/user.py:4676
 #, python-format
 msgid "The user %s cleared all selections"
 msgstr "Użytkownik %s wyczyścił wszystkie zaznaczenia"
 
-#: marker/views/user.py:4606
+#: marker/views/user.py:4695
 msgid "warning:Please provide a name and select tags"
 msgstr "warning:Proszę podać nazwę i wybrać tagi"
 
-#: marker/views/user.py:4679
+#: marker/views/user.py:4768
 msgid "success:Selected tags merged"
 msgstr "success:Wybrane tagi zostały scalone"
 
-#: marker/views/user.py:4681
+#: marker/views/user.py:4770
 #, python-format
 msgid "The user %s merged selected tags to '%s'"
 msgstr "Użytkownik %s scalił zaznaczone tagi w '%s'"
 
-#: marker/views/user.py:4848
+#: marker/views/user.py:4937
 #, python-format
 msgid "The user %s exported the data of companies with a star"
 msgstr "Użytkownik %s eksportował dane firm z gwiazdką"
 
-#: marker/views/user.py:4863
+#: marker/views/user.py:4952
 #, python-format
 msgid "The user %s cleared companies with a star"
 msgstr "Użytkownik %s eksportował dane firm z gwiazdką"
 
-#: marker/views/user.py:5110
+#: marker/views/user.py:5199
 #, python-format
 msgid "The user %s exported the data of projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
-#: marker/views/user.py:5125
+#: marker/views/user.py:5214
 #, python-format
 msgid "The user %s cleared projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
 
-msgid "Location"
-msgstr "Lokalizacja"
-
-msgid "Parameters"
-msgstr "Parametry"

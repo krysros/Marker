@@ -7,7 +7,6 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
-    ${button.deselect_selected(url=request.route_url('user_deselect_companies', username=user.name), confirm_text=_("Deselect all selected companies?"))}
     ${button.delete_selected(url=request.route_url('user_delete_selected_companies', username=user.name, _query=q), confirm_text=_("Delete all selected companies?"))}
     <% from marker.utils.export_columns import company_cols; _export_cols = company_cols(_) %>
     ${button.dropdown_download_cols(request.route_url('user_export_selected_companies', username=user.name, _query=q), _export_cols)}
