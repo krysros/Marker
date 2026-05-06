@@ -403,6 +403,8 @@ class UserView:
     def _selected_contacts_export_header(self, category):
         if category == "projects":
             return self._project_export_header()
+        if not category:
+            return self._contact_export_header()
         return self._company_export_header()
 
     def _selected_contacts_export_rows(self, contacts, category):
@@ -411,6 +413,11 @@ class UserView:
         is_projects = category == "projects"
 
         for contact in contacts:
+            if not category:
+                rows.append(self._contact_row_values(contact))
+                row_colors.append(self._resolve_row_color("", contact.color))
+                continue
+
             linked_object = contact.project if is_projects else contact.company
 
             if linked_object:
@@ -4280,15 +4287,17 @@ class UserView:
         ]
         country = self.request.params.get("country", None)
         color = self.request.params.get("color", None)
-        _category = self.request.params.get("category", "companies")
+        _category = self.request.params.get("category", "")
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
 
         allowed_sorts = {
             "name",
             "role",
+            "city",
             "country",
             "subdivision",
+            "category_name",
             "color",
             "created_at",
             "updated_at",
@@ -4333,11 +4342,26 @@ class UserView:
                 stmt = stmt.filter(
                     Contact.project.has(Project.subdivision.in_(subdivision))
                 )
+        else:
+            if country:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.country == country),
+                        Contact.project.has(Project.country == country),
+                    )
+                )
+            if subdivision:
+                stmt = stmt.filter(
+                    or_(
+                        Contact.company.has(Company.subdivision.in_(subdivision)),
+                        Contact.project.has(Project.subdivision.in_(subdivision)),
+                    )
+                )
 
         if color:
             stmt = stmt.filter(Contact.color == color)
 
-        category = "projects" if _category == "projects" else "companies"
+        category = _category
 
         if _sort in {"city", "country", "subdivision"}:
             if category == "projects":
@@ -4346,12 +4370,32 @@ class UserView:
                     stmt = stmt.order_by(sort_column(Project, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Project, _sort).desc(), Contact.id)
-            else:
+            elif category == "companies":
                 stmt = stmt.join(Contact.company)
                 if _order == "asc":
                     stmt = stmt.order_by(sort_column(Company, _sort).asc(), Contact.id)
                 elif _order == "desc":
                     stmt = stmt.order_by(sort_column(Company, _sort).desc(), Contact.id)
+            else:
+                stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+                relation_sort = func.coalesce(
+                    getattr(Project, _sort), getattr(Company, _sort)
+                )
+                if _order == "asc":
+                    stmt = stmt.order_by(func.lower(relation_sort).asc(), Contact.id)
+                elif _order == "desc":
+                    stmt = stmt.order_by(func.lower(relation_sort).desc(), Contact.id)
+        elif _sort == "category_name":
+            stmt = stmt.outerjoin(Contact.project).outerjoin(Contact.company)
+            relation_sort = func.coalesce(Project.name, Company.name)
+            if _order == "asc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).asc(), Contact.id
+                )
+            elif _order == "desc":
+                stmt = stmt.order_by(
+                    polish_sort_expression(relation_sort).desc(), Contact.id
+                )
         else:
             if _order == "asc":
                 stmt = stmt.order_by(sort_column(Contact, _sort).asc(), Contact.id)

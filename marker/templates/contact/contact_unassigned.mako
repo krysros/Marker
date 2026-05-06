@@ -1,15 +1,16 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<h2>
-  <i class="bi bi-person-x"></i> ${_("Unassigned contacts")}
-  <span class="badge bg-secondary">${counter}</span>
-  <div class="float-end">
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+  <h2 class="mb-0 text-nowrap flex-grow-1 flex-shrink-1">
+    <i class="bi bi-person-x"></i> ${_("Unassigned contacts")}
+    <span class="badge bg-secondary">${counter}</span>
+  </h2>
+  <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
-    ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}
-    ${button.a(icon='person-vcard', color='success', url=request.route_url('contact_import_vcard'))}
+    ${button.dropdown_import(url_csv=request.route_url('contact_import_csv'), url_vcard=request.route_url('contact_import_vcard'))}
   </div>
-</h2>
+</div>
 
 <hr>
 

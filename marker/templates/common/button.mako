@@ -154,7 +154,7 @@
 </div>
 </%def>
 
-<%def name="dropdown_download_cols(base_url, columns)">
+<%def name="dropdown_download_cols(base_url, columns, extra_params=None)">
 <%
   import json as _json
   uid = abs(hash(base_url)) % 100000
@@ -167,6 +167,17 @@
   </button>
   <div class="dropdown-menu dropdown-menu-end p-2" style="min-width:260px">
     <form id="export-form-${uid}" method="get" action="${base_url}">
+      % if extra_params:
+        % for _ep_k, _ep_v in extra_params.items():
+          % if isinstance(_ep_v, list):
+            % for _ep_item in _ep_v:
+              <input type="hidden" name="${_ep_k}" value="${_ep_item}">
+            % endfor
+          % elif _ep_v is not None and str(_ep_v) != '':
+              <input type="hidden" name="${_ep_k}" value="${_ep_v}">
+          % endif
+        % endfor
+      % endif
       <div class="mb-2 fw-semibold small">${_("Columns")}</div>
       <div style="max-height:260px;overflow-y:auto">
         % for col in columns:

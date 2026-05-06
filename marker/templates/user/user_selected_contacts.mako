@@ -7,8 +7,9 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">    ${button.deselect_selected(url=request.route_url('user_deselect_contacts', username=user.name), confirm_text=_('Deselect all selected contacts?'))}    ${button.delete_selected(url=request.route_url('user_delete_selected_contacts', username=user.name, _query=q), confirm_text=_("Delete all selected contacts?"))}
-    <% from marker.utils.export_columns import company_cols, project_cols; _export_cols = project_cols(_) if q.get('category') == 'projects' else company_cols(_) %>
-    ${button.dropdown_download_cols(request.route_url('user_export_selected_contacts', username=user.name, _query=q), _export_cols)}
+    <% from marker.utils.export_columns import contact_cols, company_cols, project_cols %>
+    <% _export_cols = project_cols(_) if q.get('category') == 'projects' else (company_cols(_) if q.get('category') == 'companies' else contact_cols(_)) %>
+    ${button.dropdown_download_cols(request.route_url('user_export_selected_contacts', username=user.name), _export_cols, extra_params=q)}
   </div>
   </div>
 <hr>

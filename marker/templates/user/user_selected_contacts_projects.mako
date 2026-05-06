@@ -6,6 +6,10 @@
     <i class="bi bi-briefcase"></i> ${_("Projects of selected contacts")}
     <span class="badge bg-secondary">${counter}</span>
   </h2>
+  <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
+    <% from marker.utils.export_columns import project_cols; _export_cols = project_cols(_) %>
+    ${button.dropdown_download_cols(request.route_url('user_export_selected_contacts', username=user.name), _export_cols, extra_params={**q, 'category': 'projects'})}
+  </div>
 </div>
 <hr>
 
