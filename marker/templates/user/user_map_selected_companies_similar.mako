@@ -10,7 +10,7 @@
 <hr>
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
-  <a class="btn btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
+  <a class="btn btn-sm btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
     <a class="btn ${'btn-primary' if q.get('tag_operator') == 'or' else 'btn-outline-primary'}"
        href="${request.route_url('user_map_selected_companies_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>

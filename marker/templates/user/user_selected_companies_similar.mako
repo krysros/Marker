@@ -13,7 +13,7 @@
   <%include file="company_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
-  <a class="btn btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
+  <a class="btn btn-sm btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
     <a class="btn ${'btn-primary' if tag_operator == 'or' else 'btn-outline-primary'}"
        href="${request.route_url('user_selected_companies_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>
