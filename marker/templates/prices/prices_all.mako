@@ -33,7 +33,7 @@
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="dropdown">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       % if q.get('object_category') or q.get('stage') or q.get('role'):
         <i class="bi bi-tag-fill"></i>
       % else:
@@ -78,7 +78,7 @@
     </form>
   </div>
   <div class="dropdown">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       % if q.get('currency') or q.get('value_net_from') or q.get('value_net_to') or q.get('value_gross_from') or q.get('value_gross_to') or q.get('unit_price_net_from') or q.get('unit_price_net_to') or q.get('unit_price_gross_from') or q.get('unit_price_gross_to'):
         <i class="bi bi-cash-fill"></i>
       % else:

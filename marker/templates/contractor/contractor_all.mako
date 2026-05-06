@@ -27,7 +27,7 @@
 
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="dropdown">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       % if q.get('role', []):
         <i class="bi bi-person-fill"></i>
       % else:
@@ -54,7 +54,7 @@
     </form>
   </div>
   <div class="dropdown">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       % if q.get('tag', []):
         <i class="bi bi-tags-fill"></i>
       % else:

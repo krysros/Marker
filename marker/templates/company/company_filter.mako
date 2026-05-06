@@ -16,7 +16,7 @@
 </%def>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('country') or q.get('subdivision'):
       <i class="bi bi-geo-alt-fill"></i>
     % else:
@@ -44,7 +44,7 @@
 </div>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('date_from') or q.get('date_to'):
       <i class="bi bi-calendar-fill"></i>
     % else:
@@ -70,7 +70,7 @@
 </div>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('color'):
       <i class="bi bi-palette-fill"></i>
     % else:

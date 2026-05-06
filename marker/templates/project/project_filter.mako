@@ -16,7 +16,7 @@
 </%def>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('country') or q.get('subdivision'):
       <i class="bi bi-geo-alt-fill"></i>
     % else:
@@ -44,7 +44,7 @@
 </div>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('object_category') or q.get('stage') or q.get('delivery_method') or q.get('status'):
       <i class="bi bi-tag-fill"></i>
     % else:
@@ -79,7 +79,7 @@
 </div>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('color'):
       <i class="bi bi-palette-fill"></i>
     % else:
@@ -102,7 +102,7 @@
 </div>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('usable_area_from') or q.get('usable_area_to') or q.get('cubic_volume_from') or q.get('cubic_volume_to'):
       <i class="bi bi-rulers"></i>
     % else:
@@ -135,7 +135,7 @@
 </div>
 
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('deadline_from') or q.get('deadline_to') or q.get('date_from') or q.get('date_to'):
       <i class="bi bi-calendar-fill"></i>
     % else:

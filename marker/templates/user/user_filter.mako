@@ -1,5 +1,5 @@
 <div class="dropdown">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     <i class="bi bi-filter"></i> ${_("Filter")}
   </button>
   <form class="dropdown-menu p-4" style="min-width: 400px;">

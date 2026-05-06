@@ -101,7 +101,7 @@
 <%def name="dropdown_sort(items)">
 <div class="btn-group">
   <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       % if q["order"] == "asc":
         <i class="bi bi-sort-alpha-down"></i>
       % else:
@@ -197,7 +197,7 @@
 <%def name="dropdown_order(items)">
 <div class="btn-group">
   <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       % if q["order"] == "asc":
         <i class="bi bi-caret-up-fill"></i>
       % else:
@@ -225,7 +225,7 @@
 <%def name="dropdown_filter(param, label, items)">
 <div class="btn-group">
   <div class="dropdown">
-    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="btn btn-sm btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       % if q.get(param):
         <i class="bi bi-funnel-fill"></i>
       % else:
