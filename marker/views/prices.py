@@ -1,12 +1,20 @@
 """Prices view — project activity prices (unit prices per m²)."""
+
 import logging
 from collections import namedtuple
 from decimal import Decimal, InvalidOperation
 
 from pyramid.view import view_config
-from sqlalchemy import case as sa_case, func, select
+from sqlalchemy import case as sa_case
+from sqlalchemy import func, select
 
-from ..forms.select import COMPANY_ROLES, OBJECT_CATEGORIES, ORDER_CRITERIA, STAGES, select_currencies
+from ..forms.select import (
+    COMPANY_ROLES,
+    OBJECT_CATEGORIES,
+    ORDER_CRITERIA,
+    STAGES,
+    select_currencies,
+)
 from ..models import Activity, Company, Project
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
@@ -126,7 +134,8 @@ class PricesView:
             try:
                 stmt = stmt.filter(
                     Project.usable_area > 0,
-                    Activity.value_net / Project.usable_area >= Decimal(unit_price_net_from),
+                    Activity.value_net / Project.usable_area
+                    >= Decimal(unit_price_net_from),
                 )
                 q["unit_price_net_from"] = unit_price_net_from
             except (InvalidOperation, ValueError):
@@ -136,7 +145,8 @@ class PricesView:
             try:
                 stmt = stmt.filter(
                     Project.usable_area > 0,
-                    Activity.value_net / Project.usable_area <= Decimal(unit_price_net_to),
+                    Activity.value_net / Project.usable_area
+                    <= Decimal(unit_price_net_to),
                 )
                 q["unit_price_net_to"] = unit_price_net_to
             except (InvalidOperation, ValueError):
@@ -146,7 +156,8 @@ class PricesView:
             try:
                 stmt = stmt.filter(
                     Project.usable_area > 0,
-                    Activity.value_gross / Project.usable_area >= Decimal(unit_price_gross_from),
+                    Activity.value_gross / Project.usable_area
+                    >= Decimal(unit_price_gross_from),
                 )
                 q["unit_price_gross_from"] = unit_price_gross_from
             except (InvalidOperation, ValueError):
@@ -156,7 +167,8 @@ class PricesView:
             try:
                 stmt = stmt.filter(
                     Project.usable_area > 0,
-                    Activity.value_gross / Project.usable_area <= Decimal(unit_price_gross_to),
+                    Activity.value_gross / Project.usable_area
+                    <= Decimal(unit_price_gross_to),
                 )
                 q["unit_price_gross_to"] = unit_price_gross_to
             except (InvalidOperation, ValueError):
@@ -191,15 +203,15 @@ class PricesView:
             "unit_price_gross": Activity.value_gross / Project.usable_area,
         }
         sort_col = _sort_map.get(_sort, polish_sort_expression(Project.name))
-        stmt = apply_order(stmt, sort_col, _order, Activity.project_id, Activity.company_id)
+        stmt = apply_order(
+            stmt, sort_col, _order, Activity.project_id, Activity.company_id
+        )
 
         counter = self.request.dbsession.execute(
             select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
-        raw_rows = self.request.dbsession.execute(
-            get_paginator(stmt, page=page)
-        ).all()
+        raw_rows = self.request.dbsession.execute(get_paginator(stmt, page=page)).all()
 
         paginator = []
         for activity, project, company in raw_rows:
@@ -243,12 +255,21 @@ class PricesView:
             "next_page": next_page,
         }
 
-    def _build_filtered_stmt(self, stage, role, currency,
-                             value_net_from, value_net_to,
-                             value_gross_from, value_gross_to,
-                             unit_price_net_from, unit_price_net_to,
-                             unit_price_gross_from, unit_price_gross_to,
-                             object_category=""):
+    def _build_filtered_stmt(
+        self,
+        stage,
+        role,
+        currency,
+        value_net_from,
+        value_net_to,
+        value_gross_from,
+        value_gross_to,
+        unit_price_net_from,
+        unit_price_net_to,
+        unit_price_gross_from,
+        unit_price_gross_to,
+        object_category="",
+    ):
         stmt = (
             select(Activity, Project, Company)
             .join(Project, Activity.project_id == Project.id)
@@ -272,10 +293,22 @@ class PricesView:
                 except (InvalidOperation, ValueError):
                     pass
         for expr_fn, val in (
-            (lambda d: Activity.value_net / Project.usable_area >= d, unit_price_net_from),
-            (lambda d: Activity.value_net / Project.usable_area <= d, unit_price_net_to),
-            (lambda d: Activity.value_gross / Project.usable_area >= d, unit_price_gross_from),
-            (lambda d: Activity.value_gross / Project.usable_area <= d, unit_price_gross_to),
+            (
+                lambda d: Activity.value_net / Project.usable_area >= d,
+                unit_price_net_from,
+            ),
+            (
+                lambda d: Activity.value_net / Project.usable_area <= d,
+                unit_price_net_to,
+            ),
+            (
+                lambda d: Activity.value_gross / Project.usable_area >= d,
+                unit_price_gross_from,
+            ),
+            (
+                lambda d: Activity.value_gross / Project.usable_area <= d,
+                unit_price_gross_to,
+            ),
         ):
             if val:
                 try:
@@ -307,11 +340,17 @@ class PricesView:
             _order = "asc"
 
         stmt = self._build_filtered_stmt(
-            stage, role, currency,
-            value_net_from, value_net_to,
-            value_gross_from, value_gross_to,
-            unit_price_net_from, unit_price_net_to,
-            unit_price_gross_from, unit_price_gross_to,
+            stage,
+            role,
+            currency,
+            value_net_from,
+            value_net_to,
+            value_gross_from,
+            value_gross_to,
+            unit_price_net_from,
+            unit_price_net_to,
+            unit_price_gross_from,
+            unit_price_gross_to,
             object_category,
         )
 
@@ -336,7 +375,9 @@ class PricesView:
             "unit_price_gross": Activity.value_gross / Project.usable_area,
         }
         sort_col = _sort_map.get(_sort, polish_sort_expression(Project.name))
-        stmt = apply_order(stmt, sort_col, _order, Activity.project_id, Activity.company_id)
+        stmt = apply_order(
+            stmt, sort_col, _order, Activity.project_id, Activity.company_id
+        )
 
         stages_map = dict(STAGES)
         roles_map = dict(COMPANY_ROLES)
@@ -349,21 +390,37 @@ class PricesView:
             unit_price_gross = None
             if project.usable_area and project.usable_area > 0:
                 if activity.value_net is not None:
-                    unit_price_net = round(float(activity.value_net / project.usable_area), 2)
+                    unit_price_net = round(
+                        float(activity.value_net / project.usable_area), 2
+                    )
                 if activity.value_gross is not None:
-                    unit_price_gross = round(float(activity.value_gross / project.usable_area), 2)
-            rows.append((
-                project.name,
-                object_categories_map.get(project.object_category, project.object_category or ""),
-                company.name,
-                str(_(stages_map.get(activity.stage, activity.stage or ""))),
-                str(_(roles_map.get(activity.role, activity.role or ""))),
-                activity.currency or "",
-                float(activity.value_net) if activity.value_net is not None else None,
-                float(activity.value_gross) if activity.value_gross is not None else None,
-                unit_price_net,
-                unit_price_gross,
-            ))
+                    unit_price_gross = round(
+                        float(activity.value_gross / project.usable_area), 2
+                    )
+            rows.append(
+                (
+                    project.name,
+                    object_categories_map.get(
+                        project.object_category, project.object_category or ""
+                    ),
+                    company.name,
+                    str(_(stages_map.get(activity.stage, activity.stage or ""))),
+                    str(_(roles_map.get(activity.role, activity.role or ""))),
+                    activity.currency or "",
+                    (
+                        float(activity.value_net)
+                        if activity.value_net is not None
+                        else None
+                    ),
+                    (
+                        float(activity.value_gross)
+                        if activity.value_gross is not None
+                        else None
+                    ),
+                    unit_price_net,
+                    unit_price_gross,
+                )
+            )
 
         header_row = [
             _("Project"),

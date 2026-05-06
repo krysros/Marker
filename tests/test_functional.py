@@ -2692,7 +2692,9 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
 
     monkeypatch.setattr(
         "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "Acme Corp Jan Kowalski CEO"})()],
+        lambda self: [
+            type("Doc", (), {"page_content": "Acme Corp Jan Kowalski CEO"})()
+        ],
     )
 
     def mock_invoke(self, prompt):
@@ -2704,7 +2706,11 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
                     "content": '[{"name": "Jan Kowalski", "role": "CEO", "phone": "+48123456789", "email": "jan@acme.com"}]'
                 },
             )()
-        return type("Resp", (), {"content": '{"name": "Acme Corp", "city": "Warszawa", "country": "PL"}'})()
+        return type(
+            "Resp",
+            (),
+            {"content": '{"name": "Acme Corp", "city": "Warszawa", "country": "PL"}'},
+        )()
 
     monkeypatch.setattr(
         "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
@@ -2740,9 +2746,7 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
     resp.follow(status=200)
 
     company = dbsession.execute(
-        select(models.company.Company).where(
-            models.company.Company.name == "Acme Corp"
-        )
+        select(models.company.Company).where(models.company.Company.name == "Acme Corp")
     ).scalar_one_or_none()
     assert company is not None
     assert len(company.contacts) == 1
@@ -2773,7 +2777,13 @@ def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
                     "content": '[{"name": "Anna Nowak", "role": "PM", "phone": "+48987654321", "email": "anna@budowex.com"}]'
                 },
             )()
-        return type("Resp", (), {"content": '{"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}'})()
+        return type(
+            "Resp",
+            (),
+            {
+                "content": '{"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}'
+            },
+        )()
 
     monkeypatch.setattr(
         "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
@@ -2809,9 +2819,7 @@ def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
     resp.follow(status=200)
 
     project = dbsession.execute(
-        select(models.project.Project).where(
-            models.project.Project.name == "Budowex"
-        )
+        select(models.project.Project).where(models.project.Project.name == "Budowex")
     ).scalar_one_or_none()
     assert project is not None
     assert len(project.contacts) == 1
@@ -2830,17 +2838,33 @@ def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
 
     monkeypatch.setattr(
         "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "TagCo offers construction and civil engineering services."})()],
+        lambda self: [
+            type(
+                "Doc",
+                (),
+                {
+                    "page_content": "TagCo offers construction and civil engineering services."
+                },
+            )()
+        ],
     )
 
     def mock_invoke(self, prompt):
         if "Extract up to 20 tags" in prompt:
-            return type("Resp", (), {"content": '["Construction", "Civil engineering"]'})()
+            return type(
+                "Resp", (), {"content": '["Construction", "Civil engineering"]'}
+            )()
         if "Extract a list of contacts" in prompt:
             return type("Resp", (), {"content": "[]"})()
-        return type("Resp", (), {"content": '{"name": "TagCo", "city": "Gdansk", "country": "PL"}'})()
+        return type(
+            "Resp",
+            (),
+            {"content": '{"name": "TagCo", "city": "Gdansk", "country": "PL"}'},
+        )()
 
-    monkeypatch.setattr("langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke)
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
+    )
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
 
@@ -2892,7 +2916,11 @@ def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
 
     monkeypatch.setattr(
         "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "ArchFirm provides architecture services."})()],
+        lambda self: [
+            type(
+                "Doc", (), {"page_content": "ArchFirm provides architecture services."}
+            )()
+        ],
     )
 
     def mock_invoke(self, prompt):
@@ -2900,9 +2928,15 @@ def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
             return type("Resp", (), {"content": '["Architecture"]'})()
         if "Extract a list of contacts" in prompt:
             return type("Resp", (), {"content": "[]"})()
-        return type("Resp", (), {"content": '{"name": "ArchFirm", "city": "Poznan", "country": "PL"}'})()
+        return type(
+            "Resp",
+            (),
+            {"content": '{"name": "ArchFirm", "city": "Poznan", "country": "PL"}'},
+        )()
 
-    monkeypatch.setattr("langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke)
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
+    )
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
 
@@ -2946,7 +2980,13 @@ def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
 
     monkeypatch.setattr(
         "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "TagProject residential housing development."})()],
+        lambda self: [
+            type(
+                "Doc",
+                (),
+                {"page_content": "TagProject residential housing development."},
+            )()
+        ],
     )
 
     def mock_invoke(self, prompt):
@@ -2954,9 +2994,17 @@ def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
             return type("Resp", (), {"content": '["Residential", "Housing"]'})()
         if "Extract a list of contacts" in prompt:
             return type("Resp", (), {"content": "[]"})()
-        return type("Resp", (), {"content": '{"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}'})()
+        return type(
+            "Resp",
+            (),
+            {
+                "content": '{"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}'
+            },
+        )()
 
-    monkeypatch.setattr("langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke)
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
+    )
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
 
@@ -2985,7 +3033,9 @@ def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
     resp.follow(status=200)
 
     project = dbsession.execute(
-        select(models.project.Project).where(models.project.Project.name == "TagProject")
+        select(models.project.Project).where(
+            models.project.Project.name == "TagProject"
+        )
     ).scalar_one_or_none()
     assert project is not None
     tag_names = {t.name for t in project.tags}

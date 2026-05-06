@@ -99,24 +99,14 @@ def test_parse_vcard_minimal():
 
 def test_parse_vcard_line_folding():
     # RFC 6350 §3.2: CRLF + single whitespace is removed (not replaced with space)
-    vcf = (
-        "BEGIN:VCARD\r\n"
-        "VERSION:4.0\r\n"
-        "FN:Long\r\n"
-        " Name\r\n"
-        "END:VCARD\r\n"
-    )
+    vcf = "BEGIN:VCARD\r\n" "VERSION:4.0\r\n" "FN:Long\r\n" " Name\r\n" "END:VCARD\r\n"
     card = parse_vcard(vcf)
     # The fold marker (space) is stripped, so "Long" + "Name" = "LongName"
     assert card.name == "LongName"
 
 
 def test_parse_vcard_unescape_special_chars():
-    vcf = (
-        "BEGIN:VCARD\nVERSION:4.0\n"
-        r"FN:O\'Brien\, Jr." + "\n"
-        "END:VCARD\n"
-    )
+    vcf = "BEGIN:VCARD\nVERSION:4.0\n" r"FN:O\'Brien\, Jr." + "\n" "END:VCARD\n"
     card = parse_vcard(vcf)
     assert "Brien" in card.name
 
@@ -140,7 +130,6 @@ def test_parse_vcard_param_without_equals():
     card = parse_vcard(vcf)
     assert card.phone == "+1-555-0100"
 
-
     vcf = FULL_VCARD.replace("\n", "\r\n")
     card = parse_vcard(vcf)
     assert card.name == "Jan Kowalski"
@@ -149,6 +138,7 @@ def test_parse_vcard_param_without_equals():
 # ---------------------------------------------------------------------------
 # upsert_vcard unit tests (with real DB)
 # ---------------------------------------------------------------------------
+
 
 def _make_user(dbsession, name="vcarduser"):
     user = User(
@@ -197,8 +187,17 @@ def test_upsert_vcard_creates_company_and_contact(dbsession):
 def test_upsert_vcard_existing_company_adds_contact(dbsession):
     user = _make_user(dbsession, "uvc2")
     company = Company(
-        name="ExistCo", street="", postcode="", city="", subdivision="",
-        country="", website="", color="", NIP="", REGON="", KRS="",
+        name="ExistCo",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
     )
     company.created_by = user
     dbsession.add(company)
@@ -213,8 +212,17 @@ def test_upsert_vcard_existing_company_adds_contact(dbsession):
 def test_upsert_vcard_returns_existing_contact(dbsession):
     user = _make_user(dbsession, "uvc3")
     company = Company(
-        name="SameCo", street="", postcode="", city="", subdivision="",
-        country="", website="", color="", NIP="", REGON="", KRS="",
+        name="SameCo",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
     )
     company.created_by = user
     dbsession.add(company)
@@ -242,6 +250,7 @@ def test_upsert_vcard_no_org_creates_standalone_contact(dbsession):
 # View tests for contact_import_vcard
 # ---------------------------------------------------------------------------
 
+
 def _make_view_request(dbsession, user, method="GET", vcf_content=None):
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
@@ -263,7 +272,9 @@ def _make_view_request(dbsession, user, method="GET", vcf_content=None):
         if vcf_content is not None:
             file_mock = MagicMock()
             file_mock.file = io.BytesIO(
-                vcf_content.encode("utf-8") if isinstance(vcf_content, str) else vcf_content
+                vcf_content.encode("utf-8")
+                if isinstance(vcf_content, str)
+                else vcf_content
             )
             post["vcf_file"] = file_mock
         request.POST = post
@@ -289,15 +300,19 @@ def test_view_import_vcard_post_no_file(dbsession):
     request.POST = MultiDict()
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
 
 
 def test_view_import_vcard_post_invalid_file(dbsession):
     user = _make_user(dbsession, "vvu3")
-    request = _make_view_request(dbsession, user, method="POST", vcf_content="NOT A VCARD")
+    request = _make_view_request(
+        dbsession, user, method="POST", vcf_content="NOT A VCARD"
+    )
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
     request.session.flash.assert_called_once()
@@ -307,11 +322,10 @@ def test_view_import_vcard_post_invalid_file(dbsession):
 def test_view_import_vcard_post_valid_new_company(dbsession):
     user = _make_user(dbsession, "vvu4")
     transaction.commit()
-    request = _make_view_request(
-        dbsession, user, method="POST", vcf_content=FULL_VCARD
-    )
+    request = _make_view_request(dbsession, user, method="POST", vcf_content=FULL_VCARD)
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
     assert "/contact_view" in result.location
@@ -320,18 +334,26 @@ def test_view_import_vcard_post_valid_new_company(dbsession):
 def test_view_import_vcard_post_existing_company_new_contact(dbsession):
     user = _make_user(dbsession, "vvu5")
     company = Company(
-        name="ACME Corp", street="", postcode="", city="", subdivision="",
-        country="", website="", color="", NIP="", REGON="", KRS="",
+        name="ACME Corp",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
     )
     company.created_by = user
     dbsession.add(company)
     transaction.commit()
 
-    request = _make_view_request(
-        dbsession, user, method="POST", vcf_content=FULL_VCARD
-    )
+    request = _make_view_request(dbsession, user, method="POST", vcf_content=FULL_VCARD)
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
 
@@ -347,6 +369,7 @@ def test_view_import_vcard_post_latin1_encoded(dbsession):
     request.POST["vcf_file"] = file_mock
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     # The replaced text may or may not parse as valid vCard — either way, no exception
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
@@ -361,6 +384,7 @@ def test_view_import_vcard_post_string_data(dbsession):
     request.POST["vcf_file"] = file_mock
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
 
@@ -368,25 +392,35 @@ def test_view_import_vcard_post_string_data(dbsession):
 def test_view_import_vcard_post_existing_contact(dbsession):
     user = _make_user(dbsession, "vvu6")
     company = Company(
-        name="ACME Corp", street="", postcode="", city="", subdivision="",
-        country="", website="", color="", NIP="", REGON="", KRS="",
+        name="ACME Corp",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
     )
     company.created_by = user
     dbsession.add(company)
     dbsession.flush()
     existing = Contact(
-        name="Jan Kowalski", role="Developer", phone="+48 600 100 200",
-        email="jan@example.com", color=""
+        name="Jan Kowalski",
+        role="Developer",
+        phone="+48 600 100 200",
+        email="jan@example.com",
+        color="",
     )
     existing.created_by = user
     company.contacts.append(existing)
     transaction.commit()
 
-    request = _make_view_request(
-        dbsession, user, method="POST", vcf_content=FULL_VCARD
-    )
+    request = _make_view_request(dbsession, user, method="POST", vcf_content=FULL_VCARD)
     view = ContactView(request)
     from pyramid.httpexceptions import HTTPFound
+
     result = view.contact_import_vcard()
     assert isinstance(result, HTTPFound)
-

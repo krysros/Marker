@@ -47,7 +47,11 @@ from ..subscribers import get_subdivision_name
 from ..utils.geo import location, location_details
 from ..utils.paginator import get_paginator
 from ..utils.uptime import check_website_uptime, render_uptime_badge
-from ..utils.website_autofill import company_autofill_from_website, contacts_autofill_from_website, tags_autofill_from_website
+from ..utils.website_autofill import (
+    company_autofill_from_website,
+    contacts_autofill_from_website,
+    tags_autofill_from_website,
+)
 from . import (
     Filter,
     apply_order,
@@ -212,8 +216,8 @@ class CompanyView:
 
         if tags:
             tag_operator = (
-                self.request.params.get("tag_operator") or "or"
-            ).strip().lower()
+                (self.request.params.get("tag_operator") or "or").strip().lower()
+            )
             if tag_operator not in {"or", "and"}:
                 tag_operator = "or"
             normalized_tags = [normalize_ci_value(tag) for tag in tags]
@@ -224,7 +228,9 @@ class CompanyView:
                     )
             else:
                 stmt = stmt.filter(
-                    Company.tags.any(normalize_ci_expression(Tag.name).in_(normalized_tags))
+                    Company.tags.any(
+                        normalize_ci_expression(Tag.name).in_(normalized_tags)
+                    )
                 )
             q["tag"] = tags
             q["tag_operator"] = tag_operator
@@ -719,9 +725,11 @@ class CompanyView:
     )
     def uptime(self):
         page = int(self.request.params.get("page", 1))
-        stmt = select(Company).filter(
-            Company.website.isnot(None), Company.website != ""
-        ).order_by(Company.name)
+        stmt = (
+            select(Company)
+            .filter(Company.website.isnot(None), Company.website != "")
+            .order_by(Company.name)
+        )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -739,9 +747,11 @@ class CompanyView:
     )
     def uptime_rows(self):
         page = int(self.request.params.get("page", 1))
-        stmt = select(Company).filter(
-            Company.website.isnot(None), Company.website != ""
-        ).order_by(Company.name)
+        stmt = (
+            select(Company)
+            .filter(Company.website.isnot(None), Company.website != "")
+            .order_by(Company.name)
+        )
         paginator = (
             self.request.dbsession.execute(get_paginator(stmt, page=page))
             .scalars()
@@ -1347,12 +1357,17 @@ class CompanyView:
     def website_autofill(self):
         _ = self.request.translate
         website = self.request.params.get("website", "")
-        settings = (getattr(self.request.registry, "settings", None) or {})
+        settings = getattr(self.request.registry, "settings", None) or {}
         model = settings.get("gemini.model", "gemini-2.5-flash-lite")
         from ..utils.website_autofill import _country_from_locale
-        default_country = _country_from_locale(settings.get("pyramid.default_locale_name", ""))
+
+        default_country = _country_from_locale(
+            settings.get("pyramid.default_locale_name", "")
+        )
         try:
-            fields = company_autofill_from_website(website, model=model, default_country=default_country)
+            fields = company_autofill_from_website(
+                website, model=model, default_country=default_country
+            )
         except Exception as e:
             log.error("company_website_autofill error: %s", e)
             error_msg = str(e)
@@ -1756,7 +1771,9 @@ class CompanyView:
                 "gemini.model", "gemini-2.5-flash-lite"
             )
             try:
-                autofill = dict(company_autofill_from_website(form.website.data, model=model))
+                autofill = dict(
+                    company_autofill_from_website(form.website.data, model=model)
+                )
                 autofill["website"] = form.website.data
             except Exception as e:
                 self.request.session.flash(
@@ -1858,7 +1875,9 @@ class CompanyView:
 
             # Extract and save contacts from the website
             try:
-                extracted_contacts = contacts_autofill_from_website(form.website.data, model=model)
+                extracted_contacts = contacts_autofill_from_website(
+                    form.website.data, model=model
+                )
                 for c_data in extracted_contacts:
                     name = (c_data.get("name") or "").strip()
                     if not name:
@@ -1873,7 +1892,11 @@ class CompanyView:
                     contact.created_by = self.request.identity
                     company.contacts.append(contact)
             except Exception as e:
-                log.warning("Failed to extract contacts via AI for company %s: %s", company.id, e)
+                log.warning(
+                    "Failed to extract contacts via AI for company %s: %s",
+                    company.id,
+                    e,
+                )
 
             # Extract and assign tags from the website
             try:
@@ -1885,9 +1908,7 @@ class CompanyView:
                 )
                 for tag_name in extracted_tags[:20]:
                     existing_tag = self.request.dbsession.execute(
-                        select(Tag).where(
-                            func.lower(Tag.name) == func.lower(tag_name)
-                        )
+                        select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
                     ).scalar_one_or_none()
                     if existing_tag:
                         tag = existing_tag
@@ -1897,7 +1918,9 @@ class CompanyView:
                     if tag not in company.tags:
                         company.tags.append(tag)
             except Exception as e:
-                log.warning("Failed to extract tags via AI for company %s: %s", company.id, e)
+                log.warning(
+                    "Failed to extract tags via AI for company %s: %s", company.id, e
+                )
 
             self.request.session.flash(_("success:Added to the database"))
             log.info(

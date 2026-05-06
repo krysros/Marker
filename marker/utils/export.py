@@ -326,7 +326,9 @@ def _apply_column_selection(rows, header_row, selected_keys, row_colors=None):
     if not indices:
         return rows, header_row, row_colors
 
-    filtered_rows = [[row[i] if i < len(row) else None for i in indices] for row in rows]
+    filtered_rows = [
+        [row[i] if i < len(row) else None for i in indices] for row in rows
+    ]
     return filtered_rows, filtered_header, row_colors
 
 
@@ -339,11 +341,15 @@ def make_export_response(request, rows, header_row, row_colors=None):
     fmt = request.params.get("format", "xlsx")
 
     # Accept both repeated ?columns=A&columns=B and comma-separated ?columns=A,B
-    raw_cols = request.params.getall("columns") if hasattr(request.params, "getall") else []
+    raw_cols = (
+        request.params.getall("columns") if hasattr(request.params, "getall") else []
+    )
     if len(raw_cols) == 1 and "," in raw_cols[0]:
         raw_cols = [c.strip() for c in raw_cols[0].split(",") if c.strip()]
 
-    rows, header_row, row_colors = _apply_column_selection(rows, header_row, raw_cols, row_colors)
+    rows, header_row, row_colors = _apply_column_selection(
+        rows, header_row, raw_cols, row_colors
+    )
 
     if fmt == "ods":
         return response_ods(rows, header_row, row_colors=row_colors)

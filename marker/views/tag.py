@@ -696,13 +696,24 @@ class TagView:
 
         rows = []
         for company in companies:
-            row = [company.name, company.street, company.postcode,
-                   company.city, company.subdivision, company.country, company.website]
+            row = [
+                company.name,
+                company.street,
+                company.postcode,
+                company.city,
+                company.subdivision,
+                company.country,
+                company.website,
+            ]
             if role:
                 av = activity_values.get(company.id)
                 row += [
                     float(av.value_net) if av and av.value_net is not None else None,
-                    float(av.value_gross) if av and av.value_gross is not None else None,
+                    (
+                        float(av.value_gross)
+                        if av and av.value_gross is not None
+                        else None
+                    ),
                 ]
             rows.append(row)
 
@@ -969,14 +980,25 @@ class TagView:
 
         rows = []
         for project in projects:
-            row = [project.name, project.object_category or "", project.street, project.postcode,
-                   project.city, project.subdivision, project.country,
-                   project.website, project.deadline, project.stage,
-                   project.delivery_method]
+            row = [
+                project.name,
+                project.object_category or "",
+                project.street,
+                project.postcode,
+                project.city,
+                project.subdivision,
+                project.country,
+                project.website,
+                project.deadline,
+                project.stage,
+                project.delivery_method,
+            ]
             if role:
                 av = activity_values.get(project.id)
                 vn = float(av.value_net) if av and av.value_net is not None else None
-                vg = float(av.value_gross) if av and av.value_gross is not None else None
+                vg = (
+                    float(av.value_gross) if av and av.value_gross is not None else None
+                )
                 ua = project.usable_area
                 row += [
                     vn,

@@ -338,17 +338,15 @@ def test_prompt_post_with_mock_llm(dbsession, monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "fake-key")
     sql = "SELECT name FROM companies LIMIT 10"
     with patch(
-        "marker.views.report.ReportView.prompt.__wrapped__"
-        if hasattr(ReportView.prompt, "__wrapped__")
-        else "marker.utils.llm_report.generate_report_sql",
+        (
+            "marker.views.report.ReportView.prompt.__wrapped__"
+            if hasattr(ReportView.prompt, "__wrapped__")
+            else "marker.utils.llm_report.generate_report_sql"
+        ),
         return_value=sql,
     ):
-        with patch(
-            "marker.utils.llm_report.generate_report_sql", return_value=sql
-        ):
-            request = _make_post_request(
-                dbsession, {"prompt": "show all companies"}
-            )
+        with patch("marker.utils.llm_report.generate_report_sql", return_value=sql):
+            request = _make_post_request(dbsession, {"prompt": "show all companies"})
             view = ReportView(request)
             result = view.prompt()
             assert result["sql_generated"] == sql
@@ -526,4 +524,3 @@ def test_report_view_chart_decimal_value(dbsession):
     data = json.loads(result["chart_data_json"])
     assert len(data["values"]) > 0
     assert data["is_decimal"] is True
-

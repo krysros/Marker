@@ -1,5 +1,6 @@
-import pytest
 import datetime
+
+import pytest
 
 import marker.forms.ts
 from marker.utils import export
@@ -127,6 +128,7 @@ def test_response_ods_contacts_project():
 # vCard template integration tests
 # ===========================================================================
 
+
 class _VcardCompany:
     def __init__(self, **kw):
         self.name = kw.get("name", "ACME Corp")
@@ -218,7 +220,8 @@ def test_vcard_rev_updated_at():
 
 def test_vcard_rev_fallback_created_at():
     contact = _VcardContact(
-        company=None, project=None,
+        company=None,
+        project=None,
         updated_at=None,
         created_at=datetime.datetime(2025, 3, 10, 7, 0, 0),
     )
@@ -233,14 +236,27 @@ def test_vcard_uid():
 
 
 def test_vcard_vescape_special_chars():
-    co = _VcardCompany(name="Firm; & Co,", street=None, postcode=None,
-                       city=None, subdivision=None, country=None,
-                       website=None, NIP=None, REGON=None, KRS=None)
+    co = _VcardCompany(
+        name="Firm; & Co,",
+        street=None,
+        postcode=None,
+        city=None,
+        subdivision=None,
+        country=None,
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
     contact = _VcardContact(
         name="O'Brien, James; Jr.",
-        role=None, phone=None, email=None,
-        company=co, project=None,
-        updated_at=None, created_at=None,
+        role=None,
+        phone=None,
+        email=None,
+        company=co,
+        project=None,
+        updated_at=None,
+        created_at=None,
     )
     text = _render_vcard(contact)
     assert r"FN:O'Brien\, James\; Jr." in text
@@ -249,9 +265,13 @@ def test_vcard_vescape_special_chars():
 
 def test_vcard_empty_optional_fields():
     contact = _VcardContact(
-        role=None, phone=None, email=None,
-        company=None, project=None,
-        updated_at=None, created_at=None,
+        role=None,
+        phone=None,
+        email=None,
+        company=None,
+        project=None,
+        updated_at=None,
+        created_at=None,
     )
     text = _render_vcard(contact)
     assert "TITLE" not in text
@@ -265,13 +285,20 @@ def test_vcard_empty_optional_fields():
 
 
 def test_vcard_company_no_address():
-    co = _VcardCompany(street=None, postcode=None, city=None,
-                       subdivision=None, country=None, website=None,
-                       NIP=None, REGON=None, KRS=None)
+    co = _VcardCompany(
+        street=None,
+        postcode=None,
+        city=None,
+        subdivision=None,
+        country=None,
+        website=None,
+        NIP=None,
+        REGON=None,
+        KRS=None,
+    )
     contact = _VcardContact(company=co, project=None)
     text = _render_vcard(contact)
     assert "ORG:ACME Corp" in text
     assert "ADR" not in text
     assert "URL" not in text
     assert "X-NIP" not in text
-

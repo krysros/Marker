@@ -5086,9 +5086,7 @@ def test_user_selected_projects_similar_delivery_method(dbsession):
     other_proj.tags.append(tag)
     user.selected_projects.append(sel_proj)
     transaction.commit()
-    request = _req(
-        dbsession, user, params={"delivery_method": "design_build"}
-    )
+    request = _req(dbsession, user, params={"delivery_method": "design_build"})
     view = UserView(request)
     result = view.selected_projects_similar()
     assert result["q"].get("delivery_method") == "design_build"
@@ -5153,9 +5151,7 @@ def test_user_selected_contacts_companies_basic(dbsession):
 def test_user_selected_contacts_companies_filters(dbsession):
     """Cover color/country/subdivision filter branches in selected_contacts_companies()."""
     user = _user(dbsession, "selcontcofilt")
-    co = _company(
-        dbsession, user, "SelContCoFiltCo", color="red", country="PL"
-    )
+    co = _company(dbsession, user, "SelContCoFiltCo", color="red", country="PL")
     c1 = _contact(dbsession, user, "SelContCoFiltC1", company=co)
     user.selected_contacts.append(c1)
     transaction.commit()
@@ -5400,9 +5396,7 @@ def test_user_json_selected_companies_similar_and_filters(dbsession):
     user = _user(dbsession, "jsonsimcoand")
     tag = _tag(dbsession, user, "JsonSimCoTag")
     sel_co = _company(dbsession, user, "JsonSimCoSel", color="red", country="PL")
-    other_co = _company(
-        dbsession, user, "JsonSimCoOther", color="red", country="PL"
-    )
+    other_co = _company(dbsession, user, "JsonSimCoOther", color="red", country="PL")
     sel_co.tags.append(tag)
     other_co.tags.append(tag)
     user.selected_companies.append(sel_co)
@@ -5446,9 +5440,7 @@ def test_user_map_selected_companies_similar_filters(dbsession):
     user = _user(dbsession, "mapsimco")
     tag = _tag(dbsession, user, "MapSimCoTag")
     sel_co = _company(dbsession, user, "MapSimCoSel", color="red", country="PL")
-    other_co = _company(
-        dbsession, user, "MapSimCoOther", color="red", country="PL"
-    )
+    other_co = _company(dbsession, user, "MapSimCoOther", color="red", country="PL")
     sel_co.tags.append(tag)
     other_co.tags.append(tag)
     user.selected_companies.append(sel_co)

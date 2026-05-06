@@ -2482,7 +2482,9 @@ def test_company_all_filter_tags_and_operator(dbsession):
     co_one = _co_company(dbsession, user, "CoANDCoOne")
     co_one.tags.append(tag1)
     transaction.commit()
-    params = MultiDict([("tag", "CoANDTag1"), ("tag", "CoANDTag2"), ("tag_operator", "and")])
+    params = MultiDict(
+        [("tag", "CoANDTag1"), ("tag", "CoANDTag2"), ("tag_operator", "and")]
+    )
     request = _co_request(dbsession, user, params=params)
     request.matched_route.name = "company_all"
     view = CompanyView(request)
@@ -2962,7 +2964,9 @@ def test_company_all_invalid_tag_operator(dbsession):
     "marker.views.company.company_autofill_from_website",
     return_value={"name": "ContExcCo", "country": "PL"},
 )
-def test_company_add_ai_contacts_exception(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_company_add_ai_contacts_exception(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover line 1843: exception in contacts_autofill_from_website is handled."""
     user = _co_user(dbsession, "coaicontexc")
     transaction.commit()
@@ -2983,13 +2987,17 @@ def test_company_add_ai_contacts_exception(mock_autofill, mock_contacts, mock_ta
 )
 @patch(
     "marker.views.company.contacts_autofill_from_website",
-    return_value=[{"name": "John Smith", "role": "CEO", "phone": "123", "email": "j@e.com"}],
+    return_value=[
+        {"name": "John Smith", "role": "CEO", "phone": "123", "email": "j@e.com"}
+    ],
 )
 @patch(
     "marker.views.company.company_autofill_from_website",
     return_value={"name": "ContactReturnCo", "country": "PL"},
 )
-def test_company_add_ai_contacts_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_company_add_ai_contacts_returned(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover lines 1841-1852: contacts_autofill returns contact data that is saved."""
     user = _co_user(dbsession, "coaicontret")
     transaction.commit()
@@ -3333,7 +3341,9 @@ def test_company_similar_bulk_select(dbsession):
     "marker.views.company.company_autofill_from_website",
     return_value={"name": "BlankContactCo", "country": "PL"},
 )
-def test_company_add_ai_contacts_blank_name(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_company_add_ai_contacts_blank_name(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover line 1843: continue when contact name is blank."""
     user = _co_user(dbsession, "coaiblankname")
     transaction.commit()
@@ -3388,6 +3398,7 @@ def test_company_all_filter_name(dbsession):
     _co_company(dbsession, user, "FilterNameCo")
     transaction.commit()
     from webob.multidict import MultiDict as WMultiDict
+
     request = _co_request(dbsession, user, params={"name": "FilterNameCo"})
     request.matched_route.name = "company_all"
     view = CompanyView(request)
@@ -3408,9 +3419,12 @@ def test_company_all_filter_name(dbsession):
     "marker.views.company.company_autofill_from_website",
     return_value={"name": "CoTagsRetCo", "country": "PL"},
 )
-def test_company_add_ai_tags_returned(mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession):
+def test_company_add_ai_tags_returned(
+    mock_autofill, mock_contacts, mock_tags, mock_geo, dbsession
+):
     """Cover lines 1865-1876: tags returned from autofill including pre-existing tag."""
     from marker.models.tag import Tag
+
     user = _co_user(dbsession, "coaitagsret")
     existing_tag = Tag(name="ExistCoTag")
     existing_tag.created_by = user

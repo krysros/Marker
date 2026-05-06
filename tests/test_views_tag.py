@@ -1662,6 +1662,7 @@ def test_tag_projects_date_to(dbsession):
 def test_tag_companies_role_param(dbsession):
     """Cover line 496: if role: q['role'] = role and lines 579-592 activity_values."""
     from decimal import Decimal
+
     from marker.models.association import Activity
 
     user = _make_user(dbsession, "tagcorole1")
@@ -1689,6 +1690,7 @@ def test_tag_companies_role_param(dbsession):
 def test_tag_export_companies_role(dbsession):
     """Cover lines 647-660, 672, 679-680: role in export_companies."""
     from decimal import Decimal
+
     from marker.models.association import Activity
 
     user = _make_user(dbsession, "tagcoexprole")
@@ -1715,6 +1717,7 @@ def test_tag_export_companies_role(dbsession):
 def test_tag_projects_role_param(dbsession):
     """Cover line 736: if role: q['role'] = role and lines 838-851 activity_values."""
     from decimal import Decimal
+
     from marker.models.association import Activity
 
     user = _make_user(dbsession, "tagprrole1")
@@ -1759,6 +1762,7 @@ def test_tag_projects_object_category(dbsession):
 def test_tag_export_projects_role(dbsession):
     """Cover lines 911-924, 940, 954-958: role in export_projects with usable_area."""
     from decimal import Decimal
+
     from marker.models.association import Activity
 
     user = _make_user(dbsession, "tagprexprole")
