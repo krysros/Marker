@@ -13,7 +13,7 @@ from ..forms.ts import TranslationString as _
 from .geo import location_details
 
 
-def _autofill_from_website(url, prompt, model="gemini-2.5-flash-lite"):
+def _autofill_from_website(url, prompt, model="gemini-2.5-flash-lite", default_country=""):
     """
     Shared logic for autofilling company or project data from a website.
     """
@@ -44,7 +44,13 @@ def _autofill_from_website(url, prompt, model="gemini-2.5-flash-lite"):
         result["street"] = street
 
     # Set country, subdivision, and postcode based on address using Nominatim
-    geo = location_details(**result)
+    # Pass only address-relevant fields to avoid confusing Nominatim with NIP, REGON, etc.
+    address_fields = {
+        k: v
+        for k, v in result.items()
+        if k in ("street", "postcode", "city", "subdivision", "country")
+    }
+    geo = location_details(**address_fields)
     if geo:
         # Autofill postcode if not provided by user
         if not result.get("postcode"):
@@ -59,27 +65,62 @@ def _autofill_from_website(url, prompt, model="gemini-2.5-flash-lite"):
         # Set country to country code (e.g. PL)
         if geo.get("country_code"):
             result["country"] = geo["country_code"].upper()
-        # Set subdivision (voivodeship/state) to ISO code if possible, otherwise use state name
+        # Set subdivision (voivodeship/state) to ISO code if possible
         if geo.get("state") and geo.get("country_code"):
             code = _subdivision_code_from_value(
                 geo["state"], geo["country_code"].upper()
             )
-            if code:
-                result["subdivision"] = code
-            else:
-                result["subdivision"] = geo["state"]
+            result["subdivision"] = code if code else ""
+
+    # Normalize country value to alpha_2 code; LLM may return "Poland", "Polska", etc.
+    # Fall back to default_country (derived from app locale) if value cannot be resolved.
+    country_val = (result.get("country") or "").strip()
+    if pycountry.countries.get(alpha_2=country_val.upper()):
+        result["country"] = country_val.upper()
+    else:
+        country_obj = None
+        if country_val:
+            try:
+                matches = pycountry.countries.search_fuzzy(country_val)
+                if matches:
+                    country_obj = matches[0]
+            except LookupError:
+                pass
+        result["country"] = country_obj.alpha_2 if country_obj else default_country
 
     return result
 
 
-def company_autofill_from_website(website, model="gemini-2.5-flash-lite"):
+def _country_from_locale(locale_str):
+    """Derive ISO alpha_2 country code from a locale string (e.g. 'pl' → 'PL', 'pl_PL' → 'PL').
+    First tries babel's territory (handles 'pl_PL', 'de_DE', etc.), then checks if the
+    uppercase language code is itself a valid country alpha_2 (covers 'pl'→'PL', 'de'→'DE', etc.).
+    Returns '' if the locale cannot be mapped to a country.
+    """
+    if not locale_str:
+        return ""
+    try:
+        from babel import Locale
+        locale = Locale.parse(locale_str, sep="_")
+        if locale.territory:
+            return locale.territory
+    except Exception:
+        pass
+    # Fallback: check if the language code is also a valid country code (pl→PL, de→DE, fr→FR…)
+    lang = locale_str.split("_")[0].split("-")[0].upper()
+    if pycountry.countries.get(alpha_2=lang):
+        return lang
+    return ""
+
+
+def company_autofill_from_website(website, model="gemini-2.5-flash-lite", default_country=""):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(website, prompt, model=model)
+    return _autofill_from_website(website, prompt, model=model, default_country=default_country)
 
 
-def project_autofill_from_website(website, model="gemini-2.5-flash-lite"):
+def project_autofill_from_website(website, model="gemini-2.5-flash-lite", default_country=""):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(website, prompt, model=model)
+    return _autofill_from_website(website, prompt, model=model, default_country=default_country)
 
 
 def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):

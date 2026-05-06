@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from marker.utils.website_autofill import (
+    _country_from_locale,
     _fold_text,
     _normalize_whitespace,
     _subdivision_code_from_value,
@@ -125,14 +126,85 @@ def test_autofill_geo_no_subdivision_code(mock_loader, mock_llm, mock_geo):
     }
     with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
         result = company_autofill_from_website("https://example.com")
-    # Falls back to state name when no ISO code found
-    assert result.get("subdivision") == "NonexistentState"
+    # Falls back to empty string when no ISO code found (raw state name would fail form validation)
+    assert result.get("subdivision") == ""
+
+
+def test_country_from_locale_bare_language():
+    # 'pl' has likely subtag PL
+    assert _country_from_locale("pl") == "PL"
+
+
+def test_country_from_locale_with_territory():
+    # 'pl_PL' already has territory
+    assert _country_from_locale("pl_PL") == "PL"
+
+
+def test_country_from_locale_empty():
+    assert _country_from_locale("") == ""
+
+
+def test_country_from_locale_invalid():
+    assert _country_from_locale("zzz_invalid") == ""
 
 
 def test_subdivision_code_partial_match():
     # Test that partial matching works (subdivision name contained in input)
     result = _subdivision_code_from_value("województwo mazowieckie", "PL")
     assert result == "PL-14"
+
+
+@patch("marker.utils.website_autofill.location_details")
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_country_full_name_normalized(mock_loader, mock_llm, mock_geo):
+    """LLM returns full country name (e.g. 'Poland') — should be normalized to alpha_2 'PL'."""
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Warsaw", "country": "Poland"}')
+    mock_geo.return_value = None
+    with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
+        result = company_autofill_from_website("https://example.com")
+    assert result["country"] == "PL"
+
+
+@patch("marker.utils.website_autofill.location_details")
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_country_empty_defaults_to_pl(mock_loader, mock_llm, mock_geo):
+    """LLM returns no country — with explicit default_country='PL' should return 'PL'."""
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Warsaw"}')
+    mock_geo.return_value = None
+    with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
+        result = company_autofill_from_website("https://example.com", default_country="PL")
+    assert result["country"] == "PL"
+
+
+@patch("marker.utils.website_autofill.location_details")
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_country_empty_no_default(mock_loader, mock_llm, mock_geo):
+    """LLM returns no country and no default_country — should return empty string."""
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "city": "Warsaw"}')
+    mock_geo.return_value = None
+    with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
+        result = company_autofill_from_website("https://example.com")
+    assert result["country"] == ""
+
+
+@patch("marker.utils.website_autofill.location_details")
+@patch("langchain_google_genai.ChatGoogleGenerativeAI.invoke")
+@patch("langchain_community.document_loaders.WebBaseLoader.load")
+def test_autofill_country_lookup_error_defaults_to_pl(mock_loader, mock_llm, mock_geo):
+    """LLM returns unrecognizable country and fuzzy search raises LookupError — falls back to default_country."""
+    mock_loader.return_value = [MagicMock(page_content="test page content")]
+    mock_llm.return_value = MagicMock(content='{"name": "Co", "country": "xyzzy_not_a_country"}')
+    mock_geo.return_value = None
+    with patch("pycountry.countries.search_fuzzy", side_effect=LookupError):
+        with patch.dict("os.environ", {"GEMINI_API_KEY": "fake"}):
+            result = company_autofill_from_website("https://example.com", default_country="PL")
+    assert result["country"] == "PL"
 
 
 def test_subdivision_code_fuzzy_contained_match():
