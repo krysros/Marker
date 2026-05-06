@@ -14,14 +14,35 @@
 
 <hr>
 
+<%def name="preserve_params(exclude)">
+<%
+  skip = set(exclude)
+%>
+% for k, v in q.items():
+  % if k not in skip:
+    % if isinstance(v, list):
+      % for item in v:
+        <input type="hidden" name="${k}" value="${item}">
+      % endfor
+    % elif v is not None and str(v) != '':
+      <input type="hidden" name="${k}" value="${v}">
+    % endif
+  % endif
+% endfor
+</%def>
+
 <div class="hstack gap-2 mb-4 d-flex flex-wrap">
   <div class="dropdown">
     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-      <i class="bi bi-filter"></i> ${_("Filter")}
+      % if q.get('object_category') or q.get('stage') or q.get('role'):
+        <i class="bi bi-tag-fill"></i>
+      % else:
+        <i class="bi bi-tag"></i>
+      % endif
+      ${_("Category")}
     </button>
-    <form class="dropdown-menu p-4" style="min-width: 340px;" method="get">
-      <input type="hidden" name="sort" value="${q.get('sort', 'project_name')}">
-      <input type="hidden" name="order" value="${q.get('order', 'asc')}">
+    <form class="dropdown-menu p-3" style="min-width: 280px;" method="get">
+      ${preserve_params({'object_category', 'stage', 'role'})}
       <div class="mb-3">
         <label for="prices-filter-object-category" class="form-label">${_("Object category")}</label>
         <select id="prices-filter-object-category" class="form-select" name="object_category">
@@ -49,8 +70,25 @@
           % endfor
         </select>
       </div>
+      <div class="hstack gap-2">
+        <button type="submit" class="btn btn-primary btn-sm">${_("Submit")}</button>
+        <% clear_q = {k: v for k, v in q.items() if k not in ('object_category', 'stage', 'role')} %>
+        <a class="btn btn-outline-secondary btn-sm" href="${request.current_route_url(_query=clear_q)}">${_("Clear")}</a>
+      </div>
+    </form>
+  </div>
+  <div class="dropdown">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+      % if q.get('currency') or q.get('value_net_from') or q.get('value_net_to') or q.get('value_gross_from') or q.get('value_gross_to') or q.get('unit_price_net_from') or q.get('unit_price_net_to') or q.get('unit_price_gross_from') or q.get('unit_price_gross_to'):
+        <i class="bi bi-cash-fill"></i>
+      % else:
+        <i class="bi bi-cash"></i>
+      % endif
+      ${_("Value")}
+    </button>
+    <form class="dropdown-menu p-3" style="min-width: 320px;" method="get">
+      ${preserve_params({'currency', 'value_net_from', 'value_net_to', 'value_gross_from', 'value_gross_to', 'unit_price_net_from', 'unit_price_net_to', 'unit_price_gross_from', 'unit_price_gross_to'})}
       <div class="mb-3">
-
         <label for="prices-filter-currency" class="form-label">${_("Currency")}</label>
         <select id="prices-filter-currency" class="form-select" name="currency">
           % for v, l in currency_choices:
@@ -87,8 +125,9 @@
         </div>
       </div>
       <div class="hstack gap-2">
-        <button type="submit" class="btn btn-primary">${_("Submit")}</button>
-        <a class="btn btn-outline-secondary" href="${request.route_url('prices_all')}">${_("Clear")}</a>
+        <button type="submit" class="btn btn-primary btn-sm">${_("Submit")}</button>
+        <% clear_q = {k: v for k, v in q.items() if k not in ('currency', 'value_net_from', 'value_net_to', 'value_gross_from', 'value_gross_to', 'unit_price_net_from', 'unit_price_net_to', 'unit_price_gross_from', 'unit_price_gross_to')} %>
+        <a class="btn btn-outline-secondary btn-sm" href="${request.current_route_url(_query=clear_q)}">${_("Clear")}</a>
       </div>
     </form>
   </div>

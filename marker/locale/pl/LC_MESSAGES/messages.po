@@ -2352,3 +2352,9 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 msgid "The user %s cleared projects with a star"
 msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 
+
+msgid "Location"
+msgstr "Lokalizacja"
+
+msgid "Parameters"
+msgstr "Parametry"
