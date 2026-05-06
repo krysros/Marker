@@ -1317,11 +1317,12 @@ class ProjectView:
     def website_autofill(self):
         _ = self.request.translate
         website = self.request.params.get("website", "")
-        model = (getattr(self.request.registry, "settings", None) or {}).get(
-            "gemini.model", "gemini-2.5-flash-lite"
-        )
+        settings = (getattr(self.request.registry, "settings", None) or {})
+        model = settings.get("gemini.model", "gemini-2.5-flash-lite")
+        from ..utils.website_autofill import _country_from_locale
+        default_country = _country_from_locale(settings.get("pyramid.default_locale_name", ""))
         try:
-            fields = project_autofill_from_website(website, model=model)
+            fields = project_autofill_from_website(website, model=model, default_country=default_country)
         except Exception as e:
             log.error("project_website_autofill error: %s", e)
             error_msg = str(e)
