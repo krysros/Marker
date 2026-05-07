@@ -1,3 +1,22 @@
+3.0
+---
+
+- Added vCard import for contacts with duplicate detection, tag assignment and comprehensive automated tests
+- Improved vCard export quality
+- Added unassigned contacts view with filtering to list contacts not linked to any company or project
+- Added column selection for XLSX/ODS exports across all list and selected views
+- Added interactive charts to report views
+- Added progress bar during lazy loading of map markers
+- Added selection checkboxes to Leaflet marker popups in company and project map views
+- Added relationships context to Gemini/LangChain SQL prompt generation
+- Improved uptime view with pagination and performance optimizations
+- Improved similar companies and similar projects views
+- Improved AI-assisted website autofill with better field extraction
+- Improved Bootstrap 5.3.8 compatibility
+- Refactored Mako templates by folding partial templates into named defs
+- UI improvements: navigation layout, filter dropdowns, import button as dropdown, smaller dropdowns and various polish
+- Updated Polish translations
+
 2.9
 ---
 
