@@ -18,7 +18,8 @@
   <div class="vr mx-1"></div>
   ${button.dropdown_sort(sort_criteria)}
   ${button.dropdown_order(order_criteria)}
-  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="vr mx-1"></div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_contacts', username=user.name, _query=q)}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_contacts_companies', username=user.name, _query=q)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_contacts_projects', username=user.name, _query=q)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>

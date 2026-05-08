@@ -11,7 +11,7 @@
 <p class="lead">${user.fullname}</p>
 
 <div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
-  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_companies', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_map_companies', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
   </div>
