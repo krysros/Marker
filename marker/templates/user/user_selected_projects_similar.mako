@@ -9,10 +9,12 @@
 </div>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <%include file="project_filter.mako"/>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
+  <div class="vr mx-1"></div>
+  ${button.dropdown_sort(sort_criteria)}
+  ${button.dropdown_order(order_criteria)}
+  <div class="vr mx-1"></div>
   <a class="btn btn-sm btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
     <a class="btn ${'btn-primary' if tag_operator == 'or' else 'btn-outline-primary'}"

@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(tag_pills, active_url=request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug))}</div>
   <div>${button.a(icon='table', color='secondary', url=request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug, _query=q))}</div>
   <% from marker.utils.export_columns import tag_project_cols; _export_cols = tag_project_cols(_) %>

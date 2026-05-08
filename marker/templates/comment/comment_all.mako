@@ -11,8 +11,7 @@
 
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
-  <%include file="comment_filter.mako"/>
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>
 

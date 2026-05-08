@@ -14,7 +14,7 @@
 
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <%include file="contact_unassigned_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
