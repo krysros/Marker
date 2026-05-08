@@ -674,6 +674,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_uptime_selected_companies_similar",
+        "/user/{username}/uptime_selected_companies_similar",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_companies_similar_rows",
+        "/user/{username}/uptime_selected_companies_similar_rows",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_json_selected_companies",
         "/user/{username}/json_selected_companies",
         factory=user_factory,
@@ -686,6 +696,16 @@ def includeme(config):
     config.add_route(
         "user_export_selected_companies",
         "/user/{username}/export_selected_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_companies",
+        "/user/{username}/uptime_selected_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_companies_rows",
+        "/user/{username}/uptime_selected_companies_rows",
         factory=user_factory,
     )
     config.add_route(
@@ -739,6 +759,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_uptime_selected_projects_similar",
+        "/user/{username}/uptime_selected_projects_similar",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_projects_similar_rows",
+        "/user/{username}/uptime_selected_projects_similar_rows",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_json_selected_projects",
         "/user/{username}/json_selected_projects",
         factory=user_factory,
@@ -751,6 +781,16 @@ def includeme(config):
     config.add_route(
         "user_export_selected_projects",
         "/user/{username}/export_selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_projects",
+        "/user/{username}/uptime_selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_projects_rows",
+        "/user/{username}/uptime_selected_projects_rows",
         factory=user_factory,
     )
     config.add_route(
@@ -972,6 +1012,26 @@ def includeme(config):
     config.add_route(
         "user_map_projects",
         r"/user/{username}/map_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_companies",
+        r"/user/{username}/uptime_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_companies_rows",
+        r"/user/{username}/uptime_companies_rows",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_projects",
+        r"/user/{username}/uptime_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_projects_rows",
+        r"/user/{username}/uptime_projects_rows",
         factory=user_factory,
     )
     config.add_route(
