@@ -382,6 +382,16 @@ def includeme(config):
         factory=tag_factory,
     )
     config.add_route(
+        "tag_uptime_companies",
+        r"/tag/{tag_id:\d+}/{slug}/uptime_companies",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_uptime_companies_rows",
+        r"/tag/{tag_id:\d+}/{slug}/uptime_companies_rows",
+        factory=tag_factory,
+    )
+    config.add_route(
         "tag_export_companies",
         r"/tag/{tag_id:\d+}/{slug}/export_companies",
         factory=tag_factory,
@@ -404,6 +414,16 @@ def includeme(config):
     config.add_route(
         "tag_map_projects",
         r"/tag/{tag_id:\d+}/{slug}/map_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_uptime_projects",
+        r"/tag/{tag_id:\d+}/{slug}/uptime_projects",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_uptime_projects_rows",
+        r"/tag/{tag_id:\d+}/{slug}/uptime_projects_rows",
         factory=tag_factory,
     )
     config.add_route(

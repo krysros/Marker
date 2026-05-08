@@ -38,6 +38,7 @@ from ..models import (
 )
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
+from ..utils.uptime import check_website_uptime, render_uptime_badge
 from . import (
     Filter,
     apply_order,
@@ -268,6 +269,47 @@ class TagView:
         return {"tag": tag, "url": url, "q": q, "tag_pills": self.pills(tag)}
 
     @view_config(
+        route_name="tag_uptime_companies",
+        renderer="tag_uptime_companies.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="tag_uptime_companies_rows",
+        renderer="tag_uptime_companies_rows.mako",
+        permission="view",
+    )
+    def uptime_companies(self):
+        tag = self.request.context.tag
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Company)
+            .filter(
+                Company.tags.any(name=tag.name),
+                Company.website.isnot(None),
+                Company.website != "",
+            )
+            .order_by(Company.name)
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "tag_uptime_companies_rows",
+            tag_id=tag.id,
+            slug=tag.slug,
+            _query={"page": page + 1},
+        )
+        return {
+            "tag": tag,
+            "paginator": paginator,
+            "next_page": next_page,
+            "page": page,
+            "tag_pills": self.pills(tag),
+        }
+
+    @view_config(
         route_name="tag_map_projects",
         renderer="tag_map_projects.mako",
         permission="view",
@@ -325,6 +367,47 @@ class TagView:
             "tag_json_projects", tag_id=tag.id, slug=tag.slug, _query=q
         )
         return {"tag": tag, "url": url, "q": q, "tag_pills": self.pills(tag)}
+
+    @view_config(
+        route_name="tag_uptime_projects",
+        renderer="tag_uptime_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="tag_uptime_projects_rows",
+        renderer="tag_uptime_projects_rows.mako",
+        permission="view",
+    )
+    def uptime_projects(self):
+        tag = self.request.context.tag
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Project)
+            .filter(
+                Project.tags.any(name=tag.name),
+                Project.website.isnot(None),
+                Project.website != "",
+            )
+            .order_by(Project.name)
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "tag_uptime_projects_rows",
+            tag_id=tag.id,
+            slug=tag.slug,
+            _query={"page": page + 1},
+        )
+        return {
+            "tag": tag,
+            "paginator": paginator,
+            "next_page": next_page,
+            "page": page,
+            "tag_pills": self.pills(tag),
+        }
 
     @view_config(
         route_name="tag_json_companies",
