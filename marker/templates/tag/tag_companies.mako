@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(tag_pills, active_url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug))}</div>
   <% from marker.utils.export_columns import tag_company_cols; _export_cols = tag_company_cols(_) %>
   <div>${button.dropdown_download_cols(request.route_url('tag_export_companies', tag_id=tag.id, slug=tag.slug, _query=q), _export_cols)}</div>
@@ -17,7 +17,7 @@
 
 <%include file="tag_lead.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <%include file="company_filter.mako"/>
   ${button.dropdown_filter('role', _("Role"), role_choices)}
   <div class="vr mx-1"></div>

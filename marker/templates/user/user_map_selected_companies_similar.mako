@@ -9,7 +9,7 @@
 </div>
 <hr>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <a class="btn btn-sm btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
     <a class="btn ${'btn-primary' if q.get('tag_operator') == 'or' else 'btn-outline-primary'}"

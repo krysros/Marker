@@ -3,14 +3,14 @@
 <%namespace name="pills" file="pills.mako"/>
 <%! from marker.utils.export_columns import project_cols %>
 <% _export_cols = project_cols(_) %>
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_projects', username=user.name))}</div>
   <div>${button.dropdown_download_cols(request.route_url('user_export_projects', username=user.name, _query=q), _export_cols)}</div>
 </div>
 
 <p class="lead">${user.fullname}</p>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <%include file="project_filter.mako"/>
   <div class="vr mx-1"></div>
   ${button.dropdown_sort(sort_criteria)}

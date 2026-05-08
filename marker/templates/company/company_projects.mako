@@ -3,7 +3,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(company_pills)}</div>
     % else:
     <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
@@ -13,7 +13,7 @@
 
 <%include file="company_lead.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   ${button.dropdown_filter('stage', _('Stage'), filter_stages)}
   ${button.dropdown_filter('role', _('Role'), filter_roles)}
   ${button.dropdown_sort(sort_criteria)}
