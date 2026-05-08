@@ -12,6 +12,7 @@
 <hr>
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
+  <%include file="comment_filter.mako"/>
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>
 

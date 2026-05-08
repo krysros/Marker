@@ -1786,3 +1786,71 @@ def test_tag_export_projects_role(dbsession):
     view = TagView(request)
     result = view.export_projects()
     assert "vnd.openxmlformats-officedocument" in result.content_type
+
+
+def test_tag_uptime_companies(dbsession):
+    """Cover tag uptime_companies view (lines 282-304)."""
+    user = _make_user(dbsession, "tagucuser")
+    tag = _make_tag(dbsession, user, "TagUcTag")
+    co = _make_company(dbsession, user, "TagUcCo")
+    co.website = "https://example.com"
+    tag.companies.append(co)
+    tag_id = tag.id
+    transaction.commit()
+    tag = dbsession.get(Tag, tag_id)
+    request = _make_request(dbsession, user, tag=tag, params={})
+    view = TagView(request)
+    result = view.uptime_companies()
+    assert result["tag"] == tag
+    assert len(result["paginator"]) > 0
+    assert result["page"] == 1
+
+
+def test_tag_uptime_companies_page2(dbsession):
+    """Cover tag uptime_companies view with pagination."""
+    user = _make_user(dbsession, "tagucpage2user")
+    tag = _make_tag(dbsession, user, "TagUcPage2Tag")
+    co = _make_company(dbsession, user, "TagUcPage2Co")
+    co.website = "https://example.com"
+    tag.companies.append(co)
+    tag_id = tag.id
+    transaction.commit()
+    tag = dbsession.get(Tag, tag_id)
+    request = _make_request(dbsession, user, tag=tag, params={"page": "2"})
+    view = TagView(request)
+    result = view.uptime_companies()
+    assert result["page"] == 2
+
+
+def test_tag_uptime_projects(dbsession):
+    """Cover tag uptime_projects view (lines 382-404)."""
+    user = _make_user(dbsession, "tagupuser")
+    tag = _make_tag(dbsession, user, "TagUpTag")
+    proj = _make_project(dbsession, user, "TagUpProj")
+    proj.website = "https://example.com"
+    tag.projects.append(proj)
+    tag_id = tag.id
+    transaction.commit()
+    tag = dbsession.get(Tag, tag_id)
+    request = _make_request(dbsession, user, tag=tag, params={})
+    view = TagView(request)
+    result = view.uptime_projects()
+    assert result["tag"] == tag
+    assert len(result["paginator"]) > 0
+    assert result["page"] == 1
+
+
+def test_tag_uptime_projects_page2(dbsession):
+    """Cover tag uptime_projects view with pagination."""
+    user = _make_user(dbsession, "taguppage2user")
+    tag = _make_tag(dbsession, user, "TagUpPage2Tag")
+    proj = _make_project(dbsession, user, "TagUpPage2Proj")
+    proj.website = "https://example.com"
+    tag.projects.append(proj)
+    tag_id = tag.id
+    transaction.commit()
+    tag = dbsession.get(Tag, tag_id)
+    request = _make_request(dbsession, user, tag=tag, params={"page": "2"})
+    view = TagView(request)
+    result = view.uptime_projects()
+    assert result["page"] == 2

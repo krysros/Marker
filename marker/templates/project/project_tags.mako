@@ -5,10 +5,11 @@
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(project_pills)}</div>
-    % else:
-    <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
-    % endif
-  </div>
+% if request.identity.role == 'editor' or 'admin':
+  <a href="${request.route_url('project_add_tag', project_id=project.id, slug=project.slug)}" class="btn btn-success"><i class="bi bi-plus-lg"></i></a>
+% else:
+  <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
+% endif
 </div>
 
 <%include file="project_lead.mako"/>

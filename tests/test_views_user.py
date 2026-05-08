@@ -5694,3 +5694,319 @@ def test_user_map_selected_projects_similar_invalid_operator_fallback(dbsession)
 
     assert result["q"]["tag_operator"] == "or"
     assert isinstance(result["counter"], int)
+
+
+# ===========================================================================
+# uptime_selected_companies_similar() (lines 2300-2377)
+# ===========================================================================
+
+
+def test_user_uptime_selected_companies_similar_or(dbsession):
+    user = _user(dbsession, "uptselcosimor")
+    tag = _tag(dbsession, user, "UptSelCoSimOrTag")
+    sel_co = _company(dbsession, user, "UptSelCoSimOrSel")
+    other_co = _company(dbsession, user, "UptSelCoSimOrOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "or"})
+    view = UserView(request)
+    result = view.uptime_selected_companies_similar()
+
+    assert "paginator" in result
+    assert result["tag_operator"] == "or"
+    assert result["page"] == 1
+
+
+def test_user_uptime_selected_companies_similar_and(dbsession):
+    user = _user(dbsession, "uptselcosimand")
+    tag = _tag(dbsession, user, "UptSelCoSimAndTag")
+    sel_co = _company(dbsession, user, "UptSelCoSimAndSel")
+    other_co = _company(dbsession, user, "UptSelCoSimAndOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "and", "page": "2"})
+    view = UserView(request)
+    result = view.uptime_selected_companies_similar()
+
+    assert "paginator" in result
+    assert result["tag_operator"] == "and"
+    assert result["page"] == 2
+
+
+def test_user_uptime_selected_companies_similar_invalid_operator(dbsession):
+    user = _user(dbsession, "uptselcosimInv")
+    tag = _tag(dbsession, user, "UptSelCoSimInvTag")
+    sel_co = _company(dbsession, user, "UptSelCoSimInvSel")
+    other_co = _company(dbsession, user, "UptSelCoSimInvOther")
+    sel_co.tags.append(tag)
+    other_co.tags.append(tag)
+    user.selected_companies.append(sel_co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.uptime_selected_companies_similar()
+
+    assert "paginator" in result
+    assert result["tag_operator"] == "or"
+
+
+# ===========================================================================
+# uptime_selected_companies() (lines 2517-2539)
+# ===========================================================================
+
+
+def test_user_uptime_selected_companies(dbsession):
+    user = _user(dbsession, "uptselco")
+    co = _company(dbsession, user, "UptSelCo")
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.uptime_selected_companies()
+
+    assert "paginator" in result
+    assert result["page"] == 1
+
+
+def test_user_uptime_selected_companies_page2(dbsession):
+    user = _user(dbsession, "uptselcop2")
+    co = _company(dbsession, user, "UptSelCoP2")
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"page": "2"})
+    view = UserView(request)
+    result = view.uptime_selected_companies()
+
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
+# ===========================================================================
+# uptime_selected_projects_similar() (lines 3172-3249)
+# ===========================================================================
+
+
+def test_user_uptime_selected_projects_similar_or(dbsession):
+    user = _user(dbsession, "uptselprjsimor")
+    tag = _tag(dbsession, user, "UptSelPrjSimOrTag")
+    sel_prj = _project(dbsession, user, "UptSelPrjSimOrSel")
+    other_prj = _project(dbsession, user, "UptSelPrjSimOrOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "or"})
+    view = UserView(request)
+    result = view.uptime_selected_projects_similar()
+
+    assert "paginator" in result
+    assert result["tag_operator"] == "or"
+    assert result["page"] == 1
+
+
+def test_user_uptime_selected_projects_similar_and(dbsession):
+    user = _user(dbsession, "uptselprjsimand")
+    tag = _tag(dbsession, user, "UptSelPrjSimAndTag")
+    sel_prj = _project(dbsession, user, "UptSelPrjSimAndSel")
+    other_prj = _project(dbsession, user, "UptSelPrjSimAndOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "and", "page": "2"})
+    view = UserView(request)
+    result = view.uptime_selected_projects_similar()
+
+    assert "paginator" in result
+    assert result["tag_operator"] == "and"
+    assert result["page"] == 2
+
+
+def test_user_uptime_selected_projects_similar_invalid_operator(dbsession):
+    user = _user(dbsession, "uptselprjsimInv")
+    tag = _tag(dbsession, user, "UptSelPrjSimInvTag")
+    sel_prj = _project(dbsession, user, "UptSelPrjSimInvSel")
+    other_prj = _project(dbsession, user, "UptSelPrjSimInvOther")
+    sel_prj.tags.append(tag)
+    other_prj.tags.append(tag)
+    user.selected_projects.append(sel_prj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"tag_operator": "invalid"})
+    view = UserView(request)
+    result = view.uptime_selected_projects_similar()
+
+    assert "paginator" in result
+    assert result["tag_operator"] == "or"
+
+
+# ===========================================================================
+# uptime_selected_projects() (lines 3426-3448)
+# ===========================================================================
+
+
+def test_user_uptime_selected_projects(dbsession):
+    user = _user(dbsession, "uptselprj")
+    proj = _project(dbsession, user, "UptSelPrj")
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.uptime_selected_projects()
+
+    assert "paginator" in result
+    assert result["page"] == 1
+
+
+def test_user_uptime_selected_projects_page2(dbsession):
+    user = _user(dbsession, "uptselprjp2")
+    proj = _project(dbsession, user, "UptSelPrjP2")
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"page": "2"})
+    view = UserView(request)
+    result = view.uptime_selected_projects()
+
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
+# ===========================================================================
+# uptime_companies_stars() (lines 5303-5322)
+# ===========================================================================
+
+
+def test_user_uptime_companies_stars(dbsession):
+    user = _user(dbsession, "uptcostar")
+    co = _company(dbsession, user, "UptCoStar")
+    user.companies_stars.append(co)
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.uptime_companies_stars()
+
+    assert "paginator" in result
+    assert result["page"] == 1
+
+
+def test_user_uptime_companies_stars_page2(dbsession):
+    user = _user(dbsession, "uptcostarp2")
+    co = _company(dbsession, user, "UptCoStarP2")
+    user.companies_stars.append(co)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"page": "2"})
+    view = UserView(request)
+    result = view.uptime_companies_stars()
+
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
+# ===========================================================================
+# uptime_projects_stars() (lines 5597-5616)
+# ===========================================================================
+
+
+def test_user_uptime_projects_stars(dbsession):
+    user = _user(dbsession, "uptprjstar")
+    proj = _project(dbsession, user, "UptPrjStar")
+    user.projects_stars.append(proj)
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.uptime_projects_stars()
+
+    assert "paginator" in result
+    assert result["page"] == 1
+
+
+def test_user_uptime_projects_stars_page2(dbsession):
+    user = _user(dbsession, "uptprjstarp2")
+    proj = _project(dbsession, user, "UptPrjStarP2")
+    user.projects_stars.append(proj)
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"page": "2"})
+    view = UserView(request)
+    result = view.uptime_projects_stars()
+
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
+# ===========================================================================
+# uptime_companies() (lines 5694-5715)
+# ===========================================================================
+
+
+def test_user_uptime_companies(dbsession):
+    user = _user(dbsession, "uptco")
+    _company(dbsession, user, "UptCo")
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.uptime_companies()
+
+    assert "paginator" in result
+    assert result["page"] == 1
+
+
+def test_user_uptime_companies_page2(dbsession):
+    user = _user(dbsession, "uptcop2")
+    _company(dbsession, user, "UptCoP2")
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"page": "2"})
+    view = UserView(request)
+    result = view.uptime_companies()
+
+    assert "paginator" in result
+    assert result["page"] == 2
+
+
+# ===========================================================================
+# uptime_projects() (lines 5734-5755)
+# ===========================================================================
+
+
+def test_user_uptime_projects(dbsession):
+    user = _user(dbsession, "uptprj")
+    _project(dbsession, user, "UptPrj")
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    result = view.uptime_projects()
+
+    assert "paginator" in result
+    assert result["page"] == 1
+
+
+def test_user_uptime_projects_page2(dbsession):
+    user = _user(dbsession, "uptprjp2")
+    _project(dbsession, user, "UptPrjP2")
+    transaction.commit()
+
+    request = _req(dbsession, user, params={"page": "2"})
+    view = UserView(request)
+    result = view.uptime_projects()
+
+    assert "paginator" in result
+    assert result["page"] == 2
