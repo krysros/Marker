@@ -13,6 +13,7 @@
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <%include file="tag_filter.mako"/>
+  <div class="vr mx-1"></div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>

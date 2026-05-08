@@ -36,6 +36,7 @@
       <button type="submit" class="btn btn-primary">${_("Submit")}</button>
     </form>
   </div>
+  <div class="vr mx-1"></div>
   ${button.dropdown_sort(sort_criteria)}
   ${button.dropdown_order(order_criteria)}
 </div>
