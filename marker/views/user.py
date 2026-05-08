@@ -5290,6 +5290,38 @@ class UserView:
         return {"user": user, "url": url, "counter": counter}
 
     @view_config(
+        route_name="user_uptime_companies_stars",
+        renderer="user_uptime_companies_stars.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_uptime_companies_stars_rows",
+        renderer="user_uptime_companies_stars_rows.mako",
+        permission="view",
+    )
+    def uptime_companies_stars(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Company)
+            .join(companies_stars)
+            .filter(user.id == companies_stars.c.user_id)
+            .filter(Company.website != None)
+            .filter(Company.website != "")
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "user_uptime_companies_stars_rows",
+            username=user.name,
+            _query={"page": page + 1},
+        )
+        return {"user": user, "paginator": paginator, "next_page": next_page, "page": page}
+
+    @view_config(
         route_name="user_projects_stars",
         renderer="user_projects_stars.mako",
         permission="view",
@@ -5550,6 +5582,38 @@ class UserView:
         ).scalar()
         url = self.request.route_url("user_json_projects_stars", username=user.name)
         return {"user": user, "url": url, "counter": counter}
+
+    @view_config(
+        route_name="user_uptime_projects_stars",
+        renderer="user_uptime_projects_stars.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_uptime_projects_stars_rows",
+        renderer="user_uptime_projects_stars_rows.mako",
+        permission="view",
+    )
+    def uptime_projects_stars(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Project)
+            .join(projects_stars)
+            .filter(user.id == projects_stars.c.user_id)
+            .filter(Project.website != None)
+            .filter(Project.website != "")
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "user_uptime_projects_stars_rows",
+            username=user.name,
+            _query={"page": page + 1},
+        )
+        return {"user": user, "paginator": paginator, "next_page": next_page, "page": page}
 
     @view_config(
         route_name="user_count_companies",

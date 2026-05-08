@@ -952,6 +952,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_uptime_companies_stars",
+        "/user/{username}/uptime_companies_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_companies_stars_rows",
+        "/user/{username}/uptime_companies_stars_rows",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_projects_stars", "/user/{username}/projects_stars", factory=user_factory
     )
     config.add_route(
@@ -977,6 +987,16 @@ def includeme(config):
     config.add_route(
         "user_clear_projects_stars",
         "/user/{username}/clear_projects_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_projects_stars",
+        "/user/{username}/uptime_projects_stars",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_projects_stars_rows",
+        "/user/{username}/uptime_projects_stars_rows",
         factory=user_factory,
     )
     config.add_route(

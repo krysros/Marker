@@ -7,13 +7,20 @@
     <span class="badge bg-secondary">${counter}</span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
-    ${button.a(icon='table', color='secondary', url=request.route_url('user_projects_stars', username=user.name))}
     ${button.button(icon='star', color='warning', url=request.route_url('user_clear_projects_stars', username=user.name))}
     <% from marker.utils.export_columns import project_cols; _export_cols = project_cols(_) %>
-    ${button.dropdown_download_cols(request.route_url('user_export_projects_stars', username=user.name, _query=q), _export_cols)}
+    ${button.dropdown_download_cols(request.route_url('user_export_projects_stars', username=user.name), _export_cols)}
   </div>
 </div>
 <hr>
+
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
+    <a class="btn btn-outline-primary" href="${request.route_url('user_projects_stars', username=user.name)}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn btn-primary" href="${request.route_url('user_map_projects_stars', username=user.name)}"><i class="bi bi-map"></i> ${_("Map")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_projects_stars', username=user.name)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
+  </div>
+</div>
 
 <div id="map"></div>
 
