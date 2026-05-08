@@ -22,7 +22,8 @@
     <a class="btn ${'btn-primary' if tag_operator == 'and' else 'btn-outline-primary'}"
        href="${request.route_url('user_selected_companies_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'and'})}">AND</a>
   </div>
-  <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
+  <div class="vr mx-1"></div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-primary" href="${request.route_url('user_selected_companies_similar', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_map_selected_companies_similar', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
   </div>

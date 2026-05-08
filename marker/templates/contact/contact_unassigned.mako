@@ -18,11 +18,10 @@
   <%include file="contact_unassigned_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
-  <div class="ms-auto">
-    <div class="btn-group btn-group-sm" role="group">
-      <a class="btn btn-outline-primary btn-sm" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> ${_("All")}</a>
-      <a class="btn btn-primary btn-sm" href="${request.route_url('contact_unassigned')}"><i class="bi bi-person-x"></i> ${_("Unassigned")}</a>
-    </div>
+  <div class="vr mx-1"></div>
+  <div class="btn-group btn-group-sm" role="group">
+    <a class="btn btn-outline-primary btn-sm" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> ${_("All")}</a>
+    <a class="btn btn-primary btn-sm" href="${request.route_url('contact_unassigned')}"><i class="bi bi-person-x"></i> ${_("Unassigned")}</a>
   </div>
 </div>
 
