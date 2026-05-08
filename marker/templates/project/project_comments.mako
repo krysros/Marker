@@ -2,7 +2,7 @@
 <%namespace name="pills" file="pills.mako"/>
 <%namespace name="button" file="button.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(project_pills)}</div>
     % else:
     <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
@@ -12,7 +12,7 @@
 
 <%include file="project_lead.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   ${button.dropdown_sort(sort_criteria)}
   ${button.dropdown_order(order_criteria)}
 </div>

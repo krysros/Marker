@@ -11,7 +11,7 @@
 </h2>
 <hr>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <%include file="tag_filter.mako"/>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>

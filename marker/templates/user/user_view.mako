@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(user_pills)}</div>
   <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('user_edit', username=user.name))}</div>
   <div class="btn-group" role="group" aria-label="${_('Delete user options')}">

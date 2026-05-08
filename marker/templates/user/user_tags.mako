@@ -4,14 +4,14 @@
 
 <%! from marker.utils.export_columns import tag_company_cols, tag_project_cols %>
 <% _export_cols = tag_project_cols(_) if q.get('category') == 'projects' else tag_company_cols(_) %>
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_tags', username=user.name))}</div>
   <div>${button.dropdown_download_cols(request.route_url('user_export_tags', username=user.name, _query=q), _export_cols)}</div>
 </div>
 
 <p class="lead">${user.fullname}</p>
 
-<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="dropdown">
     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       <i class="bi bi-filter"></i> ${_("Filter")}
