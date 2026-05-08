@@ -2,7 +2,7 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(tag_pills, active_url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug))}</div>
   <div>${button.a(icon='map', color='secondary', url=request.route_url('tag_map_companies', tag_id=tag.id, slug=tag.slug, _query=q))}</div>
   <% from marker.utils.export_columns import tag_company_cols; _export_cols = tag_company_cols(_) %>
@@ -18,11 +18,12 @@
 
 <%include file="tag_lead.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <%include file="company_filter.mako"/>
-  <div>${button.dropdown_filter('role', _("Role"), role_choices)}</div>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div class="me-auto">${button.dropdown_order(order_criteria)}</div>
+  ${button.dropdown_filter('role', _("Role"), role_choices)}
+  <div class="vr mx-1"></div>
+  ${button.dropdown_sort(sort_criteria)}
+  ${button.dropdown_order(order_criteria)}
 </div>
 
 <%include file="company_table.mako"/>

@@ -6,7 +6,7 @@
   from urllib.parse import urlparse
 %>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(company_pills)}</div>
   <div>${button.company_star(company)}</div>
   <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}</div>

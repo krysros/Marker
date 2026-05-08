@@ -4,11 +4,8 @@
 <%namespace name="checkbox" file="checkbox.mako"/>
 <%namespace name="ct" file="contact_table.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(project_pills)}</div>
-  <div>
-    % if request.identity.role == 'editor' or 'admin':
-    ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add_contact', project_id=project.id, slug=project.slug))}
     % else:
     <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
     % endif
@@ -17,9 +14,9 @@
 
 <%include file="project_lead.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+  ${button.dropdown_sort(sort_criteria)}
+  ${button.dropdown_order(order_criteria)}
 </div>
 
 <div class="table-responsive">

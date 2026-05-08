@@ -14,10 +14,12 @@
 </div>
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <%include file="project_filter.mako"/>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
+  <div class="vr mx-1"></div>
+  ${button.dropdown_sort(sort_criteria)}
+  ${button.dropdown_order(order_criteria)}
+  <div class="vr mx-1"></div>
   <a class="btn btn-sm btn-outline-secondary" href="${request.route_url('user_selected_projects_similar', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
   <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-primary" href="${request.route_url('user_selected_projects', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>

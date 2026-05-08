@@ -14,10 +14,11 @@
 
 <hr>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <%include file="contact_filter.mako"/>
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
+  <div class="vr mx-1"></div>
+  ${button.dropdown_sort(sort_criteria)}
+  ${button.dropdown_order(order_criteria)}
   <div class="ms-auto">
     <div class="btn-group btn-group-sm" role="group">
       <a class="btn btn-primary btn-sm" href="${request.route_url('contact_all')}"><i class="bi bi-people"></i> ${_("All")}</a>

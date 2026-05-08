@@ -3,9 +3,8 @@
 <%namespace name="pills" file="pills.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(company_pills)}</div>
-  <div>
     % if request.identity.role == 'editor' or 'admin':
     ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add_tag', company_id=company.id, slug=company.slug))}
     % else:
@@ -16,9 +15,9 @@
 
 <%include file="company_lead.mako"/>
 
-<div class="hstack gap-2 mb-4 d-flex flex-wrap">
-  <div>${button.dropdown_sort(sort_criteria)}</div>
-  <div>${button.dropdown_order(order_criteria)}</div>
+<div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 mb-4 pb-1">
+  ${button.dropdown_sort(sort_criteria)}
+  ${button.dropdown_order(order_criteria)}
 </div>
 
 <div class="table-responsive">
