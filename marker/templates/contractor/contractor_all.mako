@@ -80,6 +80,7 @@
       </div>
     </form>
   </div>
+  <div class="vr mx-1"></div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
 </div>

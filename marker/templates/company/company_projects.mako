@@ -16,6 +16,7 @@
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   ${button.dropdown_filter('stage', _('Stage'), filter_stages)}
   ${button.dropdown_filter('role', _('Role'), filter_roles)}
+  <div class="vr mx-1"></div>
   ${button.dropdown_sort(sort_criteria)}
   ${button.dropdown_order(order_criteria)}
 </div>
