@@ -60,8 +60,8 @@ tests/
 # Install dependencies
 uv sync
 
-# Run development server (blocked by WDAC on this machine — use pytest instead)
-# uv run pserve development.ini
+# Run development server
+uv run pserve development.ini
 
 # Run tests
 uv run pytest
