@@ -201,6 +201,96 @@ class TagView:
         ).scalar()
 
     @view_config(
+        route_name="tag_unassigned",
+        renderer="tag_unassigned.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="tag_unassigned_more",
+        renderer="tag_table#rows.mako",
+        permission="view",
+    )
+    def unassigned(self):
+        page = int(self.request.params.get("page", 1))
+        name = self.request.params.get("name", None)
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria["name"] = self.request.translate("Tag")
+        order_criteria = dict(ORDER_CRITERIA)
+        q = {}
+
+        no_company = ~(
+            select(companies_tags.c.tag_id)
+            .where(companies_tags.c.tag_id == Tag.id)
+            .exists()
+        )
+        no_project = ~(
+            select(projects_tags.c.tag_id)
+            .where(projects_tags.c.tag_id == Tag.id)
+            .exists()
+        )
+        stmt = select(Tag).where(no_company, no_project)
+
+        if name:
+            stmt = stmt.filter(contains_ci(Tag.name, name))
+            q["name"] = name
+
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Tag.created_at >= date_from_dt)
+            q["date_from"] = date_from
+
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Tag.created_at <= date_to_dt)
+            q["date_to"] = date_to
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_tags
+            )
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+
+        next_page = self.request.route_url(
+            "tag_unassigned_more",
+            _query={
+                **q,
+                "page": page + 1,
+            },
+        )
+
+        obj = Filter(**q)
+        form = TagFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "categories": {},
+            "paginator": paginator,
+            "next_page": next_page,
+            "counter": counter,
+            "form": form,
+        }
+
+    @view_config(
         route_name="tag_view",
         renderer="tag_view.mako",
         permission="view",
