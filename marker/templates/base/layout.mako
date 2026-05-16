@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js"></script>
     <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>
     <script src="${request.static_url('marker:static/js/marker-select-all-state.js')}"></script>
@@ -155,7 +155,7 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       initPopovers(document);
-      document.body.addEventListener('htmx:afterSwap', function(e){
+      document.body.addEventListener('htmx:after:swap', function(e){
       initPopovers(e.target);
       });
     });

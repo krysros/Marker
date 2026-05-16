@@ -84,7 +84,7 @@
   });
 
   document.addEventListener('DOMContentLoaded', syncAllSelectAllCheckboxes);
-  document.addEventListener('htmx:afterSettle', (event) => {
+  document.addEventListener('htmx:after:swap', (event) => {
     const table = tableFromEvent(event);
     if (table) {
       syncTableSelectAll(table);

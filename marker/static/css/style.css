@@ -13,6 +13,18 @@ tr.htmx-swapping td {
   transition: opacity 1s ease-out;
 }
 
+/* Override htmx 4 opacity-based indicator with display-based hiding.
+   !important is needed because htmx injects its default CSS via
+   Constructable Stylesheets (document.adoptedStyleSheets) after page load,
+   which would otherwise override linked stylesheets in the cascade. */
+.htmx-indicator {
+  display: none !important;
+}
+.htmx-request .htmx-indicator,
+.htmx-indicator.htmx-request {
+  display: inline-block !important;
+}
+
 /* Navbar dropdowns
  See https://github.com/twbs/examples/blob/main/color-modes/scss/styles.scss#L104 */
 .bi {

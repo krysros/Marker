@@ -284,9 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', handleSearchSelectModalKeys, true);
     document.addEventListener('keydown', handleAddSelectModalKeys, true);
 });
-document.body.addEventListener('htmx:afterSwap', function(e){
-    setupShortcuts();
-});
-document.body.addEventListener('htmx:afterSwap', function(e){
+document.body.addEventListener('htmx:after:swap', function(e){
     setupShortcuts();
 });
