@@ -348,6 +348,10 @@ def includeme(config):
     config.add_route("tag_all", "/tag", factory=default_factory)
     config.add_route("tag_more", "/tag/more", factory=default_factory)
     config.add_route("tag_count", "/tag/count", factory=default_factory)
+    config.add_route("tag_unassigned", "/tag/unassigned", factory=default_factory)
+    config.add_route(
+        "tag_unassigned_more", "/tag/unassigned/more", factory=default_factory
+    )
     config.add_route("tag_add", "/tag/add", factory=default_factory)
     config.add_route("tag_search", "/tag/search", factory=default_factory)
     config.add_route("tag_select", "/tag/select", factory=default_factory)

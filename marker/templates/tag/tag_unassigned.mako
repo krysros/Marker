@@ -12,14 +12,14 @@
 <hr>
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
-  <%include file="tag_filter.mako"/>
+  <%include file="tag_unassigned_filter.mako"/>
   <div class="vr mx-1"></div>
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
   <div class="vr mx-1"></div>
   <div class="btn-group btn-group-sm" role="group">
-    <a class="btn btn-primary btn-sm" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> ${_("All")}</a>
-    <a class="btn btn-outline-primary btn-sm" href="${request.route_url('tag_unassigned')}"><i class="bi bi-tag-x"></i> ${_("Unassigned")}</a>
+    <a class="btn btn-outline-primary btn-sm" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> ${_("All")}</a>
+    <a class="btn btn-primary btn-sm" href="${request.route_url('tag_unassigned')}"><i class="bi bi-tag-x"></i> ${_("Unassigned")}</a>
   </div>
 </div>
 
