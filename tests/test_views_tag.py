@@ -1854,3 +1854,114 @@ def test_tag_uptime_projects_page2(dbsession):
     view = TagView(request)
     result = view.uptime_projects()
     assert result["page"] == 2
+
+
+# ===========================================================================
+# unassigned() tests
+# ===========================================================================
+
+
+def test_tag_unassigned_default(dbsession):
+    user = _make_user(dbsession, "tagunassign1")
+    _make_tag(dbsession, user, "UnassignedTag")
+    transaction.commit()
+    request = _make_request(dbsession, user)
+    view = TagView(request)
+    result = view.unassigned()
+    assert "paginator" in result
+    assert "counter" in result
+    assert "form" in result
+    assert "categories" in result
+    assert result["counter"] >= 1
+
+
+def test_tag_unassigned_excludes_company_linked(dbsession):
+    user = _make_user(dbsession, "tagunassign2")
+    tag_free = _make_tag(dbsession, user, "FreeTag")
+    tag_linked = _make_tag(dbsession, user, "LinkedTag")
+    company = _make_company(dbsession, user, "UnassignCo")
+    company.tags.append(tag_linked)
+    free_id = tag_free.id
+    linked_id = tag_linked.id
+    transaction.commit()
+    request = _make_request(dbsession, user)
+    view = TagView(request)
+    result = view.unassigned()
+    ids = [t.id for t in result["paginator"]]
+    assert free_id in ids
+    assert linked_id not in ids
+
+
+def test_tag_unassigned_excludes_project_linked(dbsession):
+    user = _make_user(dbsession, "tagunassign3")
+    tag_free = _make_tag(dbsession, user, "FreeTag3")
+    tag_linked = _make_tag(dbsession, user, "LinkedTag3")
+    project = _make_project(dbsession, user, "UnassignProj")
+    project.tags.append(tag_linked)
+    free_id = tag_free.id
+    linked_id = tag_linked.id
+    transaction.commit()
+    request = _make_request(dbsession, user)
+    view = TagView(request)
+    result = view.unassigned()
+    ids = [t.id for t in result["paginator"]]
+    assert free_id in ids
+    assert linked_id not in ids
+
+
+def test_tag_unassigned_filter_name(dbsession):
+    user = _make_user(dbsession, "tagunassign4")
+    _make_tag(dbsession, user, "NamedFreeTag")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"name": "NamedFree"})
+    view = TagView(request)
+    result = view.unassigned()
+    assert result["q"]["name"] == "NamedFree"
+
+
+def test_tag_unassigned_filter_date_from(dbsession):
+    user = _make_user(dbsession, "tagunassign5")
+    _make_tag(dbsession, user, "DateFreeTag")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, params={"date_from": "2020-01-01T00:00"}
+    )
+    view = TagView(request)
+    result = view.unassigned()
+    assert result["q"]["date_from"] == "2020-01-01T00:00"
+
+
+def test_tag_unassigned_filter_date_to(dbsession):
+    user = _make_user(dbsession, "tagunassign6")
+    _make_tag(dbsession, user, "DateToFreeTag")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, params={"date_to": "2030-01-01T00:00"}
+    )
+    view = TagView(request)
+    result = view.unassigned()
+    assert result["q"]["date_to"] == "2030-01-01T00:00"
+
+
+def test_tag_unassigned_sort_asc(dbsession):
+    user = _make_user(dbsession, "tagunassign7")
+    _make_tag(dbsession, user, "SortFreeTag")
+    transaction.commit()
+    request = _make_request(dbsession, user, params={"sort": "name", "order": "asc"})
+    view = TagView(request)
+    result = view.unassigned()
+    assert result["q"]["order"] == "asc"
+
+
+def test_tag_unassigned_bulk_select(dbsession):
+    user = _make_user(dbsession, "tagunassign8")
+    _make_tag(dbsession, user, "BulkFreeTag")
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", params={"_select_all": "1", "checked": "1"}
+    )
+    request.params = MultiDict({"_select_all": "1", "checked": "1"})
+    view = TagView(request)
+    result = view.unassigned()
+    assert result is request.response
+
