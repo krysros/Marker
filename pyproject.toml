@@ -25,7 +25,7 @@ dependencies = [
     "pyramid_debugtoolbar",
     "pyramid_retry",
     "pyramid_tm",
-    "SQLAlchemy",
+    "sqlalchemy>=2.1.0b2",
     "transaction",
     "zope.sqlalchemy",
     "waitress",

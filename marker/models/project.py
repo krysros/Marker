@@ -52,16 +52,16 @@ class Project(Base):
     updated_by: Mapped[Optional["User"]] = relationship(foreign_keys=[editor_id])
 
     tags: Mapped[list["Tag"]] = relationship(
-        secondary=projects_tags, back_populates="projects"
+        secondary=projects_tags, back_populates=lambda: Tag.projects
     )
     companies: Mapped[list["Activity"]] = relationship(
-        back_populates="project", cascade="all, delete-orphan"
+        back_populates=lambda: Activity.project, cascade="all, delete-orphan"
     )
     contacts: Mapped[list["Contact"]] = relationship(
-        back_populates="project", cascade="all, delete-orphan"
+        back_populates=lambda: Contact.project, cascade="all, delete-orphan"
     )
     comments: Mapped[list["Comment"]] = relationship(
-        back_populates="project", cascade="all, delete-orphan"
+        back_populates=lambda: Comment.project, cascade="all, delete-orphan"
     )
 
     def __init__(
