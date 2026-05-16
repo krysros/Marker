@@ -185,11 +185,8 @@ class UserView:
             project_ids,
         )
 
-        for company in companies_to_delete:
-            dbsession.delete(company)
-
-        for project in projects_to_delete:
-            dbsession.delete(project)
+        dbsession.delete_all(companies_to_delete)
+        dbsession.delete_all(projects_to_delete)
 
         dbsession.flush()
 
