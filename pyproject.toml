@@ -22,7 +22,6 @@ dependencies = [
     "plaster_pastedeploy",
     "pyramid",
     "pyramid_mako",
-    "pyramid_debugtoolbar",
     "pyramid_retry",
     "pyramid_tm",
     "sqlalchemy>=2.1.0b2",
@@ -41,14 +40,15 @@ dependencies = [
     "pycountry",
     "odfpy",
     "beautifulsoup4",
-    "langchain",
-    "langchain-community",
-    "langchain-google-genai",
+    "google-genai",
 ]
 
 [dependency-groups]
 docs = [
     "sqlalchemy-data-model-visualizer",
+]
+dev = [
+    "pyramid_debugtoolbar",
 ]
 testing = [
     "WebTest",
@@ -57,9 +57,7 @@ testing = [
     "factory_boy",
 ]
 lint = [
-    "pylint",
-    "black",
-    "isort",
+    "ruff",
 ]
 
 [project.urls]

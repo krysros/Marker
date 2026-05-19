@@ -69,9 +69,9 @@ uv run pytest
 # Run tests with coverage (must reach 100%)
 uv run pytest --cov=marker --cov-report=term-missing
 
-# Format code (run after every code change)
-uv run isort .
-uv run black .
+# Lint and format code (run after every code change)
+uv run ruff check .
+uv run ruff format .
 
 # Alembic migrations
 uv run alembic -c development.ini revision --autogenerate -m "description"
@@ -95,7 +95,8 @@ uv run pybabel compile -d marker/locale
 - Inherit from `Base` (`marker.models.meta`).
 - Use SQLAlchemy naming convention defined in `meta.py` (`NAMING_CONVENTION`).
 - Foreign keys: `ondelete="CASCADE"` for ownership relations, `ondelete="SET NULL"` for soft references (`creator_id`, `editor_id`).
-- Timestamps: `created_at` (`DateTime`, `default=func.now()`), `updated_at` (`DateTime`, `onupdate=func.now()`).
+- Timestamps: `created_at` (`DateTime`, `default=lambda: datetime.datetime.now(UTC)`), `updated_at` (`DateTime`, `onupdate=func.now()`).
+- Shared count helper: `CountMixin` in `meta.py` provides `_scalar_count(stmt)` — inherit it in any model that needs scalar count queries.
 - Relationships via `relationship(..., back_populates=...)`.
 
 ### Views
@@ -185,7 +186,7 @@ def test_export_returns_xlsx(dbsession):
 After every change:
 
 1. [ ] Code and comments written in English
-2. [ ] `uv run isort .` and `uv run black .` run
+2. [ ] `uv run ruff check .` and `uv run ruff format .` run
 3. [ ] New/changed user-facing strings extracted and translations updated (if applicable):
    - `uv run pybabel extract -F babel.cfg -o marker/locale/messages.pot .`
    - `uv run pybabel update -i marker/locale/messages.pot -d marker/locale`

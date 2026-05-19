@@ -1,16 +1,37 @@
 import json
-import os
 import re
 import unicodedata
-
-os.environ["USER_AGENT"] = "Marker/1.0"
+import urllib.request
 
 import pycountry
-from langchain_community.document_loaders import WebBaseLoader
-from langchain_google_genai import ChatGoogleGenerativeAI
+from bs4 import BeautifulSoup
+from google import genai
+from google.genai import types
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
+
+
+def _load_page_content(url):
+    """Fetch a web page and return its visible text content."""
+    req = urllib.request.Request(url, headers={"User-Agent": "Marker/1.0"})
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        content = resp.read()
+    soup = BeautifulSoup(content, "html.parser")
+    for tag in soup(["script", "style", "noscript"]):
+        tag.decompose()
+    return soup.get_text(separator="\n", strip=True)
+
+
+def _gemini_json(prompt, model="gemini-2.5-flash-lite"):
+    """Call Google Gemini with forced JSON output and return parsed result."""
+    client = genai.Client()
+    response = client.models.generate_content(
+        model=model,
+        contents=prompt,
+        config=types.GenerateContentConfig(response_mime_type="application/json"),
+    )
+    return json.loads(response.text)
 
 
 def _autofill_from_website(
@@ -19,24 +40,11 @@ def _autofill_from_website(
     """
     Shared logic for autofilling company or project data from a website.
     """
-    # Load the content of the page
-    loader = WebBaseLoader(url)
-    docs = loader.load()
-    if not docs:
+    content = _load_page_content(url)
+    if not content:
         raise ValueError(str(_("Could not load content from %(url)s")) % {"url": url})
 
-    content = docs[0].page_content
-
-    # Initialize Gemini model with forced JSON output
-    llm = ChatGoogleGenerativeAI(
-        model=model,
-        response_mime_type="application/json",
-    )
-
-    # Make the request
-    response = llm.invoke(f"{prompt}:\n\n{content}")
-
-    result = json.loads(response.content)
+    result = _gemini_json(f"{prompt}:\n\n{content}", model=model)
 
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
@@ -150,9 +158,9 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
 
     # Load the main page
     try:
-        docs = WebBaseLoader(website).load()
-        if docs and docs[0].page_content.strip():
-            content_parts.append(docs[0].page_content)
+        text = _load_page_content(website)
+        if text.strip():
+            content_parts.append(text)
     except Exception:
         pass
 
@@ -163,9 +171,9 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
         if url.rstrip("/") == website.rstrip("/"):
             continue
         try:
-            docs = WebBaseLoader(url).load()
-            if docs and len(docs[0].page_content.strip()) > 200:
-                content_parts.append(docs[0].page_content)
+            text = _load_page_content(url)
+            if len(text.strip()) > 200:
+                content_parts.append(text)
                 break
         except Exception:
             continue
@@ -177,11 +185,6 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
 
     content = "\n\n---\n\n".join(content_parts[:2])
 
-    llm = ChatGoogleGenerativeAI(
-        model=model,
-        response_mime_type="application/json",
-    )
-
     prompt = (
         "Extract a list of contacts (people) from the context. "
         "For each contact provide: name, role, phone, email. "
@@ -189,8 +192,7 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
         "If no contacts are found, return an empty array []."
     )
 
-    response = llm.invoke(f"{prompt}:\n\n{content}")
-    result = json.loads(response.content)
+    result = _gemini_json(f"{prompt}:\n\n{content}", model=model)
 
     if isinstance(result, list):
         return result
@@ -220,9 +222,9 @@ def tags_autofill_from_website(
 
     # Load the main page
     try:
-        docs = WebBaseLoader(website).load()
-        if docs and docs[0].page_content.strip():
-            content_parts.append(docs[0].page_content)
+        text = _load_page_content(website)
+        if text.strip():
+            content_parts.append(text)
     except Exception:
         pass
 
@@ -233,9 +235,9 @@ def tags_autofill_from_website(
         if url.rstrip("/") == website.rstrip("/"):
             continue
         try:
-            docs = WebBaseLoader(url).load()
-            if docs and len(docs[0].page_content.strip()) > 200:
-                content_parts.append(docs[0].page_content)
+            text = _load_page_content(url)
+            if len(text.strip()) > 200:
+                content_parts.append(text)
                 break
         except Exception:
             continue
@@ -246,11 +248,6 @@ def tags_autofill_from_website(
         )
 
     content = "\n\n---\n\n".join(content_parts[:2])
-
-    llm = ChatGoogleGenerativeAI(
-        model=model,
-        response_mime_type="application/json",
-    )
 
     existing_section = ""
     if existing_tags:
@@ -270,8 +267,7 @@ def tags_autofill_from_website(
         " Return at most 20 items. If nothing can be determined, return an empty array []."
     )
 
-    response = llm.invoke(f"{prompt}:\n\n{content}")
-    result = json.loads(response.content)
+    result = _gemini_json(f"{prompt}:\n\n{content}", model=model)
 
     if isinstance(result, list):
         return [str(t).strip() for t in result if str(t).strip()][:20]

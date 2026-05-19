@@ -1,12 +1,13 @@
 import datetime
+from datetime import UTC
 from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
 from sqlalchemy import ForeignKey, func, select
-from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .association import companies_tags, projects_tags
-from .meta import Base
+from .meta import Base, CountMixin
 
 if TYPE_CHECKING:
     from .company import Company
@@ -14,14 +15,14 @@ if TYPE_CHECKING:
     from .user import User
 
 
-class Tag(Base):
+class Tag(CountMixin, Base):
     __tablename__ = "tags"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
 
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    created_at: Mapped[datetime.datetime] = mapped_column(default=lambda: datetime.datetime.now(UTC))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        default=datetime.datetime.now, onupdate=datetime.datetime.now
+        default=lambda: datetime.datetime.now(UTC), onupdate=lambda: datetime.datetime.now(UTC)
     )
 
     creator_id: Mapped[Optional[int]] = mapped_column(
@@ -47,13 +48,6 @@ class Tag(Base):
     @property
     def slug(self) -> str:
         return slugify(self.name)
-
-    def _scalar_count(self, stmt) -> int:
-        session = object_session(self)
-        if session is None:
-            return 0
-        value = session.scalar(stmt)
-        return int(value or 0)
 
     @property
     def count_companies(self) -> int:

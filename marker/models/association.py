@@ -73,11 +73,13 @@ companies_stars = Table(
         "company_id",
         Integer,
         ForeignKey("companies.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 
@@ -88,11 +90,13 @@ projects_stars = Table(
         "project_id",
         Integer,
         ForeignKey("projects.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
+        index=True,
     ),
 )
 

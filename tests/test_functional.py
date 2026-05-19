@@ -2316,28 +2316,7 @@ def test_select_all_project_companies_updates_selected_companies(testapp, dbsess
 def test_company_website_autofill_supports_developer_descriptors(
     testapp, dbsession, monkeypatch
 ):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
-
-    def mock_invoke(self, prompt):
-        if "Developer" in prompt:
-            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
-        else:
-            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
-
-    def make_loader(descriptor):
-        return lambda self: [type("Doc", (), {"page_content": f"Alfa {descriptor}"})()]
-
-    def mock_invoke(self, prompt):
-        if "Deweloper" in prompt:
-            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
-        else:
-            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
-
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        mock_invoke,
-    )
 
     user = models.user.User(
         name="company-autofill-descriptor-editor",
@@ -2363,8 +2342,14 @@ def test_company_website_autofill_supports_developer_descriptors(
 
     for descriptor in ("Deweloper", "Developer"):
         monkeypatch.setattr(
-            "langchain_community.document_loaders.WebBaseLoader.load",
-            make_loader(descriptor),
+            website_autofill,
+            "_load_page_content",
+            lambda url, d=descriptor: f"Alfa {d}",
+        )
+        monkeypatch.setattr(
+            website_autofill,
+            "_gemini_json",
+            lambda prompt, model="gemini-2.5-flash-lite", d=descriptor: {"name": f"Alfa {d}"},
         )
         response = testapp.get(
             "/company/add/website_autofill",
@@ -2379,20 +2364,17 @@ def test_company_website_autofill_supports_developer_descriptors(
 def test_company_website_autofill_prefers_company_like_descriptor_casing(
     testapp, dbsession, monkeypatch
 ):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [
-            type("Doc", (), {"page_content": "alfa developer Alfa Developer"})()
-        ],
+        website_autofill,
+        "_load_page_content",
+        lambda url: "alfa developer Alfa Developer",
     )
     monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: type(
-            "Resp", (), {"content": '{"name": "Alfa Developer"}'}
-        )(),
+        website_autofill,
+        "_gemini_json",
+        lambda prompt, model="gemini-2.5-flash-lite": {"name": "Alfa Developer"},
     )
 
     user = models.user.User(
@@ -2430,30 +2412,22 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
 def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
     testapp, dbsession, monkeypatch
 ):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [
-            type(
-                "Doc",
-                (),
-                {
-                    "page_content": "Nowa Przestrzeń Developer Kwiatowa 12 00-123 Warszawa"
-                },
-            )()
-        ],
+        website_autofill,
+        "_load_page_content",
+        lambda url: "Nowa Przestrzeń Developer Kwiatowa 12 00-123 Warszawa",
     )
     monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: type(
-            "Resp",
-            (),
-            {
-                "content": '{"name": "Nowa Przestrzeń Developer", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}'
-            },
-        )(),
+        website_autofill,
+        "_gemini_json",
+        lambda prompt, model="gemini-2.5-flash-lite": {
+            "name": "Nowa Przestrzeń Developer",
+            "street": "Kwiatowa 12",
+            "postcode": "00-123",
+            "city": "Warszawa",
+        },
     )
 
     user = models.user.User(
@@ -2494,7 +2468,6 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
 def test_company_website_autofill_includes_trade_prefix_from_previous_line(
     testapp, dbsession, monkeypatch
 ):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
 
     # Patch will be set per test case below
@@ -2534,24 +2507,19 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
 
     for prefix_line, expected_name in html_cases:
         monkeypatch.setattr(
-            "langchain_community.document_loaders.WebBaseLoader.load",
-            lambda self: [
-                type(
-                    "Doc",
-                    (),
-                    {"page_content": f"{prefix_line} Alfa Kwiatowa 12 00-123 Warszawa"},
-                )()
-            ],
+            website_autofill,
+            "_load_page_content",
+            lambda url, p=prefix_line: f"{p} Alfa Kwiatowa 12 00-123 Warszawa",
         )
         monkeypatch.setattr(
-            "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-            lambda self, prompt, expected_name=expected_name: type(
-                "Resp",
-                (),
-                {
-                    "content": f'{{"name": "{expected_name}", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}}'
-                },
-            )(),
+            website_autofill,
+            "_gemini_json",
+            lambda prompt, model="gemini-2.5-flash-lite", n=expected_name: {
+                "name": n,
+                "street": "Kwiatowa 12",
+                "postcode": "00-123",
+                "city": "Warszawa",
+            },
         )
 
         response = testapp.get(
@@ -2568,17 +2536,14 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
 
 
 def test_company_website_autofill_error(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
 
     # Patch the LLM call to raise an exception
+    monkeypatch.setattr(website_autofill, "_load_page_content", lambda url: "irrelevant")
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
-    )
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: (_ for _ in ()).throw(RuntimeError("LLM error!")),
+        website_autofill,
+        "_gemini_json",
+        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(RuntimeError("LLM error!")),
     )
     monkeypatch.setattr(
         website_autofill,
@@ -2607,19 +2572,16 @@ def test_company_website_autofill_error(testapp, dbsession, monkeypatch):
 
 
 def test_company_website_autofill_error_long_response(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
 
-    monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
-    )
+    monkeypatch.setattr(website_autofill, "_load_page_content", lambda url: "irrelevant")
     # Simulate a long error message with 'Response:'
     long_error = "Some error. Response: " + ("x" * 500)
     monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: (_ for _ in ()).throw(RuntimeError(long_error)),
+        website_autofill,
+        "_gemini_json",
+        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(RuntimeError(long_error)),
     )
     monkeypatch.setattr(
         website_autofill,
@@ -2646,19 +2608,16 @@ def test_company_website_autofill_error_long_response(testapp, dbsession, monkey
 
 
 def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
 
-    monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
-    )
+    monkeypatch.setattr(website_autofill, "_load_page_content", lambda url: "irrelevant")
     # Simulate a very long error message (over 500 bytes)
     very_long_error = "x" * 1000
     monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        lambda self, prompt: (_ for _ in ()).throw(RuntimeError(very_long_error)),
+        website_autofill,
+        "_gemini_json",
+        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(RuntimeError(very_long_error)),
     )
     monkeypatch.setattr(
         website_autofill,
@@ -2685,37 +2644,20 @@ def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monke
 
 
 def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
     from marker.views import company as company_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [
-            type("Doc", (), {"page_content": "Acme Corp Jan Kowalski CEO"})()
-        ],
+        website_autofill, "_load_page_content", lambda url: "Acme Corp Jan Kowalski CEO"
     )
 
-    def mock_invoke(self, prompt):
+    def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract a list of contacts" in prompt:
-            return type(
-                "Resp",
-                (),
-                {
-                    "content": '[{"name": "Jan Kowalski", "role": "CEO", "phone": "+48123456789", "email": "jan@acme.com"}]'
-                },
-            )()
-        return type(
-            "Resp",
-            (),
-            {"content": '{"name": "Acme Corp", "city": "Warszawa", "country": "PL"}'},
-        )()
+            return [{"name": "Jan Kowalski", "role": "CEO", "phone": "+48123456789", "email": "jan@acme.com"}]
+        return {"name": "Acme Corp", "city": "Warszawa", "country": "PL"}
 
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        mock_invoke,
-    )
+    monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
 
@@ -2758,37 +2700,20 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
 
 
 def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
     from marker.views import project as project_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [type("Doc", (), {"page_content": "Budowex Anna Nowak PM"})()],
+        website_autofill, "_load_page_content", lambda url: "Budowex Anna Nowak PM"
     )
 
-    def mock_invoke(self, prompt):
+    def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract a list of contacts" in prompt:
-            return type(
-                "Resp",
-                (),
-                {
-                    "content": '[{"name": "Anna Nowak", "role": "PM", "phone": "+48987654321", "email": "anna@budowex.com"}]'
-                },
-            )()
-        return type(
-            "Resp",
-            (),
-            {
-                "content": '{"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}'
-            },
-        )()
+            return [{"name": "Anna Nowak", "role": "PM", "phone": "+48987654321", "email": "anna@budowex.com"}]
+        return {"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}
 
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
-        mock_invoke,
-    )
+    monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
 
@@ -2831,41 +2756,24 @@ def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
 
 
 def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
     from marker.views import company as company_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [
-            type(
-                "Doc",
-                (),
-                {
-                    "page_content": "TagCo offers construction and civil engineering services."
-                },
-            )()
-        ],
+        website_autofill,
+        "_load_page_content",
+        lambda url: "TagCo offers construction and civil engineering services.",
     )
 
-    def mock_invoke(self, prompt):
+    def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract up to 20 tags" in prompt:
-            return type(
-                "Resp", (), {"content": '["Construction", "Civil engineering"]'}
-            )()
+            return ["Construction", "Civil engineering"]
         if "Extract a list of contacts" in prompt:
-            return type("Resp", (), {"content": "[]"})()
-        return type(
-            "Resp",
-            (),
-            {"content": '{"name": "TagCo", "city": "Gdansk", "country": "PL"}'},
-        )()
+            return []
+        return {"name": "TagCo", "city": "Gdansk", "country": "PL"}
 
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
-    )
-    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
 
     user = models.user.User(
@@ -2903,7 +2811,6 @@ def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
 
 def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
     """When the LLM returns a tag that already exists in the DB, the existing Tag row is reused."""
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
     from marker.views import company as company_views
@@ -2915,28 +2822,19 @@ def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
     existing_tag_id = existing_tag.id
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [
-            type(
-                "Doc", (), {"page_content": "ArchFirm provides architecture services."}
-            )()
-        ],
+        website_autofill,
+        "_load_page_content",
+        lambda url: "ArchFirm provides architecture services.",
     )
 
-    def mock_invoke(self, prompt):
+    def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract up to 20 tags" in prompt:
-            return type("Resp", (), {"content": '["Architecture"]'})()
+            return ["Architecture"]
         if "Extract a list of contacts" in prompt:
-            return type("Resp", (), {"content": "[]"})()
-        return type(
-            "Resp",
-            (),
-            {"content": '{"name": "ArchFirm", "city": "Poznan", "country": "PL"}'},
-        )()
+            return []
+        return {"name": "ArchFirm", "city": "Poznan", "country": "PL"}
 
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
-    )
+    monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
 
@@ -2973,38 +2871,24 @@ def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
 
 
 def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
-    os.environ["GEMINI_API_KEY"] = "dummy"
     from marker import models
     from marker.utils import website_autofill
     from marker.views import project as project_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
-        lambda self: [
-            type(
-                "Doc",
-                (),
-                {"page_content": "TagProject residential housing development."},
-            )()
-        ],
+        website_autofill,
+        "_load_page_content",
+        lambda url: "TagProject residential housing development.",
     )
 
-    def mock_invoke(self, prompt):
+    def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract up to 20 tags" in prompt:
-            return type("Resp", (), {"content": '["Residential", "Housing"]'})()
+            return ["Residential", "Housing"]
         if "Extract a list of contacts" in prompt:
-            return type("Resp", (), {"content": "[]"})()
-        return type(
-            "Resp",
-            (),
-            {
-                "content": '{"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}'
-            },
-        )()
+            return []
+        return {"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}
 
-    monkeypatch.setattr(
-        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
-    )
+    monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
     monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
 

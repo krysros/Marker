@@ -1,21 +1,22 @@
 import datetime
+from datetime import UTC
 from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
 from sqlalchemy import ForeignKey, func, select
-from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .association import Activity, companies_stars, companies_tags
 from .comment import Comment
 from .contact import Contact
-from .meta import Base
+from .meta import Base, CountMixin
 from .tag import Tag
 
 if TYPE_CHECKING:
     from .user import User
 
 
-class Company(Base):
+class Company(CountMixin, Base):
     __tablename__ = "companies"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
@@ -32,9 +33,9 @@ class Company(Base):
     REGON: Mapped[Optional[str]]
     KRS: Mapped[Optional[str]]
 
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    created_at: Mapped[datetime.datetime] = mapped_column(default=lambda: datetime.datetime.now(UTC))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        default=datetime.datetime.now, onupdate=datetime.datetime.now
+        default=lambda: datetime.datetime.now(UTC), onupdate=lambda: datetime.datetime.now(UTC)
     )
 
     creator_id: Mapped[Optional[int]] = mapped_column(
@@ -89,13 +90,6 @@ class Company(Base):
     @property
     def slug(self) -> str:
         return slugify(self.name or "")
-
-    def _scalar_count(self, stmt) -> int:
-        session = object_session(self)
-        if session is None:
-            return 0
-        value = session.scalar(stmt)
-        return int(value or 0)
 
     @property
     def count_projects(self) -> int:

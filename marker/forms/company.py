@@ -33,10 +33,7 @@ def _check_sum_9(digits):
     check_sum = sum(map(mul, digits[0:8], weights9)) % 11
     if check_sum == 10:
         check_sum = 0
-    if check_sum == digits[8]:
-        return True
-    else:
-        return False
+    return check_sum == digits[8]
 
 
 def _check_sum_14(digits):
@@ -44,10 +41,7 @@ def _check_sum_14(digits):
     check_sum = sum(map(mul, digits[0:13], weights14)) % 11
     if check_sum == 10:
         check_sum = 0
-    if check_sum == digits[13]:
-        return True
-    else:
-        return False
+    return check_sum == digits[13]
 
 
 class CompanyForm(Form):

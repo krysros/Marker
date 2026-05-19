@@ -1,9 +1,10 @@
 import datetime
+from datetime import UTC
 from typing import Optional
 
 import argon2
 from sqlalchemy import func, select
-from sqlalchemy.orm import Mapped, mapped_column, object_session, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .association import (
     companies_stars,
@@ -16,14 +17,14 @@ from .association import (
 from .comment import Comment
 from .company import Company
 from .contact import Contact
-from .meta import Base
+from .meta import Base, CountMixin
 from .project import Project
 from .tag import Tag
 
 ph = argon2.PasswordHasher()
 
 
-class User(Base):
+class User(CountMixin, Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True)
@@ -31,9 +32,9 @@ class User(Base):
     email: Mapped[str]
     role: Mapped[str]
     _password: Mapped[str] = mapped_column("password")
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    created_at: Mapped[datetime.datetime] = mapped_column(default=lambda: datetime.datetime.now(UTC))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        default=datetime.datetime.now, onupdate=datetime.datetime.now
+        default=lambda: datetime.datetime.now(UTC), onupdate=lambda: datetime.datetime.now(UTC)
     )
 
     @property
@@ -52,13 +53,6 @@ class User(Base):
             return True
         except argon2.exceptions.VerifyMismatchError:
             return False
-
-    def _scalar_count(self, stmt) -> int:
-        session = object_session(self)
-        if session is None:
-            return 0
-        value = session.scalar(stmt)
-        return int(value or 0)
 
     companies_stars: Mapped[list["Company"]] = relationship(
         secondary=companies_stars,

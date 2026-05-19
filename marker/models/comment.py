@@ -1,4 +1,5 @@
 import datetime
+from datetime import UTC
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey
@@ -17,9 +18,9 @@ class Comment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     comment: Mapped[str]
 
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now)
+    created_at: Mapped[datetime.datetime] = mapped_column(default=lambda: datetime.datetime.now(UTC))
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        default=datetime.datetime.now, onupdate=datetime.datetime.now
+        default=lambda: datetime.datetime.now(UTC), onupdate=lambda: datetime.datetime.now(UTC)
     )
 
     creator_id: Mapped[Optional[int]] = mapped_column(

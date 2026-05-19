@@ -1,3 +1,15 @@
+3.1
+---
+
+- Migrated AI website autofill from LangChain + langchain-google-genai to `google-genai` (unified Google SDK) with direct `genai.Client().models.generate_content()` calls and forced JSON output
+- Replaced `pylint`, `black` and `isort` with `ruff` for linting and formatting
+- Moved `pyramid_debugtoolbar` to the `dev` dependency group
+- Added `CountMixin` to `marker/models/meta.py` — shared `_scalar_count` helper for model classes
+- Simplified boolean return expressions in NIP/REGON checksum validators
+- Added database indexes on foreign-key columns of `companies_stars` and `projects_stars` association tables
+- Switched model `created_at` defaults from `func.now()` to `lambda: datetime.datetime.now(UTC)` (timezone-aware, Python 3.11+)
+- Added Alembic migration for stars table indexes
+
 3.0
 ---
 
