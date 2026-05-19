@@ -4,7 +4,9 @@
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
   <h2 class="mb-0 text-nowrap flex-grow-1 flex-shrink-1">
     <i class="bi bi-people"></i> ${_("Contacts")}
-    <span class="badge bg-secondary"><div hx-get="${request.route_url('contact_count')}" hx-trigger="contactEvent from:body">${counter}</div></span>
+    <span class="badge bg-secondary">
+      <div hx-get="${request.route_url('contact_count')}" hx-trigger="contactEvent from:body">${counter}</div>
+    </span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}

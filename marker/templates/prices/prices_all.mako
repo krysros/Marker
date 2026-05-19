@@ -139,14 +139,17 @@
 <%def name="rows()">
 % for row in paginator:
 % if loop.last:
-<tr hx-get="${next_page}" hx-trigger="intersect once" hx-swap="afterend">
+<tr hx-get="${next_page}"
+    hx-trigger="intersect once"
+    hx-swap="afterend">
 % else:
 <tr>
 % endif
   <td>
     <a href="${request.route_url('project_view', project_id=row.project.id, slug=row.project.slug)}">${row.project.name}</a>
     % if row.project.usable_area:
-    <br><small class="text-body-secondary">${_("Usable area")}: ${"{:,.2f}".format(row.project.usable_area)} m2</small>
+    <br>
+    <small class="text-body-secondary">${_("Usable area")}: ${"{:,.2f}".format(row.project.usable_area)} m2</small>
     % endif
   </td>
   <td><small>${object_categories.get(row.project.object_category, row.project.object_category or "---")}</small></td>

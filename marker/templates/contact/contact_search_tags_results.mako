@@ -3,7 +3,9 @@
 
 <h2>
   <i class="bi bi-people"></i> ${_("Contacts")}
-  <span class="badge bg-secondary"><div hx-get="${request.route_url('contact_count')}" hx-trigger="contactEvent from:body">${counter}</div></span>
+  <span class="badge bg-secondary">
+    <div hx-get="${request.route_url('contact_count')}" hx-trigger="contactEvent from:body">${counter}</div>
+  </span>
   <div class="float-end">
     ${button.a(icon='search', color='primary', url=request.route_url('contact_search'))}
     ${button.a(icon='upload', color='success', url=request.route_url('contact_import_csv'))}

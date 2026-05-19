@@ -1,6 +1,6 @@
 <%inherit file="layout.mako"/>
 <%namespace name="pills" file="pills.mako"/>
-<%namespace name="button" file="button.mako" />
+<%namespace name="button" file="button.mako"/>
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(user_pills, active_url=request.route_url('user_comments', username=user.name))}</div>
@@ -20,7 +20,7 @@
 % for comment in paginator:
 % if loop.last:
 <div hx-get="${next_page}"
-    hx-trigger="intersect once"
+     hx-trigger="intersect once"
      hx-swap="afterend">
 % else:
 <div>

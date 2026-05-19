@@ -1,6 +1,6 @@
 % if request.session.peek_flash():
   % for message in request.session.pop_flash():
-    <% 
+    <%
       alert_type, separator, alert_message = message.partition(':')
       if not separator:
           alert_type = "info"

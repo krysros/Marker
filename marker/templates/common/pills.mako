@@ -6,7 +6,7 @@
     % if pill["url"] == active_url:
       <a class="nav-link active" aria-current="page" href="${pill['url']}">
     % else:
-      <a class="nav-link" href="${pill['url']}">  
+      <a class="nav-link" href="${pill['url']}">
     % endif
       % if pill["icon"]:
         <i class="bi bi-${pill['icon']}"></i>

@@ -34,9 +34,11 @@
   % endif
   <td>
     % if contact.company:
-    <i class="bi bi-buildings"></i> <a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a><br>
+    <i class="bi bi-buildings"></i>
+    <a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a><br>
     % elif contact.project:
-    <i class="bi bi-briefcase"></i> <a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a><br>
+    <i class="bi bi-briefcase"></i>
+    <a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a><br>
     % else:
     ---
     % endif

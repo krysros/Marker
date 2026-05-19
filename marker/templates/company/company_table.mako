@@ -11,7 +11,7 @@
 % for company in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
-  hx-trigger="intersect once"
+    hx-trigger="intersect once"
     hx-swap="afterend"
     class="table-${company.color}">
 % else:

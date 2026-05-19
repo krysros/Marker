@@ -28,7 +28,10 @@
             ${company.name}
             % if company.website:
             <small>
-              <i class="bi bi-link-45deg"></i> <a href="${external_url(company.website)}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${external_hostname(company.website)}</a></p>
+              <i class="bi bi-link-45deg"></i>
+              <a href="${external_url(company.website)}"
+                 target="_blank"
+                 class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${external_hostname(company.website)}</a>
             </small>
             % endif
           </dd>
@@ -70,7 +73,7 @@
       % if company.updated_at:
         ${_("Updated at")}: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
         % if company.updated_by:
-        ${_("by")} <a href="${request.route_url('user_view', username=company.updated_by.name)}">${company.updated_by.name}</a>
+          ${_("by")} <a href="${request.route_url('user_view', username=company.updated_by.name)}">${company.updated_by.name}</a>
         % endif
       % endif
     </p>
@@ -80,8 +83,8 @@
 <script>
   var map = L.map('map').setView([${company.latitude}, ${company.longitude}], 13);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
+  maxZoom: 19,
+  attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${company.latitude}, ${company.longitude}]).addTo(map);
   let title = `<b>${company.name}</b><br>${company.street}<br>${company.city}<br>${company.country}`;

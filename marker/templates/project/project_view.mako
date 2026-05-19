@@ -26,7 +26,10 @@
             ${project.name}
             % if project.website:
             <small>
-              <i class="bi bi-link-45deg"></i> <a href="${external_url(project.website)}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${external_hostname(project.website)}</a></p>
+              <i class="bi bi-link-45deg"></i>
+              <a href="${external_url(project.website)}"
+                 target="_blank"
+                 class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${external_hostname(project.website)}</a>
             </small>
             % endif
           </dd>
@@ -90,8 +93,8 @@
 <script>
   var map = L.map('map').setView([${project.latitude}, ${project.longitude}], 13);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
+  maxZoom: 19,
+  attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
   let title = `<b>${project.name}</b><br>${project.street}<br>${project.city}<br>${project.country}`;

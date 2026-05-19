@@ -3,7 +3,9 @@
 
 <h2>
   <i class="bi bi-tags"></i> ${_("Tags")}
-  <span class="badge bg-secondary"><div hx-get="${request.route_url('tag_count')}" hx-trigger="tagEvent from:body">${counter}</div></span>
+  <span class="badge bg-secondary">
+    <div hx-get="${request.route_url('tag_count')}" hx-trigger="tagEvent from:body">${counter}</div>
+  </span>
   <div class="float-end">
     ${button.a(icon='search', color='primary', url=request.route_url('tag_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add'))}

@@ -13,11 +13,15 @@
 % endif
   <td>${offset + loop.index + 1}</td>
   <td>${item.name}</td>
-  <td class="text-break"><a href="${external_url(item.website)}" target="_blank" rel="noopener">${item.website}</a></td>
+  <td class="text-break">
+    <a href="${external_url(item.website)}" target="_blank" rel="noopener">${item.website}</a>
+  </td>
   <td hx-get="${request.route_url(check_route_name, _query={'url': item.website})}"
       hx-trigger="intersect once"
       hx-swap="innerHTML">
-    <div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>
+    <div class="spinner-border spinner-border-sm" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </td>
 </tr>
 % endfor

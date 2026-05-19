@@ -147,7 +147,7 @@
             <svg class="bi my-1 theme-icon-active" aria-hidden="true">
               <use href="#circle-half"></use>
             </svg>
-            <span class="d-lg-none ms-2" id="bd-theme-text">${_("Toggle theme")}</span> 
+            <span class="d-lg-none ms-2" id="bd-theme-text">${_("Toggle theme")}</span>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme">
             <li>

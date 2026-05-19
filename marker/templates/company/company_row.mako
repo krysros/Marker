@@ -4,7 +4,9 @@
 
 % if assoc:
 <tr>
-  <td>${checkbox.checkbox(assoc.company, selected_ids=selected_ids('selected_companies'), url=request.route_url('company_check', company_id=assoc.company.id, slug=assoc.company.slug))}</td>
+  <td>
+    ${checkbox.checkbox(assoc.company, selected_ids=selected_ids('selected_companies'), url=request.route_url('company_check', company_id=assoc.company.id, slug=assoc.company.slug))}
+  </td>
   <td>
     <a href="${request.route_url('company_view', company_id=assoc.company.id, slug=assoc.company.slug)}">${assoc.company.name}</a>
     <div class="small text-body-secondary">
@@ -19,8 +21,12 @@
     <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross)}${' ' + assoc.currency if assoc.value_gross is not None and assoc.currency else ''}</span>
   </td>
   <td>
-    <span class="d-block">${_("Net")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}${' ' + assoc.currency if assoc.value_net and assoc.project.usable_area and assoc.currency else ''}</span>
-    <span class="d-block">${_("Gross")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}${' ' + assoc.currency if assoc.value_gross and assoc.project.usable_area and assoc.currency else ''}</span>
+    <span class="d-block">
+      ${_("Net")}: ${fmt_decimal(assoc.value_net / assoc.project.usable_area) if assoc.value_net and assoc.project.usable_area else '---'}${' ' + assoc.currency if assoc.value_net and assoc.project.usable_area and assoc.currency else ''}
+    </span>
+    <span class="d-block">
+      ${_("Gross")}: ${fmt_decimal(assoc.value_gross / assoc.project.usable_area) if assoc.value_gross and assoc.project.usable_area else '---'}${' ' + assoc.currency if assoc.value_gross and assoc.project.usable_area and assoc.currency else ''}
+    </span>
   </td>
   <td>
     <div class="hstack gap-2 mx-2">
