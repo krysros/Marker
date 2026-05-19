@@ -51,8 +51,8 @@ docs = [
 ]
 dev = [
     "pyramid_debugtoolbar",
-    "pytest>=9.0.3",
-    "webtest>=3.0.7",
+    "pytest",
+    "webtest",
 ]
 testing = [
     "WebTest",
