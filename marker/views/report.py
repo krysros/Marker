@@ -22,12 +22,27 @@ from ..models import (
     projects_tags,
 )
 from ..subscribers import get_subdivision_name
+from ..utils.ai_metrics import get_ai_metrics_snapshot
 from ..utils.paginator import get_paginator
 
 
 class ReportView:
     def __init__(self, request):
         self.request = request
+
+    def _gemini_ai_options(self):
+        settings = getattr(self.request.registry, "settings", None) or {}
+        options = {}
+        fallback_model = (settings.get("gemini.fallback_model") or "").strip()
+        if fallback_model:
+            options["fallback_model"] = fallback_model
+        retries_raw = settings.get("gemini.retries")
+        if retries_raw not in (None, ""):
+            try:
+                options["retries"] = max(0, int(retries_raw))
+            except (TypeError, ValueError):
+                pass
+        return options
 
     @view_config(route_name="report_all", renderer="report_all.mako", permission="view")
     def all(self):
@@ -58,10 +73,13 @@ class ReportView:
                 )
             else:
                 try:
-                    model = (
-                        getattr(self.request.registry, "settings", None) or {}
-                    ).get("gemini.model", "gemini-2.5-flash-lite")
-                    raw_sql = generate_report_sql(prompt, model=model)
+                    settings = getattr(self.request.registry, "settings", None) or {}
+                    model = settings.get("gemini.model", "gemini-2.5-flash-lite")
+                    raw_sql = generate_report_sql(
+                        prompt,
+                        model=model,
+                        **self._gemini_ai_options(),
+                    )
                     sql_generated = validate_sql(raw_sql)
                     result = self.request.dbsession.execute(text(sql_generated))
                     columns = list(result.keys())
@@ -75,6 +93,31 @@ class ReportView:
             "rows": rows,
             "error": error,
             "sql_generated": sql_generated,
+        }
+
+    @view_config(
+        route_name="report_ai_dashboard",
+        renderer="report_ai_dashboard.mako",
+        permission="view",
+    )
+    def ai_dashboard(self):
+        _ = self.request.translate
+        snapshot = get_ai_metrics_snapshot()
+        sources = []
+        for name, data in snapshot.get("sources", {}).items():
+            row = {"source": name, **data}
+            sources.append(row)
+        sources.sort(
+            key=lambda item: (
+                item.get("requests", 0),
+                item.get("errors", 0),
+            ),
+            reverse=True,
+        )
+        return {
+            "heading": _("AI telemetry dashboard"),
+            "totals": snapshot.get("totals", {}),
+            "sources": sources,
         }
 
     @view_config(

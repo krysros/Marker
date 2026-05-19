@@ -40,7 +40,9 @@ dependencies = [
     "pycountry",
     "odfpy",
     "beautifulsoup4",
-    "google-genai",
+    "langchain",
+    "langchain-community",
+    "langchain-google-genai",
 ]
 
 [dependency-groups]
@@ -49,6 +51,8 @@ docs = [
 ]
 dev = [
     "pyramid_debugtoolbar",
+    "pytest>=9.0.3",
+    "webtest>=3.0.7",
 ]
 testing = [
     "WebTest",

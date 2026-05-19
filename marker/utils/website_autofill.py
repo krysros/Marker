@@ -1,15 +1,53 @@
 import json
+import os
 import re
 import unicodedata
 import urllib.request
 
 import pycountry
 from bs4 import BeautifulSoup
-from google import genai
-from google.genai import types
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
+from .langchain_ai import invoke_json
+
+
+_MAX_AUTOFILL_CONTENT_CHARS = 20_000
+
+
+class _CompanyAutofillModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    name: str = ""
+    street: str = ""
+    postcode: str = ""
+    city: str = ""
+    subdivision: str = ""
+    country: str = ""
+    NIP: str = ""
+    REGON: str = ""
+    KRS: str = ""
+
+
+class _ProjectAutofillModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    name: str = ""
+    street: str = ""
+    postcode: str = ""
+    city: str = ""
+    subdivision: str = ""
+    country: str = ""
+
+
+class _ContactAutofillModel(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    name: str = ""
+    role: str = ""
+    phone: str = ""
+    email: str = ""
 
 
 def _load_page_content(url):
@@ -23,19 +61,41 @@ def _load_page_content(url):
     return soup.get_text(separator="\n", strip=True)
 
 
-def _gemini_json(prompt, model="gemini-2.5-flash-lite"):
+def _gemini_json(
+    prompt,
+    model="gemini-2.5-flash-lite",
+    fallback_model=None,
+    retries=None,
+    source="unknown",
+):
     """Call Google Gemini with forced JSON output and return parsed result."""
-    client = genai.Client()
-    response = client.models.generate_content(
+    fallback = fallback_model or os.environ.get("GEMINI_FALLBACK_MODEL")
+    retries_value = retries
+    if retries_value is None:
+        retries_raw = os.environ.get("GEMINI_RETRIES")
+        if retries_raw not in (None, ""):
+            try:
+                retries_value = max(0, int(retries_raw))
+            except ValueError:
+                retries_value = None
+    return invoke_json(
+        prompt,
         model=model,
-        contents=prompt,
-        config=types.GenerateContentConfig(response_mime_type="application/json"),
+        fallback_model=fallback,
+        retries=2 if retries_value is None else retries_value,
+        source=source,
     )
-    return json.loads(response.text)
 
 
 def _autofill_from_website(
-    url, prompt, model="gemini-2.5-flash-lite", default_country=""
+    url,
+    prompt,
+    model="gemini-2.5-flash-lite",
+    default_country="",
+    schema_model=None,
+    fallback_model=None,
+    retries=None,
+    source="unknown",
 ):
     """
     Shared logic for autofilling company or project data from a website.
@@ -44,7 +104,17 @@ def _autofill_from_website(
     if not content:
         raise ValueError(str(_("Could not load content from %(url)s")) % {"url": url})
 
-    result = _gemini_json(f"{prompt}:\n\n{content}", model=model)
+    # Keep content bounded to limit token usage and avoid brittle behavior on huge pages.
+    bounded_content = content[:_MAX_AUTOFILL_CONTENT_CHARS]
+    result = _gemini_json(
+        f"{prompt}:\n\n{bounded_content}",
+        model=model,
+        fallback_model=fallback_model,
+        retries=retries,
+        source=source,
+    )
+    if schema_model is not None:
+        result = _validate_structured_object(result, schema_model)
 
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
@@ -125,24 +195,51 @@ def _country_from_locale(locale_str):
 
 
 def company_autofill_from_website(
-    website, model="gemini-2.5-flash-lite", default_country=""
+    website,
+    model="gemini-2.5-flash-lite",
+    default_country="",
+    fallback_model=None,
+    retries=None,
 ):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
     return _autofill_from_website(
-        website, prompt, model=model, default_country=default_country
+        website,
+        prompt,
+        model=model,
+        default_country=default_country,
+        schema_model=_CompanyAutofillModel,
+        fallback_model=fallback_model,
+        retries=retries,
+        source="company_autofill",
     )
 
 
 def project_autofill_from_website(
-    website, model="gemini-2.5-flash-lite", default_country=""
+    website,
+    model="gemini-2.5-flash-lite",
+    default_country="",
+    fallback_model=None,
+    retries=None,
 ):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
     return _autofill_from_website(
-        website, prompt, model=model, default_country=default_country
+        website,
+        prompt,
+        model=model,
+        default_country=default_country,
+        schema_model=_ProjectAutofillModel,
+        fallback_model=fallback_model,
+        retries=retries,
+        source="project_autofill",
     )
 
 
-def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
+def contacts_autofill_from_website(
+    website,
+    model="gemini-2.5-flash-lite",
+    fallback_model=None,
+    retries=None,
+):
     """
     Extract a list of contacts (people) from the given website URL.
     In addition to the main URL, tries common contact sub-pages
@@ -192,20 +289,30 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
         "If no contacts are found, return an empty array []."
     )
 
-    result = _gemini_json(f"{prompt}:\n\n{content}", model=model)
+    result = _gemini_json(
+        f"{prompt}:\n\n{content}",
+        model=model,
+        fallback_model=fallback_model,
+        retries=retries,
+        source="contacts_autofill",
+    )
 
     if isinstance(result, list):
-        return result
+        return _normalize_contacts(result)
     # Gemini sometimes wraps the array in a dict
     if isinstance(result, dict):
         for key in ("contacts", "people", "results", "data"):
             if key in result and isinstance(result[key], list):
-                return result[key]
+                return _normalize_contacts(result[key])
     return []
 
 
 def tags_autofill_from_website(
-    website, existing_tags=None, model="gemini-2.5-flash-lite"
+    website,
+    existing_tags=None,
+    model="gemini-2.5-flash-lite",
+    fallback_model=None,
+    retries=None,
 ):
     """
     Extract a list of tags (core business activities or project types) from the
@@ -267,16 +374,78 @@ def tags_autofill_from_website(
         " Return at most 20 items. If nothing can be determined, return an empty array []."
     )
 
-    result = _gemini_json(f"{prompt}:\n\n{content}", model=model)
+    result = _gemini_json(
+        f"{prompt}:\n\n{content}",
+        model=model,
+        fallback_model=fallback_model,
+        retries=retries,
+        source="tags_autofill",
+    )
 
     if isinstance(result, list):
-        return [str(t).strip() for t in result if str(t).strip()][:20]
+        return _normalize_tags(result)
     # Gemini sometimes wraps in a dict
     if isinstance(result, dict):
         for key in ("tags", "items", "results", "data"):
             if key in result and isinstance(result[key], list):
-                return [str(t).strip() for t in result[key] if str(t).strip()][:20]
+                return _normalize_tags(result[key])
     return []
+
+
+def _validate_structured_object(payload, schema_model):
+    if not isinstance(payload, dict):
+        payload = {}
+    try:
+        validated = schema_model.model_validate(payload)
+    except ValidationError:
+        validated = schema_model()
+    return {
+        key: _normalize_optional_text(value)
+        for key, value in validated.model_dump().items()
+    }
+
+
+def _normalize_contacts(items):
+    contacts = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        try:
+            validated = _ContactAutofillModel.model_validate(item)
+        except ValidationError:
+            continue
+        normalized = {
+            key: _normalize_optional_text(value)
+            for key, value in validated.model_dump().items()
+        }
+        if normalized.get("name"):
+            contacts.append(normalized)
+    return contacts
+
+
+def _normalize_tags(items):
+    normalized = []
+    seen = set()
+    for tag in items:
+        text = _normalize_optional_text(tag)
+        if not text:
+            continue
+        key = text.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        normalized.append(text)
+        if len(normalized) >= 20:
+            break
+    return normalized
+
+
+def _normalize_optional_text(value):
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value.strip()
+    return str(value).strip()
 
 
 def _subdivision_code_from_value(value, country_code):

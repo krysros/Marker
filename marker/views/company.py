@@ -76,6 +76,20 @@ class CompanyView:
     def __init__(self, request):
         self.request = request
 
+    def _gemini_ai_options(self):
+        settings = getattr(self.request.registry, "settings", None) or {}
+        options = {}
+        fallback_model = (settings.get("gemini.fallback_model") or "").strip()
+        if fallback_model:
+            options["fallback_model"] = fallback_model
+        retries_raw = settings.get("gemini.retries")
+        if retries_raw not in (None, ""):
+            try:
+                options["retries"] = max(0, int(retries_raw))
+            except (TypeError, ValueError):
+                pass
+        return options
+
     def _normalized_tags(self):
         return normalized_tags_from_request(self.request)
 
@@ -1359,12 +1373,16 @@ class CompanyView:
         website = self.request.params.get("website", "")
         settings = getattr(self.request.registry, "settings", None) or {}
         model = settings.get("gemini.model", "gemini-2.5-flash-lite")
+        ai_options = self._gemini_ai_options()
         from ..utils.website_autofill import _country_from_locale
 
         default_country = _country_from_locale(self.request.locale_name)
         try:
             fields = company_autofill_from_website(
-                website, model=model, default_country=default_country
+                website,
+                model=model,
+                default_country=default_country,
+                **ai_options,
             )
         except Exception as e:
             log.error("company_website_autofill error: %s", e)
@@ -1765,12 +1783,16 @@ class CompanyView:
             self.request.POST if self.request.method == "POST" else None
         )
         if self.request.method == "POST" and form.validate():
-            model = (getattr(self.request.registry, "settings", None) or {}).get(
-                "gemini.model", "gemini-2.5-flash-lite"
-            )
+            settings = getattr(self.request.registry, "settings", None) or {}
+            model = settings.get("gemini.model", "gemini-2.5-flash-lite")
+            ai_options = self._gemini_ai_options()
             try:
                 autofill = dict(
-                    company_autofill_from_website(form.website.data, model=model)
+                    company_autofill_from_website(
+                        form.website.data,
+                        model=model,
+                        **ai_options,
+                    )
                 )
                 autofill["website"] = form.website.data
             except Exception:

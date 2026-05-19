@@ -1,21 +1,9 @@
 import re
-
-try:
-    from langchain_google_genai import ChatGoogleGenerativeAI
-except ImportError:  # pragma: no cover - exercised through patched tests
-
-    class ChatGoogleGenerativeAI:
-        def __init__(self, *args, **kwargs):
-            self.args = args
-            self.kwargs = kwargs
-
-        def invoke(self, *args, **kwargs):
-            raise ModuleNotFoundError(
-                "langchain_google_genai is required to generate AI reports"
-            )
+import os
 
 
 from ..forms.ts import TranslationString as _
+from .langchain_ai import invoke_text
 
 _SCHEMA_CONTEXT = """\
 You are a SQL query generator for a CRM database.
@@ -68,10 +56,28 @@ _FORBIDDEN_KEYWORDS = (
 )
 
 
-def generate_report_sql(prompt: str, model: str = "gemini-2.5-flash-lite") -> str:
-    llm = ChatGoogleGenerativeAI(model=model)
-    response = llm.invoke(f"{_SCHEMA_CONTEXT}\nUser request: {prompt}")
-    sql = response.content.strip()
+def generate_report_sql(
+    prompt: str,
+    model: str = "gemini-2.5-flash-lite",
+    fallback_model: str | None = None,
+    retries: int | None = None,
+) -> str:
+    fallback_model = fallback_model or os.environ.get("GEMINI_FALLBACK_MODEL")
+    retries_value = retries
+    if retries_value is None:
+        retries_raw = os.environ.get("GEMINI_RETRIES")
+        if retries_raw not in (None, ""):
+            try:
+                retries_value = max(0, int(retries_raw))
+            except ValueError:
+                retries_value = None
+    sql = invoke_text(
+        f"{_SCHEMA_CONTEXT}\nUser request: {prompt}",
+        model=model,
+        fallback_model=fallback_model,
+        retries=2 if retries_value is None else retries_value,
+        source="report_sql",
+    )
     # Strip markdown code fences if Gemini wraps them anyway
     sql = re.sub(r"^```(?:sql)?\s*\n?", "", sql, flags=re.IGNORECASE)
     sql = re.sub(r"\n?```\s*$", "", sql)

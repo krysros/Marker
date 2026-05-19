@@ -239,10 +239,8 @@ def test_autofill_geo_provides_postcode(mock_load, mock_gemini, mock_geo):
 
 
 def test_gemini_json_parses_response(monkeypatch):
-    mock_client = MagicMock()
-    mock_client.models.generate_content.return_value.text = '{"name": "Acme"}'
     monkeypatch.setattr(
-        "marker.utils.website_autofill.genai.Client", lambda: mock_client
+        "marker.utils.website_autofill.invoke_json", lambda *args, **kwargs: {"name": "Acme"}
     )
 
     result = _gemini_json("prompt text")
@@ -515,3 +513,70 @@ def test_tags_autofill_url_skip(mock_load, mock_gemini):
     result = tags_autofill_from_website("https://example.com/oferta")
 
     assert result == ["Design"]
+
+
+# ===========================================================================
+# structured output normalization
+# ===========================================================================
+
+
+@patch("marker.utils.website_autofill.location_details", return_value=None)
+@patch("marker.utils.website_autofill._gemini_json")
+@patch("marker.utils.website_autofill._load_page_content", return_value="content")
+def test_company_autofill_structured_ignores_unknown_keys(
+    mock_load, mock_gemini, mock_geo
+):
+    mock_gemini.return_value = {
+        "name": " Acme ",
+        "city": " Warsaw ",
+        "unknown": "drop-me",
+    }
+
+    result = company_autofill_from_website("https://example.com")
+
+    assert result["name"] == "Acme"
+    assert result["city"] == "Warsaw"
+    assert "unknown" not in result
+
+
+@patch("marker.utils.website_autofill.location_details", return_value=None)
+@patch("marker.utils.website_autofill._gemini_json")
+@patch("marker.utils.website_autofill._load_page_content", return_value="content")
+def test_company_autofill_structured_fallbacks_on_invalid_object(
+    mock_load, mock_gemini, mock_geo
+):
+    mock_gemini.return_value = ["invalid-shape"]
+
+    result = company_autofill_from_website(
+        "https://example.com", default_country="PL"
+    )
+
+    # Invalid shape is coerced to schema defaults then enriched by default country logic.
+    assert result["name"] == ""
+    assert result["country"] == "PL"
+
+
+@patch("marker.utils.website_autofill._gemini_json")
+@patch("marker.utils.website_autofill._load_page_content")
+def test_contacts_autofill_filters_invalid_and_blank_name(mock_load, mock_gemini):
+    mock_load.side_effect = _make_load_page_side_effect("main page content", "x" * 300)
+    mock_gemini.return_value = [
+        {"name": "  Alice  ", "role": " CEO "},
+        {"name": "   ", "role": "no-name"},
+        "not-an-object",
+    ]
+
+    result = contacts_autofill_from_website("https://example.com")
+
+    assert result == [{"name": "Alice", "role": "CEO", "phone": "", "email": ""}]
+
+
+@patch("marker.utils.website_autofill._gemini_json")
+@patch("marker.utils.website_autofill._load_page_content")
+def test_tags_autofill_deduplicates_case_insensitive(mock_load, mock_gemini):
+    mock_load.side_effect = _make_load_page_side_effect("main page content", "x" * 300)
+    mock_gemini.return_value = ["BIM", " bim ", "Architecture", ""]
+
+    result = tags_autofill_from_website("https://example.com")
+
+    assert result == ["BIM", "Architecture"]

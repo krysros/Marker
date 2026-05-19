@@ -1,6 +1,6 @@
 """Tests for marker/utils/llm_report.py"""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -9,29 +9,21 @@ import pytest
 # ---------------------------------------------------------------------------
 
 
-@patch("marker.utils.llm_report.ChatGoogleGenerativeAI")
-def test_generate_report_sql_returns_sql(mock_llm_class):
-    mock_llm = MagicMock()
-    mock_llm.invoke.return_value = MagicMock(
-        content="SELECT name FROM companies LIMIT 10"
-    )
-    mock_llm_class.return_value = mock_llm
+@patch("marker.utils.llm_report.invoke_text")
+def test_generate_report_sql_returns_sql(mock_invoke_text):
+    mock_invoke_text.return_value = "SELECT name FROM companies LIMIT 10"
 
     from marker.utils.llm_report import generate_report_sql
 
     result = generate_report_sql("list all companies")
 
     assert result == "SELECT name FROM companies LIMIT 10"
-    mock_llm_class.assert_called_once_with(model="gemini-2.5-flash-lite")
+    mock_invoke_text.assert_called_once()
 
 
-@patch("marker.utils.llm_report.ChatGoogleGenerativeAI")
-def test_generate_report_sql_strips_sql_code_fence(mock_llm_class):
-    mock_llm = MagicMock()
-    mock_llm.invoke.return_value = MagicMock(
-        content="```sql\nSELECT name FROM companies LIMIT 10\n```"
-    )
-    mock_llm_class.return_value = mock_llm
+@patch("marker.utils.llm_report.invoke_text")
+def test_generate_report_sql_strips_sql_code_fence(mock_invoke_text):
+    mock_invoke_text.return_value = "```sql\nSELECT name FROM companies LIMIT 10\n```"
 
     from marker.utils.llm_report import generate_report_sql
 
@@ -40,13 +32,9 @@ def test_generate_report_sql_strips_sql_code_fence(mock_llm_class):
     assert result == "SELECT name FROM companies LIMIT 10"
 
 
-@patch("marker.utils.llm_report.ChatGoogleGenerativeAI")
-def test_generate_report_sql_strips_plain_code_fence(mock_llm_class):
-    mock_llm = MagicMock()
-    mock_llm.invoke.return_value = MagicMock(
-        content="```\nSELECT id FROM projects\n```"
-    )
-    mock_llm_class.return_value = mock_llm
+@patch("marker.utils.llm_report.invoke_text")
+def test_generate_report_sql_strips_plain_code_fence(mock_invoke_text):
+    mock_invoke_text.return_value = "```\nSELECT id FROM projects\n```"
 
     from marker.utils.llm_report import generate_report_sql
 
@@ -55,17 +43,15 @@ def test_generate_report_sql_strips_plain_code_fence(mock_llm_class):
     assert result == "SELECT id FROM projects"
 
 
-@patch("marker.utils.llm_report.ChatGoogleGenerativeAI")
-def test_generate_report_sql_passes_model_param(mock_llm_class):
-    mock_llm = MagicMock()
-    mock_llm.invoke.return_value = MagicMock(content="SELECT 1")
-    mock_llm_class.return_value = mock_llm
+@patch("marker.utils.llm_report.invoke_text")
+def test_generate_report_sql_passes_model_param(mock_invoke_text):
+    mock_invoke_text.return_value = "SELECT 1"
 
     from marker.utils.llm_report import generate_report_sql
 
     generate_report_sql("test", model="gemini-custom-model")
 
-    mock_llm_class.assert_called_once_with(model="gemini-custom-model")
+    assert mock_invoke_text.call_args.kwargs["model"] == "gemini-custom-model"
 
 
 # ---------------------------------------------------------------------------
