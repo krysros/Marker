@@ -119,33 +119,18 @@ class UserView:
             .all()
         )
 
-        company_contact_ids = []
-        project_contact_ids = []
-
+        _contact_conditions = [Contact.creator_id == user.id]
         if company_ids:
-            company_contact_ids = (
-                dbsession.execute(
-                    select(Contact.id).where(Contact.company_id.in_(company_ids))
-                )
-                .scalars()
-                .all()
-            )
-
+            _contact_conditions.append(Contact.company_id.in_(company_ids))
         if project_ids:
-            project_contact_ids = (
-                dbsession.execute(
-                    select(Contact.id).where(Contact.project_id.in_(project_ids))
-                )
-                .scalars()
-                .all()
-            )
+            _contact_conditions.append(Contact.project_id.in_(project_ids))
 
-        contact_ids_to_delete = list(
-            {
-                *created_contact_ids,
-                *company_contact_ids,
-                *project_contact_ids,
-            }
+        contact_ids_to_delete = (
+            dbsession.execute(
+                select(Contact.id).where(or_(*_contact_conditions)).distinct()
+            )
+            .scalars()
+            .all()
         )
 
         clear_selected_rows(
@@ -605,7 +590,7 @@ class UserView:
             stmt = stmt.order_by(sort_column(User, _sort).desc())
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt.subquery())
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -829,7 +814,17 @@ class UserView:
 
         stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
-        tags = self.request.dbsession.execute(stmt).scalars().all()
+        if category == "projects":
+            eager_opts = selectinload(Tag.projects).options(
+                selectinload(Project.tags),
+                selectinload(Project.contacts),
+            )
+        else:
+            eager_opts = selectinload(Tag.companies).options(
+                selectinload(Company.tags),
+                selectinload(Company.contacts),
+            )
+        tags = self.request.dbsession.execute(stmt.options(eager_opts)).scalars().all()
         rows, row_colors = self._tag_export_rows(tags, category=category)
         header_row = self._tag_export_header(category=category)
         response = make_export_response(
@@ -1081,7 +1076,12 @@ class UserView:
         else:
             stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
-        companies = self.request.dbsession.execute(stmt).scalars().all()
+        companies = self.request.dbsession.execute(
+            stmt.options(
+                selectinload(Company.tags),
+                selectinload(Company.contacts),
+            )
+        ).scalars().all()
         rows, row_colors = self._company_export_rows(companies)
         header_row = self._company_export_header()
         response = make_export_response(
@@ -1393,7 +1393,12 @@ class UserView:
         else:
             stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
-        projects = self.request.dbsession.execute(stmt).scalars().all()
+        projects = self.request.dbsession.execute(
+            stmt.options(
+                selectinload(Project.tags),
+                selectinload(Project.contacts),
+            )
+        ).scalars().all()
         rows, row_colors = self._project_export_rows(projects)
         header_row = self._project_export_header()
         response = make_export_response(
@@ -2575,7 +2580,12 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
-        companies = self.request.dbsession.execute(stmt).scalars().all()
+        companies = self.request.dbsession.execute(
+            stmt.options(
+                selectinload(Company.tags),
+                selectinload(Company.contacts),
+            )
+        ).scalars().all()
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
@@ -3484,7 +3494,12 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(stmt).scalars().all()
+        projects = self.request.dbsession.execute(
+            stmt.options(
+                selectinload(Project.tags),
+                selectinload(Project.contacts),
+            )
+        ).scalars().all()
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
@@ -3544,7 +3559,7 @@ class UserView:
             )
 
         counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt.subquery())
+            select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
         paginator = (
@@ -3851,7 +3866,17 @@ class UserView:
 
         stmt = apply_order(stmt, sort_column(Tag, _sort), _order)
 
-        tags = self.request.dbsession.execute(stmt).scalars().all()
+        if category == "projects":
+            eager_opts = selectinload(Tag.projects).options(
+                selectinload(Project.tags),
+                selectinload(Project.contacts),
+            )
+        else:
+            eager_opts = selectinload(Tag.companies).options(
+                selectinload(Company.tags),
+                selectinload(Company.contacts),
+            )
+        tags = self.request.dbsession.execute(stmt.options(eager_opts)).scalars().all()
         rows, row_colors = self._tag_export_rows(tags, category=category)
 
         header_row = self._tag_export_header(category=category)
@@ -5196,7 +5221,12 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
-        companies = self.request.dbsession.execute(stmt).scalars().all()
+        companies = self.request.dbsession.execute(
+            stmt.options(
+                selectinload(Company.tags),
+                selectinload(Company.contacts),
+            )
+        ).scalars().all()
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
@@ -5490,7 +5520,12 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(stmt).scalars().all()
+        projects = self.request.dbsession.execute(
+            stmt.options(
+                selectinload(Project.tags),
+                selectinload(Project.contacts),
+            )
+        ).scalars().all()
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()

@@ -24,21 +24,14 @@ class ContractorView:
         return normalized_tags_from_request(self.request)
 
     def _available_tags(self):
-        names = self.request.dbsession.execute(
-            select(Tag.name)
+        return self.request.dbsession.execute(
+            select(func.min(Tag.name))
             .join(companies_tags, companies_tags.c.tag_id == Tag.id)
             .join(Activity, Activity.company_id == companies_tags.c.company_id)
-            .distinct()
-        ).scalars()
-
-        tags_by_normalized = {}
-        for name in names:
-            if not name:
-                continue
-            normalized = normalize_ci_value(name)
-            tags_by_normalized.setdefault(normalized, name)
-
-        return sorted(tags_by_normalized.values(), key=normalize_ci_value)
+            .where(Tag.name.isnot(None), Tag.name != "")
+            .group_by(normalize_ci_expression(Tag.name))
+            .order_by(normalize_ci_expression(func.min(Tag.name)))
+        ).scalars().all()
 
     @view_config(
         route_name="contractor_all",
