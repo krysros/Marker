@@ -1779,6 +1779,7 @@ class CompanyView:
                 )
                 autofill["website"] = form.website.data
             except Exception as e:
+                log.error("company_add_ai autofill error: %s", e)
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the company data"
