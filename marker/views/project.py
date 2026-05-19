@@ -1897,7 +1897,7 @@ class ProjectView:
                     project_autofill_from_website(form.website.data, model=model)
                 )
                 autofill["website"] = form.website.data
-            except Exception as e:
+            except Exception:
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the project data"

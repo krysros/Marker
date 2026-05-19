@@ -1923,9 +1923,7 @@ def test_tag_unassigned_filter_date_from(dbsession):
     user = _make_user(dbsession, "tagunassign5")
     _make_tag(dbsession, user, "DateFreeTag")
     transaction.commit()
-    request = _make_request(
-        dbsession, user, params={"date_from": "2020-01-01T00:00"}
-    )
+    request = _make_request(dbsession, user, params={"date_from": "2020-01-01T00:00"})
     view = TagView(request)
     result = view.unassigned()
     assert result["q"]["date_from"] == "2020-01-01T00:00"
@@ -1935,9 +1933,7 @@ def test_tag_unassigned_filter_date_to(dbsession):
     user = _make_user(dbsession, "tagunassign6")
     _make_tag(dbsession, user, "DateToFreeTag")
     transaction.commit()
-    request = _make_request(
-        dbsession, user, params={"date_to": "2030-01-01T00:00"}
-    )
+    request = _make_request(dbsession, user, params={"date_to": "2030-01-01T00:00"})
     view = TagView(request)
     result = view.unassigned()
     assert result["q"]["date_to"] == "2030-01-01T00:00"
@@ -1964,4 +1960,3 @@ def test_tag_unassigned_bulk_select(dbsession):
     view = TagView(request)
     result = view.unassigned()
     assert result is request.response
-

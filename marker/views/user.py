@@ -49,7 +49,6 @@ from ..models import (
 )
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
-from ..utils.uptime import check_website_uptime, render_uptime_badge
 from . import (
     Filter,
     apply_order,
@@ -1076,12 +1075,16 @@ class UserView:
         else:
             stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
 
-        companies = self.request.dbsession.execute(
-            stmt.options(
-                selectinload(Company.tags),
-                selectinload(Company.contacts),
+        companies = (
+            self.request.dbsession.execute(
+                stmt.options(
+                    selectinload(Company.tags),
+                    selectinload(Company.contacts),
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         rows, row_colors = self._company_export_rows(companies)
         header_row = self._company_export_header()
         response = make_export_response(
@@ -1393,12 +1396,16 @@ class UserView:
         else:
             stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
 
-        projects = self.request.dbsession.execute(
-            stmt.options(
-                selectinload(Project.tags),
-                selectinload(Project.contacts),
+        projects = (
+            self.request.dbsession.execute(
+                stmt.options(
+                    selectinload(Project.tags),
+                    selectinload(Project.contacts),
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         rows, row_colors = self._project_export_rows(projects)
         header_row = self._project_export_header()
         response = make_export_response(
@@ -2580,12 +2587,16 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
-        companies = self.request.dbsession.execute(
-            stmt.options(
-                selectinload(Company.tags),
-                selectinload(Company.contacts),
+        companies = (
+            self.request.dbsession.execute(
+                stmt.options(
+                    selectinload(Company.tags),
+                    selectinload(Company.contacts),
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
@@ -3494,12 +3505,16 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(
-            stmt.options(
-                selectinload(Project.tags),
-                selectinload(Project.contacts),
+        projects = (
+            self.request.dbsession.execute(
+                stmt.options(
+                    selectinload(Project.tags),
+                    selectinload(Project.contacts),
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
@@ -5221,12 +5236,16 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Company, _sort).desc())
 
-        companies = self.request.dbsession.execute(
-            stmt.options(
-                selectinload(Company.tags),
-                selectinload(Company.contacts),
+        companies = (
+            self.request.dbsession.execute(
+                stmt.options(
+                    selectinload(Company.tags),
+                    selectinload(Company.contacts),
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         rows, row_colors = self._company_export_rows(companies)
 
         header_row = self._company_export_header()
@@ -5333,7 +5352,7 @@ class UserView:
             select(Company)
             .join(companies_stars)
             .filter(user.id == companies_stars.c.user_id)
-            .filter(Company.website != None)
+            .filter(Company.website is not None)
             .filter(Company.website != "")
         )
         paginator = (
@@ -5346,7 +5365,12 @@ class UserView:
             username=user.name,
             _query={"page": page + 1},
         )
-        return {"user": user, "paginator": paginator, "next_page": next_page, "page": page}
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "page": page,
+        }
 
     @view_config(
         route_name="user_projects_stars",
@@ -5520,12 +5544,16 @@ class UserView:
         elif _order == "desc":
             stmt = stmt.order_by(sort_column(Project, _sort).desc())
 
-        projects = self.request.dbsession.execute(
-            stmt.options(
-                selectinload(Project.tags),
-                selectinload(Project.contacts),
+        projects = (
+            self.request.dbsession.execute(
+                stmt.options(
+                    selectinload(Project.tags),
+                    selectinload(Project.contacts),
+                )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         rows, row_colors = self._project_export_rows(projects)
 
         header_row = self._project_export_header()
@@ -5632,7 +5660,7 @@ class UserView:
             select(Project)
             .join(projects_stars)
             .filter(user.id == projects_stars.c.user_id)
-            .filter(Project.website != None)
+            .filter(Project.website is not None)
             .filter(Project.website != "")
         )
         paginator = (
@@ -5645,7 +5673,12 @@ class UserView:
             username=user.name,
             _query={"page": page + 1},
         )
-        return {"user": user, "paginator": paginator, "next_page": next_page, "page": page}
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "page": page,
+        }
 
     @view_config(
         route_name="user_count_companies",

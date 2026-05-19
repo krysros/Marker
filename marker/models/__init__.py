@@ -26,21 +26,21 @@ def _unicode_lower(s: str | None) -> str | None:
 
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
-from .association import Activity  # flake8: noqa
-from .association import companies_stars  # flake8: noqa
-from .association import companies_tags  # flake8: noqa
-from .association import projects_stars  # flake8: noqa
-from .association import projects_tags  # flake8: noqa
-from .association import selected_companies  # flake8: noqa
-from .association import selected_contacts  # flake8: noqa
-from .association import selected_projects  # flake8: noqa
-from .association import selected_tags  # flake8: noqa
-from .comment import Comment  # flake8: noqa
-from .company import Company  # flake8: noqa
-from .contact import Contact  # flake8: noqa
-from .project import Project  # flake8: noqa
-from .tag import Tag  # flake8: noqa
-from .user import User  # flake8: noqa
+from .association import Activity  # noqa
+from .association import companies_stars  # noqa
+from .association import companies_tags  # noqa
+from .association import projects_stars  # noqa
+from .association import projects_tags  # noqa
+from .association import selected_companies  # noqa
+from .association import selected_contacts  # noqa
+from .association import selected_projects  # noqa
+from .association import selected_tags  # noqa
+from .comment import Comment  # noqa
+from .company import Company  # noqa
+from .contact import Contact  # noqa
+from .project import Project  # noqa
+from .tag import Tag  # noqa
+from .user import User  # noqa
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.

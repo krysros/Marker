@@ -1,33 +1,33 @@
-from .account import Account  # flake8: noqa
-from .account import ChangePassword  # flake8: noqa
-from .association import ActivityForm  # flake8: noqa
-from .comment import CommentFilterForm  # flake8: noqa
-from .comment import CommentForm  # flake8: noqa
-from .comment import CommentSearchForm  # flake8: noqa
-from .company import CompanyActivityForm  # flake8: noqa
-from .company import CompanyFilterForm  # flake8: noqa
-from .company import CompanyForm  # flake8: noqa
-from .company import CompanyLinkForm  # flake8: noqa
-from .company import CompanySearchForm  # flake8: noqa
-from .company_add_ai import CompanyAddAIForm  # flake8: noqa
-from .contact import ContactFilterForm  # flake8: noqa
-from .contact import ContactForm  # flaske8: noqa
-from .contact import ContactImportForm  # flake8: noqa
-from .contact import ContactImportVcardForm  # flake8: noqa
-from .contact import ContactSearchForm  # flake8: noqa
-from .contact import ContactUnassignedFilterForm  # flake8: noqa
-from .contractor import ContractorFilterForm  # flake8: noqa
-from .login import LoginForm  # flake8: noqa
-from .project import ProjectActivityForm  # flake8: noqa
-from .project import ProjectFilterForm  # flake8: noqa
-from .project import ProjectForm  # flake8: noqa
-from .project import ProjectLinkForm  # flake8: noqa
-from .project import ProjectSearchForm  # flake8: noqa
-from .project_add_ai import ProjectAddAIForm  # flake8: noqa
-from .tag import TagFilterForm  # flake8: noqa
-from .tag import TagForm  # flake8: noqa
-from .tag import TagLinkForm  # flake8: noqa
-from .tag import TagSearchForm  # flake8: noqa
-from .user import UserFilterForm  # flake8: noqa
-from .user import UserForm  # flake8: noqa
-from .user import UserSearchForm  # flake8: noqa
+from .account import Account  # noqa
+from .account import ChangePassword  # noqa
+from .association import ActivityForm  # noqa
+from .comment import CommentFilterForm  # noqa
+from .comment import CommentForm  # noqa
+from .comment import CommentSearchForm  # noqa
+from .company import CompanyActivityForm  # noqa
+from .company import CompanyFilterForm  # noqa
+from .company import CompanyForm  # noqa
+from .company import CompanyLinkForm  # noqa
+from .company import CompanySearchForm  # noqa
+from .company_add_ai import CompanyAddAIForm  # noqa
+from .contact import ContactFilterForm  # noqa
+from .contact import ContactForm  # noqa
+from .contact import ContactImportForm  # noqa
+from .contact import ContactImportVcardForm  # noqa
+from .contact import ContactSearchForm  # noqa
+from .contact import ContactUnassignedFilterForm  # noqa
+from .contractor import ContractorFilterForm  # noqa
+from .login import LoginForm  # noqa
+from .project import ProjectActivityForm  # noqa
+from .project import ProjectFilterForm  # noqa
+from .project import ProjectForm  # noqa
+from .project import ProjectLinkForm  # noqa
+from .project import ProjectSearchForm  # noqa
+from .project_add_ai import ProjectAddAIForm  # noqa
+from .tag import TagFilterForm  # noqa
+from .tag import TagForm  # noqa
+from .tag import TagLinkForm  # noqa
+from .tag import TagSearchForm  # noqa
+from .user import UserFilterForm  # noqa
+from .user import UserForm  # noqa
+from .user import UserSearchForm  # noqa

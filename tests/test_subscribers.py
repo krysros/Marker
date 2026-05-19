@@ -35,7 +35,9 @@ def test_selected_ids_loader_caches_result(dbsession):
 
 
 def test_add_renderer_globals():
-    translate_fn = lambda x: x
+    def translate_fn(x):
+        return x
+
     localizer_obj = object()
     request = SimpleNamespace(
         translate=translate_fn,

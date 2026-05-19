@@ -16,13 +16,9 @@ depends_on = None
 
 
 def upgrade():
-    op.create_index(
-        "ix_companies_stars_company_id", "companies_stars", ["company_id"]
-    )
+    op.create_index("ix_companies_stars_company_id", "companies_stars", ["company_id"])
     op.create_index("ix_companies_stars_user_id", "companies_stars", ["user_id"])
-    op.create_index(
-        "ix_projects_stars_project_id", "projects_stars", ["project_id"]
-    )
+    op.create_index("ix_projects_stars_project_id", "projects_stars", ["project_id"])
     op.create_index("ix_projects_stars_user_id", "projects_stars", ["user_id"])
 
 

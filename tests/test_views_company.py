@@ -2,9 +2,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import transaction
-from pyramid.httpexceptions import HTTPSeeOther
+from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from webob.multidict import MultiDict
-
 import marker.forms.ts
 from marker.models.association import Activity
 from marker.models.comment import Comment
@@ -968,8 +967,6 @@ def test_company_activity_edit_post_and_invalid(dbsession):
 
 
 # Error and edge case tests
-import pytest
-from pyramid.httpexceptions import HTTPNotFound
 
 
 def test_unlink_tag_not_found(dbsession):
@@ -2919,7 +2916,7 @@ def test_company_add_post_with_tags(mock_loc, dbsession):
     )
     request.params["tag"] = "NewTestTag"
     view = CompanyView(request)
-    result = view.add()
+    view.add()
 
 
 # ===========================================================================
@@ -3397,7 +3394,6 @@ def test_company_all_filter_name(dbsession):
     user = _co_user(dbsession, "conamefilter")
     _co_company(dbsession, user, "FilterNameCo")
     transaction.commit()
-    from webob.multidict import MultiDict as WMultiDict
 
     request = _co_request(dbsession, user, params={"name": "FilterNameCo"})
     request.matched_route.name = "company_all"

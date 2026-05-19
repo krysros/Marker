@@ -64,7 +64,10 @@ def test_subdivision_code_from_value_not_found():
 def test_company_autofill_success(mock_load, mock_gemini, mock_geo):
     mock_load.return_value = "test page content"
     mock_gemini.return_value = {
-        "name": "TestCo", "street": "ul. Testowa 1", "postcode": "00-001", "city": "Warsaw"
+        "name": "TestCo",
+        "street": "ul. Testowa 1",
+        "postcode": "00-001",
+        "city": "Warsaw",
     }
     mock_geo.return_value = {
         "country_code": "PL",
@@ -88,8 +91,13 @@ def test_project_autofill_success(mock_load, mock_gemini, mock_geo):
     assert result["city"] == "Krakow"
 
 
-@patch("marker.utils.website_autofill._gemini_json", side_effect=ValueError("API key not configured"))
-@patch("marker.utils.website_autofill._load_page_content", return_value="test page content")
+@patch(
+    "marker.utils.website_autofill._gemini_json",
+    side_effect=ValueError("API key not configured"),
+)
+@patch(
+    "marker.utils.website_autofill._load_page_content", return_value="test page content"
+)
 def test_autofill_missing_api_key(mock_load, mock_gemini):
     with pytest.raises(ValueError):
         company_autofill_from_website("https://example.com")
@@ -165,9 +173,7 @@ def test_autofill_country_empty_defaults_to_pl(mock_load, mock_gemini, mock_geo)
     mock_load.return_value = "test page content"
     mock_gemini.return_value = {"name": "Co", "city": "Warsaw"}
     mock_geo.return_value = None
-    result = company_autofill_from_website(
-        "https://example.com", default_country="PL"
-    )
+    result = company_autofill_from_website("https://example.com", default_country="PL")
     assert result["country"] == "PL"
 
 
@@ -268,7 +274,9 @@ def test_contacts_autofill_list_result(mock_load, mock_gemini):
         Exception("not found"),
         long_content,
     )
-    mock_gemini.return_value = [{"name": "Alice", "role": "CEO", "phone": "123", "email": "a@e.com"}]
+    mock_gemini.return_value = [
+        {"name": "Alice", "role": "CEO", "phone": "123", "email": "a@e.com"}
+    ]
 
     result = contacts_autofill_from_website("https://example.com")
 

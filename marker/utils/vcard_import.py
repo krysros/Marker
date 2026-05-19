@@ -14,7 +14,7 @@ Supported fields (matching the built-in vCard export):
 """
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 from sqlalchemy import func, select

@@ -1,6 +1,5 @@
 from urllib.parse import urlsplit
 
-from pyramid.i18n import TranslationString as _
 from sqlalchemy import String, Text, delete, func, insert, literal, select
 from zope.sqlalchemy import mark_changed
 

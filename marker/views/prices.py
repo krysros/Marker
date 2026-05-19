@@ -65,8 +65,8 @@ class PricesView:
         stages = dict(STAGES)
         roles = dict(COMPANY_ROLES)
         object_categories = dict(OBJECT_CATEGORIES)
-        stage_choices = [(v, l) for v, l in STAGES if v]
-        role_choices = [(v, l) for v, l in COMPANY_ROLES if v]
+        stage_choices = [(v, label) for v, label in STAGES if v]
+        role_choices = [(v, label) for v, label in COMPANY_ROLES if v]
         currency_choices = select_currencies()
         sort_criteria = {
             "project_name": _("Project"),
@@ -182,11 +182,11 @@ class PricesView:
         q["order"] = _order
 
         stage_case = sa_case(
-            *[(Activity.stage == v, str(_(l))) for v, l in STAGES if v],
+            *[(Activity.stage == v, str(_(label))) for v, label in STAGES if v],
             else_=Activity.stage,
         ).collate("POLISH_CI")
         role_case = sa_case(
-            *[(Activity.role == v, str(_(l))) for v, l in COMPANY_ROLES if v],
+            *[(Activity.role == v, str(_(label))) for v, label in COMPANY_ROLES if v],
             else_=Activity.role,
         ).collate("POLISH_CI")
 
@@ -355,11 +355,11 @@ class PricesView:
         )
 
         stage_case = sa_case(
-            *[(Activity.stage == v, str(_(l))) for v, l in STAGES if v],
+            *[(Activity.stage == v, str(_(label))) for v, label in STAGES if v],
             else_=Activity.stage,
         ).collate("POLISH_CI")
         role_case = sa_case(
-            *[(Activity.role == v, str(_(l))) for v, l in COMPANY_ROLES if v],
+            *[(Activity.role == v, str(_(label))) for v, label in COMPANY_ROLES if v],
             else_=Activity.role,
         ).collate("POLISH_CI")
         _sort_map = {

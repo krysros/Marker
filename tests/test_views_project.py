@@ -1373,7 +1373,7 @@ def test_project_add_company_post(dbsession):
     """Lines 1401-1425: POST add_company."""
     user = _make_user(dbsession, "projaddcopost")
     project = _make_project(dbsession, user, "AddCoPostProj")
-    company = _make_company(dbsession, user, "AddCoPostCompany")
+    _make_company(dbsession, user, "AddCoPostCompany")
     transaction.commit()
     request = _make_request(
         dbsession,
@@ -2837,7 +2837,7 @@ def test_project_website_autofill_error_long_response(mock_autofill, dbsession):
 
     request.session.flash = flash
     view = ProjectView(request)
-    result = view.website_autofill()
+    view.website_autofill()
     # The returned error is the original exception, but the flash message is truncated and should contain (details omitted)
     flash_msg = flashes[-1][1]
     assert "(details omitted)" in flash_msg
@@ -2864,7 +2864,7 @@ def test_project_website_autofill_error_flash_truncation(mock_autofill, dbsessio
 
     request.session.flash = flash
     view = ProjectView(request)
-    result = view.website_autofill()
+    view.website_autofill()
     # The flash message should be truncated to max_len and end with '...'
     flash_msg = flashes[-1][1]
     assert flash_msg.endswith("...")

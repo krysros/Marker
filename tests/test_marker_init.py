@@ -43,8 +43,6 @@ def test_models_dbsession_fallback_when_no_environ():
     fake_dbsession = MagicMock()
     captured = {}
 
-    original_add_request_method = None
-
     with (
         patch("marker.models.get_engine", return_value=fake_engine),
         patch("marker.models.get_session_factory", return_value=mock_session_factory),

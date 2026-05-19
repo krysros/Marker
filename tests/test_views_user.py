@@ -2704,7 +2704,7 @@ def test_user_export_tags_invalid_sort_order(dbsession):
 def test_user_export_tags_projects_no_projects(dbsession):
     """Cover lines 820-866: tag with category=projects but tag has no projects."""
     user = _user(dbsession, "texpnp")
-    tag = _tag(dbsession, user, "TExpNoProjTag")
+    _tag(dbsession, user, "TExpNoProjTag")
     # tag has no projects
     transaction.commit()
     request = _req(

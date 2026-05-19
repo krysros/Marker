@@ -37,9 +37,12 @@ class Project(CountMixin, Base):
     usable_area: Mapped[Optional[Decimal]]
     cubic_volume: Mapped[Optional[Decimal]]
 
-    created_at: Mapped[datetime.datetime] = mapped_column(default=lambda: datetime.datetime.now(UTC))
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        default=lambda: datetime.datetime.now(UTC)
+    )
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        default=lambda: datetime.datetime.now(UTC), onupdate=lambda: datetime.datetime.now(UTC)
+        default=lambda: datetime.datetime.now(UTC),
+        onupdate=lambda: datetime.datetime.now(UTC),
     )
 
     creator_id: Mapped[Optional[int]] = mapped_column(

@@ -26,7 +26,9 @@ def _select_subdivisions(country_code=None):
         return (("", "---"),)
     country_subdivisions = pycountry.subdivisions.get(country_code=country_code) or []
     subdivisions = tuple(
-        sorted((subdivision.code, subdivision.name) for subdivision in country_subdivisions)
+        sorted(
+            (subdivision.code, subdivision.name) for subdivision in country_subdivisions
+        )
     )
     return (("", "---"),) + subdivisions
 

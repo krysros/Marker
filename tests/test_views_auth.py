@@ -146,7 +146,7 @@ def test_httpexception_view_renders_template(mock_render, dbsession):
     mock_response = MagicMock()
     mock_response.headers = ResponseHeaders()
     mock_render.return_value = mock_response
-    result = httpexception_view(exc, request)
+    httpexception_view(exc, request)
     assert mock_render.called
 
 

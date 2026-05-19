@@ -41,7 +41,6 @@ def test_user_check_password_rehash(dbsession):
     )
     dbsession.add(user)
     dbsession.flush()
-    old_hash = user.password
     mock_ph = MagicMock()
     mock_ph.verify.return_value = True
     mock_ph.check_needs_rehash.return_value = True

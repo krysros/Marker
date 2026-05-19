@@ -99,14 +99,14 @@ def test_parse_vcard_minimal():
 
 def test_parse_vcard_line_folding():
     # RFC 6350 §3.2: CRLF + single whitespace is removed (not replaced with space)
-    vcf = "BEGIN:VCARD\r\n" "VERSION:4.0\r\n" "FN:Long\r\n" " Name\r\n" "END:VCARD\r\n"
+    vcf = "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Long\r\n Name\r\nEND:VCARD\r\n"
     card = parse_vcard(vcf)
     # The fold marker (space) is stripped, so "Long" + "Name" = "LongName"
     assert card.name == "LongName"
 
 
 def test_parse_vcard_unescape_special_chars():
-    vcf = "BEGIN:VCARD\nVERSION:4.0\n" r"FN:O\'Brien\, Jr." + "\n" "END:VCARD\n"
+    vcf = "BEGIN:VCARD\nVERSION:4.0\n" r"FN:O\'Brien\, Jr." + "\nEND:VCARD\n"
     card = parse_vcard(vcf)
     assert "Brien" in card.name
 

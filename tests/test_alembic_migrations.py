@@ -39,7 +39,7 @@ def test_alembic_env_offline_mode():
         alembic.context = mock_ctx
         sys.modules["alembic.context"] = mock_ctx
         try:
-            mod = importlib.import_module(mod_name)
+            importlib.import_module(mod_name)
             mock_ctx.configure.assert_called()
             mock_ctx.run_migrations.assert_called()
         finally:

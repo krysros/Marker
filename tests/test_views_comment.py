@@ -1,12 +1,17 @@
 from unittest.mock import MagicMock
 
 import pytest
+import transaction
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.testing import DummyRequest
 from webob.multidict import MultiDict
 
+import marker.forms.ts
 from marker.forms.comment import CommentFilterForm, CommentSearchForm
 from marker.models import Comment
+from marker.models.company import Company
+from marker.models.project import Project
+from marker.models.user import User
 from marker.views.comment import CommentView
 
 
@@ -101,14 +106,6 @@ def test_count_view_returns_int(dummy_request):
 # ===========================================================================
 # Database-backed tests for uncovered branches
 # ===========================================================================
-
-import transaction
-
-import marker.forms.ts
-from marker.models.company import Company
-from marker.models.project import Project
-from marker.models.user import User
-from tests.conftest import DummyRequestWithIdentity
 
 
 @pytest.fixture(autouse=True)
@@ -279,7 +276,7 @@ def test_search_view_get(dummy_request):
 
 def test_search_view_post_valid(monkeypatch, dummy_request):
     dummy_request.method = "POST"
-    form = CommentSearchForm()
+    CommentSearchForm()
     monkeypatch.setattr(CommentSearchForm, "validate", lambda self: True)
     monkeypatch.setattr(CommentSearchForm, "comment", type("F", (), {"data": "test"})())
     dummy_request.POST = MultiDict({"comment": "test"})

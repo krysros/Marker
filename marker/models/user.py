@@ -32,9 +32,12 @@ class User(CountMixin, Base):
     email: Mapped[str]
     role: Mapped[str]
     _password: Mapped[str] = mapped_column("password")
-    created_at: Mapped[datetime.datetime] = mapped_column(default=lambda: datetime.datetime.now(UTC))
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        default=lambda: datetime.datetime.now(UTC)
+    )
     updated_at: Mapped[Optional[datetime.datetime]] = mapped_column(
-        default=lambda: datetime.datetime.now(UTC), onupdate=lambda: datetime.datetime.now(UTC)
+        default=lambda: datetime.datetime.now(UTC),
+        onupdate=lambda: datetime.datetime.now(UTC),
     )
 
     @property

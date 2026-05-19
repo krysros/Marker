@@ -1,5 +1,3 @@
-import os
-
 from sqlalchemy import select
 
 from marker import models
@@ -334,7 +332,7 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
     assert "Zulu Contact" not in res_filtered.text
     assert "Project Contact" not in res_filtered.text
 
-    legacy_route_res = testapp.get(
+    testapp.get(
         "/contact/search/tags/results",
         params={"tag": "pipeline", "sort": "name", "order": "asc"},
         status=303,
@@ -615,7 +613,7 @@ def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
         _extract_selected_sort_value(all_contacts_with_color_sort.text) == "created_at"
     )
 
-    tags_results_with_color_sort = testapp.get(
+    testapp.get(
         "/contact/search/tags/results",
         params={"tag": "pipeline", "sort": "color", "order": "asc"},
         status=303,
@@ -1706,7 +1704,7 @@ def test_plus_shortcut_script_and_single_button(testapp, dbsession):
     if count != 1:
         # dump a small snippet for easier debugging
         idx = res.text.find("plus-lg")
-        snippet = res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
+        res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
         print("Lines containing plus-lg:")
         for line in res.text.splitlines():
             if "plus-lg" in line:
@@ -2349,11 +2347,13 @@ def test_company_website_autofill_supports_developer_descriptors(
         monkeypatch.setattr(
             website_autofill,
             "_gemini_json",
-            lambda prompt, model="gemini-2.5-flash-lite", d=descriptor: {"name": f"Alfa {d}"},
+            lambda prompt, model="gemini-2.5-flash-lite", d=descriptor: {
+                "name": f"Alfa {d}"
+            },
         )
         response = testapp.get(
             "/company/add/website_autofill",
-            params={"website": f"https://example.com/kontakt/"},
+            params={"website": "https://example.com/kontakt/"},
             status=200,
         )
         fields = response.json["fields"]
@@ -2539,11 +2539,15 @@ def test_company_website_autofill_error(testapp, dbsession, monkeypatch):
     from marker.utils import website_autofill
 
     # Patch the LLM call to raise an exception
-    monkeypatch.setattr(website_autofill, "_load_page_content", lambda url: "irrelevant")
+    monkeypatch.setattr(
+        website_autofill, "_load_page_content", lambda url: "irrelevant"
+    )
     monkeypatch.setattr(
         website_autofill,
         "_gemini_json",
-        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(RuntimeError("LLM error!")),
+        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(
+            RuntimeError("LLM error!")
+        ),
     )
     monkeypatch.setattr(
         website_autofill,
@@ -2575,13 +2579,17 @@ def test_company_website_autofill_error_long_response(testapp, dbsession, monkey
     from marker import models
     from marker.utils import website_autofill
 
-    monkeypatch.setattr(website_autofill, "_load_page_content", lambda url: "irrelevant")
+    monkeypatch.setattr(
+        website_autofill, "_load_page_content", lambda url: "irrelevant"
+    )
     # Simulate a long error message with 'Response:'
     long_error = "Some error. Response: " + ("x" * 500)
     monkeypatch.setattr(
         website_autofill,
         "_gemini_json",
-        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(RuntimeError(long_error)),
+        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(
+            RuntimeError(long_error)
+        ),
     )
     monkeypatch.setattr(
         website_autofill,
@@ -2611,13 +2619,17 @@ def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monke
     from marker import models
     from marker.utils import website_autofill
 
-    monkeypatch.setattr(website_autofill, "_load_page_content", lambda url: "irrelevant")
+    monkeypatch.setattr(
+        website_autofill, "_load_page_content", lambda url: "irrelevant"
+    )
     # Simulate a very long error message (over 500 bytes)
     very_long_error = "x" * 1000
     monkeypatch.setattr(
         website_autofill,
         "_gemini_json",
-        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(RuntimeError(very_long_error)),
+        lambda prompt, model="gemini-2.5-flash-lite": (_ for _ in ()).throw(
+            RuntimeError(very_long_error)
+        ),
     )
     monkeypatch.setattr(
         website_autofill,
@@ -2654,7 +2666,14 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
 
     def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract a list of contacts" in prompt:
-            return [{"name": "Jan Kowalski", "role": "CEO", "phone": "+48123456789", "email": "jan@acme.com"}]
+            return [
+                {
+                    "name": "Jan Kowalski",
+                    "role": "CEO",
+                    "phone": "+48123456789",
+                    "email": "jan@acme.com",
+                }
+            ]
         return {"name": "Acme Corp", "city": "Warszawa", "country": "PL"}
 
     monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
@@ -2710,8 +2729,21 @@ def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
 
     def mock_gemini(prompt, model="gemini-2.5-flash-lite"):
         if "Extract a list of contacts" in prompt:
-            return [{"name": "Anna Nowak", "role": "PM", "phone": "+48987654321", "email": "anna@budowex.com"}]
-        return {"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}
+            return [
+                {
+                    "name": "Anna Nowak",
+                    "role": "PM",
+                    "phone": "+48987654321",
+                    "email": "anna@budowex.com",
+                }
+            ]
+        return {
+            "name": "Budowex",
+            "city": "Krakow",
+            "country": "PL",
+            "stage": "",
+            "delivery_method": "",
+        }
 
     monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
@@ -2886,7 +2918,13 @@ def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
             return ["Residential", "Housing"]
         if "Extract a list of contacts" in prompt:
             return []
-        return {"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}
+        return {
+            "name": "TagProject",
+            "city": "Lodz",
+            "country": "PL",
+            "stage": "",
+            "delivery_method": "",
+        }
 
     monkeypatch.setattr(website_autofill, "_gemini_json", mock_gemini)
     monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)

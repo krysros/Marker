@@ -38,7 +38,6 @@ from ..models import (
 )
 from ..utils.export import make_export_response
 from ..utils.paginator import get_paginator
-from ..utils.uptime import check_website_uptime, render_uptime_badge
 from . import (
     Filter,
     apply_order,

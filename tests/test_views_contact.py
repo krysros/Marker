@@ -558,9 +558,7 @@ def test_contact_search_tags_results_and_operator_contacts(dbsession):
     company_both.tags.append(tag2)
     company_one = _make_company(dbsession, user, "ANDCoOne")
     company_one.tags.append(tag1)
-    contact_both = _make_contact(
-        dbsession, user, "ANDContactBoth", company=company_both
-    )
+    _make_contact(dbsession, user, "ANDContactBoth", company=company_both)
     _make_contact(dbsession, user, "ANDContactOne", company=company_one)
     transaction.commit()
     params = MultiDict(
@@ -600,7 +598,7 @@ def test_contact_search_tags_input_remove(dbsession):
     transaction.commit()
     request = _make_request(dbsession, user)
     view = ContactView(request)
-    result = view.search_tags_input_remove()
+    view.search_tags_input_remove()
 
 
 # ===========================================================================
