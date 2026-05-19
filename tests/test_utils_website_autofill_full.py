@@ -240,7 +240,8 @@ def test_autofill_geo_provides_postcode(mock_load, mock_gemini, mock_geo):
 
 def test_gemini_json_parses_response(monkeypatch):
     monkeypatch.setattr(
-        "marker.utils.website_autofill.invoke_json", lambda *args, **kwargs: {"name": "Acme"}
+        "marker.utils.website_autofill.invoke_json",
+        lambda *args, **kwargs: {"name": "Acme"},
     )
 
     result = _gemini_json("prompt text")
@@ -547,9 +548,7 @@ def test_company_autofill_structured_fallbacks_on_invalid_object(
 ):
     mock_gemini.return_value = ["invalid-shape"]
 
-    result = company_autofill_from_website(
-        "https://example.com", default_country="PL"
-    )
+    result = company_autofill_from_website("https://example.com", default_country="PL")
 
     # Invalid shape is coerced to schema defaults then enriched by default country logic.
     assert result["name"] == ""

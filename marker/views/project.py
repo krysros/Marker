@@ -79,7 +79,6 @@ class ProjectView:
     def __init__(self, request):
         self.request = request
 
-
     def _normalized_tags(self):
         return normalized_tags_from_request(self.request)
 
