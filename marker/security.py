@@ -68,8 +68,8 @@ class MySecurityPolicy:
         user = self.identity(request)
         if user is not None:
             principals.append(Authenticated)
-            principals.append("u:" + str(user.id))
-            principals.append("role:" + user.role)
+            principals.append(f"u:{user.id}")
+            principals.append(f"role:{user.role}")
         return principals
 
 

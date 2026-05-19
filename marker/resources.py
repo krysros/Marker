@@ -16,22 +16,13 @@ class AccountResource:
 
     def __acl__(self):
         return [
-            (Allow, "u:" + str(self.user.id), "view"),
-            (Allow, "u:" + str(self.user.id), "edit"),
+            (Allow, f"u:{self.user.id}", ("view", "edit")),
             (Allow, "role:admin", ALL_PERMISSIONS),
         ]
 
 
-class UserResource(DefaultResource):
-    def __init__(self, user):
-        self.user = user
-
-    def __acl__(self):
-        return [
-            (Allow, "u:" + str(self.user.id), "view"),
-            (Allow, "u:" + str(self.user.id), "edit"),
-            (Allow, "role:admin", ALL_PERMISSIONS),
-        ]
+class UserResource(AccountResource):
+    pass
 
 
 class TagResource(DefaultResource):

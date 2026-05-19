@@ -27,8 +27,7 @@ def test_account_resource_acl():
     r = AccountResource(user)
     assert r.user is user
     acl = r.__acl__()
-    assert (Allow, "u:7", "view") in acl
-    assert (Allow, "u:7", "edit") in acl
+    assert (Allow, "u:7", ("view", "edit")) in acl
     assert (Allow, "role:admin", ALL_PERMISSIONS) in acl
 
 
@@ -37,8 +36,7 @@ def test_user_resource_acl():
     r = UserResource(user)
     assert r.user is user
     acl = r.__acl__()
-    assert (Allow, "u:99", "view") in acl
-    assert (Allow, "u:99", "edit") in acl
+    assert (Allow, "u:99", ("view", "edit")) in acl
     assert (Allow, "role:admin", ALL_PERMISSIONS) in acl
 
 
