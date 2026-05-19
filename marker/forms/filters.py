@@ -44,3 +44,8 @@ def remove_mailto(v):
 def title(v):
     """Return a titlecased version of the string."""
     return v.title()
+
+
+def normalize_string(v):
+    """Normalize a string by stripping whitespace, replacing dashes, and collapsing spaces."""
+    return remove_multiple_spaces(dash_filter(strip_filter(v)))

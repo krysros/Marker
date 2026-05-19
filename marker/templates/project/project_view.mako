@@ -2,17 +2,6 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<%!
-  from urllib.parse import urlparse
-
-  def fmt_decimal(value):
-      if value is None:
-          return "---"
-      formatted = f"{value:,.2f}"
-      formatted = formatted.replace(",", "\u202f")
-      return formatted
-%>
-
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(project_pills)}</div>
   <div>${button.project_star(project)}</div>
@@ -36,9 +25,8 @@
           <dd>
             ${project.name}
             % if project.website:
-            <% o = urlparse(project.website) %>
             <small>
-              <i class="bi bi-link-45deg"></i> <a href="${project.website}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${o.hostname}</a></p>
+              <i class="bi bi-link-45deg"></i> <a href="${external_url(project.website)}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${external_hostname(project.website)}</a></p>
             </small>
             % endif
           </dd>

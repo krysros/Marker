@@ -2,15 +2,6 @@
 <%namespace name="checkbox" file="checkbox.mako"/>
 <%page args="assoc"/>
 
-<%!
-  def fmt_decimal(value):
-      if value is None:
-          return "---"
-      formatted = f"{value:,.2f}"
-      formatted = formatted.replace(",", "\u202f")
-      return formatted
-%>
-
 % if assoc:
 <tr>
   <td>${checkbox.checkbox(assoc.company, selected_ids=selected_ids('selected_companies'), url=request.route_url('company_check', company_id=assoc.company.id, slug=assoc.company.slug))}</td>

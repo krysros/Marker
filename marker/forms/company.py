@@ -17,6 +17,7 @@ from ..models import Company
 from .association import ActivityForm
 from .filters import (
     dash_filter,
+    normalize_string,
     remove_dashes_and_spaces,
     remove_multiple_spaces,
     remove_pl_prefix,
@@ -67,7 +68,7 @@ class CompanyForm(Form):
     postcode = StringField(
         _("Post code"),
         validators=[Length(max=100)],
-        filters=[strip_filter, dash_filter, remove_multiple_spaces],
+        filters=[normalize_string],
     )
     city = StringField(
         _("City"),

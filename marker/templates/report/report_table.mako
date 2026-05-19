@@ -2,24 +2,17 @@
   from decimal import Decimal
 
   _DECIMAL_REPORTS = {
-      "projects-highest-value",
-      "projects-highest-usable-area",
-      "projects-highest-cubic-volume",
+    "projects-highest-value",
+    "projects-highest-usable-area",
+    "projects-highest-cubic-volume",
   }
-
-  def fmt_decimal(value):
-      if value is None:
-          return "---"
-      parts = f"{value:,.2f}".split(".")
-      parts[0] = parts[0].replace(",", "\u202f")
-      return ".".join(parts)
 %>
 
 <%def name="rows()">
 % for k, v in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
-    hx-trigger="revealed"
+  hx-trigger="intersect once"
     hx-swap="afterend">
 % else:
 <tr>

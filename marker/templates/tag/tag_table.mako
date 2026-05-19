@@ -10,7 +10,7 @@
 % for tag in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
-    hx-trigger="revealed"
+    hx-trigger="intersect once"
     hx-swap="afterend">
 % else:
 <tr>

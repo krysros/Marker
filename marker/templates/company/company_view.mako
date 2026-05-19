@@ -2,10 +2,6 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="pills" file="pills.mako"/>
 
-<%!
-  from urllib.parse import urlparse
-%>
-
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(company_pills)}</div>
   <div>${button.company_star(company)}</div>
@@ -31,9 +27,8 @@
           <dd>
             ${company.name}
             % if company.website:
-            <% o = urlparse(company.website) %>
             <small>
-              <i class="bi bi-link-45deg"></i> <a href="${company.website}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${o.hostname}</a></p>
+              <i class="bi bi-link-45deg"></i> <a href="${external_url(company.website)}" target="_blank" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">${external_hostname(company.website)}</a></p>
             </small>
             % endif
           </dd>

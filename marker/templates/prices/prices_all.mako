@@ -139,7 +139,7 @@
 <%def name="rows()">
 % for row in paginator:
 % if loop.last:
-<tr hx-get="${next_page}" hx-trigger="revealed" hx-swap="afterend">
+<tr hx-get="${next_page}" hx-trigger="intersect once" hx-swap="afterend">
 % else:
 <tr>
 % endif

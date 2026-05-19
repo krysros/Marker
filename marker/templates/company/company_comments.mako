@@ -24,7 +24,7 @@
 % for comment in paginator:
 % if loop.last:
 <div hx-get="${next_page}"
-     hx-trigger="revealed"
+    hx-trigger="intersect once"
      hx-swap="afterend">
 % else:
 <div>

@@ -1,39 +1,49 @@
+from functools import lru_cache
+
 import pycountry
 
 from .ts import TranslationString as _
 
 
 def select_countries():
-    first_option = [("", "---")]
-    countries = [(country.alpha_2, country.name) for country in pycountry.countries]
-    countries = first_option + countries
-    return countries
+    return list(_select_countries())
+
+
+@lru_cache(maxsize=1)
+def _select_countries():
+    return (("", "---"),) + tuple(
+        (country.alpha_2, country.name) for country in pycountry.countries
+    )
 
 
 def select_subdivisions(country_code=None):
-    first_option = [("", "---")]
-    subdivisions = []
-    if country_code:
-        country_subdivisions = (
-            pycountry.subdivisions.get(country_code=country_code) or []
-        )
-        subdivisions = [
-            (subdivision.code, subdivision.name) for subdivision in country_subdivisions
-        ]
-        subdivisions = sorted(subdivisions)
-    subdivisions = first_option + subdivisions
-    return subdivisions
+    return list(_select_subdivisions(country_code))
+
+
+@lru_cache(maxsize=None)
+def _select_subdivisions(country_code=None):
+    if not country_code:
+        return (("", "---"),)
+    country_subdivisions = pycountry.subdivisions.get(country_code=country_code) or []
+    subdivisions = tuple(
+        sorted((subdivision.code, subdivision.name) for subdivision in country_subdivisions)
+    )
+    return (("", "---"),) + subdivisions
 
 
 def select_currencies():
-    first_option = [("", "---")]
-    currencies = [
-        (currency.alpha_3, f"{currency.alpha_3} - {currency.name}")
-        for currency in pycountry.currencies
-    ]
-    currencies = sorted(currencies)
-    currencies = first_option + currencies
-    return currencies
+    return list(_select_currencies())
+
+
+@lru_cache(maxsize=1)
+def _select_currencies():
+    currencies = tuple(
+        sorted(
+            (currency.alpha_3, f"{currency.alpha_3} - {currency.name}")
+            for currency in pycountry.currencies
+        )
+    )
+    return (("", "---"),) + currencies
 
 
 SORT_CRITERIA = [

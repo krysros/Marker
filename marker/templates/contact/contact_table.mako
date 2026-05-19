@@ -11,7 +11,7 @@
 % for contact in paginator:
 % if loop.last and next_page:
 <tr hx-get="${next_page}"
-    hx-trigger="revealed"
+    hx-trigger="intersect once"
     hx-swap="afterend"
     class="table-${contact.color}">
 % else:

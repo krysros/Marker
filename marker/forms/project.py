@@ -15,7 +15,7 @@ from wtforms.widgets import DateTimeLocalInput
 
 from ..models import Project
 from .association import ActivityForm
-from .filters import dash_filter, remove_multiple_spaces, strip_filter, title
+from .filters import normalize_string, strip_filter, title
 from .select import (
     COLORS,
     OBJECT_CATEGORIES,
@@ -46,7 +46,7 @@ class ProjectForm(Form):
     postcode = StringField(
         _("Post code"),
         validators=[Length(max=100)],
-        filters=[strip_filter, dash_filter, remove_multiple_spaces],
+        filters=[normalize_string],
     )
     city = StringField(
         _("City"),

@@ -1,4 +1,6 @@
 import os
+from functools import lru_cache
+from urllib.parse import urlparse
 
 import pycountry
 from pyramid.i18n import TranslationStringFactory, get_localizer
@@ -59,16 +61,51 @@ def _selected_ids_loader(request):
 
 def get_subdivision_name(code, default=""):
     try:
-        return pycountry.subdivisions.get(code=code).name
+        return _cached_subdivision_name(code)
     except (LookupError, AttributeError):
         return default
 
 
 def get_country_name(alpha_2, default=""):
     try:
-        return pycountry.countries.get(alpha_2=alpha_2).name
+        return _cached_country_name(alpha_2)
     except (LookupError, AttributeError):
         return default
+
+
+@lru_cache(maxsize=None)
+def _cached_subdivision_name(code):
+    return pycountry.subdivisions.get(code=code).name
+
+
+@lru_cache(maxsize=None)
+def _cached_country_name(alpha_2):
+    return pycountry.countries.get(alpha_2=alpha_2).name
+
+
+def fmt_decimal(value):
+    if value is None:
+        return "---"
+    return f"{value:,.2f}".replace(",", "\u202f")
+
+
+def external_url(url):
+    value = (url or "").strip()
+    if not value:
+        return ""
+    if not value.startswith(("http://", "https://")):
+        return f"https://{value}"
+    return value
+
+
+def external_hostname(url):
+    value = external_url(url)
+    if not value:
+        return ""
+    try:
+        return urlparse(value).hostname or value
+    except ValueError:
+        return value
 
 
 def add_renderer_globals(event):
@@ -79,6 +116,9 @@ def add_renderer_globals(event):
     event["gemini_api_key_set"] = bool(os.environ.get("GEMINI_API_KEY"))
     event["get_subdivision_name"] = get_subdivision_name
     event["get_country_name"] = get_country_name
+    event["fmt_decimal"] = fmt_decimal
+    event["external_url"] = external_url
+    event["external_hostname"] = external_hostname
 
 
 tsf = TranslationStringFactory("Marker")

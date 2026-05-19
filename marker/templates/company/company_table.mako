@@ -1,15 +1,6 @@
 <%namespace name="button" file="button.mako"/>
 <%namespace name="checkbox" file="checkbox.mako"/>
 
-<%!
-  def fmt_decimal(value):
-      if value is None:
-          return "---"
-      formatted = f"{value:,.2f}"
-      formatted = formatted.replace(",", "\u202f")
-      return formatted
-%>
-
 <%def name="rows()">
 <%
   show_shared_tags = bool(context.get("show_shared_tags", False))
@@ -20,7 +11,7 @@
 % for company in paginator:
 % if loop.last:
 <tr hx-get="${next_page}"
-    hx-trigger="revealed"
+  hx-trigger="intersect once"
     hx-swap="afterend"
     class="table-${company.color}">
 % else:
