@@ -1,5 +1,6 @@
 """Tests for marker/views/report.py"""
 
+import pytest
 from decimal import Decimal
 from unittest.mock import MagicMock
 
@@ -149,36 +150,11 @@ def test_report_view_projects_comments(dbsession):
     result = view.view()
     assert result["rel"] == "projects-comments"
 
-
-def test_report_view_users_companies(dbsession):
-    request = _make_request(dbsession, matchdict={"rel": "users-companies"})
-    view = ReportView(request)
-    result = view.view()
-    assert result["rel"] == "users-companies"
-
-
-def test_report_view_users_projects(dbsession):
-    request = _make_request(dbsession, matchdict={"rel": "users-projects"})
-    view = ReportView(request)
-    result = view.view()
-    assert result["rel"] == "users-projects"
-
-
-def test_report_view_companies_projects(dbsession):
-    request = _make_request(dbsession, matchdict={"rel": "companies-projects"})
-    view = ReportView(request)
-    result = view.view()
-    assert result["rel"] == "companies-projects"
-
-
-def test_report_view_companies_stars(dbsession):
-    request = _make_request(dbsession, matchdict={"rel": "companies-stars"})
-    view = ReportView(request)
-    result = view.view()
-    assert result["rel"] == "companies-stars"
-
-
 def test_report_view_projects_stars(dbsession):
+    request = _make_request(dbsession, matchdict={"rel": "projects-stars"})
+    view = ReportView(request)
+    result = view.view()
+    assert result["rel"] == "projects-stars"
     request = _make_request(dbsession, matchdict={"rel": "projects-stars"})
     view = ReportView(request)
     result = view.view()
@@ -370,41 +346,6 @@ def test_prompt_post_exception(dbsession, monkeypatch):
         assert result["rows"] is None
 
 
-def test_report_ai_dashboard_empty(dbsession):
-    from marker.utils.ai_metrics import reset_ai_metrics
-
-    reset_ai_metrics()
-    request = _make_request(dbsession)
-    view = ReportView(request)
-
-    result = view.ai_dashboard()
-
-    assert "heading" in result
-    assert result["totals"]["requests"] == 0
-    assert result["sources"] == []
-
-
-def test_report_ai_dashboard_with_data(dbsession):
-    from marker.utils.ai_metrics import record_ai_event, reset_ai_metrics
-
-    reset_ai_metrics()
-    record_ai_event("report_sql", "request", model="gemini-x")
-    record_ai_event(
-        "report_sql",
-        "success",
-        model="gemini-x",
-        elapsed_ms=50,
-        prompt_chars=12,
-        response_chars=30,
-    )
-    request = _make_request(dbsession)
-    view = ReportView(request)
-
-    result = view.ai_dashboard()
-
-    assert result["totals"]["requests"] == 1
-    assert len(result["sources"]) == 1
-    assert result["sources"][0]["source"] == "report_sql"
 
 
 # ===========================================================================

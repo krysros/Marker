@@ -574,7 +574,6 @@ def includeme(config):
 
     config.add_route("report_all", "/report", factory=default_factory)
     config.add_route("prompt", "/prompt", factory=default_factory)
-    config.add_route("report_ai_dashboard", "/report/ai", factory=default_factory)
     config.add_route("report_view", "/report/{rel}", factory=default_factory)
     config.add_route("report_more", "/report/{rel}/more", factory=default_factory)
 

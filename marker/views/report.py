@@ -22,7 +22,6 @@ from ..models import (
     projects_tags,
 )
 from ..subscribers import get_subdivision_name
-from ..utils.ai_metrics import get_ai_metrics_snapshot
 from ..utils.paginator import get_paginator
 
 
@@ -95,30 +94,6 @@ class ReportView:
             "sql_generated": sql_generated,
         }
 
-    @view_config(
-        route_name="report_ai_dashboard",
-        renderer="report_ai_dashboard.mako",
-        permission="view",
-    )
-    def ai_dashboard(self):
-        _ = self.request.translate
-        snapshot = get_ai_metrics_snapshot()
-        sources = []
-        for name, data in snapshot.get("sources", {}).items():
-            row = {"source": name, **data}
-            sources.append(row)
-        sources.sort(
-            key=lambda item: (
-                item.get("requests", 0),
-                item.get("errors", 0),
-            ),
-            reverse=True,
-        )
-        return {
-            "heading": _("AI telemetry dashboard"),
-            "totals": snapshot.get("totals", {}),
-            "sources": sources,
-        }
 
     @view_config(
         route_name="report_view", renderer="report_view.mako", permission="view"

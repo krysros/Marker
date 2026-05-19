@@ -23,7 +23,6 @@
 
 <ol class="list-group list-group-numbered" id="reports-list">
   % for rel, report in reports:
-  <a class="list-group-item list-group-item-action" href="${request.route_url('report_ai_dashboard') if rel == 'ai-telemetry' else request.route_url('report_view', rel=rel)}" data-report-name="${_(report).lower()}">${report}</a>
   % endfor
 </ol>
 

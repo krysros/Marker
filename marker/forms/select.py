@@ -315,5 +315,4 @@ REPORTS = [
     ("projects-highest-value", _("Projects with the highest value")),
     ("projects-highest-usable-area", _("Projects with the highest usable area")),
     ("projects-highest-cubic-volume", _("Projects with the highest cubic volume")),
-    ("ai-telemetry", _("AI telemetry dashboard")),
 ]
