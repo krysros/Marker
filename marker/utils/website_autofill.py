@@ -2,119 +2,41 @@ import json
 import os
 import re
 import unicodedata
-import urllib.request
+
+os.environ["USER_AGENT"] = "Marker/1.0"
 
 import pycountry
-from bs4 import BeautifulSoup
-from pydantic import BaseModel, ConfigDict, ValidationError
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
-from .langchain_ai import invoke_json
-
-
-_MAX_AUTOFILL_CONTENT_CHARS = 20_000
-
-
-class _CompanyAutofillModel(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    name: str = ""
-    street: str = ""
-    postcode: str = ""
-    city: str = ""
-    subdivision: str = ""
-    country: str = ""
-    NIP: str = ""
-    REGON: str = ""
-    KRS: str = ""
-
-
-class _ProjectAutofillModel(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    name: str = ""
-    street: str = ""
-    postcode: str = ""
-    city: str = ""
-    subdivision: str = ""
-    country: str = ""
-
-
-class _ContactAutofillModel(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    name: str = ""
-    role: str = ""
-    phone: str = ""
-    email: str = ""
-
-
-def _load_page_content(url):
-    """Fetch a web page and return its visible text content."""
-    req = urllib.request.Request(url, headers={"User-Agent": "Marker/1.0"})
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        content = resp.read()
-    soup = BeautifulSoup(content, "html.parser")
-    for tag in soup(["script", "style", "noscript"]):
-        tag.decompose()
-    return soup.get_text(separator="\n", strip=True)
-
-
-def _gemini_json(
-    prompt,
-    model="gemini-2.5-flash-lite",
-    fallback_model=None,
-    retries=None,
-    source="unknown",
-):
-    """Call Google Gemini with forced JSON output and return parsed result."""
-    fallback = fallback_model or os.environ.get("GEMINI_FALLBACK_MODEL")
-    retries_value = retries
-    if retries_value is None:
-        retries_raw = os.environ.get("GEMINI_RETRIES")
-        if retries_raw not in (None, ""):
-            try:
-                retries_value = max(0, int(retries_raw))
-            except ValueError:
-                retries_value = None
-    return invoke_json(
-        prompt,
-        model=model,
-        fallback_model=fallback,
-        retries=2 if retries_value is None else retries_value,
-        source=source,
-    )
 
 
 def _autofill_from_website(
-    url,
-    prompt,
-    model="gemini-2.5-flash-lite",
-    default_country="",
-    schema_model=None,
-    fallback_model=None,
-    retries=None,
-    source="unknown",
+    url, prompt, model="gemini-2.5-flash-lite", default_country=""
 ):
     """
     Shared logic for autofilling company or project data from a website.
     """
-    content = _load_page_content(url)
-    if not content:
+    # Load the content of the page
+    loader = WebBaseLoader(url)
+    docs = loader.load()
+    if not docs:
         raise ValueError(str(_("Could not load content from %(url)s")) % {"url": url})
 
-    # Keep content bounded to limit token usage and avoid brittle behavior on huge pages.
-    bounded_content = content[:_MAX_AUTOFILL_CONTENT_CHARS]
-    result = _gemini_json(
-        f"{prompt}:\n\n{bounded_content}",
+    content = docs[0].page_content
+
+    # Initialize Gemini model with forced JSON output
+    llm = ChatGoogleGenerativeAI(
         model=model,
-        fallback_model=fallback_model,
-        retries=retries,
-        source=source,
+        response_mime_type="application/json",
     )
-    if schema_model is not None:
-        result = _validate_structured_object(result, schema_model)
+
+    # Make the request
+    response = llm.invoke(f"{prompt}:\n\n{content}")
+
+    result = json.loads(response.content)
 
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
@@ -195,51 +117,24 @@ def _country_from_locale(locale_str):
 
 
 def company_autofill_from_website(
-    website,
-    model="gemini-2.5-flash-lite",
-    default_country="",
-    fallback_model=None,
-    retries=None,
+    website, model="gemini-2.5-flash-lite", default_country=""
 ):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
     return _autofill_from_website(
-        website,
-        prompt,
-        model=model,
-        default_country=default_country,
-        schema_model=_CompanyAutofillModel,
-        fallback_model=fallback_model,
-        retries=retries,
-        source="company_autofill",
+        website, prompt, model=model, default_country=default_country
     )
 
 
 def project_autofill_from_website(
-    website,
-    model="gemini-2.5-flash-lite",
-    default_country="",
-    fallback_model=None,
-    retries=None,
+    website, model="gemini-2.5-flash-lite", default_country=""
 ):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
     return _autofill_from_website(
-        website,
-        prompt,
-        model=model,
-        default_country=default_country,
-        schema_model=_ProjectAutofillModel,
-        fallback_model=fallback_model,
-        retries=retries,
-        source="project_autofill",
+        website, prompt, model=model, default_country=default_country
     )
 
 
-def contacts_autofill_from_website(
-    website,
-    model="gemini-2.5-flash-lite",
-    fallback_model=None,
-    retries=None,
-):
+def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
     """
     Extract a list of contacts (people) from the given website URL.
     In addition to the main URL, tries common contact sub-pages
@@ -255,9 +150,9 @@ def contacts_autofill_from_website(
 
     # Load the main page
     try:
-        text = _load_page_content(website)
-        if text.strip():
-            content_parts.append(text)
+        docs = WebBaseLoader(website).load()
+        if docs and docs[0].page_content.strip():
+            content_parts.append(docs[0].page_content)
     except Exception:
         pass
 
@@ -268,9 +163,9 @@ def contacts_autofill_from_website(
         if url.rstrip("/") == website.rstrip("/"):
             continue
         try:
-            text = _load_page_content(url)
-            if len(text.strip()) > 200:
-                content_parts.append(text)
+            docs = WebBaseLoader(url).load()
+            if docs and len(docs[0].page_content.strip()) > 200:
+                content_parts.append(docs[0].page_content)
                 break
         except Exception:
             continue
@@ -282,6 +177,11 @@ def contacts_autofill_from_website(
 
     content = "\n\n---\n\n".join(content_parts[:2])
 
+    llm = ChatGoogleGenerativeAI(
+        model=model,
+        response_mime_type="application/json",
+    )
+
     prompt = (
         "Extract a list of contacts (people) from the context. "
         "For each contact provide: name, role, phone, email. "
@@ -289,30 +189,21 @@ def contacts_autofill_from_website(
         "If no contacts are found, return an empty array []."
     )
 
-    result = _gemini_json(
-        f"{prompt}:\n\n{content}",
-        model=model,
-        fallback_model=fallback_model,
-        retries=retries,
-        source="contacts_autofill",
-    )
+    response = llm.invoke(f"{prompt}:\n\n{content}")
+    result = json.loads(response.content)
 
     if isinstance(result, list):
-        return _normalize_contacts(result)
+        return result
     # Gemini sometimes wraps the array in a dict
     if isinstance(result, dict):
         for key in ("contacts", "people", "results", "data"):
             if key in result and isinstance(result[key], list):
-                return _normalize_contacts(result[key])
+                return result[key]
     return []
 
 
 def tags_autofill_from_website(
-    website,
-    existing_tags=None,
-    model="gemini-2.5-flash-lite",
-    fallback_model=None,
-    retries=None,
+    website, existing_tags=None, model="gemini-2.5-flash-lite"
 ):
     """
     Extract a list of tags (core business activities or project types) from the
@@ -329,9 +220,9 @@ def tags_autofill_from_website(
 
     # Load the main page
     try:
-        text = _load_page_content(website)
-        if text.strip():
-            content_parts.append(text)
+        docs = WebBaseLoader(website).load()
+        if docs and docs[0].page_content.strip():
+            content_parts.append(docs[0].page_content)
     except Exception:
         pass
 
@@ -342,9 +233,9 @@ def tags_autofill_from_website(
         if url.rstrip("/") == website.rstrip("/"):
             continue
         try:
-            text = _load_page_content(url)
-            if len(text.strip()) > 200:
-                content_parts.append(text)
+            docs = WebBaseLoader(url).load()
+            if docs and len(docs[0].page_content.strip()) > 200:
+                content_parts.append(docs[0].page_content)
                 break
         except Exception:
             continue
@@ -355,6 +246,11 @@ def tags_autofill_from_website(
         )
 
     content = "\n\n---\n\n".join(content_parts[:2])
+
+    llm = ChatGoogleGenerativeAI(
+        model=model,
+        response_mime_type="application/json",
+    )
 
     existing_section = ""
     if existing_tags:
@@ -374,78 +270,17 @@ def tags_autofill_from_website(
         " Return at most 20 items. If nothing can be determined, return an empty array []."
     )
 
-    result = _gemini_json(
-        f"{prompt}:\n\n{content}",
-        model=model,
-        fallback_model=fallback_model,
-        retries=retries,
-        source="tags_autofill",
-    )
+    response = llm.invoke(f"{prompt}:\n\n{content}")
+    result = json.loads(response.content)
 
     if isinstance(result, list):
-        return _normalize_tags(result)
+        return [str(t).strip() for t in result if str(t).strip()][:20]
     # Gemini sometimes wraps in a dict
     if isinstance(result, dict):
         for key in ("tags", "items", "results", "data"):
             if key in result and isinstance(result[key], list):
-                return _normalize_tags(result[key])
+                return [str(t).strip() for t in result[key] if str(t).strip()][:20]
     return []
-
-
-def _validate_structured_object(payload, schema_model):
-    if not isinstance(payload, dict):
-        payload = {}
-    try:
-        validated = schema_model.model_validate(payload)
-    except ValidationError:
-        validated = schema_model()
-    return {
-        key: _normalize_optional_text(value)
-        for key, value in validated.model_dump().items()
-    }
-
-
-def _normalize_contacts(items):
-    contacts = []
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        try:
-            validated = _ContactAutofillModel.model_validate(item)
-        except ValidationError:
-            continue
-        normalized = {
-            key: _normalize_optional_text(value)
-            for key, value in validated.model_dump().items()
-        }
-        if normalized.get("name"):
-            contacts.append(normalized)
-    return contacts
-
-
-def _normalize_tags(items):
-    normalized = []
-    seen = set()
-    for tag in items:
-        text = _normalize_optional_text(tag)
-        if not text:
-            continue
-        key = text.casefold()
-        if key in seen:
-            continue
-        seen.add(key)
-        normalized.append(text)
-        if len(normalized) >= 20:
-            break
-    return normalized
-
-
-def _normalize_optional_text(value):
-    if value is None:
-        return ""
-    if isinstance(value, str):
-        return value.strip()
-    return str(value).strip()
 
 
 def _subdivision_code_from_value(value, country_code):
