@@ -1,3 +1,5 @@
+# ruff: noqa: E402,F401
+
 import zope.sqlalchemy
 from sqlalchemy import engine_from_config, event
 from sqlalchemy.orm import configure_mappers, sessionmaker

@@ -66,3 +66,25 @@ def test_9ca296fb5e5a_downgrade():
         mod.downgrade()
         assert mock_op.drop_index.call_count == 8
         assert mock_op.drop_table.call_count == 15
+
+
+def test_add_stars_indexes_upgrade_and_downgrade():
+    mod = _load_migration("20260519_add_stars_indexes")
+    with patch.object(mod, "op") as mock_op:
+        mod.upgrade()
+        assert mock_op.create_index.call_args_list == [
+            (("ix_companies_stars_company_id", "companies_stars", ["company_id"]),),
+            (("ix_companies_stars_user_id", "companies_stars", ["user_id"]),),
+            (("ix_projects_stars_project_id", "projects_stars", ["project_id"]),),
+            (("ix_projects_stars_user_id", "projects_stars", ["user_id"]),),
+        ]
+
+        mock_op.reset_mock()
+
+        mod.downgrade()
+        assert mock_op.drop_index.call_args_list == [
+            (("ix_companies_stars_company_id",), {"table_name": "companies_stars"}),
+            (("ix_companies_stars_user_id",), {"table_name": "companies_stars"}),
+            (("ix_projects_stars_project_id",), {"table_name": "projects_stars"}),
+            (("ix_projects_stars_user_id",), {"table_name": "projects_stars"}),
+        ]

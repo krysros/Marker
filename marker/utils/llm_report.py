@@ -1,6 +1,19 @@
 import re
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+try:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+except ImportError:  # pragma: no cover - exercised through patched tests
+
+    class ChatGoogleGenerativeAI:
+        def __init__(self, *args, **kwargs):
+            self.args = args
+            self.kwargs = kwargs
+
+        def invoke(self, *args, **kwargs):
+            raise ModuleNotFoundError(
+                "langchain_google_genai is required to generate AI reports"
+            )
+
 
 from ..forms.ts import TranslationString as _
 

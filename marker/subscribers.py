@@ -103,9 +103,10 @@ def external_hostname(url):
     if not value:
         return ""
     try:
-        return urlparse(value).hostname or value
+        parsed = urlparse(value)
+        return (parsed.hostname or value).replace("https://", "").replace("http://", "")
     except ValueError:
-        return value
+        return value.replace("https://", "").replace("http://", "")
 
 
 def add_renderer_globals(event):

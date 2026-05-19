@@ -9,6 +9,7 @@ from marker.utils.website_autofill import (
     _fold_text,
     _normalize_whitespace,
     _subdivision_code_from_value,
+    _gemini_json,
     company_autofill_from_website,
     contacts_autofill_from_website,
     project_autofill_from_website,
@@ -235,6 +236,18 @@ def test_autofill_geo_provides_postcode(mock_load, mock_gemini, mock_geo):
     }
     result = company_autofill_from_website("https://example.com")
     assert result["postcode"] == "00-001"
+
+
+def test_gemini_json_parses_response(monkeypatch):
+    mock_client = MagicMock()
+    mock_client.models.generate_content.return_value.text = '{"name": "Acme"}'
+    monkeypatch.setattr(
+        "marker.utils.website_autofill.genai.Client", lambda: mock_client
+    )
+
+    result = _gemini_json("prompt text")
+
+    assert result == {"name": "Acme"}
 
 
 # ===========================================================================

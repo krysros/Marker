@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
 from marker.subscribers import (
@@ -76,6 +77,24 @@ def test_get_country_name_invalid():
 
 def test_get_country_name_none():
     assert get_country_name(None, "---") == "---"
+
+
+def test_fmt_decimal_and_external_url_helpers():
+    from marker.subscribers import external_hostname, external_url, fmt_decimal
+
+    assert fmt_decimal(Decimal("1234.5")) == "1\u202f234.50"
+    assert fmt_decimal(None) == "---"
+    assert external_url("") == ""
+    assert external_url("example.com") == "https://example.com"
+    assert external_hostname("") == ""
+    assert external_hostname("https://example.com") == "example.com"
+
+
+def test_external_hostname_value_error_falls_back(monkeypatch):
+    from marker import subscribers
+
+    monkeypatch.setattr(subscribers, "urlparse", MagicMock(side_effect=ValueError))
+    assert subscribers.external_hostname("bad-url") == "bad-url"
 
 
 def test_add_localizer():

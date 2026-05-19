@@ -1,33 +1,35 @@
-from .account import Account  # noqa
-from .account import ChangePassword  # noqa
-from .association import ActivityForm  # noqa
-from .comment import CommentFilterForm  # noqa
-from .comment import CommentForm  # noqa
-from .comment import CommentSearchForm  # noqa
-from .company import CompanyActivityForm  # noqa
-from .company import CompanyFilterForm  # noqa
-from .company import CompanyForm  # noqa
-from .company import CompanyLinkForm  # noqa
-from .company import CompanySearchForm  # noqa
-from .company_add_ai import CompanyAddAIForm  # noqa
-from .contact import ContactFilterForm  # noqa
-from .contact import ContactForm  # noqa
-from .contact import ContactImportForm  # noqa
-from .contact import ContactImportVcardForm  # noqa
-from .contact import ContactSearchForm  # noqa
-from .contact import ContactUnassignedFilterForm  # noqa
-from .contractor import ContractorFilterForm  # noqa
-from .login import LoginForm  # noqa
-from .project import ProjectActivityForm  # noqa
-from .project import ProjectFilterForm  # noqa
-from .project import ProjectForm  # noqa
-from .project import ProjectLinkForm  # noqa
-from .project import ProjectSearchForm  # noqa
-from .project_add_ai import ProjectAddAIForm  # noqa
-from .tag import TagFilterForm  # noqa
-from .tag import TagForm  # noqa
-from .tag import TagLinkForm  # noqa
-from .tag import TagSearchForm  # noqa
-from .user import UserFilterForm  # noqa
-from .user import UserForm  # noqa
-from .user import UserSearchForm  # noqa
+# ruff: noqa: F401
+
+from .account import Account
+from .account import ChangePassword
+from .association import ActivityForm
+from .comment import CommentFilterForm
+from .comment import CommentForm
+from .comment import CommentSearchForm
+from .company import CompanyActivityForm
+from .company import CompanyFilterForm
+from .company import CompanyForm
+from .company import CompanyLinkForm
+from .company import CompanySearchForm
+from .company_add_ai import CompanyAddAIForm
+from .contact import ContactFilterForm
+from .contact import ContactForm
+from .contact import ContactImportForm
+from .contact import ContactImportVcardForm
+from .contact import ContactSearchForm
+from .contact import ContactUnassignedFilterForm
+from .contractor import ContractorFilterForm
+from .login import LoginForm
+from .project import ProjectActivityForm
+from .project import ProjectFilterForm
+from .project import ProjectForm
+from .project import ProjectLinkForm
+from .project import ProjectSearchForm
+from .project_add_ai import ProjectAddAIForm
+from .tag import TagFilterForm
+from .tag import TagForm
+from .tag import TagLinkForm
+from .tag import TagSearchForm
+from .user import UserFilterForm
+from .user import UserForm
+from .user import UserSearchForm
