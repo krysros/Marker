@@ -5,6 +5,9 @@
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="me-auto">${pills.pills(company_pills)}</div>
+  <div>
+    % if request.identity.role == 'editor' or 'admin':
+    <a href="${request.route_url('company_add_project', company_id=company.id, slug=company.slug)}" class="btn btn-success"><i class="bi bi-plus-lg"></i></a>
     % else:
     <button type="button" class="btn btn-success" disabled><i class="bi bi-plus-lg"></i></button>
     % endif
