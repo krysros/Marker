@@ -4,7 +4,6 @@ import re
 import time
 from typing import Any
 
-from .ai_metrics import record_ai_event
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -70,23 +69,12 @@ def invoke_text(
     for model_name in _model_candidates(model, fallback_model):
         llm = ChatGoogleGenerativeAI(model=model_name, temperature=0)
         for attempt in range(retries + 1):
-            if attempt == 0:
-                record_ai_event(source, "request", model=model_name)
             started = time.monotonic()
             try:
                 response = llm.invoke(prompt)
                 text = _response_to_text(response).strip()
                 elapsed_ms = int((time.monotonic() - started) * 1000)
                 usage = _usage_metadata(response)
-                record_ai_event(
-                    source,
-                    "success",
-                    model=model_name,
-                    elapsed_ms=elapsed_ms,
-                    prompt_chars=len(prompt),
-                    response_chars=len(text),
-                    usage=usage,
-                )
                 log.info(
                     "AI invoke success model=%s attempt=%s/%s elapsed_ms=%s prompt_chars=%s response_chars=%s usage=%s",
                     model_name,
@@ -102,13 +90,6 @@ def invoke_text(
                 last_error = exc
                 elapsed_ms = int((time.monotonic() - started) * 1000)
                 if attempt >= retries:
-                    record_ai_event(
-                        source,
-                        "error",
-                        model=model_name,
-                        elapsed_ms=elapsed_ms,
-                        error=exc,
-                    )
                     log.warning(
                         "AI invoke failed model=%s attempt=%s/%s elapsed_ms=%s error=%s",
                         model_name,
@@ -119,7 +100,6 @@ def invoke_text(
                     )
                     break
                 delay = _DEFAULT_BACKOFF_SECONDS * (2**attempt)
-                record_ai_event(source, "retry", model=model_name)
                 log.warning(
                     "AI invoke retry model=%s attempt=%s/%s elapsed_ms=%s backoff_s=%.2f error=%s",
                     model_name,
