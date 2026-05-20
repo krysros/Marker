@@ -20,7 +20,7 @@ TITLE:${contact.role | vescape}
 ROLE:${contact.role | vescape}
 % endif
 % if contact.phone:
-TEL;TYPE=WORK;VALUE=uri:tel:${contact.phone | vescape}
+TEL;TYPE=WORK:${contact.phone | vescape}
 % endif
 % if contact.email:
 EMAIL;TYPE=WORK:${contact.email | vescape}
@@ -32,7 +32,7 @@ EMAIL;TYPE=WORK:${contact.email | vescape}
 %>
 ORG:${contact.company.name | vescape}
 % if has_adr:
-ADR;TYPE=WORK:;;${(co.street or "") | vescape};${(co.city or "") | vescape};${(co.subdivision or "") | vescape};${(co.postcode or "") | vescape};${(co.country or "") | vescape}
+ADR;TYPE=WORK:;;${(co.street or "") | vescape};${(co.city or "") | vescape};${get_subdivision_name(co.subdivision) if co.subdivision else "" | vescape};${(co.postcode or "") | vescape};${get_country_name(co.country) if co.country else "" | vescape}
 % endif
 % if co.website:
 URL;TYPE=WORK:${co.website | vescape}
@@ -53,7 +53,7 @@ X-KRS:${co.KRS | vescape}
 %>
 ORG:${contact.project.name | vescape}
 % if has_padr:
-ADR;TYPE=WORK:;;${(proj.street or "") | vescape};${(proj.city or "") | vescape};${(proj.subdivision or "") | vescape};${(proj.postcode or "") | vescape};${(proj.country or "") | vescape}
+ADR;TYPE=WORK:;;${(proj.street or "") | vescape};${(proj.city or "") | vescape};${get_subdivision_name(proj.subdivision) if proj.subdivision else "" | vescape};${(proj.postcode or "") | vescape};${get_country_name(proj.country) if proj.country else "" | vescape}
 % endif
 % if proj.website:
 URL;TYPE=WORK:${proj.website | vescape}

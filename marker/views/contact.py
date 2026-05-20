@@ -6,6 +6,8 @@ from pyramid.httpexceptions import HTTPFound, HTTPSeeOther
 from pyramid.view import view_config
 from sqlalchemy import and_, func, or_, select
 
+from ..subscribers import get_country_name, get_subdivision_name
+
 from ..forms import (
     ContactFilterForm,
     ContactForm,
@@ -430,7 +432,7 @@ class ContactView:
             is not None
         )
         template = vcard_template()
-        vcard = template.render(contact=contact)
+        vcard = template.render(contact=contact, get_country_name=get_country_name, get_subdivision_name=get_subdivision_name)
         vcard = vcard.replace("\r", r"\r").replace("\n", r"\n")
         return {
             "contact": contact,
@@ -818,7 +820,7 @@ class ContactView:
     @view_config(route_name="contact_vcard", permission="view")
     def vcard(self):
         contact = self.request.context.contact
-        response = response_vcard(contact)
+        response = response_vcard(contact, get_country_name=get_country_name, get_subdivision_name=get_subdivision_name)
         return response
 
     @view_config(

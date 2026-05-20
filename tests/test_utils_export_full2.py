@@ -70,8 +70,9 @@ def test_response_vcard(monkeypatch):
     class DummyContact:
         name = "Jan Kowalski"
 
+
     class DummyTemplate:
-        def render(self, contact):
+        def render(self, contact, **kwargs):
             return "VCARD DATA"
 
     monkeypatch.setattr(export, "vcard_template", lambda: DummyTemplate())
@@ -168,7 +169,22 @@ class _VcardContact:
 
 
 def _render_vcard(contact):
-    return export.vcard_template().render(contact=contact)
+    def fake_get_subdivision_name(code):
+        return {
+            "PL-MZ": "Mazowieckie",
+            "PL-MA": "Małopolskie",
+        }.get(code, code or "")
+
+    def fake_get_country_name(code):
+        return {
+            "PL": "Poland"
+        }.get(code, code or "")
+
+    return export.vcard_template().render(
+        contact=contact,
+        get_country_name=fake_get_country_name,
+        get_subdivision_name=fake_get_subdivision_name,
+    )
 
 
 def test_vcard_basic_fields():
@@ -180,7 +196,7 @@ def test_vcard_basic_fields():
     assert "N:Jan Kowalski;;;;" in text
     assert "TITLE:Developer" in text
     assert "ROLE:Developer" in text
-    assert "TEL;TYPE=WORK;VALUE=uri:tel:+48 600 100 200" in text
+    assert "TEL;TYPE=WORK:+48 600 100 200" in text
     assert "EMAIL;TYPE=WORK:jan@example.com" in text
     assert "END:VCARD" in text
 
@@ -190,7 +206,7 @@ def test_vcard_company_fields():
     contact = _VcardContact(company=co, project=None)
     text = _render_vcard(contact)
     assert "ORG:ACME Corp" in text
-    assert "ADR;TYPE=WORK:;;Main St 1;Warsaw;PL-MZ;00-001;PL" in text
+    assert "ADR;TYPE=WORK:;;Main St 1;Warsaw;Mazowieckie;00-001;Poland" in text
     assert "URL;TYPE=WORK:https://acme.example.com" in text
     assert "X-NIP:1234567890" in text
     assert "X-REGON:987654321" in text
@@ -202,7 +218,7 @@ def test_vcard_project_fields():
     contact = _VcardContact(company=None, project=proj)
     text = _render_vcard(contact)
     assert "ORG:Big Project" in text
-    assert "ADR;TYPE=WORK:;;Project Rd 5;Krakow;PL-MA;01-001;PL" in text
+    assert "ADR;TYPE=WORK:;;Project Rd 5;Krakow;Małopolskie;01-001;Poland" in text
     assert "URL;TYPE=WORK:https://proj.example.com" in text
     assert "X-NIP" not in text
 
