@@ -78,6 +78,21 @@ def test_response_to_text_variants():
 def test_usage_metadata():
     resp = MagicMock(response_metadata={"usage_metadata": {"foo": 1}})
     assert langchain_ai._usage_metadata(resp) == {"foo": 1}
+
+
+def test_invoke_text_both_models_fail():
+    class FailingLLM:
+        def __init__(self, *a, **k):
+            pass
+
+        def invoke(self, prompt):
+            raise RuntimeError("fail-both")
+
+    with patch("marker.utils.langchain_ai.ChatGoogleGenerativeAI", FailingLLM):
+        with pytest.raises(RuntimeError, match="fail-both"):
+            langchain_ai.invoke_text(
+                "prompt", model="fail1", fallback_model="fail2", retries=0
+            )
     resp = MagicMock(response_metadata=None)
     assert langchain_ai._usage_metadata(resp) == {}
     resp = MagicMock(response_metadata="notadict")
