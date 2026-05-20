@@ -1369,7 +1369,7 @@ class CompanyView:
                 website, model=model, default_country=default_country
             )
         except Exception as e:
-            log.error("company_website_autofill error: %s", e)
+            log.error(_("An error occurred during company website autofill: %s"), e)
             error_msg = str(e)
             # If the error message contains a long API response, only show a summary
             if "Response:" in error_msg and len(error_msg) > 300:
@@ -1778,7 +1778,7 @@ class CompanyView:
                 )
                 autofill["website"] = form.website.data
             except Exception as e:
-                log.error("company_add_ai autofill error: %s", e)
+                log.error(_("An error occurred during company autofill with AI: %s"), e)
                 self.request.session.flash(
                     _(
                         "danger:An error occurred while trying to autofill the company data"
