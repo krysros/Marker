@@ -1,7 +1,6 @@
-import json
 import logging
-import re
 import time
+
 from typing import Any
 
 
@@ -21,6 +20,7 @@ except ImportError:  # pragma: no cover - exercised by tests through monkeypatch
 
 
 log = logging.getLogger(__name__)
+
 
 _DEFAULT_RETRIES = 2
 _DEFAULT_BACKOFF_SECONDS = 1.0
@@ -120,23 +120,3 @@ def invoke_text(
         )
         raise last_error
     raise RuntimeError("AI invocation failed before request execution")
-
-
-def invoke_json(
-    prompt: str,
-    model: str,
-    *,
-    fallback_model: str | None = None,
-    retries: int = _DEFAULT_RETRIES,
-    source: str = "unknown",
-) -> Any:
-    payload = invoke_text(
-        prompt,
-        model,
-        fallback_model=fallback_model,
-        retries=retries,
-        source=source,
-    )
-    payload = re.sub(r"^```(?:json)?\s*\n?", "", payload, flags=re.IGNORECASE)
-    payload = re.sub(r"\n?```\s*$", "", payload)
-    return json.loads(payload)
