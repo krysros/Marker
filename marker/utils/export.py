@@ -366,7 +366,11 @@ def vcard_template():
 def response_vcard(contact):
     response = Response()
     template = vcard_template()
-    response.text = template.render(contact=contact, get_country_name=get_country_name, get_subdivision_name=get_subdivision_name)
+    response.text = template.render(
+        contact=contact,
+        get_country_name=get_country_name,
+        get_subdivision_name=get_subdivision_name,
+    )
     response.charset = "utf-8"
     response.content_type = "text/vcard"
     response.content_disposition = f"attachment; filename={ascii_slug(contact.name)}.vcf; filename*=UTF-8''{quote(contact.name)}.vcf"

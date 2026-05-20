@@ -149,6 +149,7 @@ def test_report_view_projects_comments(dbsession):
     result = view.view()
     assert result["rel"] == "projects-comments"
 
+
 def test_report_view_projects_stars(dbsession):
     request = _make_request(dbsession, matchdict={"rel": "projects-stars"})
     view = ReportView(request)
@@ -343,8 +344,6 @@ def test_prompt_post_exception(dbsession, monkeypatch):
         assert result["error"] == "LLM call failed"
         assert result["columns"] is None
         assert result["rows"] is None
-
-
 
 
 # ===========================================================================

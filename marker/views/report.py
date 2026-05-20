@@ -94,7 +94,6 @@ class ReportView:
             "sql_generated": sql_generated,
         }
 
-
     @view_config(
         route_name="report_view", renderer="report_view.mako", permission="view"
     )

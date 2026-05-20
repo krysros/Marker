@@ -70,7 +70,6 @@ def test_response_vcard(monkeypatch):
     class DummyContact:
         name = "Jan Kowalski"
 
-
     class DummyTemplate:
         def render(self, contact, **kwargs):
             return "VCARD DATA"
@@ -176,9 +175,7 @@ def _render_vcard(contact):
         }.get(code, code or "")
 
     def fake_get_country_name(code):
-        return {
-            "PL": "Poland"
-        }.get(code, code or "")
+        return {"PL": "Poland"}.get(code, code or "")
 
     return export.vcard_template().render(
         contact=contact,

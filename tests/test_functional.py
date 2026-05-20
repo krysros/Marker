@@ -334,7 +334,7 @@ def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsessi
     assert "Zulu Contact" not in res_filtered.text
     assert "Project Contact" not in res_filtered.text
 
-    legacy_route_res = testapp.get(
+    testapp.get(
         "/contact/search/tags/results",
         params={"tag": "pipeline", "sort": "name", "order": "asc"},
         status=303,
@@ -615,7 +615,7 @@ def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
         _extract_selected_sort_value(all_contacts_with_color_sort.text) == "created_at"
     )
 
-    tags_results_with_color_sort = testapp.get(
+    testapp.get(
         "/contact/search/tags/results",
         params={"tag": "pipeline", "sort": "color", "order": "asc"},
         status=303,
@@ -1706,7 +1706,7 @@ def test_plus_shortcut_script_and_single_button(testapp, dbsession):
     if count != 1:
         # dump a small snippet for easier debugging
         idx = res.text.find("plus-lg")
-        snippet = res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
+        res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
         print("Lines containing plus-lg:")
         for line in res.text.splitlines():
             if "plus-lg" in line:
@@ -2318,12 +2318,6 @@ def test_company_website_autofill_supports_developer_descriptors(
 ):
     os.environ["GEMINI_API_KEY"] = "dummy"
     from marker.utils import website_autofill
-
-    def mock_invoke(self, prompt):
-        if "Developer" in prompt:
-            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
-        else:
-            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
 
     def make_loader(descriptor):
         return lambda self: [type("Doc", (), {"page_content": f"Alfa {descriptor}"})()]
