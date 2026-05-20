@@ -1,0 +1,30 @@
+import pytest
+from marker.views import report
+from pyramid.testing import DummyRequest
+
+
+@pytest.mark.parametrize(
+    "rel,expected",
+    [
+        ("companies-tags", "companies-tags"),
+        ("projects-tags", "projects-tags"),
+        ("companies-subdivisions", "companies-subdivisions"),
+        ("companies-cities", "companies-cities"),
+        ("users-companies", "users-companies"),
+        ("users-projects", "users-projects"),
+        ("companies-projects", "companies-projects"),
+    ],
+)
+def test_report_view_cases(rel, expected):
+    req = DummyRequest(matchdict={"rel": rel}, params={"page": 1})
+    # Use a MagicMock for dbsession to avoid AttributeError
+    from unittest.mock import MagicMock
+
+    req.dbsession = MagicMock()
+    req.dbsession.execute.return_value.all.return_value = []
+    req.registry = type("Reg", (), {"settings": {}})()
+    # Patch route_url to avoid AttributeError from missing getUtility
+    req.route_url = lambda *a, **kw: "/dummy-url"
+    view = report.ReportView(req)
+    # Should not raise
+    view.view()
