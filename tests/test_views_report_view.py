@@ -28,3 +28,25 @@ def test_report_view_cases(rel, expected):
     view = report.ReportView(req)
     # Should not raise
     view.view()
+
+
+def test_gemini_ai_options_fallback_and_retries():
+    from marker.views.report import ReportView
+    class DummyReq:
+        def __init__(self):
+            self.registry = type("Reg", (), {"settings": {"gemini.fallback_model": "fallback", "gemini.retries": "2"}})()
+    req = DummyReq()
+    view = ReportView(req)
+    opts = view._gemini_ai_options()
+    assert opts["fallback_model"] == "fallback"
+    assert opts["retries"] == 2
+
+def test_gemini_ai_options_invalid_retries():
+    from marker.views.report import ReportView
+    class DummyReq:
+        def __init__(self):
+            self.registry = type("Reg", (), {"settings": {"gemini.retries": "notanint"}})()
+    req = DummyReq()
+    view = ReportView(req)
+    opts = view._gemini_ai_options()
+    assert "retries" not in opts
