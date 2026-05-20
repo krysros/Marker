@@ -1,4 +1,5 @@
-import pytest
+import os
+
 from sqlalchemy import select
 
 from marker import models
@@ -107,7 +108,620 @@ def _extract_info_badge_values(page_text):
     ]
 
 
+def _set_cookie_headers(response):
     return [value for key, value in response.headerlist if key.lower() == "set-cookie"]
+
+
+def test_my_view_success(testapp, dbsession):
+    model = models.user.User(
+        name="admin",
+        password="admin",
+        fullname="Jan Kowalski",
+        email="jan.kowalski@example.com",
+        role="admin",
+    )
+    dbsession.add(model)
+    dbsession.flush()
+
+    res = testapp.get("/", status=200)
+    assert res.body
+
+
+def test_tag_search_is_case_insensitive_in_project_and_company_lists(
+    testapp, dbsession
+):
+    import datetime
+
+    user = models.user.User(
+        name="case-search-user",
+        password="admin",
+        fullname="Case Search User",
+        email="case.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Case Search Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Case Search Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    tag = models.tag.Tag(name="MiXeDcAsEtAg")
+    tag.created_by = user
+    tag.companies.append(company)
+    tag.projects.append(project)
+
+    dbsession.add_all([company, project, tag])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "case-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_res = testapp.get("/company", params={"tag": "mixedcasetag"}, status=200)
+    assert "Case Search Company" in company_res.text
+
+    project_res = testapp.get("/project", params={"tag": "MIXEDCASETAG"}, status=200)
+    assert "Case Search Project" in project_res.text
+
+
+def test_contact_tag_search_results_support_filters_and_sorting(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="contact-tags-user",
+        password="admin",
+        fullname="Contact Tags User",
+        email="contact.tags.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company_a = models.company.Company(
+        name="Alpha Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="DE",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company_a.created_by = user
+
+    company_b = models.company.Company(
+        name="Zulu Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company_b.created_by = user
+
+    project = models.project.Project(
+        name="Tagged Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    tag = models.tag.Tag(name="pipeline")
+    tag.created_by = user
+    tag.companies.extend([company_a, company_b])
+    tag.projects.append(project)
+
+    contact_a = models.contact.Contact(
+        name="Alpha Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_a.company = company_a
+    contact_a.created_by = user
+
+    contact_b = models.contact.Contact(
+        name="Zulu Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_b.company = company_b
+    contact_b.created_by = user
+
+    contact_project = models.contact.Contact(
+        name="Project Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_project.project = project
+    contact_project.created_by = user
+
+    dbsession.add_all(
+        [
+            company_a,
+            company_b,
+            project,
+            tag,
+            contact_a,
+            contact_b,
+            contact_project,
+        ]
+    )
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "contact-tags-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    res_sorted = testapp.get(
+        "/search/tags/results",
+        params={
+            "target": "contacts",
+            "tag": "pipeline",
+            "sort": "name",
+            "order": "asc",
+        },
+        status=200,
+    )
+    _assert_text_order(
+        res_sorted.text,
+        ["Alpha Contact", "Project Contact", "Zulu Contact"],
+    )
+
+    res_filtered = testapp.get(
+        "/search/tags/results",
+        params={
+            "target": "contacts",
+            "tag": "pipeline",
+            "category": "companies",
+            "country": "DE",
+        },
+        status=200,
+    )
+    assert "Alpha Contact" in res_filtered.text
+    assert "Zulu Contact" not in res_filtered.text
+    assert "Project Contact" not in res_filtered.text
+
+    legacy_route_res = testapp.get(
+        "/contact/search/tags/results",
+        params={"tag": "pipeline", "sort": "name", "order": "asc"},
+        status=303,
+    )
+
+
+def test_search_tags_handles_polish_letters_in_tag_name(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="polish-tag-search-user",
+        password="admin",
+        fullname="Polish Tag Search User",
+        email="polish.tag.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Polish Tag Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Polish Tag Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    contact_company = models.contact.Contact(
+        name="Polish Company Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_company.company = company
+    contact_company.created_by = user
+
+    contact_project = models.contact.Contact(
+        name="Polish Project Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    contact_project.project = project
+    contact_project.created_by = user
+
+    tag = models.tag.Tag(name="Ślusarka aluminiowa")
+    tag.created_by = user
+    tag.companies.append(company)
+    tag.projects.append(project)
+
+    dbsession.add_all([company, project, contact_company, contact_project, tag])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "polish-tag-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    companies_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "companies", "tag": "ślusarka aluminiowa"},
+        status=303,
+    )
+    companies_page = companies_redirect.follow(status=200)
+    assert "Polish Tag Company" in companies_page.text
+
+    projects_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "projects", "tag": "ślusarka aluminiowa"},
+        status=303,
+    )
+    projects_page = projects_redirect.follow(status=200)
+    assert "Polish Tag Project" in projects_page.text
+
+    contacts_page = testapp.get(
+        "/search/tags/results",
+        params={"target": "contacts", "tag": "ślusarka aluminiowa"},
+        status=200,
+    )
+    assert "Polish Company Contact" in contacts_page.text
+    assert "Polish Project Contact" in contacts_page.text
+
+
+def test_tag_search_redirects_and_supports_contacts_view_for_company_and_project(
+    testapp, dbsession
+):
+    import datetime
+
+    user = models.user.User(
+        name="tag-search-switch-user",
+        password="admin",
+        fullname="Tag Search Switch User",
+        email="tag.search.switch.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Switch Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="Switch Project",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    company_contact = models.contact.Contact(
+        name="Company Switch Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    company_contact.company = company
+    company_contact.created_by = user
+
+    project_contact = models.contact.Contact(
+        name="Project Switch Contact",
+        role="",
+        phone="",
+        email="",
+        color="",
+    )
+    project_contact.project = project
+    project_contact.created_by = user
+
+    tag = models.tag.Tag(name="switch-tag")
+    tag.created_by = user
+    tag.companies.append(company)
+    tag.projects.append(project)
+
+    dbsession.add_all([company, project, company_contact, project_contact, tag])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "tag-search-switch-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "companies", "tag": "switch-tag"},
+        status=303,
+    )
+    assert "/company" in company_redirect.location
+
+    project_redirect = testapp.get(
+        "/search/tags/results",
+        params={"target": "projects", "tag": "switch-tag"},
+        status=303,
+    )
+    assert "/project" in project_redirect.location
+
+    company_contacts_view = testapp.get(
+        "/company",
+        params={"tag": "switch-tag", "view": "contacts"},
+        status=200,
+    )
+    assert "Company Switch Contact" in company_contacts_view.text
+    assert "Switch Company" in company_contacts_view.text
+
+    project_contacts_view = testapp.get(
+        "/project",
+        params={"tag": "switch-tag", "view": "contacts"},
+        status=200,
+    )
+    assert "Project Switch Contact" in project_contacts_view.text
+    assert "Switch Project" in project_contacts_view.text
+
+
+def test_contact_views_do_not_allow_sorting_by_color(testapp, dbsession):
+    user = models.user.User(
+        name="contact-color-sort-user",
+        password="admin",
+        fullname="Contact Color Sort User",
+        email="contact.color.sort.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="Color Sort Company",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="PL",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+
+    tag = models.tag.Tag(name="pipeline")
+    tag.created_by = user
+    tag.companies.append(company)
+
+    contact = models.contact.Contact(
+        name="Color Sort Contact",
+        role="",
+        phone="",
+        email="",
+        color="warning",
+    )
+    contact.created_by = user
+    contact.company = company
+
+    dbsession.add_all([company, tag, contact])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "contact-color-sort-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    all_contacts = testapp.get("/contact", status=200)
+    assert "color" not in _extract_sort_values_from_dropdown(all_contacts.text)
+
+    all_contacts_with_color_sort = testapp.get(
+        "/contact", params={"sort": "color", "order": "asc"}, status=200
+    )
+    assert "color" not in _extract_sort_values_from_dropdown(
+        all_contacts_with_color_sort.text
+    )
+    assert (
+        _extract_selected_sort_value(all_contacts_with_color_sort.text) == "created_at"
+    )
+
+    tags_results_with_color_sort = testapp.get(
+        "/contact/search/tags/results",
+        params={"tag": "pipeline", "sort": "color", "order": "asc"},
+        status=303,
+    )
+
+
+def test_name_search_is_case_insensitive_with_polish_letters(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="lodz-search-user",
+        password="admin",
+        fullname="Lodz Search User",
+        email="lodz.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="ALFA ŁÓDŹ",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="BETA ŁÓDŹ",
+        street="",
+        postcode="",
+        city="",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+
+    dbsession.add_all([company, project])
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "lodz-search-user"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    company_res = testapp.get("/company", params={"name": "łódź"}, status=200)
+    assert "ALFA ŁÓDŹ" in company_res.text
+
+    project_res = testapp.get("/project", params={"name": "łódź"}, status=200)
+    assert "BETA ŁÓDŹ" in project_res.text
+
+
+def test_city_search_is_case_insensitive_with_polish_letters(testapp, dbsession):
+    import datetime
+
+    user = models.user.User(
+        name="city-search-user",
+        password="admin",
+        fullname="City Search User",
+        email="city.search.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    company = models.company.Company(
+        name="City Search Company",
+        street="",
+        postcode="",
+        city="ŁÓDŹ",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+
+    project = models.project.Project(
+        name="City Search Project",
+        street="",
+        postcode="",
+        city="ŁÓDŹ",
+        subdivision="",
+        country="",
+        website="",
+        color="",
+        deadline=datetime.datetime.now(),
+        stage="",
+        delivery_method="",
+    )
     project.created_by = user
 
     dbsession.add_all([company, project])
@@ -913,6 +1527,51 @@ def test_login_redirect_rejects_external_next_and_allows_local_path(testapp, dbs
     assert response_local.headers["Location"] == "http://example.com/project"
 
 
+def test_login_sets_httponly_and_samesite_cookies(testapp, dbsession):
+    user = models.user.User(
+        name="cookie-security-user",
+        password="admin",
+        fullname="Cookie Security User",
+        email="cookie.security.user@example.com",
+        role="admin",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "cookie-security-user"
+    form["password"] = "admin"
+    response = form.submit(status=303)
+
+    cookies = _set_cookie_headers(response)
+    auth_cookies = [cookie for cookie in cookies if cookie.startswith("auth_tkt=")]
+    csrf_cookies = [cookie for cookie in cookies if cookie.startswith("csrf_token=")]
+    session_cookies = [cookie for cookie in cookies if cookie.startswith("session=")]
+
+    assert auth_cookies
+    assert csrf_cookies
+    assert session_cookies
+
+    for cookie in auth_cookies + csrf_cookies + session_cookies:
+        assert "HttpOnly" in cookie
+        assert "SameSite=Lax" in cookie
+
+
+def test_set_locale_rejects_external_referrer(testapp):
+    response = testapp.get(
+        "/locale/pl",
+        headers={"Referer": "https://evil.example/steal"},
+        status=302,
+    )
+    assert response.headers["Location"] == "http://example.com/"
+
+    cookies = _set_cookie_headers(response)
+    locale_cookies = [cookie for cookie in cookies if cookie.startswith("_LOCALE_=")]
+    assert locale_cookies
+    assert "HttpOnly" in locale_cookies[0]
+    assert "SameSite=Lax" in locale_cookies[0]
+
 
 def test_comment_markdown_sanitizes_dangerous_html(testapp, dbsession):
     user = models.user.User(
@@ -1047,7 +1706,7 @@ def test_plus_shortcut_script_and_single_button(testapp, dbsession):
     if count != 1:
         # dump a small snippet for easier debugging
         idx = res.text.find("plus-lg")
-        res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
+        snippet = res.text[idx - 100 : idx + 200] if idx != -1 else "<not found>"
         print("Lines containing plus-lg:")
         for line in res.text.splitlines():
             if "plus-lg" in line:
@@ -1654,14 +2313,731 @@ def test_select_all_project_companies_updates_selected_companies(testapp, dbsess
     assert selected_company_ids == []
 
 
+def test_company_website_autofill_supports_developer_descriptors(
+    testapp, dbsession, monkeypatch
+):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker.utils import website_autofill
+
+    def mock_invoke(self, prompt):
+        if "Developer" in prompt:
+            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
+        else:
+            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
+
+    def make_loader(descriptor):
+        return lambda self: [type("Doc", (), {"page_content": f"Alfa {descriptor}"})()]
+
+    def mock_invoke(self, prompt):
+        if "Deweloper" in prompt:
+            return type("Resp", (), {"content": '{"name": "Alfa Deweloper"}'})()
+        else:
+            return type("Resp", (), {"content": '{"name": "Alfa Developer"}'})()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        mock_invoke,
+    )
+
+    user = models.user.User(
+        name="company-autofill-descriptor-editor",
+        password="admin",
+        fullname="Company Autofill Descriptor Editor",
+        email="company.autofill.descriptor@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-descriptor-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    for descriptor in ("Deweloper", "Developer"):
+        monkeypatch.setattr(
+            "langchain_community.document_loaders.WebBaseLoader.load",
+            make_loader(descriptor),
+        )
+        response = testapp.get(
+            "/company/add/website_autofill",
+            params={"website": "https://example.com/kontakt/"},
+            status=200,
+        )
+        fields = response.json["fields"]
+
+        assert fields["name"] == f"Alfa {descriptor}"
+
+
+def test_company_website_autofill_prefers_company_like_descriptor_casing(
+    testapp, dbsession, monkeypatch
+):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [
+            type("Doc", (), {"page_content": "alfa developer Alfa Developer"})()
+        ],
+    )
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: type(
+            "Resp", (), {"content": '{"name": "Alfa Developer"}'}
+        )(),
+    )
+
+    user = models.user.User(
+        name="company-autofill-descriptor-casing-editor",
+        password="admin",
+        fullname="Company Autofill Descriptor Casing Editor",
+        email="company.autofill.descriptor.casing@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-descriptor-casing-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    response = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://example.com/kontakt/"},
+        status=200,
+    )
+    fields = response.json["fields"]
+
+    assert fields["name"] == "Alfa Developer"
+
+
+def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
+    testapp, dbsession, monkeypatch
+):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [
+            type(
+                "Doc",
+                (),
+                {
+                    "page_content": "Nowa Przestrzeń Developer Kwiatowa 12 00-123 Warszawa"
+                },
+            )()
+        ],
+    )
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: type(
+            "Resp",
+            (),
+            {
+                "content": '{"name": "Nowa Przestrzeń Developer", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}'
+            },
+        )(),
+    )
+
+    user = models.user.User(
+        name="company-autofill-address-block-editor",
+        password="admin",
+        fullname="Company Autofill Address Block Editor",
+        email="company.autofill.address.block@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-address-block-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    response = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://example.com/kontakt/"},
+        status=200,
+    )
+    fields = response.json["fields"]
+
+    assert fields["name"] == "Nowa Przestrzeń Developer"
+    assert fields["street"] == "Kwiatowa 12"
+    assert fields["postcode"] == "00-123"
+    assert fields["city"] == "Warszawa"
+
+
+def test_company_website_autofill_includes_trade_prefix_from_previous_line(
+    testapp, dbsession, monkeypatch
+):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker.utils import website_autofill
+
+    # Patch will be set per test case below
+
+    user = models.user.User(
+        name="company-autofill-prefix-editor",
+        password="admin",
+        fullname="Company Autofill Prefix Editor",
+        email="company.autofill.prefix@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+
+    login_page = testapp.get("/login", status=200)
+    form = login_page.forms[0]
+    form["username"] = "company-autofill-prefix-editor"
+    form["password"] = "admin"
+    form.submit(status=303)
+
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+
+    html_cases = (
+        (
+            "FHU",
+            "FHU Alfa",
+        ),
+        (
+            "Przedsiębiorstwo Handlowo-Usługowe",
+            "Przedsiębiorstwo Handlowo-Usługowe Alfa",
+        ),
+    )
+
+    for prefix_line, expected_name in html_cases:
+        monkeypatch.setattr(
+            "langchain_community.document_loaders.WebBaseLoader.load",
+            lambda self: [
+                type(
+                    "Doc",
+                    (),
+                    {"page_content": f"{prefix_line} Alfa Kwiatowa 12 00-123 Warszawa"},
+                )()
+            ],
+        )
+        monkeypatch.setattr(
+            "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+            lambda self, prompt, expected_name=expected_name: type(
+                "Resp",
+                (),
+                {
+                    "content": f'{{"name": "{expected_name}", "street": "Kwiatowa 12", "postcode": "00-123", "city": "Warszawa"}}'
+                },
+            )(),
+        )
+
+        response = testapp.get(
+            "/company/add/website_autofill",
+            params={"website": "https://example.com/kontakt/"},
+            status=200,
+        )
+        fields = response.json["fields"]
+
+        assert fields["name"] == expected_name
+        assert fields["street"] == "Kwiatowa 12"
+        assert fields["postcode"] == "00-123"
+        assert fields["city"] == "Warszawa"
+
+
 def test_company_website_autofill_error(testapp, dbsession, monkeypatch):
-    pass
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker.utils import website_autofill
+
+    # Patch the LLM call to raise an exception
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
+    )
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: (_ for _ in ()).throw(RuntimeError("LLM error!")),
+    )
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+    from marker import models
+
+    user = models.user.User(
+        name="company-autofill-error-editor",
+        password="admin",
+        fullname="Company Autofill Error Editor",
+        email="company.autofill.error@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-autofill-error-editor", "admin")
+    resp = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://fail.example.com"},
+        status=502,
+    )
+    assert resp.json["error"] == "LLM error!"
+    assert resp.json["fields"] == {}
+
+
 def test_company_website_autofill_error_long_response(testapp, dbsession, monkeypatch):
-    pass
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
+    )
+    # Simulate a long error message with 'Response:'
+    long_error = "Some error. Response: " + ("x" * 500)
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: (_ for _ in ()).throw(RuntimeError(long_error)),
+    )
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+    user = models.user.User(
+        name="company-autofill-error-long-editor",
+        password="admin",
+        fullname="Company Autofill Error Long Editor",
+        email="company.autofill.error.long@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-autofill-error-long-editor", "admin")
+    resp = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://fail.example.com"},
+        status=502,
+    )
+    assert resp.json["error"].startswith("Some error.")
+    assert resp.json["fields"] == {}
+
+
 def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monkeypatch):
-    pass
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
+    )
+    # Simulate a very long error message (over 500 bytes)
+    very_long_error = "x" * 1000
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        lambda self, prompt: (_ for _ in ()).throw(RuntimeError(very_long_error)),
+    )
+    monkeypatch.setattr(
+        website_autofill,
+        "location_details",
+        lambda **kwargs: None,
+    )
+    user = models.user.User(
+        name="company-autofill-error-flash-editor",
+        password="admin",
+        fullname="Company Autofill Error Flash Editor",
+        email="company.autofill.error.flash@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-autofill-error-flash-editor", "admin")
+    resp = testapp.get(
+        "/company/add/website_autofill",
+        params={"website": "https://fail.example.com"},
+        status=502,
+    )
+    assert resp.json["error"].startswith("x")
+    assert resp.json["fields"] == {}
 
 
+def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import company as company_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [
+            type("Doc", (), {"page_content": "Acme Corp Jan Kowalski CEO"})()
+        ],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract a list of contacts" in prompt:
+            return type(
+                "Resp",
+                (),
+                {
+                    "content": '[{"name": "Jan Kowalski", "role": "CEO", "phone": "+48123456789", "email": "jan@acme.com"}]'
+                },
+            )()
+        return type(
+            "Resp",
+            (),
+            {"content": '{"name": "Acme Corp", "city": "Warszawa", "country": "PL"}'},
+        )()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        mock_invoke,
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="company-add-ai-contacts-editor",
+        password="admin",
+        fullname="Company Add AI Contacts Editor",
+        email="company.add.ai.contacts@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-add-ai-contacts-editor", "admin")
+
+    ai_page = testapp.get("/company/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_input = soup.find("input", {"name": "csrf_token"})
+    assert csrf_input is not None
+    csrf_token = csrf_input["value"]
+
+    resp = testapp.post(
+        "/company/add/ai",
+        params={"website": "https://acme.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    company = dbsession.execute(
+        select(models.company.Company).where(models.company.Company.name == "Acme Corp")
+    ).scalar_one_or_none()
+    assert company is not None
+    assert len(company.contacts) == 1
+    contact = company.contacts[0]
+    assert contact.name == "Jan Kowalski"
+    assert contact.role == "CEO"
+    assert contact.phone == "+48123456789"
+    assert contact.email == "jan@acme.com"
 
 
+def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import project as project_views
 
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [type("Doc", (), {"page_content": "Budowex Anna Nowak PM"})()],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract a list of contacts" in prompt:
+            return type(
+                "Resp",
+                (),
+                {
+                    "content": '[{"name": "Anna Nowak", "role": "PM", "phone": "+48987654321", "email": "anna@budowex.com"}]'
+                },
+            )()
+        return type(
+            "Resp",
+            (),
+            {
+                "content": '{"name": "Budowex", "city": "Krakow", "country": "PL", "stage": "", "delivery_method": ""}'
+            },
+        )()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke",
+        mock_invoke,
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="project-add-ai-contacts-editor",
+        password="admin",
+        fullname="Project Add AI Contacts Editor",
+        email="project.add.ai.contacts@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "project-add-ai-contacts-editor", "admin")
+
+    ai_page = testapp.get("/project/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_input = soup.find("input", {"name": "csrf_token"})
+    assert csrf_input is not None
+    csrf_token = csrf_input["value"]
+
+    resp = testapp.post(
+        "/project/add/ai",
+        params={"website": "https://budowex.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    project = dbsession.execute(
+        select(models.project.Project).where(models.project.Project.name == "Budowex")
+    ).scalar_one_or_none()
+    assert project is not None
+    assert len(project.contacts) == 1
+    contact = project.contacts[0]
+    assert contact.name == "Anna Nowak"
+    assert contact.role == "PM"
+    assert contact.phone == "+48987654321"
+    assert contact.email == "anna@budowex.com"
+
+
+def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import company as company_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [
+            type(
+                "Doc",
+                (),
+                {
+                    "page_content": "TagCo offers construction and civil engineering services."
+                },
+            )()
+        ],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract up to 20 tags" in prompt:
+            return type(
+                "Resp", (), {"content": '["Construction", "Civil engineering"]'}
+            )()
+        if "Extract a list of contacts" in prompt:
+            return type("Resp", (), {"content": "[]"})()
+        return type(
+            "Resp",
+            (),
+            {"content": '{"name": "TagCo", "city": "Gdansk", "country": "PL"}'},
+        )()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="company-add-ai-tags-editor",
+        password="admin",
+        fullname="Company Add AI Tags Editor",
+        email="company.add.ai.tags@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-add-ai-tags-editor", "admin")
+
+    ai_page = testapp.get("/company/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_token = soup.find("input", {"name": "csrf_token"})["value"]
+
+    resp = testapp.post(
+        "/company/add/ai",
+        params={"website": "https://tagco.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    company = dbsession.execute(
+        select(models.company.Company).where(models.company.Company.name == "TagCo")
+    ).scalar_one_or_none()
+    assert company is not None
+    tag_names = {t.name for t in company.tags}
+    assert "Construction" in tag_names
+    assert "Civil engineering" in tag_names
+
+
+def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
+    """When the LLM returns a tag that already exists in the DB, the existing Tag row is reused."""
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import company as company_views
+
+    # Pre-create a tag that should be reused
+    existing_tag = models.tag.Tag("Architecture")
+    dbsession.add(existing_tag)
+    dbsession.flush()
+    existing_tag_id = existing_tag.id
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [
+            type(
+                "Doc", (), {"page_content": "ArchFirm provides architecture services."}
+            )()
+        ],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract up to 20 tags" in prompt:
+            return type("Resp", (), {"content": '["Architecture"]'})()
+        if "Extract a list of contacts" in prompt:
+            return type("Resp", (), {"content": "[]"})()
+        return type(
+            "Resp",
+            (),
+            {"content": '{"name": "ArchFirm", "city": "Poznan", "country": "PL"}'},
+        )()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(company_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="company-add-ai-reuse-tag-editor",
+        password="admin",
+        fullname="Company Add AI Reuse Tag Editor",
+        email="company.add.ai.reusetag@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "company-add-ai-reuse-tag-editor", "admin")
+
+    ai_page = testapp.get("/company/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_token = soup.find("input", {"name": "csrf_token"})["value"]
+
+    testapp.post(
+        "/company/add/ai",
+        params={"website": "https://archfirm.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+
+    company = dbsession.execute(
+        select(models.company.Company).where(models.company.Company.name == "ArchFirm")
+    ).scalar_one_or_none()
+    assert company is not None
+    assert len(company.tags) == 1
+    # Must be the same row, not a duplicate
+    assert company.tags[0].id == existing_tag_id
+
+
+def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
+    os.environ["GEMINI_API_KEY"] = "dummy"
+    from marker import models
+    from marker.utils import website_autofill
+    from marker.views import project as project_views
+
+    monkeypatch.setattr(
+        "langchain_community.document_loaders.WebBaseLoader.load",
+        lambda self: [
+            type(
+                "Doc",
+                (),
+                {"page_content": "TagProject residential housing development."},
+            )()
+        ],
+    )
+
+    def mock_invoke(self, prompt):
+        if "Extract up to 20 tags" in prompt:
+            return type("Resp", (), {"content": '["Residential", "Housing"]'})()
+        if "Extract a list of contacts" in prompt:
+            return type("Resp", (), {"content": "[]"})()
+        return type(
+            "Resp",
+            (),
+            {
+                "content": '{"name": "TagProject", "city": "Lodz", "country": "PL", "stage": "", "delivery_method": ""}'
+            },
+        )()
+
+    monkeypatch.setattr(
+        "langchain_google_genai.ChatGoogleGenerativeAI.invoke", mock_invoke
+    )
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kwargs: None)
+    monkeypatch.setattr(project_views, "location_details", lambda **kwargs: None)
+
+    user = models.user.User(
+        name="project-add-ai-tags-editor",
+        password="admin",
+        fullname="Project Add AI Tags Editor",
+        email="project.add.ai.tags@example.com",
+        role="editor",
+    )
+    dbsession.add(user)
+    dbsession.flush()
+    _login_as_editor(testapp, "project-add-ai-tags-editor", "admin")
+
+    ai_page = testapp.get("/project/add/ai", status=200)
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(ai_page.text, "html.parser")
+    csrf_token = soup.find("input", {"name": "csrf_token"})["value"]
+
+    resp = testapp.post(
+        "/project/add/ai",
+        params={"website": "https://tagproject.example.com", "csrf_token": csrf_token},
+        status=303,
+    )
+    resp.follow(status=200)
+
+    project = dbsession.execute(
+        select(models.project.Project).where(
+            models.project.Project.name == "TagProject"
+        )
+    ).scalar_one_or_none()
+    assert project is not None
+    tag_names = {t.name for t in project.tags}
+    assert "Residential" in tag_names
+    assert "Housing" in tag_names

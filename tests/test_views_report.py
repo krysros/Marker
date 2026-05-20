@@ -1,6 +1,5 @@
 """Tests for marker/views/report.py"""
 
-import pytest
 from decimal import Decimal
 from unittest.mock import MagicMock
 
