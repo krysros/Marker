@@ -3,25 +3,15 @@
 from decimal import Decimal
 from unittest.mock import MagicMock
 
-import pytest
 import transaction
 from webob.multidict import MultiDict
 
-import marker.forms.ts
 from marker.models.association import Activity
 from marker.models.company import Company
 from marker.models.project import Project
 from marker.models.user import User
 from marker.views.prices import PricesView
 from tests.conftest import DummyRequestWithIdentity
-
-
-@pytest.fixture(autouse=True)
-def patch_translationstring_str(monkeypatch):
-    monkeypatch.setattr(
-        marker.forms.ts.TranslationString, "__str__", lambda self: self.msg
-    )
-    yield
 
 
 def _user(dbsession, name="valuser"):

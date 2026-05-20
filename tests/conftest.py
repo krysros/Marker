@@ -14,12 +14,25 @@ from marker import main, models
 from marker.models.meta import Base
 
 
+# Patch only __str__ of TranslationString to avoid AttributeError (no request context)
+import marker.forms.ts
+
+
+def _translationstring_str(self):
+    return self.msg
+
+
+marker.forms.ts.TranslationString.__str__ = _translationstring_str
+
+
 class DummyRequestWithIdentity:
     def __init__(self, *args, **kwargs):
         from pyramid.testing import DummyRequest
 
         self._request = DummyRequest(*args, **kwargs)
         self._identity = None
+        # Ensure translate is always available for tests
+        self.translate = lambda x: x
 
     def __getattr__(self, name):
         return getattr(self._request, name)
