@@ -28,18 +28,21 @@ def test_invoke_text_success():
 @patch("marker.utils.langchain_ai.ChatGoogleGenerativeAI", DummyLLM)
 def test_invoke_text_fallback():
     # fallback_model is used if model fails
-    def fail_first(prompt):
-        if prompt == "hello":
-            raise RuntimeError("fail")
-        return MagicMock(content="ok", response_metadata={})
+    # The fallback_model should only be called if the first model fails
+    class FailFirstLLM(DummyLLM):
+        def __init__(self, *a, **k):
+            super().__init__(*a, **k)
+            self.calls = 0
 
-    class FallbackLLM(DummyLLM):
         def invoke(self, prompt):
-            return fail_first(prompt)
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError("fail")
+            return MagicMock(content="ok", response_metadata={})
 
-    with patch("marker.utils.langchain_ai.ChatGoogleGenerativeAI", FallbackLLM):
-        with pytest.raises(RuntimeError, match="fail"):
-            langchain_ai.invoke_text("hello", model="fail", fallback_model="ok")
+    with patch("marker.utils.langchain_ai.ChatGoogleGenerativeAI", FailFirstLLM):
+        result = langchain_ai.invoke_text("hello", model="fail", fallback_model="ok")
+        assert result == "ok"
 
 
 @patch("marker.utils.langchain_ai.ChatGoogleGenerativeAI", DummyLLM)
@@ -78,6 +81,22 @@ def test_response_to_text_variants():
 def test_usage_metadata():
     resp = MagicMock(response_metadata={"usage_metadata": {"foo": 1}})
     assert langchain_ai._usage_metadata(resp) == {"foo": 1}
+
+
+def test_invoke_text_runtimeerror():
+    class DummyLLM:
+        def __init__(self, *a, **k):
+            pass
+
+        def invoke(self, prompt):
+            raise Exception("should not be called")
+
+    with patch("marker.utils.langchain_ai.ChatGoogleGenerativeAI", DummyLLM):
+        # Should raise the Exception from DummyLLM, since last_error is set
+        with pytest.raises(Exception, match="should not be called"):
+            langchain_ai.invoke_text(
+                "prompt", model=None, fallback_model=None, retries=0
+            )
 
 
 def test_invoke_text_both_models_fail():

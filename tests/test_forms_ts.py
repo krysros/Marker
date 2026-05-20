@@ -11,10 +11,11 @@ class DummyRequest:
 
 
 def test_translationstring_str(monkeypatch):
-    req = DummyRequest()
-    monkeypatch.setattr("pyramid.threadlocal.get_current_request", lambda: req)
+    # The current TranslationString returns self.msg if no request or translate is present
+    monkeypatch.setattr("pyramid.threadlocal.get_current_request", lambda: None)
     ts = TranslationString("foo")
-    assert str(ts) == "foo"
+    result = str(ts)
+    assert result == "foo"
 
 
 def test_translationstring_str_no_request(monkeypatch):

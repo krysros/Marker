@@ -7,4 +7,6 @@ class TranslationString:
 
     def __str__(self):
         request = get_current_request()
-        return request.translate(self.msg)
+        if request is not None and hasattr(request, "translate"):
+            return request.translate(self.msg)
+        return self.msg

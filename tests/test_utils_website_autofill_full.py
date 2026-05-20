@@ -132,3 +132,49 @@ def test_subdivision_code_from_value_matches(monkeypatch):
         website_autofill._subdivision_code_from_value("woj. mazowieckie", "PL")
         == "PL-MZ"
     )
+
+
+def test_country_from_locale_edge_cases():
+    # Empty input
+    assert website_autofill._country_from_locale("") == ""
+    # Invalid input
+    assert website_autofill._country_from_locale("not_a_locale") == ""
+    # Language code as country
+    assert website_autofill._country_from_locale("pl") == "PL"
+
+
+def test_contacts_autofill_from_website_valueerror(monkeypatch):
+    # Should raise ValueError if no content is loaded
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: types.SimpleNamespace(load=lambda: []),
+    )
+    with pytest.raises(ValueError):
+        website_autofill.contacts_autofill_from_website("http://example.com")
+
+
+def test_tags_autofill_from_website_valueerror(monkeypatch):
+    # Should raise ValueError if no content is loaded
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: types.SimpleNamespace(load=lambda: []),
+    )
+    with pytest.raises(ValueError):
+        website_autofill.tags_autofill_from_website("http://example.com")
+
+
+def test_subdivision_code_from_value_edge_cases():
+    # Partial/invalid input
+    assert website_autofill._subdivision_code_from_value(None, "PL") == ""
+    assert website_autofill._subdivision_code_from_value("", None) == ""
+    assert website_autofill._subdivision_code_from_value(None, None) == ""
+
+
+def test_normalize_whitespace_and_fold_text_edge_cases():
+    # Empty and None input
+    assert website_autofill._normalize_whitespace("") == ""
+    assert website_autofill._normalize_whitespace(None) == ""
+    assert website_autofill._fold_text("") == ""
+    assert website_autofill._fold_text(None) == ""
