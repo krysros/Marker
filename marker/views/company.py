@@ -371,6 +371,16 @@ class CompanyView:
         }
 
     @view_config(
+        route_name="company_count",
+        renderer="json",
+        permission="view",
+    )
+    def count(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(select(Company).subquery())
+        ).scalar()
+
+    @view_config(
         route_name="company_view",
         renderer="company_view.mako",
         permission="view",

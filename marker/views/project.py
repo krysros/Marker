@@ -440,6 +440,16 @@ class ProjectView:
         }
 
     @view_config(
+        route_name="project_count",
+        renderer="json",
+        permission="view",
+    )
+    def count(self):
+        return self.request.dbsession.execute(
+            select(func.count()).select_from(select(Project).subquery())
+        ).scalar()
+
+    @view_config(
         route_name="project_comments",
         renderer="project_comments.mako",
         permission="view",

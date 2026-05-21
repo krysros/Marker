@@ -3,7 +3,9 @@
 
 <h2>
   <i class="bi bi-briefcase"></i> ${_("Projects")}
-  <span class="badge bg-secondary">${counter}</span>
+  <span class="badge bg-secondary">
+    <div hx-get="${request.route_url('project_count')}" hx-trigger="projectEvent from:body">${counter}</div>
+  </span>
   <div class="float-end">
     ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
     ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}

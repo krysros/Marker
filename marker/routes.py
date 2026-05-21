@@ -22,6 +22,7 @@ def includeme(config):
     config.add_route("password", "/password", factory=account_factory)
 
     config.add_route("company_all", "/company", factory=default_factory)
+    config.add_route("company_count", "/company/count", factory=default_factory)
     config.add_route("company_uptime", "/company/uptime", factory=default_factory)
     config.add_route(
         "company_uptime_check",
@@ -184,6 +185,7 @@ def includeme(config):
     )
 
     config.add_route("project_all", "/project", factory=default_factory)
+    config.add_route("project_count", "/project/count", factory=default_factory)
     config.add_route("project_uptime", "/project/uptime", factory=default_factory)
     config.add_route(
         "project_uptime_check",
