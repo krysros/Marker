@@ -15,19 +15,19 @@
   ${button.dropdown_sort(sort_criteria)}
   ${button.dropdown_order(order_criteria)}
   <div class="vr mx-1"></div>
-  <a class="btn btn-sm btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
-  <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
-    <a class="btn ${'btn-primary' if tag_operator == 'or' else 'btn-outline-primary'}"
-       href="${request.route_url('user_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>
-    <a class="btn ${'btn-primary' if tag_operator == 'and' else 'btn-outline-primary'}"
-       href="${request.route_url('user_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'and'})}">AND</a>
-  </div>
-  <div class="vr mx-1"></div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-primary" href="${request.route_url('user_selected_projects_similar', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_map_selected_projects_similar', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_selected_projects_similar', username=user.name, _query={'tag_operator': tag_operator})}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
   </div>
+    <div class="vr mx-1"></div>
+    <a class="btn btn-sm btn-secondary active" aria-pressed="true" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
+    <div class="btn-group btn-group-sm" role="group" aria-label="${_('Tag mode')}">
+     <a class="btn ${'btn-primary' if tag_operator == 'or' else 'btn-outline-primary'}"
+       href="${request.route_url('user_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'or'})}">OR</a>
+     <a class="btn ${'btn-primary' if tag_operator == 'and' else 'btn-outline-primary'}"
+       href="${request.route_url('user_selected_projects_similar', username=user.name, _query={**{k: v for k, v in q.items() if k != 'tag_operator'}, 'tag_operator': 'and'})}">AND</a>
+    </div>
 </div>
 
 <%include file="project_table.mako"/>
