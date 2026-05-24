@@ -2357,7 +2357,7 @@ def test_company_website_autofill_supports_developer_descriptors(
 
     for descriptor in ("Deweloper", "Developer"):
         monkeypatch.setattr(
-            "langchain_community.document_loaders.WebBaseLoader.load",
+            "marker.utils.website_autofill.WebBaseLoader.load",
             make_loader(descriptor),
         )
         response = testapp.get(
@@ -2377,7 +2377,7 @@ def test_company_website_autofill_prefers_company_like_descriptor_casing(
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [
             type("Doc", (), {"page_content": "alfa developer Alfa Developer"})()
         ],
@@ -2428,7 +2428,7 @@ def test_company_website_autofill_extracts_adjacent_name_street_postcode_city(
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [
             type(
                 "Doc",
@@ -2528,7 +2528,7 @@ def test_company_website_autofill_includes_trade_prefix_from_previous_line(
 
     for prefix_line, expected_name in html_cases:
         monkeypatch.setattr(
-            "langchain_community.document_loaders.WebBaseLoader.load",
+            "marker.utils.website_autofill.WebBaseLoader.load",
             lambda self: [
                 type(
                     "Doc",
@@ -2567,7 +2567,7 @@ def test_company_website_autofill_error(testapp, dbsession, monkeypatch):
 
     # Patch the LLM call to raise an exception
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
     )
     monkeypatch.setattr(
@@ -2606,7 +2606,7 @@ def test_company_website_autofill_error_long_response(testapp, dbsession, monkey
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
     )
     # Simulate a long error message with 'Response:'
@@ -2645,7 +2645,7 @@ def test_company_website_autofill_error_flash_truncate(testapp, dbsession, monke
     from marker.utils import website_autofill
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [type("Doc", (), {"page_content": "irrelevant"})()],
     )
     # Simulate a very long error message (over 500 bytes)
@@ -2685,7 +2685,7 @@ def test_company_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
     from marker.views import company as company_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [
             type("Doc", (), {"page_content": "Acme Corp Jan Kowalski CEO"})()
         ],
@@ -2758,7 +2758,7 @@ def test_project_add_ai_saves_contacts(testapp, dbsession, monkeypatch):
     from marker.views import project as project_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [type("Doc", (), {"page_content": "Budowex Anna Nowak PM"})()],
     )
 
@@ -2831,7 +2831,7 @@ def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
     from marker.views import company as company_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [
             type(
                 "Doc",
@@ -2909,7 +2909,7 @@ def test_company_add_ai_reuses_existing_tag(testapp, dbsession, monkeypatch):
     existing_tag_id = existing_tag.id
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [
             type(
                 "Doc", (), {"page_content": "ArchFirm provides architecture services."}
@@ -2973,7 +2973,7 @@ def test_project_add_ai_saves_tags(testapp, dbsession, monkeypatch):
     from marker.views import project as project_views
 
     monkeypatch.setattr(
-        "langchain_community.document_loaders.WebBaseLoader.load",
+        "marker.utils.website_autofill.WebBaseLoader.load",
         lambda self: [
             type(
                 "Doc",

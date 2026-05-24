@@ -6,11 +6,51 @@ import unicodedata
 os.environ["USER_AGENT"] = "Marker/1.0"
 
 import pycountry
-from langchain_community.document_loaders import WebBaseLoader
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
+
+
+class WebBaseLoader:
+    """
+    A lightweight, robust, custom replacement for langchain_community's WebBaseLoader.
+    Uses Python's standard urllib.request to fetch the page and BeautifulSoup to extract text.
+    Respects charset encodings and handles Unicode seamlessly.
+    """
+
+    def __init__(self, url):
+        self.url = url
+
+    def load(self):
+        import urllib.request
+        from bs4 import BeautifulSoup
+
+        user_agent = os.environ.get("USER_AGENT", "Marker/1.0")
+        req = urllib.request.Request(self.url, headers={"User-Agent": user_agent})
+
+        try:
+            with urllib.request.urlopen(req, timeout=15) as response:
+                charset = response.headers.get_content_charset() or "utf-8"
+                raw_data = response.read()
+                try:
+                    html = raw_data.decode(charset, errors="replace")
+                except Exception:
+                    html = raw_data.decode("utf-8", errors="replace")
+        except Exception as e:
+            raise ValueError(f"Could not load content from {self.url}: {e}")
+
+        soup = BeautifulSoup(html, "html.parser")
+        for element in soup(["script", "style"]):
+            element.decompose()
+
+        text = soup.get_text()
+
+        class Document:
+            def __init__(self, page_content):
+                self.page_content = page_content
+
+        return [Document(text)]
 
 
 def _autofill_from_website(
