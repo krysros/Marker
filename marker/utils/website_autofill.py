@@ -44,7 +44,7 @@ class WebBaseLoader:
         for element in soup(["script", "style"]):
             element.decompose()
 
-        text = soup.get_text()
+        text = soup.get_text(separator="\n", strip=True)
 
         class Document:
             def __init__(self, page_content):
