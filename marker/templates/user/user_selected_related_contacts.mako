@@ -44,12 +44,16 @@
   <div class="vr mx-1"></div>
   % if switch_mode == "selected_companies":
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
-    <a class="btn btn-outline-primary" href="${switch_url}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies', username=user.name)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies_projects', username=user.name)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_companies_contacts', username=user.name, _query=q)}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
   </div>
   % elif switch_mode == "selected_projects":
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
-    <a class="btn btn-outline-primary" href="${switch_url}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_companies', username=user.name)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_projects_contacts', username=user.name, _query=q)}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
   </div>
   % elif switch_mode == "selected_tags":
@@ -58,7 +62,7 @@
     <a class="btn btn-outline-primary" href="${switch_url}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_companies', username=user.name)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_tags_projects', username=user.name)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
-    <a class="btn ${'btn-primary' if selected_category == '' else 'btn-outline-primary'}" href="${request.route_url('user_selected_tags_contacts', username=user.name, _query={**q, 'category': ''})}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
+    <a class="btn btn-primary" href="${request.route_url('user_selected_tags_contacts', username=user.name, _query={**q, 'category': ''})}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
   </div>
   % else:
   <div class="ms-auto">

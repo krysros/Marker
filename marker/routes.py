@@ -765,6 +765,26 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_selected_companies_tags",
+        "/user/{username}/selected_companies/tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_companies_tags",
+        "/user/{username}/selected_companies/tags/more",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_companies_projects",
+        "/user/{username}/selected_companies/projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_companies_projects",
+        "/user/{username}/selected_companies/projects/more",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_selected_projects",
         "/user/{username}/selected_projects",
         factory=user_factory,
@@ -847,6 +867,26 @@ def includeme(config):
     config.add_route(
         "user_more_selected_projects_contacts",
         "/user/{username}/more_selected_projects_contacts",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects_tags",
+        "/user/{username}/selected_projects/tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_projects_tags",
+        "/user/{username}/selected_projects/tags/more",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects_companies",
+        "/user/{username}/selected_projects/companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_projects_companies",
+        "/user/{username}/selected_projects/companies/more",
         factory=user_factory,
     )
     config.add_route(
@@ -937,6 +977,16 @@ def includeme(config):
     config.add_route(
         "user_more_selected_contacts_projects",
         "/user/{username}/more_selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts_tags",
+        "/user/{username}/selected_contacts/tags",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_more_selected_contacts_tags",
+        "/user/{username}/selected_contacts/tags/more",
         factory=user_factory,
     )
     config.add_route(
