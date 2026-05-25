@@ -56,6 +56,8 @@ tests/
 
 ## Development Commands
 
+On Windows, use PowerShell 7 for all terminal commands. On Linux, use Bash.
+
 ```bash
 # Install dependencies
 uv sync
