@@ -30,6 +30,14 @@ class LazyMarkerLoader {
     // Add markers to map
     this.map.addLayer(this.markers);
     this._attachPopupCheckboxHandler();
+
+    // Initialize country name formatter
+    const lang = document.documentElement.lang || 'en';
+    try {
+      this.displayNames = new Intl.DisplayNames([lang], { type: 'region' });
+    } catch (e) {
+      this.displayNames = null;
+    }
   }
   
   /**
@@ -144,10 +152,23 @@ class LazyMarkerLoader {
   /**
    * Create HTML content for marker popup
    */
+  _getCountryName(countryCode) {
+    if (!countryCode) return '';
+    if (this.displayNames && countryCode.length === 2) {
+      try {
+        return this.displayNames.of(countryCode) || countryCode;
+      } catch (e) {
+        // Fallback to original country code
+      }
+    }
+    return countryCode;
+  }
+
   _createMarkerTitle(item) {
     const checkbox = this._createPopupCheckbox(item);
     const title = `<a href="${item.url}"><b>${this._escapeHtml(item.name)}</b></a>`;
-    const details = [item.street, item.city, item.country]
+    const countryName = this._getCountryName(item.country);
+    const details = [item.street, item.city, countryName]
       .filter((value) => value)
       .map((value) => this._escapeHtml(value))
       .join('<br>');

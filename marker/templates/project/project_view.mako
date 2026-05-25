@@ -97,7 +97,7 @@
   attribution: '© OpenStreetMap'
   }).addTo(map);
   var marker = L.marker([${project.latitude}, ${project.longitude}]).addTo(map);
-  let title = `<b>${project.name}</b><br>${project.street}<br>${project.city}<br>${project.country}`;
+  let title = `<b>${project.name}</b><br>${project.street}<br>${project.city}<br>${countries.get(project.country) or ''}`;
   marker.bindPopup(title);
   marker.openPopup();
 </script>
