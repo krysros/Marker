@@ -185,16 +185,13 @@ def test_export_returns_xlsx(dbsession):
 
 After every change:
 
-1. [ ] Code and comments written in English
-2. [ ] `uv run ruff check .` and `uv run ruff format .` run
-3. [ ] New/changed user-facing strings extracted and translations updated (if applicable):
+1. [ ] `uv run ruff check .` and `uv run ruff format .` run
+2. [ ] New/changed user-facing strings extracted and translations updated (if applicable):
    - `uv run pybabel extract -F babel.cfg -o marker/locale/messages.pot .`
    - `uv run pybabel update -i marker/locale/messages.pot -d marker/locale`
    - Remove `fuzzy` flags from `.po` files
    - `uv run pybabel compile -d marker/locale`
-4. [ ] Alembic migration created and applied if models changed:
+3. [ ] Alembic migration created and applied if models changed:
    - `uv run alembic -c development.ini revision --autogenerate -m "..."`
    - `uv run alembic -c development.ini upgrade head`
-5. [ ] Tests added/updated for all new or changed code
-6. [ ] `uv run pytest --cov=marker --cov-report=term-missing` passes with **100% coverage**
-7. [ ] Commit message prepared in English summarising the changes
+4. [ ] Tests added/updated for all new or changed code
