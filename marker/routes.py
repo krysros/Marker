@@ -655,6 +655,36 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_selected_companies_count",
+        "/user/{username}/selected_companies/count",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_projects_count",
+        "/user/{username}/selected_projects/count",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_tags_count",
+        "/user/{username}/selected_tags/count",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_selected_contacts_count",
+        "/user/{username}/selected_contacts/count",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_companies_stars_count",
+        "/user/{username}/companies_stars/count",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_projects_stars_count",
+        "/user/{username}/projects_stars/count",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_more_selected_companies",
         "/user/{username}/more_selected_companies",
         factory=user_factory,

@@ -5681,6 +5681,90 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_selected_companies_count",
+        renderer="json",
+        permission="view",
+    )
+    def selected_companies_count(self):
+        user = self.request.context.user
+        stmt = (
+            select(func.count())
+            .select_from(selected_companies)
+            .filter(selected_companies.c.user_id == user.id)
+        )
+        return self.request.dbsession.execute(stmt).scalar()
+
+    @view_config(
+        route_name="user_selected_projects_count",
+        renderer="json",
+        permission="view",
+    )
+    def selected_projects_count(self):
+        user = self.request.context.user
+        stmt = (
+            select(func.count())
+            .select_from(selected_projects)
+            .filter(selected_projects.c.user_id == user.id)
+        )
+        return self.request.dbsession.execute(stmt).scalar()
+
+    @view_config(
+        route_name="user_selected_tags_count",
+        renderer="json",
+        permission="view",
+    )
+    def selected_tags_count(self):
+        user = self.request.context.user
+        stmt = (
+            select(func.count())
+            .select_from(selected_tags)
+            .filter(selected_tags.c.user_id == user.id)
+        )
+        return self.request.dbsession.execute(stmt).scalar()
+
+    @view_config(
+        route_name="user_selected_contacts_count",
+        renderer="json",
+        permission="view",
+    )
+    def selected_contacts_count(self):
+        user = self.request.context.user
+        stmt = (
+            select(func.count())
+            .select_from(selected_contacts)
+            .filter(selected_contacts.c.user_id == user.id)
+        )
+        return self.request.dbsession.execute(stmt).scalar()
+
+    @view_config(
+        route_name="user_companies_stars_count",
+        renderer="json",
+        permission="view",
+    )
+    def companies_stars_count(self):
+        user = self.request.context.user
+        stmt = (
+            select(func.count())
+            .select_from(companies_stars)
+            .filter(companies_stars.c.user_id == user.id)
+        )
+        return self.request.dbsession.execute(stmt).scalar()
+
+    @view_config(
+        route_name="user_projects_stars_count",
+        renderer="json",
+        permission="view",
+    )
+    def projects_stars_count(self):
+        user = self.request.context.user
+        stmt = (
+            select(func.count())
+            .select_from(projects_stars)
+            .filter(projects_stars.c.user_id == user.id)
+        )
+        return self.request.dbsession.execute(stmt).scalar()
+
+    @view_config(
         route_name="user_count_companies",
         renderer="json",
         permission="view",

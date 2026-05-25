@@ -4,7 +4,12 @@
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
   <h2 class="mb-0 text-nowrap flex-grow-1 flex-shrink-1">
     <i class="bi bi-tags"></i> ${_("Selected tags")}
-    <span class="badge bg-secondary">${counter}</span>
+    <span class="badge bg-secondary">
+      <div hx-get="${request.route_url('user_selected_tags_count', username=user.name)}"
+           hx-trigger="selectedTagsEvent from:body">
+        ${counter}
+      </div>
+    </span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mergeTagsModal">

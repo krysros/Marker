@@ -4,7 +4,9 @@
 <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
   <h2 class="mb-0 text-nowrap flex-grow-1 flex-shrink-1">
     <i class="bi bi-buildings"></i> ${_("Selected companies")}
-    <span class="badge bg-secondary">${counter}</span>
+    <span class="badge bg-secondary">
+      <div hx-get="${request.route_url('user_selected_companies_count', username=user.name)}" hx-trigger="selectedCompaniesEvent from:body">${counter}</div>
+    </span>
   </h2>
   <div class="d-flex flex-wrap gap-2 justify-content-md-end w-100 w-md-auto">
     ${button.delete_selected(url=request.route_url('user_delete_selected_companies', username=user.name, _query=q), confirm_text=_("Delete all selected companies?"))}

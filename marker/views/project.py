@@ -1669,6 +1669,7 @@ class ProjectView:
             selected_projects.c.project_id,
             project_id,
         )
+        self.request.response.headers["HX-Trigger"] = "selectedProjectsEvent"
         return {"checked": checked}
 
     @view_config(

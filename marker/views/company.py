@@ -1548,6 +1548,7 @@ class CompanyView:
             selected_companies.c.company_id,
             company_id,
         )
+        self.request.response.headers["HX-Trigger"] = "selectedCompaniesEvent"
         return {"checked": checked}
 
     @view_config(

@@ -1357,6 +1357,7 @@ class TagView:
             selected_tags.c.tag_id,
             tag_id,
         )
+        self.request.response.headers["HX-Trigger"] = "selectedTagsEvent"
         return {"checked": checked}
 
     @view_config(

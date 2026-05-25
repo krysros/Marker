@@ -845,6 +845,7 @@ class ContactView:
             selected_contacts.c.contact_id,
             contact_id,
         )
+        self.request.response.headers["HX-Trigger"] = "selectedContactsEvent"
         return {"checked": checked}
 
     @view_config(
