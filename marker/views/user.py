@@ -5059,7 +5059,7 @@ class UserView:
             .filter(
                 or_(
                     companies_tags.c.company_id.in_(contact_companies),
-                    projects_tags.c.project_id.in_(contact_projects)
+                    projects_tags.c.project_id.in_(contact_projects),
                 )
             )
         )
