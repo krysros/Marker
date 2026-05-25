@@ -2034,7 +2034,7 @@ class ProjectView:
                     project.contacts.append(contact)
             except Exception as e:
                 log.warning(
-                    "Failed to extract contacts via AI for project %s: %s",
+                    _("Failed to extract contacts via AI for project %s: %s"),
                     project.id,
                     e,
                 )
@@ -2060,7 +2060,7 @@ class ProjectView:
                         project.tags.append(tag)
             except Exception as e:
                 log.warning(
-                    "Failed to extract tags via AI for project %s: %s", project.id, e
+                    _("Failed to extract tags via AI for project %s: %s"), project.id, e
                 )
 
             self.request.session.flash(_("success:Added to the database"))

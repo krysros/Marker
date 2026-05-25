@@ -3,6 +3,7 @@ import time
 
 from typing import Any
 
+from ..forms.ts import TranslationString as _
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -76,7 +77,9 @@ def invoke_text(
                 elapsed_ms = int((time.monotonic() - started) * 1000)
                 usage = _usage_metadata(response)
                 log.info(
-                    "AI invoke success model=%s attempt=%s/%s elapsed_ms=%s prompt_chars=%s response_chars=%s usage=%s",
+                    _(
+                        "AI invoke success model=%s attempt=%s/%s elapsed_ms=%s prompt_chars=%s response_chars=%s usage=%s"
+                    ),
                     model_name,
                     attempt + 1,
                     retries + 1,
@@ -91,7 +94,9 @@ def invoke_text(
                 elapsed_ms = int((time.monotonic() - started) * 1000)
                 if attempt >= retries:
                     log.warning(
-                        "AI invoke failed model=%s attempt=%s/%s elapsed_ms=%s error=%s",
+                        _(
+                            "AI invoke failed model=%s attempt=%s/%s elapsed_ms=%s error=%s"
+                        ),
                         model_name,
                         attempt + 1,
                         retries + 1,
@@ -101,7 +106,9 @@ def invoke_text(
                     break
                 delay = _DEFAULT_BACKOFF_SECONDS * (2**attempt)
                 log.warning(
-                    "AI invoke retry model=%s attempt=%s/%s elapsed_ms=%s backoff_s=%.2f error=%s",
+                    _(
+                        "AI invoke retry model=%s attempt=%s/%s elapsed_ms=%s backoff_s=%.2f error=%s"
+                    ),
                     model_name,
                     attempt + 1,
                     retries + 1,
@@ -113,7 +120,7 @@ def invoke_text(
 
     if last_error is not None:
         log.error(
-            "AI invoke exhausted models=%s retries=%s error=%s",
+            _("AI invoke exhausted models=%s retries=%s error=%s"),
             _model_candidates(model, fallback_model),
             retries,
             last_error,

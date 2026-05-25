@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-25 22:05+0200\n"
+"POT-Creation-Date: 2026-05-25 22:15+0200\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -2063,6 +2063,30 @@ msgstr "Termin projektu"
 msgid "Project object category"
 msgstr "Kategoria obiektu projektu"
 
+#: marker/utils/langchain_ai.py:81
+#, python-format
+msgid ""
+"AI invoke success model=%s attempt=%s/%s elapsed_ms=%s prompt_chars=%s "
+"response_chars=%s usage=%s"
+msgstr ""
+
+#: marker/utils/langchain_ai.py:98
+#, python-format
+msgid "AI invoke failed model=%s attempt=%s/%s elapsed_ms=%s error=%s"
+msgstr ""
+
+#: marker/utils/langchain_ai.py:110
+#, python-format
+msgid ""
+"AI invoke retry model=%s attempt=%s/%s elapsed_ms=%s backoff_s=%.2f "
+"error=%s"
+msgstr ""
+
+#: marker/utils/langchain_ai.py:123
+#, python-format
+msgid "AI invoke exhausted models=%s retries=%s error=%s"
+msgstr ""
+
 #: marker/utils/llm_report.py:90
 msgid "Only SELECT statements are allowed."
 msgstr "Dozwolone są wyłącznie zapytania SELECT."
@@ -2272,6 +2296,16 @@ msgstr ""
 "warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w "
 "bazie."
 
+#: marker/views/company.py:1910
+#, python-format
+msgid "Failed to extract contacts via AI for company %s: %s"
+msgstr ""
+
+#: marker/views/company.py:1936
+#, python-format
+msgid "Failed to extract tags via AI for company %s: %s"
+msgstr ""
+
 #: marker/views/company.py:1941
 #, python-format
 msgid "The user %s added a company using AI autofill"
@@ -2427,6 +2461,16 @@ msgid ""
 msgstr ""
 "warning:Firma o nazwie uzyskanej z podanego adresu strony już istnieje w "
 "bazie."
+
+#: marker/views/project.py:2037
+#, python-format
+msgid "Failed to extract contacts via AI for project %s: %s"
+msgstr ""
+
+#: marker/views/project.py:2063
+#, python-format
+msgid "Failed to extract tags via AI for project %s: %s"
+msgstr ""
 
 #: marker/views/project.py:2068
 #, python-format
@@ -2659,5 +2703,4 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 #, python-format
 msgid "The user %s cleared projects with a star"
 msgstr "Użytkownik %s usunął gwiazdki ze wszystkich projektów"
-
 

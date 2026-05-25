@@ -1907,7 +1907,7 @@ class CompanyView:
                     company.contacts.append(contact)
             except Exception as e:
                 log.warning(
-                    "Failed to extract contacts via AI for company %s: %s",
+                    _("Failed to extract contacts via AI for company %s: %s"),
                     company.id,
                     e,
                 )
@@ -1933,7 +1933,7 @@ class CompanyView:
                         company.tags.append(tag)
             except Exception as e:
                 log.warning(
-                    "Failed to extract tags via AI for company %s: %s", company.id, e
+                    _("Failed to extract tags via AI for company %s: %s"), company.id, e
                 )
 
             self.request.session.flash(_("success:Added to the database"))
