@@ -27,15 +27,14 @@
     <a class="btn btn-outline-primary" href="${request.route_url('user_map_selected_companies', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_selected_companies', username=user.name)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
   </div>
-  <div class="vr mx-1"></div>
-  <a class="btn btn-sm btn-outline-secondary" href="${request.route_url('user_selected_companies_similar', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
-  <div class="vr mx-1"></div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Pivot view')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_companies', username=user.name, _query=q)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies_projects', username=user.name)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_companies_contacts', username=user.name, _query={'category': ''})}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
   </div>
+  <div class="vr mx-1"></div>
+  <a class="btn btn-sm btn-outline-secondary" href="${request.route_url('user_selected_companies_similar', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
 </div>
 
 <%include file="company_table.mako"/>
