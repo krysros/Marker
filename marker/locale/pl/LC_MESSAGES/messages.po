@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-25 21:48+0200\n"
+"POT-Creation-Date: 2026-05-25 22:05+0200\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -1931,7 +1931,9 @@ msgstr "Przełącz opcje usuwania"
 
 #: marker/templates/user/user_view.mako:34
 msgid "Delete the user account together with all data added by this user?"
-msgstr "Usunąć konto użytkownika wraz ze wszystkimi danymi dodanymi przez tego użytkownika?"
+msgstr ""
+"Usunąć konto użytkownika wraz ze wszystkimi danymi dodanymi przez tego "
+"użytkownika?"
 
 #: marker/templates/user/user_view.mako:35
 msgid "Delete account with all added data"
@@ -2250,13 +2252,17 @@ msgid "The user %s unlinked the company from the project"
 msgstr "Użytkownik %s odczepił firmę od projektu"
 
 #: marker/views/company.py:1792
-#,  python-format
+#, python-format
 msgid "An error occurred during company autofill with AI: %s"
-msgstr "Wystąpił błąd podczas automatycznego uzupełniania danych firmy przez AI: %s"
+msgstr ""
+"Wystąpił błąd podczas automatycznego uzupełniania danych firmy przez AI: "
+"%s"
 
 #: marker/views/company.py:1795
 msgid "danger:An error occurred while trying to autofill the company data"
-msgstr "danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych firmy"
+msgstr ""
+"danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych "
+"firmy"
 
 #: marker/views/company.py:1817
 msgid ""
@@ -2317,7 +2323,9 @@ msgstr ""
 #: marker/views/contact.py:897
 #, python-format
 msgid "success:CSV file has been imported. Contacts added: %s. Skipped rows: %s"
-msgstr "success:Plik CSV został pomyślnie zaimportowany. Dodane kontakty: %s. Pominięte wiersze: %s"
+msgstr ""
+"success:Plik CSV został pomyślnie zaimportowany. Dodane kontakty: %s. "
+"Pominięte wiersze: %s"
 
 #: marker/views/contact.py:903
 #, python-format
@@ -2352,7 +2360,7 @@ msgid "The user %s has added a project"
 msgstr "Użytkownik %s dodał projekt"
 
 #: marker/views/project.py:1352
-#,  python-format
+#, python-format
 msgid "An error occurred during project website autofill: %s"
 msgstr "Wystąpił błąd podczas automatycznego uzupełniania strony projektu: %s"
 
@@ -2400,13 +2408,17 @@ msgid "The user %s unlinked the tag from the project"
 msgstr "Użytkownik %s odpiął tag od projektu"
 
 #: marker/views/project.py:1913
-#,  python-format
+#, python-format
 msgid "An error occurred during project autofill with AI: %s"
-msgstr "Wystąpił błąd podczas automatycznego uzupełniania danych projektu przez AI: %s"
+msgstr ""
+"Wystąpił błąd podczas automatycznego uzupełniania danych projektu przez "
+"AI: %s"
 
 #: marker/views/project.py:1916
 msgid "danger:An error occurred while trying to autofill the project data"
-msgstr "danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych projektu"
+msgstr ""
+"danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych "
+"projektu"
 
 #: marker/views/project.py:1938
 msgid ""
@@ -2516,7 +2528,9 @@ msgstr "Edytuj dane użytkownika"
 
 #: marker/views/user.py:1760
 msgid "success:Removed user account with all added data from the database"
-msgstr "success:Konto użytkownika wraz ze wszystkimi dodanymi danymi zostało usunięte z bazy danych"
+msgstr ""
+"success:Konto użytkownika wraz ze wszystkimi dodanymi danymi zostało "
+"usunięte z bazy danych"
 
 #: marker/views/user.py:1763
 #, python-format
@@ -2634,7 +2648,7 @@ msgstr "Użytkownik %s eksportował dane firm z gwiazdką"
 #: marker/views/user.py:5794
 #, python-format
 msgid "The user %s cleared companies with a star"
-msgstr "Użytkownik %s eksportował dane firm z gwiazdką"
+msgstr "Użytkownik %s usunął gwiazdki ze wszystkich firm"
 
 #: marker/views/user.py:6087
 #, python-format
@@ -2644,5 +2658,6 @@ msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
 #: marker/views/user.py:6102
 #, python-format
 msgid "The user %s cleared projects with a star"
-msgstr "Użytkownik %s eksportował dane projektów z gwiazdką"
+msgstr "Użytkownik %s usunął gwiazdki ze wszystkich projektów"
+
 
