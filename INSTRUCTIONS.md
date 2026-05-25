@@ -1,4 +1,10 @@
+
+
 # AI Instructions for the Marker Project
+
+## ⚠️ Critical Rules for AI
+
+- **NEVER delete, clear, or overwrite `*.sqlite` files.**
 
 ## Project Overview
 
@@ -55,6 +61,8 @@ tests/
 ---
 
 ## Development Commands
+
+**Important:** All Python commands must be executed using `uv` and always within the context of the virtual environment (`venv`). **Never install packages using global `pip` into the system Python folder.**
 
 On Windows, use PowerShell 7 for all terminal commands. On Linux, use Bash.
 
