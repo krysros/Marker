@@ -24,7 +24,7 @@ dependencies = [
     "pyramid_mako",
     "pyramid_retry",
     "pyramid_tm",
-    "sqlalchemy[asyncio]",
+    "sqlalchemy[asyncio]>=2.1.0b2",
     "transaction",
     "zope.sqlalchemy",
     "waitress",
