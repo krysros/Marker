@@ -668,6 +668,18 @@ class TagView:
     )
     def companies(self):
         tag = self.request.context.tag
+        is_tag_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_tags)
+                .where(
+                    selected_tags.c.user_id == self.request.identity.id,
+                    selected_tags.c.tag_id == tag.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         role = self.request.params.get("role", None)
         color = self.request.params.get("color", None)
@@ -799,6 +811,7 @@ class TagView:
             "title": tag.name,
             "tag_pills": self.pills(tag),
             "form": form,
+            "is_tag_selected": is_tag_selected,
         }
 
     @view_config(route_name="tag_export_companies", permission="view")
@@ -914,6 +927,18 @@ class TagView:
     )
     def projects(self):
         tag = self.request.context.tag
+        is_tag_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_tags)
+                .where(
+                    selected_tags.c.user_id == self.request.identity.id,
+                    selected_tags.c.tag_id == tag.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         role = self.request.params.get("role", None)
         stage = self.request.params.get("stage", None)
@@ -1069,6 +1094,7 @@ class TagView:
             "title": tag.name,
             "tag_pills": self.pills(tag),
             "form": form,
+            "is_tag_selected": is_tag_selected,
         }
 
     @view_config(route_name="tag_export_projects", permission="view")

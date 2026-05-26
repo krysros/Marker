@@ -462,6 +462,18 @@ class ProjectView:
     def comments(self):
         _ = self.request.translate
         project = self.request.context.project
+        is_project_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_projects)
+                .where(
+                    selected_projects.c.user_id == self.request.identity.id,
+                    selected_projects.c.project_id == project.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -510,6 +522,7 @@ class ProjectView:
             "project": project,
             "title": project.name,
             "project_pills": self.pills(project),
+            "is_project_selected": is_project_selected,
         }
 
     @view_config(
@@ -992,6 +1005,18 @@ class ProjectView:
     def similar(self):
         _ = self.request.translate
         project = self.request.context.project
+        is_project_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_projects)
+                .where(
+                    selected_projects.c.user_id == self.request.identity.id,
+                    selected_projects.c.project_id == project.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         stage = self.request.params.get("stage", None)
         status = self.request.params.get("status", None)
@@ -1241,6 +1266,7 @@ class ProjectView:
             "title": project.name,
             "project_pills": self.pills(project),
             "form": form,
+            "is_project_selected": is_project_selected,
         }
 
     @view_config(
@@ -1547,6 +1573,18 @@ class ProjectView:
     def projects_stars(self):
         _ = self.request.translate
         project = self.request.context.project
+        is_project_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_projects)
+                .where(
+                    selected_projects.c.user_id == self.request.identity.id,
+                    selected_projects.c.project_id == project.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -1604,6 +1642,7 @@ class ProjectView:
             "title": project.name,
             "roles": user_roles,
             "project_pills": self.pills(project),
+            "is_project_selected": is_project_selected,
         }
 
     @view_config(

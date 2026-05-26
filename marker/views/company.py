@@ -851,6 +851,18 @@ class CompanyView:
     def companies_stars(self):
         _ = self.request.translate
         company = self.request.context.company
+        is_company_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_companies)
+                .where(
+                    selected_companies.c.user_id == self.request.identity.id,
+                    selected_companies.c.company_id == company.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -908,6 +920,7 @@ class CompanyView:
             "title": company.name,
             "roles": user_roles,
             "company_pills": self.pills(company),
+            "is_company_selected": is_company_selected,
         }
 
     @view_config(
@@ -1038,6 +1051,18 @@ class CompanyView:
     def comments(self):
         _ = self.request.translate
         company = self.request.context.company
+        is_company_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_companies)
+                .where(
+                    selected_companies.c.user_id == self.request.identity.id,
+                    selected_companies.c.company_id == company.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
@@ -1087,6 +1112,7 @@ class CompanyView:
             "company": company,
             "title": company.name,
             "company_pills": self.pills(company),
+            "is_company_selected": is_company_selected,
         }
 
     @view_config(
@@ -1102,6 +1128,18 @@ class CompanyView:
     def similar(self):
         _ = self.request.translate
         company = self.request.context.company
+        is_company_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_companies)
+                .where(
+                    selected_companies.c.user_id == self.request.identity.id,
+                    selected_companies.c.company_id == company.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
         country = self.request.params.get("country", None)
@@ -1274,6 +1312,7 @@ class CompanyView:
             "title": company.name,
             "company_pills": self.pills(company),
             "form": form,
+            "is_company_selected": is_company_selected,
         }
 
     @view_config(
