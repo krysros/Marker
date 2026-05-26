@@ -56,12 +56,56 @@ _FORBIDDEN_KEYWORDS = (
 )
 
 
+def get_configured_model() -> str:
+    """
+    Get the configured Gemini model name.
+    Resolves in priority order:
+    1. Active Pyramid request settings (gemini.model)
+    2. Project configuration files (.ini)
+    """
+    # Try active Pyramid request settings
+    try:
+        from pyramid.threadlocal import get_current_request
+
+        req = get_current_request()
+        if (
+            req is not None
+            and hasattr(req, "registry")
+            and hasattr(req.registry, "settings")
+        ):
+            conf_model = req.registry.settings.get("gemini.model")
+            if conf_model:
+                return conf_model
+    except Exception:
+        pass
+
+    # Try reading from config files in the project root/parent directory
+    for ini_name in ("development.ini", "testing.ini", "production.ini"):
+        path = ini_name
+        for depth in range(3):
+            if os.path.exists(path):
+                try:
+                    from pyramid.paster import get_appsettings
+
+                    settings = get_appsettings(path)
+                    conf_model = settings.get("gemini.model")
+                    if conf_model:
+                        return conf_model
+                except Exception:
+                    pass
+            path = os.path.join("..", path)
+
+    raise ValueError(
+        "Gemini model is not configured. Please set 'gemini.model' in your .ini file."
+    )
+
+
 def generate_report_sql(
     prompt: str,
-    model: str = "gemini-2.5-flash-lite",
     fallback_model: str | None = None,
     retries: int | None = None,
 ) -> str:
+    model = get_configured_model()
     fallback_model = fallback_model or os.environ.get("GEMINI_FALLBACK_MODEL")
     retries_value = retries
     if retries_value is None:

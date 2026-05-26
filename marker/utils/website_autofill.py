@@ -2,6 +2,7 @@ import json
 import os
 import re
 import unicodedata
+from urllib.parse import urljoin, urlparse
 
 os.environ["USER_AGENT"] = "Marker/1.0"
 
@@ -10,6 +11,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
+from .llm_report import get_configured_model
 
 
 class WebBaseLoader:
@@ -53,12 +55,11 @@ class WebBaseLoader:
         return [Document(text)]
 
 
-def _autofill_from_website(
-    url, prompt, model="gemini-2.5-flash-lite", default_country=""
-):
+def _autofill_from_website(url, prompt, default_country=""):
     """
     Shared logic for autofilling company or project data from a website.
     """
+    model = get_configured_model()
     # Load the content of the page
     loader = WebBaseLoader(url)
     docs = loader.load()
@@ -156,33 +157,24 @@ def _country_from_locale(locale_str):
     return ""
 
 
-def company_autofill_from_website(
-    website, model="gemini-2.5-flash-lite", default_country=""
-):
+def company_autofill_from_website(website, default_country=""):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(
-        website, prompt, model=model, default_country=default_country
-    )
+    return _autofill_from_website(website, prompt, default_country=default_country)
 
 
-def project_autofill_from_website(
-    website, model="gemini-2.5-flash-lite", default_country=""
-):
+def project_autofill_from_website(website, default_country=""):
     prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
-    return _autofill_from_website(
-        website, prompt, model=model, default_country=default_country
-    )
+    return _autofill_from_website(website, prompt, default_country=default_country)
 
 
-def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
+def contacts_autofill_from_website(website):
     """
     Extract a list of contacts (people) from the given website URL.
     In addition to the main URL, tries common contact sub-pages
     (/kontakt, /contact, etc.) to improve extraction quality.
     Returns a list of dicts with keys: name, role, phone, email.
     """
-    from urllib.parse import urljoin, urlparse
-
+    model = get_configured_model()
     parsed = urlparse(website)
     root = f"{parsed.scheme}://{parsed.netloc}"
 
@@ -242,9 +234,7 @@ def contacts_autofill_from_website(website, model="gemini-2.5-flash-lite"):
     return []
 
 
-def tags_autofill_from_website(
-    website, existing_tags=None, model="gemini-2.5-flash-lite"
-):
+def tags_autofill_from_website(website, existing_tags=None):
     """
     Extract a list of tags (core business activities or project types) from the
     given website URL.  When *existing_tags* (a list of tag name strings already
@@ -252,8 +242,7 @@ def tags_autofill_from_website(
     exact names over inventing new ones.
     Returns a list of up to 20 tag name strings.
     """
-    from urllib.parse import urljoin, urlparse
-
+    model = get_configured_model()
     parsed = urlparse(website)
     root = f"{parsed.scheme}://{parsed.netloc}"
     content_parts = []

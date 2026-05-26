@@ -1404,18 +1404,18 @@ class CompanyView:
         permission="edit",
     )
     def website_autofill(self):
+        from ..utils.website_autofill import _country_from_locale
+
         _ = self.request.translate
         website = self.request.params.get("website", "")
         settings = getattr(self.request.registry, "settings", None) or {}
-        model = settings.get("gemini.model", "gemini-2.5-flash-lite")
-        from ..utils.website_autofill import _country_from_locale
 
         default_country = _country_from_locale(
             settings.get("pyramid.default_locale_name", "")
         )
         try:
             fields = company_autofill_from_website(
-                website, model=model, default_country=default_country
+                website, default_country=default_country
             )
         except Exception as e:
             log.error(_("An error occurred during company website autofill: %s"), e)
@@ -1817,13 +1817,10 @@ class CompanyView:
             self.request.POST if self.request.method == "POST" else None
         )
         if self.request.method == "POST" and form.validate():
-            settings = getattr(self.request.registry, "settings", None) or {}
-            model = settings.get("gemini.model", "gemini-2.5-flash-lite")
             try:
                 autofill = dict(
                     company_autofill_from_website(
                         form.website.data,
-                        model=model,
                     )
                 )
                 autofill["website"] = form.website.data
@@ -1928,9 +1925,7 @@ class CompanyView:
 
             # Extract and save contacts from the website
             try:
-                extracted_contacts = contacts_autofill_from_website(
-                    form.website.data, model=model
-                )
+                extracted_contacts = contacts_autofill_from_website(form.website.data)
                 for c_data in extracted_contacts:
                     name = (c_data.get("name") or "").strip()
                     if not name:
@@ -1957,7 +1952,7 @@ class CompanyView:
                     self.request.dbsession.execute(select(Tag.name)).scalars().all()
                 )
                 extracted_tags = tags_autofill_from_website(
-                    form.website.data, existing_tag_names, model=model
+                    form.website.data, existing_tag_names
                 )
                 for tag_name in extracted_tags[:20]:
                     existing_tag = self.request.dbsession.execute(

@@ -72,11 +72,8 @@ class ReportView:
                 )
             else:
                 try:
-                    settings = getattr(self.request.registry, "settings", None) or {}
-                    model = settings.get("gemini.model", "gemini-2.5-flash-lite")
                     raw_sql = generate_report_sql(
                         prompt,
-                        model=model,
                         **self._gemini_ai_options(),
                     )
                     sql_generated = validate_sql(raw_sql)

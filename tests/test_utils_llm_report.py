@@ -44,14 +44,16 @@ def test_generate_report_sql_strips_plain_code_fence(mock_invoke_text):
 
 
 @patch("marker.utils.llm_report.invoke_text")
-def test_generate_report_sql_passes_model_param(mock_invoke_text):
+@patch("marker.utils.llm_report.get_configured_model")
+def test_generate_report_sql_uses_configured_model(mock_get_model, mock_invoke_text):
     mock_invoke_text.return_value = "SELECT 1"
+    mock_get_model.return_value = "gemini-ini-model"
 
     from marker.utils.llm_report import generate_report_sql
 
-    generate_report_sql("test", model="gemini-custom-model")
+    generate_report_sql("test")
 
-    assert mock_invoke_text.call_args.kwargs["model"] == "gemini-custom-model"
+    assert mock_invoke_text.call_args.kwargs["model"] == "gemini-ini-model"
 
 
 # ---------------------------------------------------------------------------
