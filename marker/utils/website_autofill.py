@@ -214,24 +214,82 @@ def contacts_autofill_from_website(website):
         response_mime_type="application/json",
     )
 
+    # Identify a backup company name from the website domain
+    fallback_company_name = ""
+    try:
+        domain = parsed.netloc or parsed.path
+        if domain.startswith("www."):
+            domain = domain[4:]
+        parts = domain.split(".")
+        if len(parts) > 1:
+            fallback_company_name = parts[0].capitalize()
+        else:
+            fallback_company_name = domain.capitalize()
+    except Exception:
+        fallback_company_name = ""
+
     prompt = (
-        "Extract a list of contacts (people) from the context. "
-        "For each contact provide: name, role, phone, email. "
-        'Return a JSON array of objects, e.g. [{"name": "...", "role": "...", "phone": "...", "email": "..."}]. '
+        "Extract a list of contacts from the context.\n"
+        "For each contact provide: name, role, phone, email.\n\n"
+        "Strict Guidelines:\n"
+        f"1. If a specific contact person (first and last name) is NOT extracted or found, but contact information (such as phone or email) is available, use the company name as the contact's 'name'. Identify the company name from the page context. If you cannot find the company name, use '{fallback_company_name or 'the company name'}' as the fallback 'name'. Do not leave the 'name' field blank or skip the contact entry if contact details are present.\n"
+        "2. Provide job titles/roles ('role') in the EXACT form and language in which they appear on the website. Do NOT translate them to English or any other language unless they are originally written that way on the website. Correct only obvious typos/spelling mistakes. Do NOT invent, fabricate, or use your own terms or titles (e.g. keep 'Dyrektor' as 'Dyrektor', do not translate to 'Director' or make up other roles).\n"
+        "3. Returns a JSON array of objects, e.g. "
+        '[{"name": "...", "role": "...", "phone": "...", "email": "..."}]. '
         "If no contacts are found, return an empty array []."
     )
 
     response = llm.invoke(f"{prompt}:\n\n{content}")
     result = json.loads(response.content)
 
+    contacts_list = []
     if isinstance(result, list):
-        return result
-    # Gemini sometimes wraps the array in a dict
-    if isinstance(result, dict):
+        contacts_list = result
+    elif isinstance(result, dict):
         for key in ("contacts", "people", "results", "data"):
             if key in result and isinstance(result[key], list):
-                return result[key]
-    return []
+                contacts_list = result[key]
+                break
+        else:
+            if any(k in result for k in ("name", "role", "phone", "email")):
+                contacts_list = [result]
+
+    final_contacts = []
+    for c in contacts_list:
+        if not isinstance(c, dict):
+            continue
+        name = (c.get("name") or "").strip()
+        role = c.get("role")
+        if isinstance(role, str):
+            role = role.strip()
+        else:
+            role = None
+
+        phone = c.get("phone")
+        if isinstance(phone, str):
+            phone = phone.strip()
+        else:
+            phone = None
+
+        email = c.get("email")
+        if isinstance(email, str):
+            email = email.strip()
+        else:
+            email = None
+
+        # Apply fallback company name if name is empty but contact has other details
+        if not name and (role or phone or email):
+            name = fallback_company_name or "Company"
+
+        if name:
+            final_contacts.append({
+                "name": name,
+                "role": role,
+                "phone": phone,
+                "email": email
+            })
+
+    return final_contacts
 
 
 def tags_autofill_from_website(website, existing_tags=None):
