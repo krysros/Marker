@@ -25,28 +25,41 @@
           <span class="nav-link disabled px-1" aria-hidden="true">|</span>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('contractor_all')}"><i class="bi bi-diagram-3"></i> ${_("Contractors")}</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('prices_all')}"><i class="bi bi-currency-exchange"></i> ${_("Prices")}</a>
-        </li>
-        <li class="nav-item d-none d-md-flex align-items-center">
-          <span class="nav-link disabled px-1" aria-hidden="true">|</span>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" role="button" href="${request.route_url('search_tags')}"><i class="bi bi-search"></i> ${_("Search")}</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('report_all')}"><i class="bi bi-bar-chart"></i> ${_("Reports")}</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('prompt')}"><i class="bi bi-robot"></i> ${_("Prompt")}</a>
-        </li>
-        <li class="nav-item d-none d-md-flex align-items-center">
-          <span class="nav-link disabled px-1" aria-hidden="true">|</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" role="button" href="${request.route_url('user_all')}"><i class="bi bi-person-circle"></i> ${_("Users")}</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-three-dots"></i> ${_("More")}
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="${request.route_url('contractor_all')}">
+                <i class="bi bi-diagram-3"></i> ${_("Contractors")}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="${request.route_url('prices_all')}">
+                <i class="bi bi-currency-exchange"></i> ${_("Prices")}
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href="${request.route_url('report_all')}">
+                <i class="bi bi-bar-chart"></i> ${_("Reports")}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="${request.route_url('prompt')}">
+                <i class="bi bi-robot"></i> ${_("Prompt")}
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href="${request.route_url('user_all')}">
+                <i class="bi bi-person-circle"></i> ${_("Users")}
+              </a>
+            </li>
+          </ul>
         </li>
         <!-- Shortcuts moved to user/account dropdown below -->
       </ul>
