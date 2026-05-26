@@ -156,8 +156,62 @@
     document.addEventListener('DOMContentLoaded', function(){
       initPopovers(document);
       document.body.addEventListener('htmx:after:swap', function(e){
-      initPopovers(e.target);
+        initPopovers(e.target);
       });
+    });
+
+    // Prevent double form submissions and multi-clicks
+    document.addEventListener('submit', function(e) {
+      const form = e.target;
+      if (form.tagName === 'FORM') {
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return false;
+        }
+        form.dataset.submitting = 'true';
+        
+        // Disable submit buttons after a tiny delay so the submit action/HTMX registers
+        const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+        setTimeout(() => {
+          submitButtons.forEach(btn => {
+            btn.disabled = true;
+          });
+        }, 0);
+      }
+    });
+
+    // Handle HTMX requests specifically
+    document.addEventListener('htmx:beforeRequest', function(e) {
+      const element = e.detail.elt;
+      if (element) {
+        // If the request was triggered by a button or input, disable it
+        if (element.tagName === 'BUTTON' || element.tagName === 'INPUT') {
+          element.disabled = true;
+          element.dataset.htmxDisabled = 'true';
+        }
+      }
+    });
+
+    document.addEventListener('htmx:afterRequest', function(e) {
+      const element = e.detail.elt;
+      if (element) {
+        // Re-enable the triggering element if we disabled it
+        if (element.dataset.htmxDisabled === 'true') {
+          element.disabled = false;
+          delete element.dataset.htmxDisabled;
+        }
+        
+        // Re-enable form and its submit buttons
+        const form = element.tagName === 'FORM' ? element : element.closest('form');
+        if (form) {
+          delete form.dataset.submitting;
+          const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+          submitButtons.forEach(btn => {
+            btn.disabled = false;
+          });
+        }
+      }
     });
     </script>
   </body>
