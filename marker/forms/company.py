@@ -154,16 +154,35 @@ class CompanyForm(Form):
         if not field.data:
             return
 
-        if len(field.data) != 9 and len(field.data) != 14 or not field.data.isdigit():
+        if not field.data.isdigit():
             raise ValidationError(
-                _("The REGON number should consist of 9 or 14 digits")
+                _("The REGON number should consist of digits only")
             )
-        digits = list(map(int, field.data))
 
-        if len(field.data) == 9:
-            valid = _check_sum_9(digits)
-        else:
-            valid = _check_sum_9(digits) and _check_sum_14(digits)
+        s = field.data
+        n = len(s)
+        valid = False
+
+        if n >= 14:
+            for i in range(n - 14 + 1):
+                sub = s[i : i + 14]
+                if s[:i].replace("0", "") == "" and s[i + 14 :].replace("0", "") == "":
+                    digits = list(map(int, sub))
+                    if _check_sum_9(digits) and _check_sum_14(digits):
+                        valid = True
+                        break
+
+        if not valid and n >= 9:
+            for i in range(n - 9 + 1):
+                sub = s[i : i + 9]
+                if s[:i].replace("0", "") == "" and s[i + 9 :].replace("0", "") == "":
+                    digits = list(map(int, sub))
+                    if _check_sum_9(digits):
+                        valid = True
+                        break
+
+        if valid and not s.strip("0"):
+            valid = False
 
         if not valid:
             raise ValidationError(_("Invalid REGON number"))

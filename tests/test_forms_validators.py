@@ -181,6 +181,81 @@ def test_company_regon_14_valid():
     )
     # just check it runs the validation path
     form.validate()
+    assert "REGON" not in form.errors
+
+
+def test_company_regon_9_padded_trailing():
+    # 9-digit valid REGON (123456785) padded with 5 trailing zeros (making it 14-digit string)
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "PL",
+            "subdivision": "",
+            "REGON": "12345678500000",
+            "color": "",
+        }
+    )
+    form.validate()
+    assert "REGON" not in form.errors
+
+
+def test_company_regon_9_padded_leading():
+    # 9-digit valid REGON (123456785) padded with 5 leading zeros (making it 14-digit string)
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "PL",
+            "subdivision": "",
+            "REGON": "00000123456785",
+            "color": "",
+        }
+    )
+    form.validate()
+    assert "REGON" not in form.errors
+
+
+def test_company_regon_14_padded_both():
+    # 14-digit valid REGON (12345678512347) padded with leading and trailing zeros
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "PL",
+            "subdivision": "",
+            "REGON": "0001234567851234700",
+            "color": "",
+        }
+    )
+    form.validate()
+    assert "REGON" not in form.errors
+
+
+def test_company_regon_all_zeros_invalid():
+    # String of all zeros is not a valid REGON
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "PL",
+            "subdivision": "",
+            "REGON": "00000000000000",
+            "color": "",
+        }
+    )
+    form.validate()
+    assert "REGON" in form.errors
+
+
+def test_company_regon_not_digits_invalid():
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "PL",
+            "subdivision": "",
+            "REGON": "12345678a00000",
+            "color": "",
+        }
+    )
+    form.validate()
+    assert "REGON" in form.errors
 
 
 def test_company_krs_valid():
