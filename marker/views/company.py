@@ -1897,12 +1897,47 @@ class CompanyView:
                     "form_action": self.request.route_url("company_add"),
                 }
 
-            geo = location_details(
-                street=company_form.street.data,
-                city=company_form.city.data,
-                country=company_form.country.data,
-                postalcode=company_form.postcode.data,
-            )
+            # 1. Fetch existing tag names first for AI tag extraction hint (fast SELECT)
+            existing_tag_names = []
+            try:
+                existing_tag_names = list(
+                    self.request.dbsession.execute(select(Tag.name)).scalars().all()
+                )
+            except Exception as e:
+                log.warning(_("Failed to fetch existing tag names: %s"), e)
+
+            # 2. Perform all slow external API / AI calls upfront (no DB write locks held!)
+            geo = None
+            try:
+                geo = location_details(
+                    street=company_form.street.data,
+                    city=company_form.city.data,
+                    country=company_form.country.data,
+                    postalcode=company_form.postcode.data,
+                )
+            except Exception as e:
+                log.warning(_("Failed to get location details: %s"), e)
+
+            extracted_contacts = []
+            try:
+                extracted_contacts = contacts_autofill_from_website(form.website.data)
+            except Exception as e:
+                log.warning(
+                    _("Failed to extract contacts via AI: %s"),
+                    e,
+                )
+
+            extracted_tags = []
+            try:
+                extracted_tags = tags_autofill_from_website(
+                    form.website.data, existing_tag_names
+                )
+            except Exception as e:
+                log.warning(
+                    _("Failed to extract tags via AI: %s"), e
+                )
+
+            # 3. Create database objects and associate them in-memory
             company = Company(
                 name=company_form.name.data,
                 street=company_form.street.data,
@@ -1920,56 +1955,38 @@ class CompanyView:
                 company.latitude = geo.get("lat")
                 company.longitude = geo.get("lon")
             company.created_by = self.request.identity
+
+            # Add to the session immediately to avoid SAWarning: Object of type <Company> not in session
             self.request.dbsession.add(company)
+
+            for c_data in extracted_contacts:
+                name = (c_data.get("name") or "").strip()
+                if not name:
+                    continue
+                contact = Contact(
+                    name=name,
+                    role=c_data.get("role") or None,
+                    phone=c_data.get("phone") or None,
+                    email=c_data.get("email") or None,
+                    color=None,
+                )
+                contact.created_by = self.request.identity
+                company.contacts.append(contact)
+
+            for tag_name in extracted_tags[:20]:
+                existing_tag = self.request.dbsession.execute(
+                    select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
+                ).scalar_one_or_none()
+                if existing_tag:
+                    tag = existing_tag
+                else:
+                    tag = Tag(tag_name)
+                    tag.created_by = self.request.identity
+                if tag not in company.tags:
+                    company.tags.append(tag)
+
+            # 4. Save to the database in a quick operation
             self.request.dbsession.flush()
-
-            # Extract and save contacts from the website
-            try:
-                extracted_contacts = contacts_autofill_from_website(form.website.data)
-                for c_data in extracted_contacts:
-                    name = (c_data.get("name") or "").strip()
-                    if not name:
-                        continue
-                    contact = Contact(
-                        name=name,
-                        role=c_data.get("role") or None,
-                        phone=c_data.get("phone") or None,
-                        email=c_data.get("email") or None,
-                        color=None,
-                    )
-                    contact.created_by = self.request.identity
-                    company.contacts.append(contact)
-            except Exception as e:
-                log.warning(
-                    _("Failed to extract contacts via AI for company %s: %s"),
-                    company.id,
-                    e,
-                )
-
-            # Extract and assign tags from the website
-            try:
-                existing_tag_names = list(
-                    self.request.dbsession.execute(select(Tag.name)).scalars().all()
-                )
-                extracted_tags = tags_autofill_from_website(
-                    form.website.data, existing_tag_names
-                )
-                for tag_name in extracted_tags[:20]:
-                    existing_tag = self.request.dbsession.execute(
-                        select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
-                    ).scalar_one_or_none()
-                    if existing_tag:
-                        tag = existing_tag
-                    else:
-                        tag = Tag(tag_name)
-                        tag.created_by = self.request.identity
-                    if tag not in company.tags:
-                        company.tags.append(tag)
-            except Exception as e:
-                log.warning(
-                    _("Failed to extract tags via AI for company %s: %s"), company.id, e
-                )
-
             self.request.session.flash(_("success:Added to the database"))
             log.info(
                 _("The user %s added a company using AI autofill")

@@ -2021,12 +2021,47 @@ class ProjectView:
                     "form_action": self.request.route_url("project_add"),
                 }
 
-            geo = location_details(
-                street=project_form.street.data,
-                city=project_form.city.data,
-                country=project_form.country.data,
-                postalcode=project_form.postcode.data,
-            )
+            # 1. Fetch existing tag names first for AI tag extraction hint (fast SELECT)
+            existing_tag_names = []
+            try:
+                existing_tag_names = list(
+                    self.request.dbsession.execute(select(Tag.name)).scalars().all()
+                )
+            except Exception as e:
+                log.warning(_("Failed to fetch existing tag names: %s"), e)
+
+            # 2. Perform all slow external API / AI calls upfront (no DB write locks held!)
+            geo = None
+            try:
+                geo = location_details(
+                    street=project_form.street.data,
+                    city=project_form.city.data,
+                    country=project_form.country.data,
+                    postalcode=project_form.postcode.data,
+                )
+            except Exception as e:
+                log.warning(_("Failed to get location details: %s"), e)
+
+            extracted_contacts = []
+            try:
+                extracted_contacts = contacts_autofill_from_website(form.website.data)
+            except Exception as e:
+                log.warning(
+                    _("Failed to extract contacts via AI: %s"),
+                    e,
+                )
+
+            extracted_tags = []
+            try:
+                extracted_tags = tags_autofill_from_website(
+                    form.website.data, existing_tag_names
+                )
+            except Exception as e:
+                log.warning(
+                    _("Failed to extract tags via AI: %s"), e
+                )
+
+            # 3. Create database objects and associate them in-memory
             project = Project(
                 name=project_form.name.data,
                 street=project_form.street.data,
@@ -2046,56 +2081,38 @@ class ProjectView:
                 project.latitude = geo.get("lat")
                 project.longitude = geo.get("lon")
             project.created_by = self.request.identity
+
+            # Add to the session immediately to avoid SAWarning: Object of type <Project> not in session
             self.request.dbsession.add(project)
+
+            for c_data in extracted_contacts:
+                name = (c_data.get("name") or "").strip()
+                if not name:
+                    continue
+                contact = Contact(
+                    name=name,
+                    role=c_data.get("role") or None,
+                    phone=c_data.get("phone") or None,
+                    email=c_data.get("email") or None,
+                    color=None,
+                )
+                contact.created_by = self.request.identity
+                project.contacts.append(contact)
+
+            for tag_name in extracted_tags[:20]:
+                existing_tag = self.request.dbsession.execute(
+                    select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
+                ).scalar_one_or_none()
+                if existing_tag:
+                    tag = existing_tag
+                else:
+                    tag = Tag(tag_name)
+                    tag.created_by = self.request.identity
+                if tag not in project.tags:
+                    project.tags.append(tag)
+
+            # 4. Save to the database in a quick operation
             self.request.dbsession.flush()
-
-            # Extract and save contacts from the website
-            try:
-                extracted_contacts = contacts_autofill_from_website(form.website.data)
-                for c_data in extracted_contacts:
-                    name = (c_data.get("name") or "").strip()
-                    if not name:
-                        continue
-                    contact = Contact(
-                        name=name,
-                        role=c_data.get("role") or None,
-                        phone=c_data.get("phone") or None,
-                        email=c_data.get("email") or None,
-                        color=None,
-                    )
-                    contact.created_by = self.request.identity
-                    project.contacts.append(contact)
-            except Exception as e:
-                log.warning(
-                    _("Failed to extract contacts via AI for project %s: %s"),
-                    project.id,
-                    e,
-                )
-
-            # Extract and assign tags from the website
-            try:
-                existing_tag_names = list(
-                    self.request.dbsession.execute(select(Tag.name)).scalars().all()
-                )
-                extracted_tags = tags_autofill_from_website(
-                    form.website.data, existing_tag_names
-                )
-                for tag_name in extracted_tags[:20]:
-                    existing_tag = self.request.dbsession.execute(
-                        select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
-                    ).scalar_one_or_none()
-                    if existing_tag:
-                        tag = existing_tag
-                    else:
-                        tag = Tag(tag_name)
-                        tag.created_by = self.request.identity
-                    if tag not in project.tags:
-                        project.tags.append(tag)
-            except Exception as e:
-                log.warning(
-                    _("Failed to extract tags via AI for project %s: %s"), project.id, e
-                )
-
             self.request.session.flash(_("success:Added to the database"))
             log.info(
                 _("The user %s has added a project using AI autofill")
