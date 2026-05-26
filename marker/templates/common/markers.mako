@@ -10,6 +10,29 @@
   const fallbackCenter = [52.2297, 21.0122];
   const fallbackZoom = 5;
 
+  // Function to adjust the map height to fit the remaining window height
+  function resizeMap() {
+    const mapEl = document.getElementById('map');
+    if (mapEl) {
+      const rect = mapEl.getBoundingClientRect();
+      const top = rect.top;
+      
+      // Calculate height of the footer
+      const footer = document.querySelector('footer');
+      const footerHeight = footer ? footer.offsetHeight : 0;
+      
+      // Available height is viewport height minus map top offset, footer height, and some margins
+      const margin = 20; // safe margin
+      const availableHeight = window.innerHeight - top - footerHeight - margin;
+      
+      // We set minimum height to 300px to keep it usable on very small screens/mobile
+      mapEl.style.height = Math.max(availableHeight, 300) + 'px';
+    }
+  }
+
+  // Call resizeMap before initializing Leaflet so it has the correct height initially!
+  resizeMap();
+
   let map = L.map('map').setView(fallbackCenter, fallbackZoom);
   let userInteractedWithMap = false;
 
@@ -25,6 +48,21 @@
     maxZoom: 19,
     attribution: '© OpenStreetMap'
   }).addTo(map);
+
+  // Resize and load event listeners to ensure map size is always accurate
+  window.addEventListener('resize', () => {
+    resizeMap();
+    if (map && map.invalidateSize) {
+      map.invalidateSize();
+    }
+  });
+
+  window.addEventListener('load', () => {
+    resizeMap();
+    if (map && map.invalidateSize) {
+      map.invalidateSize();
+    }
+  });
 
   const lazyLoader = new LazyMarkerLoader(map, "${url}", {
     clusterOptions: {
