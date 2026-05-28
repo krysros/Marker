@@ -43,11 +43,15 @@ def test_get_configured_model_exceptions(monkeypatch):
     # 1. Force pyramid.threadlocal.get_current_request Exception
     def raising_get_current_request():
         raise RuntimeError("simulated error")
-    monkeypatch.setattr("pyramid.threadlocal.get_current_request", raising_get_current_request)
+
+    monkeypatch.setattr(
+        "pyramid.threadlocal.get_current_request", raising_get_current_request
+    )
 
     # 2. Force pyramid.paster.get_appsettings Exception
     def raising_get_appsettings(path):
         raise RuntimeError("simulated error")
+
     monkeypatch.setattr("pyramid.paster.get_appsettings", raising_get_appsettings)
 
     # Mock os.path.exists to return True once, to enter the try/except block where get_appsettings is called
@@ -55,9 +59,9 @@ def test_get_configured_model_exceptions(monkeypatch):
         if p == "development.ini":
             return True
         return False
+
     monkeypatch.setattr(os.path, "exists", mock_exists)
 
     # Run get_configured_model() -> should raise ValueError after catching exceptions in both blocks
     with pytest.raises(ValueError, match="Gemini model is not configured"):
         get_configured_model()
-

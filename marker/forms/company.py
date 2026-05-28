@@ -155,9 +155,7 @@ class CompanyForm(Form):
             return
 
         if not field.data.isdigit():
-            raise ValidationError(
-                _("The REGON number should consist of digits only")
-            )
+            raise ValidationError(_("The REGON number should consist of digits only"))
 
         s = field.data
         n = len(s)

@@ -121,13 +121,16 @@ class TagView:
                 pass
 
         import os
+
         if not os.environ.get("GEMINI_API_KEY"):
             log.warning("GEMINI_API_KEY is not configured")
             return []
 
         candidate_tags = tags
         if len(tags) > 150:
-            log.info("Tag list size %d > 150. Using two-stage hybrid AI matching.", len(tags))
+            log.info(
+                "Tag list size %d > 150. Using two-stage hybrid AI matching.", len(tags)
+            )
             prompt_keywords = f"""You are an expert Polish linguistic and semantic assistant.
 User's Polish search query is: "{query}".
 Your task is to generate a list of 10 to 15 Polish keywords, synonyms, word roots/stems, or highly related terms that would likely appear in relevant tags in a database.
@@ -147,7 +150,9 @@ Return ONLY a valid JSON list of lowercase strings. Do not include markdown form
                     source="tag_search_ai_keywords",
                 )
                 clean_kw = response_kw.strip()
-                clean_kw = re.sub(r"^```(?:json)?\s*\n?", "", clean_kw, flags=re.IGNORECASE)
+                clean_kw = re.sub(
+                    r"^```(?:json)?\s*\n?", "", clean_kw, flags=re.IGNORECASE
+                )
                 clean_kw = re.sub(r"\n?```\s*$", "", clean_kw)
                 clean_kw = clean_kw.strip()
                 keywords = json.loads(clean_kw)
@@ -161,19 +166,31 @@ Return ONLY a valid JSON list of lowercase strings. Do not include markdown form
                     if isinstance(kw, str) and kw.strip():
                         keywords_cleaned.append(kw.strip().lower())
 
-            query_words = [w.strip().lower() for w in re.split(r'\s+', query) if len(w.strip()) >= 3]
+            query_words = [
+                w.strip().lower()
+                for w in re.split(r"\s+", query)
+                if len(w.strip()) >= 3
+            ]
 
             filtered = []
             for tag in tags:
                 tag_lower = tag.lower()
-                if any(qw in tag_lower for qw in query_words) or any(kw in tag_lower for kw in keywords_cleaned):
+                if any(qw in tag_lower for qw in query_words) or any(
+                    kw in tag_lower for kw in keywords_cleaned
+                ):
                     filtered.append(tag)
 
             if filtered:
                 candidate_tags = filtered
-                log.info("Two-stage matching reduced tag count from %d to %d.", len(tags), len(candidate_tags))
+                log.info(
+                    "Two-stage matching reduced tag count from %d to %d.",
+                    len(tags),
+                    len(candidate_tags),
+                )
             else:
-                log.warning("Two-stage matching returned 0 candidates. Falling back to full list (or first 500 for safety).")
+                log.warning(
+                    "Two-stage matching returned 0 candidates. Falling back to full list (or first 500 for safety)."
+                )
                 candidate_tags = tags[:500]
 
         prompt = f"""You are a highly precise Polish semantic matching assistant.
@@ -201,7 +218,9 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             )
             # Safe clean of markdown blocks
             clean_text = response_text.strip()
-            clean_text = re.sub(r"^```(?:json)?\s*\n?", "", clean_text, flags=re.IGNORECASE)
+            clean_text = re.sub(
+                r"^```(?:json)?\s*\n?", "", clean_text, flags=re.IGNORECASE
+            )
             clean_text = re.sub(r"\n?```\s*$", "", clean_text)
             clean_text = clean_text.strip()
 
@@ -289,9 +308,13 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             else:
                 all_tags = self.request.dbsession.scalars(select(Tag)).all()
                 tag_names = [t.name for t in all_tags]
-                matched_names = self._match_tags_ai(ai_query, tag_names) if tag_names else []
+                matched_names = (
+                    self._match_tags_ai(ai_query, tag_names) if tag_names else []
+                )
                 matched_lower = {n.lower() for name in matched_names for n in [name]}
-                matched_ids = [t.id for t in all_tags if t.name.lower() in matched_lower]
+                matched_ids = [
+                    t.id for t in all_tags if t.name.lower() in matched_lower
+                ]
                 _ai_search_cache.set(user_id, ai_query, matched_ids)
             stmt = stmt.filter(Tag.id.in_(matched_ids) if matched_ids else Tag.id == -1)
 
@@ -1607,14 +1630,12 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             matched_names = self._match_tags_ai(query, tag_names) if tag_names else []
             matched_lower = {name.lower() for name in matched_names}
             matched_ids = [t.id for t in all_tags if t.name.lower() in matched_lower]
-            
+
             # Cache the search query and matched IDs in the server-side memory cache
             user_id = self.request.identity.id if self.request.identity else 0
             _ai_search_cache.set(user_id, query, matched_ids)
-            
+
             return HTTPSeeOther(
-                location=self.request.route_url(
-                    "tag_all", _query={"ai_query": query}
-                )
+                location=self.request.route_url("tag_all", _query={"ai_query": query})
             )
         return {"heading": _("Search tags with AI"), "form": form}

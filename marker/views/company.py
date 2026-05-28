@@ -1933,9 +1933,7 @@ class CompanyView:
                     form.website.data, existing_tag_names
                 )
             except Exception as e:
-                log.warning(
-                    _("Failed to extract tags via AI: %s"), e
-                )
+                log.warning(_("Failed to extract tags via AI: %s"), e)
 
             # 3. Create database objects and associate them in-memory
             company = Company(

@@ -33,9 +33,8 @@ def test_translationstring_str_with_request(monkeypatch):
             return f"translated:{msg}"
 
     monkeypatch.setattr(TranslationString, "__str__", TranslationString._original_str)
-    monkeypatch.setattr("marker.forms.ts.get_current_request", lambda: DummyRequestWithTranslate())
+    monkeypatch.setattr(
+        "marker.forms.ts.get_current_request", lambda: DummyRequestWithTranslate()
+    )
     ts = TranslationString("hello")
     assert str(ts) == "translated:hello"
-
-
-

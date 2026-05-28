@@ -282,12 +282,9 @@ def contacts_autofill_from_website(website):
             name = fallback_company_name or "Company"
 
         if name:
-            final_contacts.append({
-                "name": name,
-                "role": role,
-                "phone": phone,
-                "email": email
-            })
+            final_contacts.append(
+                {"name": name, "role": role, "phone": phone, "email": email}
+            )
 
     return final_contacts
 

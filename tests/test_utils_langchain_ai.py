@@ -120,6 +120,7 @@ def test_invoke_text_both_models_fail():
 
 def test_invoke_text_failed_before_execution(monkeypatch):
     monkeypatch.setattr(langchain_ai, "_model_candidates", lambda model, fallback: [])
-    with pytest.raises(RuntimeError, match="AI invocation failed before request execution"):
+    with pytest.raises(
+        RuntimeError, match="AI invocation failed before request execution"
+    ):
         langchain_ai.invoke_text("prompt", model="some-model", retries=0)
-
