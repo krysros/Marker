@@ -1971,7 +1971,7 @@ class CompanyView:
                 contact.created_by = self.request.identity
                 company.contacts.append(contact)
 
-            for tag_name in extracted_tags[:20]:
+            for tag_name in extracted_tags[:10]:
                 existing_tag = self.request.dbsession.execute(
                     select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
                 ).scalar_one_or_none()

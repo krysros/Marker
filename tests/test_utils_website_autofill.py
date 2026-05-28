@@ -130,3 +130,39 @@ def test_tags_autofill_from_website_valueerror(monkeypatch):
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([]))
     with pytest.raises(ValueError):
         autofill.tags_autofill_from_website("http://x")
+
+
+def test_tags_autofill_from_website_filtering(monkeypatch):
+    doc = types.SimpleNamespace(page_content="abc")
+    monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
+    # Returning some meaningless and some valid tags
+    monkeypatch.setattr(
+        autofill,
+        "ChatGoogleGenerativeAI",
+        lambda **kwargs: DummyLLM(
+            '["budowa", "Instalacje elektryczne", "jakość", "Konstrukcje stalowe", "technologia"]'
+        ),
+    )
+    res = autofill.tags_autofill_from_website("http://x")
+    # Meaningless tags should be filtered out
+    assert "budowa" not in res
+    assert "jakość" not in res
+    assert "technologia" not in res
+    assert res == ["Instalacje elektryczne", "Konstrukcje stalowe"]
+
+
+def test_tags_autofill_from_website_limit(monkeypatch):
+    import json
+    doc = types.SimpleNamespace(page_content="abc")
+    monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
+    # Returning 15 valid tags
+    tags = [f"Tag{i}" for i in range(15)]
+    monkeypatch.setattr(
+        autofill,
+        "ChatGoogleGenerativeAI",
+        lambda **kwargs: DummyLLM(json.dumps(tags)),
+    )
+    res = autofill.tags_autofill_from_website("http://x")
+    # Should be limited to exactly 10 tags
+    assert len(res) == 10
+    assert res == [f"Tag{i}" for i in range(10)]

@@ -289,13 +289,29 @@ def contacts_autofill_from_website(website):
     return final_contacts
 
 
+_AVOID_TAG_LOWER = {
+    "budowa",
+    "jakość",
+    "kierowanie projektem",
+    "budownictwo",
+    "budownictwo ogólne",
+    "technologia",
+    "certyfikaty",
+    "energooszczędność",
+}
+
+
+def _is_meaningless_tag(tag: str) -> bool:
+    return tag.strip().lower() in _AVOID_TAG_LOWER
+
+
 def tags_autofill_from_website(website, existing_tags=None):
     """
     Extract a list of tags (core business activities or project types) from the
     given website URL.  When *existing_tags* (a list of tag name strings already
     present in the database) is supplied, the LLM is instructed to prefer those
     exact names over inventing new ones.
-    Returns a list of up to 20 tag name strings.
+    Returns a list of up to 10 tag name strings.
     """
     model = get_configured_model()
     parsed = urlparse(website)
@@ -348,23 +364,31 @@ def tags_autofill_from_website(website, existing_tags=None):
 
     prompt = (
         "Extract up to 20 tags that best describe the core business activities (for a company) "
-        "or project types (for a project) based on the context."
+        "or project types (for a project) based on the context.\n"
+        "Strict Guidelines:\n"
+        "1. Strictly avoid meaningless or generic tags (usually single words), such as: "
+        "'budowa', 'jakość', 'kierowanie projektem', 'budownictwo', 'budownictwo ogólne', "
+        "'technologia', 'certyfikaty', 'energooszczędność' and similar low-value or overly broad terms.\n"
+        "2. Select specific tags describing the core/primary scope of business activity or specific project type (e.g. 'instalacje elektryczne', 'konstrukcje stalowe', 'generalne wykonawstwo').\n"
         + existing_section
-        + ' Return a JSON array of strings, e.g. ["Construction", "Real estate", "Project management"].'
+        + ' Return a JSON array of strings, e.g. ["Klimatyzacja", "Usługi instalacyjne", "Projektowanie dróg"].'
         " Return at most 20 items. If nothing can be determined, return an empty array []."
     )
 
     response = llm.invoke(f"{prompt}:\n\n{content}")
     result = json.loads(response.content)
 
+    tags = []
     if isinstance(result, list):
-        return [str(t).strip() for t in result if str(t).strip()][:20]
-    # Gemini sometimes wraps in a dict
-    if isinstance(result, dict):
+        tags = [str(t).strip() for t in result if str(t).strip()]
+    elif isinstance(result, dict):
         for key in ("tags", "items", "results", "data"):
             if key in result and isinstance(result[key], list):
-                return [str(t).strip() for t in result[key] if str(t).strip()][:20]
-    return []
+                tags = [str(t).strip() for t in result[key] if str(t).strip()]
+                break
+
+    filtered_tags = [t for t in tags if t and not _is_meaningless_tag(t)]
+    return filtered_tags[:10]
 
 
 def _subdivision_code_from_value(value, country_code):
