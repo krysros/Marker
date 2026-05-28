@@ -91,7 +91,8 @@
     </p>
     <p>
       <div class="d-flex flex-wrap gap-2">
-        ${button.a(icon='folder', color='secondary', url=request.route_url('report_all'))}
+        ${button.a(icon='bar-chart', color='secondary', url=request.route_url('report_all'))}
+        ${button.a(icon='robot', color='primary', url=request.route_url('prompt'))}
       </div>
     </p>
   </div>
