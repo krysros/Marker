@@ -28,7 +28,7 @@
           <ul class="dropdown-menu">
             <li>
               <a class="dropdown-item" href="${request.route_url('search_tags')}">
-                <i class="bi bi-search"></i> ${_("Search")}
+                <i class="bi bi-search"></i> ${_("Search+")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
