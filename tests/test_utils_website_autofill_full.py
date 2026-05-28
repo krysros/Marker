@@ -178,3 +178,282 @@ def test_normalize_whitespace_and_fold_text_edge_cases():
     assert website_autofill._normalize_whitespace(None) == ""
     assert website_autofill._fold_text("") == ""
     assert website_autofill._fold_text(None) == ""
+
+
+def test_web_base_loader_decode_error(monkeypatch):
+    import urllib.request
+    from io import BytesIO
+
+    class DummyResponse:
+        def __init__(self):
+            # headers with invalid charset
+            self.headers = type("H", (), {"get_content_charset": lambda *a, **kw: "invalid-charset-name"})()
+
+        def read(self):
+            return b"<html><body>Hello World!</body></html>"
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout=None: DummyResponse())
+    loader = website_autofill.WebBaseLoader("http://dummy-url.com")
+    docs = loader.load()
+    assert "Hello World" in docs[0].page_content
+
+
+def test_autofill_geo_field_postcode_fallbacks(monkeypatch):
+    # Tests postcode resolution chain (postalcode, postal, postal_code)
+    # also tests when _subdivision_code_from_value returns empty string (line 116)
+    class DummyDoc:
+        page_content = "{}"
+
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [DummyDoc()]})(),
+    )
+    # Patch ChatGoogleGenerativeAI
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '{"country": "PL"}'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+
+    # 1. postalcode fallback
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kw: {"postalcode": "11-222", "country_code": "pl", "state": "UnknownState"})
+    res1 = website_autofill._autofill_from_website("http://dummy.com", "prompt")
+    assert res1["postcode"] == "11-222"
+    assert res1["subdivision"] == "" # fallback empty because UnknownState subdivision is not matched
+
+    # 2. postal fallback
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kw: {"postal": "33-444", "country_code": "pl"})
+    res2 = website_autofill._autofill_from_website("http://dummy.com", "prompt")
+    assert res2["postcode"] == "33-444"
+
+    # 3. postal_code fallback
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kw: {"postal_code": "55-666", "country_code": "pl"})
+    res3 = website_autofill._autofill_from_website("http://dummy.com", "prompt")
+    assert res3["postcode"] == "55-666"
+
+
+def test_autofill_fuzzy_country_match(monkeypatch):
+    class DummyDoc:
+        page_content = "{}"
+
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [DummyDoc()]})(),
+    )
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            # Country name that triggers search_fuzzy
+            return type("R", (), {"content": '{"country": "Polska"}'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+    monkeypatch.setattr(website_autofill, "location_details", lambda **kw: None)
+
+    # Mock pycountry fuzzy search
+    class CountryMock:
+        alpha_2 = "PL"
+    monkeypatch.setattr(website_autofill.pycountry.countries, "search_fuzzy", lambda query: [CountryMock()])
+
+    res = website_autofill._autofill_from_website("http://dummy.com", "prompt")
+    assert res["country"] == "PL"
+
+
+def test_contacts_loader_main_page_exception(monkeypatch):
+    # Test that when loader throws on the main page, it catches it and can still load from a subpage
+    calls = []
+    def mock_load(self):
+        calls.append(self.url)
+        if "kontakt" in self.url:
+            return [type("D", (), {"page_content": "John Doe - Manager, tel: 1234, email: a@b.com" * 20})()]
+        raise RuntimeError("Load failed")
+
+    monkeypatch.setattr(website_autofill.WebBaseLoader, "load", mock_load)
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '[]'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+
+    # Should succeed by loading from subpage and not raising
+    res = website_autofill.contacts_autofill_from_website("http://abc.com")
+    assert isinstance(res, list)
+    assert len(calls) > 1
+
+
+def test_contacts_parser_variants_and_fallbacks(monkeypatch):
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+    # Mock main load
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [type("D", (), {"page_content": "xyz"})()]})(),
+    )
+
+    # 1. Single dict contact result (line 255)
+    class DummyLLM_SingleDict:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '{"name": "Jan Kowalski", "role": "CEO"}'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM_SingleDict)
+    res = website_autofill.contacts_autofill_from_website("http://www.abc.com")
+    assert len(res) == 1
+    assert res[0]["name"] == "Jan Kowalski"
+
+    # 2. List containing a non-dict contact element (line 260) and empty name with fallback company name (line 282)
+    # also tests www prefix pruning (line 222)
+    class DummyLLM_InvalidList:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            # first element is non-dict (string), second is empty name with role
+            return type("R", (), {"content": '["not-a-dict", {"name": "", "role": "Director", "email": "dir@abc.com"}]'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM_InvalidList)
+    res2 = website_autofill.contacts_autofill_from_website("http://www.abc.com")
+    assert len(res2) == 1
+    assert res2[0]["name"] == "Abc" # capitalized domain name from www.abc.com
+    assert res2[0]["role"] == "Director"
+
+
+def test_contacts_company_fallback_parsing_exception(monkeypatch):
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [type("D", (), {"page_content": "xyz"})()]})(),
+    )
+
+    # Force parse exception on urlparse specifically inside the fallback_company_name try-except
+    class FaultyParsed:
+        scheme = "http"
+        netloc = ""
+        @property
+        def path(self):
+            raise AttributeError("mocked error")
+
+    monkeypatch.setattr(website_autofill, "urlparse", lambda url: FaultyParsed())
+
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '[{"name": "", "role": "Staff", "email": "a@b.com"}]'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+    res = website_autofill.contacts_autofill_from_website("http://abc.com")
+    assert len(res) == 1
+    assert res[0]["name"] == "Company" # Default fallback because exception occurred when getting domain
+
+
+def test_tags_loader_main_page_exception(monkeypatch):
+    # Test tags loader throws exception on main page
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+    calls = []
+    def mock_load(self):
+        calls.append(self.url)
+        if "o-nas" in self.url:
+            return [type("D", (), {"page_content": "Offer text " * 50})()]
+        raise RuntimeError("Load failed")
+
+    monkeypatch.setattr(website_autofill.WebBaseLoader, "load", mock_load)
+
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '["Tag1"]'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+    res = website_autofill.tags_autofill_from_website("http://abc.com")
+    assert res == ["Tag1"]
+    assert len(calls) > 1
+
+
+def test_tags_autofill_as_dict(monkeypatch):
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [type("D", (), {"page_content": "xyz"})()]})(),
+    )
+
+    # Test when Gemini returns a dictionary containing a "tags" list
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '{"tags": ["Construction", "Woodwork"]}'})()
+
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+    res = website_autofill.tags_autofill_from_website("http://abc.com")
+    assert res == ["Construction", "Woodwork"]
+
+
+def test_subdivision_partial_substring_match(monkeypatch):
+    # subdivision_folded in folded matching (lines 390-395)
+    class Sub:
+        def __init__(self, code, name):
+            self.code = code
+            self.name = name
+
+    # Database subdivision is "Mazury"
+    subs = [Sub("PL-MZ", "Mazury")]
+    monkeypatch.setattr(
+        website_autofill.pycountry.subdivisions, "get", lambda country_code=None: subs
+    )
+    # Search value is "Warmia i Mazury" -> subdivision_folded "mazury" in folded "warmia i mazury"
+    code = website_autofill._subdivision_code_from_value("Warmia i Mazury", "PL")
+    assert code == "PL-MZ"
+
+
+def test_website_autofill_subpage_overlap_edge_cases(monkeypatch):
+    monkeypatch.setattr(website_autofill, "get_configured_model", lambda: "test-model")
+    
+    # 1. For contacts_autofill_from_website when the website itself ends with /kontakt
+    class DummyDoc:
+        page_content = "some text"
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [DummyDoc()]})(),
+    )
+    class DummyLLM:
+        def __init__(self, *args, **kwargs):
+            pass
+        def invoke(self, prompt):
+            return type("R", (), {"content": '[]'})()
+    monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
+    
+    # website ends with /kontakt, so when /kontakt is joined, url.rstrip('/') == website.rstrip('/')
+    website_autofill.contacts_autofill_from_website("http://abc.com/kontakt")
+    
+    # 2. For tags_autofill_from_website when the website itself ends with /oferta
+    class DummyDocTags:
+        page_content = "some text"
+    monkeypatch.setattr(
+        website_autofill,
+        "WebBaseLoader",
+        lambda url: type("L", (), {"load": lambda self: [DummyDocTags()]})(),
+    )
+    website_autofill.tags_autofill_from_website("http://abc.com/oferta")
+
+

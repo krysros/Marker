@@ -116,3 +116,10 @@ def test_invoke_text_both_models_fail():
     assert langchain_ai._usage_metadata(resp) == {}
     resp = MagicMock(response_metadata="notadict")
     assert langchain_ai._usage_metadata(resp) == {}
+
+
+def test_invoke_text_failed_before_execution(monkeypatch):
+    monkeypatch.setattr(langchain_ai, "_model_candidates", lambda model, fallback: [])
+    with pytest.raises(RuntimeError, match="AI invocation failed before request execution"):
+        langchain_ai.invoke_text("prompt", model="some-model", retries=0)
+

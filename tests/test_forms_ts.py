@@ -11,15 +11,31 @@ class DummyRequest:
 
 
 def test_translationstring_str(monkeypatch):
-    # The current TranslationString returns self.msg if no request or translate is present
-    monkeypatch.setattr("pyramid.threadlocal.get_current_request", lambda: None)
+    # Restore the original __str__ method
+    monkeypatch.setattr(TranslationString, "__str__", TranslationString._original_str)
+    monkeypatch.setattr("marker.forms.ts.get_current_request", lambda: None)
     ts = TranslationString("foo")
     result = str(ts)
     assert result == "foo"
 
 
 def test_translationstring_str_no_request(monkeypatch):
-    monkeypatch.setattr("pyramid.threadlocal.get_current_request", lambda: None)
+    monkeypatch.setattr(TranslationString, "__str__", TranslationString._original_str)
+    monkeypatch.setattr("marker.forms.ts.get_current_request", lambda: None)
     ts = TranslationString("bar")
     # If there is no request, it should return the original text
     assert str(ts) == "bar"
+
+
+def test_translationstring_str_with_request(monkeypatch):
+    class DummyRequestWithTranslate:
+        def translate(self, msg):
+            return f"translated:{msg}"
+
+    monkeypatch.setattr(TranslationString, "__str__", TranslationString._original_str)
+    monkeypatch.setattr("marker.forms.ts.get_current_request", lambda: DummyRequestWithTranslate())
+    ts = TranslationString("hello")
+    assert str(ts) == "translated:hello"
+
+
+

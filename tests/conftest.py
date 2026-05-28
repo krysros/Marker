@@ -17,12 +17,15 @@ from marker.models.meta import Base
 # Patch only __str__ of TranslationString to avoid AttributeError (no request context)
 import marker.forms.ts
 
+marker.forms.ts.TranslationString._original_str = marker.forms.ts.TranslationString.__str__
+
 
 def _translationstring_str(self):
     return self.msg
 
 
 marker.forms.ts.TranslationString.__str__ = _translationstring_str
+
 
 
 class DummyRequestWithIdentity:
