@@ -51,6 +51,7 @@ class TagSearchForm(Form):
 
 class TagFilterForm(Form):
     name = HiddenField(_("Name"), filters=[strip_filter])
+    ai_query = HiddenField(_("AI query"), filters=[strip_filter])
     category = SelectField(_("Category"), choices=CATEGORIES)
     date_from = DateTimeLocalField(
         _("Date from"),

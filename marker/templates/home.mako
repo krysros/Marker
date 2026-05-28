@@ -22,7 +22,7 @@
         ${button.a(icon='search', color='primary', url=request.route_url('company_search'))}
         ${button.a(icon='plus-lg', color='success', url=request.route_url('company_add'))}
         % if gemini_api_key_set:
-        ${button.a(icon='robot', color='success', url=request.route_url('company_add_ai'))}
+        ${button.a(icon='stars', color='info', url=request.route_url('company_add_ai'), title=_("AI Add"))}
         % endif
       </div>
     </p>
@@ -38,7 +38,7 @@
         ${button.a(icon='search', color='primary', url=request.route_url('project_search'))}
         ${button.a(icon='plus-lg', color='success', url=request.route_url('project_add'))}
         % if gemini_api_key_set:
-        ${button.a(icon='robot', color='success', url=request.route_url('project_add_ai'))}
+        ${button.a(icon='stars', color='info', url=request.route_url('project_add_ai'), title=_("AI Add"))}
         % endif
       </div>
       </p>
@@ -51,6 +51,7 @@
     <p>
       <div class="d-flex flex-wrap gap-2">
         ${button.a(icon='folder', color='secondary', url=request.route_url('tag_all'))}
+        ${button.a(icon='stars', color='info', url=request.route_url('tag_search_ai'), title=_("AI Search"))}
         ${button.a(icon='search', color='primary', url=request.route_url('tag_search'))}
         ${button.a(icon='plus-lg', color='success', url=request.route_url('tag_add'))}
       </div>

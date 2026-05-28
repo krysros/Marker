@@ -1,5 +1,9 @@
 import datetime
+import json
 import logging
+import re
+import time
+from collections import OrderedDict
 
 from pyramid.httpexceptions import HTTPSeeOther
 from pyramid.view import view_config
@@ -37,6 +41,8 @@ from ..models import (
     selected_tags,
 )
 from ..utils.export import make_export_response
+from ..utils.langchain_ai import invoke_text
+from ..utils.llm_report import get_configured_model
 from ..utils.paginator import get_paginator
 from . import (
     Filter,
@@ -53,11 +59,164 @@ from . import (
 log = logging.getLogger(__name__)
 
 
+class TagAISearchCache:
+    def __init__(self, max_size=200, ttl_seconds=1800):
+        self.cache = OrderedDict()
+        self.max_size = max_size
+        self.ttl_seconds = ttl_seconds
+
+    def get(self, user_id, query):
+        self._cleanup()
+        key = (user_id, query.strip().lower())
+        if key in self.cache:
+            val, expiry = self.cache[key]
+            if time.time() < expiry:
+                self.cache.move_to_end(key)
+                return val
+            else:
+                del self.cache[key]
+        return None
+
+    def set(self, user_id, query, matched_ids):
+        self._cleanup()
+        key = (user_id, query.strip().lower())
+        expiry = time.time() + self.ttl_seconds
+        self.cache[key] = (matched_ids, expiry)
+        self.cache.move_to_end(key)
+        if len(self.cache) > self.max_size:
+            self.cache.popitem(last=False)
+
+    def _cleanup(self):
+        now = time.time()
+        expired_keys = [k for k, (_, exp) in self.cache.items() if now >= exp]
+        for k in expired_keys:
+            self.cache.pop(k, None)
+
+
+_ai_search_cache = TagAISearchCache()
+
+
 class TagView:
     def __init__(self, request):
         self.request = request
         self.count_companies = 0
         self.count_projects = 0
+
+    def _match_tags_ai(self, query: str, tags: list[str]) -> list[str]:
+        try:
+            model = get_configured_model()
+        except Exception as e:
+            log.warning("Gemini model not configured for AI tag search: %s", e)
+            return []
+
+        # Get fallback model and retries from settings
+        settings = getattr(self.request.registry, "settings", None) or {}
+        fallback_model = (settings.get("gemini.fallback_model") or "").strip() or None
+        retries = 2
+        retries_raw = settings.get("gemini.retries")
+        if retries_raw not in (None, ""):
+            try:
+                retries = max(0, int(retries_raw))
+            except (TypeError, ValueError):
+                pass
+
+        import os
+        if not os.environ.get("GEMINI_API_KEY"):
+            log.warning("GEMINI_API_KEY is not configured")
+            return []
+
+        candidate_tags = tags
+        if len(tags) > 150:
+            log.info("Tag list size %d > 150. Using two-stage hybrid AI matching.", len(tags))
+            prompt_keywords = f"""You are an expert Polish linguistic and semantic assistant.
+User's Polish search query is: "{query}".
+Your task is to generate a list of 10 to 15 Polish keywords, synonyms, word roots/stems, or highly related terms that would likely appear in relevant tags in a database.
+Generate words that represent the core concept, its synonyms, forms (inflections), or specific subcategories or components.
+For example:
+- Query: "geotechnika" -> ["geotech", "geolog", "grunt", "posadowi", "odwiert", "fundament"]
+- Query: "stolarka drewniana" -> ["drewn", "drzw", "okn", "stolark", "bram"]
+
+Return ONLY a valid JSON list of lowercase strings. Do not include markdown formatting or extra text.
+"""
+            try:
+                response_kw = invoke_text(
+                    prompt_keywords,
+                    model=model,
+                    fallback_model=fallback_model,
+                    retries=retries,
+                    source="tag_search_ai_keywords",
+                )
+                clean_kw = response_kw.strip()
+                clean_kw = re.sub(r"^```(?:json)?\s*\n?", "", clean_kw, flags=re.IGNORECASE)
+                clean_kw = re.sub(r"\n?```\s*$", "", clean_kw)
+                clean_kw = clean_kw.strip()
+                keywords = json.loads(clean_kw)
+            except Exception as e:
+                log.warning("Error generating keywords for two-stage search: %s", e)
+                keywords = []
+
+            keywords_cleaned = []
+            if isinstance(keywords, list):
+                for kw in keywords:
+                    if isinstance(kw, str) and kw.strip():
+                        keywords_cleaned.append(kw.strip().lower())
+
+            query_words = [w.strip().lower() for w in re.split(r'\s+', query) if len(w.strip()) >= 3]
+
+            filtered = []
+            for tag in tags:
+                tag_lower = tag.lower()
+                if any(qw in tag_lower for qw in query_words) or any(kw in tag_lower for kw in keywords_cleaned):
+                    filtered.append(tag)
+
+            if filtered:
+                candidate_tags = filtered
+                log.info("Two-stage matching reduced tag count from %d to %d.", len(tags), len(candidate_tags))
+            else:
+                log.warning("Two-stage matching returned 0 candidates. Falling back to full list (or first 500 for safety).")
+                candidate_tags = tags[:500]
+
+        prompt = f"""You are a highly precise Polish semantic matching assistant.
+Analyze the user's Polish search query: "{query}".
+Below is a JSON list of available tags:
+{json.dumps(candidate_tags, ensure_ascii=False)}
+
+Your task is to select ONLY the tags from the list that are directly, semantically related to the query.
+
+CRITICAL PRECISION RULES:
+1. Strict Semantic Matching: Only select tags that represent the exact concept, direct synonyms, or specific subcategories of the query.
+2. Material/Context Constraint: For compound terms with a specific modifier (like "stolarka drewniana" - wooden joinery), do NOT select tags containing other materials (e.g., do NOT select "Okna PCV", "Drzwi stalowe", or "Stolarka aluminiowa" because they are not wooden).
+3. Do NOT match tags that merely share a broad industry word if they represent a different category (e.g., do not match "Konstrukcje stalowe" for a wood-related query).
+4. Be conservative: It is much better to return fewer highly accurate tags than to include unrelated or loosely related ones (no false positives).
+
+Return ONLY a valid JSON list of matched tags (strings) exactly as they appear in the original list. Do not include markdown code block formatting (like ```json), explanations, or extra text.
+"""
+        try:
+            response_text = invoke_text(
+                prompt,
+                model=model,
+                fallback_model=fallback_model,
+                retries=retries,
+                source="tag_search_ai",
+            )
+            # Safe clean of markdown blocks
+            clean_text = response_text.strip()
+            clean_text = re.sub(r"^```(?:json)?\s*\n?", "", clean_text, flags=re.IGNORECASE)
+            clean_text = re.sub(r"\n?```\s*$", "", clean_text)
+            clean_text = clean_text.strip()
+
+            matched_tags = json.loads(clean_text)
+            if isinstance(matched_tags, list):
+                original_set = {t.lower(): t for t in candidate_tags}
+                result = []
+                for mt in matched_tags:
+                    mt_str = str(mt).strip()
+                    if mt_str.lower() in original_set:
+                        result.append(original_set[mt_str.lower()])
+                return result
+        except Exception as exc:
+            log.exception("Error during AI tag matching: %s", exc)
+        return []
 
     def pills(self, tag):
         _ = self.request.translate
@@ -103,6 +262,7 @@ class TagView:
     def all(self):
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
+        ai_query = self.request.params.get("ai_query", None)
         category = self.request.params.get("category", "")
         date_from = self.request.params.get("date_from", None)
         date_to = self.request.params.get("date_to", None)
@@ -119,6 +279,21 @@ class TagView:
         if name:
             stmt = stmt.filter(contains_ci(Tag.name, name))
             q["name"] = name
+
+        if ai_query:
+            q["ai_query"] = ai_query
+            user_id = self.request.identity.id if self.request.identity else 0
+            cached_ids = _ai_search_cache.get(user_id, ai_query)
+            if cached_ids is not None:
+                matched_ids = cached_ids
+            else:
+                all_tags = self.request.dbsession.scalars(select(Tag)).all()
+                tag_names = [t.name for t in all_tags]
+                matched_names = self._match_tags_ai(ai_query, tag_names) if tag_names else []
+                matched_lower = {n.lower() for name in matched_names for n in [name]}
+                matched_ids = [t.id for t in all_tags if t.name.lower() in matched_lower]
+                _ai_search_cache.set(user_id, ai_query, matched_ids)
+            stmt = stmt.filter(Tag.id.in_(matched_ids) if matched_ids else Tag.id == -1)
 
         if category == "companies":
             company_link_exists = (
@@ -1416,3 +1591,30 @@ class TagView:
                 )
             )
         return {"heading": _("Find the tag"), "form": form}
+
+    @view_config(
+        route_name="tag_search_ai",
+        renderer="tag_form.mako",
+        permission="view",
+    )
+    def search_ai(self):
+        _ = self.request.translate
+        form = TagSearchForm(self.request.POST)
+        if self.request.method == "POST" and form.validate():
+            query = form.name.data
+            all_tags = self.request.dbsession.scalars(select(Tag)).all()
+            tag_names = [t.name for t in all_tags]
+            matched_names = self._match_tags_ai(query, tag_names) if tag_names else []
+            matched_lower = {name.lower() for name in matched_names}
+            matched_ids = [t.id for t in all_tags if t.name.lower() in matched_lower]
+            
+            # Cache the search query and matched IDs in the server-side memory cache
+            user_id = self.request.identity.id if self.request.identity else 0
+            _ai_search_cache.set(user_id, query, matched_ids)
+            
+            return HTTPSeeOther(
+                location=self.request.route_url(
+                    "tag_all", _query={"ai_query": query}
+                )
+            )
+        return {"heading": _("Search tags with AI"), "form": form}

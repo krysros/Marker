@@ -13,7 +13,14 @@
         % endfor
       </div>
       <div class="mb-3">
-        <button type="submit" class="btn btn-primary">${_("Submit")}</button>
+        % if request.matched_route and request.matched_route.name == 'tag_search_ai':
+          <button type="submit" class="btn btn-primary" onclick="this.classList.add('disabled'); this.querySelector('.spinner-grow').classList.remove('d-none');">
+            <span class="spinner-grow spinner-grow-sm me-2 d-none" role="status" aria-hidden="true"></span>
+            ${_("Submit")}
+          </button>
+        % else:
+          <button type="submit" class="btn btn-primary">${_("Submit")}</button>
+        % endif
       </div>
     </form>
   </div>

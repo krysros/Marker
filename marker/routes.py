@@ -356,6 +356,7 @@ def includeme(config):
     )
     config.add_route("tag_add", "/tag/add", factory=default_factory)
     config.add_route("tag_search", "/tag/search", factory=default_factory)
+    config.add_route("tag_search_ai", "/tag/search_ai", factory=default_factory)
     config.add_route("tag_select", "/tag/select", factory=default_factory)
     config.add_route(
         "tag_view",

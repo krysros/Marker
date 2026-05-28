@@ -1960,3 +1960,102 @@ def test_tag_unassigned_bulk_select(dbsession):
     view = TagView(request)
     result = view.unassigned()
     assert result is request.response
+
+def test_match_tags_ai(dbsession):
+    from unittest.mock import patch
+    user = _make_user(dbsession, "ai_match_user")
+    request = _make_request(dbsession, user)
+    view = TagView(request)
+    
+    with patch("marker.views.tag.invoke_text") as mock_invoke, \
+         patch.dict("os.environ", {"GEMINI_API_KEY": "dummy_key"}), \
+         patch("marker.views.tag.get_configured_model") as mock_get_model:
+        
+        mock_get_model.return_value = "gemini-model"
+        mock_invoke.return_value = '["Okna drewniane", "Stolarka aluminiowa"]'
+        
+        tags = ["Okna drewniane", "Drzwi metalowe", "Stolarka aluminiowa", "Inny tag"]
+        result = view._match_tags_ai("stolarka drewniana", tags)
+        
+        assert "Okna drewniane" in result
+        assert "Stolarka aluminiowa" in result
+        assert "Drzwi metalowe" not in result
+        assert "Inny tag" not in result
+
+
+def test_search_ai_post(dbsession):
+    from unittest.mock import patch
+    user = _make_user(dbsession, "ai_search_user")
+    tag1 = _make_tag(dbsession, user, "Okna drewniane")
+    tag2 = _make_tag(dbsession, user, "Stolarka aluminiowa")
+    tag3 = _make_tag(dbsession, user, "Drzwi metalowe")
+    transaction.commit()
+    
+    request = _make_request(
+        dbsession, user, method="POST", post={"name": "stolarka drewniana"}
+    )
+    request.session = {}
+    
+    # Mock route_url to preserve query arguments
+    def mock_route_url(route_name, *args, **kwargs):
+        if "_query" in kwargs:
+            from urllib.parse import urlencode
+            return f"/tag?{urlencode(kwargs['_query'])}"
+        return "/tag"
+    request.route_url = mock_route_url
+    
+    view = TagView(request)
+    
+    with patch("marker.views.tag.invoke_text") as mock_invoke, \
+         patch.dict("os.environ", {"GEMINI_API_KEY": "dummy_key"}), \
+         patch("marker.views.tag.get_configured_model") as mock_get_model:
+        
+        mock_get_model.return_value = "gemini-model"
+        mock_invoke.return_value = '["Okna drewniane", "Stolarka aluminiowa"]'
+        
+        result = view.search_ai()
+        assert isinstance(result, HTTPSeeOther)
+        
+        # Check redirect location query params
+        loc = result.location
+        assert "ai_query=stolarka+drewniana" in loc
+        assert "matched_ids" not in loc
+        
+        # Verify cached IDs are in the server-side _ai_search_cache
+        from marker.views.tag import _ai_search_cache
+        cached_ids = _ai_search_cache.get(user.id, "stolarka drewniana")
+        assert cached_ids is not None
+        assert tag1.id in cached_ids
+        assert tag2.id in cached_ids
+        assert tag3.id not in cached_ids
+
+
+def test_match_tags_ai_two_stage(dbsession):
+    from unittest.mock import patch
+    user = _make_user(dbsession, "ai_match_two_stage")
+    request = _make_request(dbsession, user)
+    view = TagView(request)
+    
+    with patch("marker.views.tag.invoke_text") as mock_invoke, \
+         patch.dict("os.environ", {"GEMINI_API_KEY": "dummy_key"}), \
+         patch("marker.views.tag.get_configured_model") as mock_get_model:
+        
+        mock_get_model.return_value = "gemini-model"
+        
+        # Side effect for the two invocations:
+        # 1. Keywords stage: returns keywords JSON
+        # 2. Match stage: returns matched tags JSON
+        mock_invoke.side_effect = [
+            '["tag 5", "tag 50"]',
+            '["Tag 5", "Tag 50"]'
+        ]
+        
+        # Generate 160 tags so len(tags) > 150
+        tags = [f"Tag {i}" for i in range(160)]
+        result = view._match_tags_ai("geotechnika", tags)
+        
+        assert mock_invoke.call_count == 2
+        assert "Tag 5" in result
+        assert "Tag 50" in result
+        assert "Tag 1" not in result
+
