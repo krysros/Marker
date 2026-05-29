@@ -11,7 +11,7 @@
       <input type="hidden" name="csrf_token" value="${get_csrf_token()}">
       <div class="mb-3">
         ${form.website.label(class_="form-label")}
-        ${form.website(class_="form-control")}
+        ${form.website(class_="form-control" + (" is-invalid" if form.errors.get("website") else ""))}
         % for error in form.errors.get("website", []):
           <div class="invalid-feedback">${error}</div>
         % endfor

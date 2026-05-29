@@ -1940,6 +1940,10 @@ class ProjectView:
         form = ProjectAddAIForm(
             self.request.POST if self.request.method == "POST" else None
         )
+        if self.request.method == "POST" and not form.validate():
+            if self.request.headers.get("HX-Request"):
+                self.request.response.headers["HX-Retarget"] = "body"
+
         if self.request.method == "POST" and form.validate():
             try:
                 autofill = dict(project_autofill_from_website(form.website.data))
