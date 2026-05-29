@@ -1372,7 +1372,9 @@ class ProjectView:
         )
         try:
             fields = project_autofill_from_website(
-                website, default_country=default_country
+                website,
+                default_country=default_country,
+                locale=getattr(self.request, "locale_name", None),
             )
         except Exception as e:
             log.error(_("An error occurred during project website autofill: %s"), e)
@@ -1946,7 +1948,12 @@ class ProjectView:
 
         if self.request.method == "POST" and form.validate():
             try:
-                autofill = dict(project_autofill_from_website(form.website.data))
+                autofill = dict(
+                    project_autofill_from_website(
+                        form.website.data,
+                        locale=getattr(self.request, "locale_name", None),
+                    )
+                )
                 autofill["website"] = form.website.data
             except Exception as e:
                 log.error(_("An error occurred during project autofill with AI: %s"), e)
@@ -2048,7 +2055,10 @@ class ProjectView:
 
             extracted_contacts = []
             try:
-                extracted_contacts = contacts_autofill_from_website(form.website.data)
+                extracted_contacts = contacts_autofill_from_website(
+                    form.website.data,
+                    locale=getattr(self.request, "locale_name", None),
+                )
             except Exception as e:
                 log.warning(
                     _("Failed to extract contacts via AI: %s"),
@@ -2058,7 +2068,9 @@ class ProjectView:
             extracted_tags = []
             try:
                 extracted_tags = tags_autofill_from_website(
-                    form.website.data, existing_tag_names
+                    form.website.data,
+                    existing_tag_names,
+                    locale=getattr(self.request, "locale_name", None),
                 )
             except Exception as e:
                 log.warning(_("Failed to extract tags via AI: %s"), e)

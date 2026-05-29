@@ -1415,7 +1415,9 @@ class CompanyView:
         )
         try:
             fields = company_autofill_from_website(
-                website, default_country=default_country
+                website,
+                default_country=default_country,
+                locale=getattr(self.request, "locale_name", None),
             )
         except Exception as e:
             log.error(_("An error occurred during company website autofill: %s"), e)
@@ -1825,6 +1827,7 @@ class CompanyView:
                 autofill = dict(
                     company_autofill_from_website(
                         form.website.data,
+                        locale=getattr(self.request, "locale_name", None),
                     )
                 )
                 autofill["website"] = form.website.data
@@ -1924,7 +1927,10 @@ class CompanyView:
 
             extracted_contacts = []
             try:
-                extracted_contacts = contacts_autofill_from_website(form.website.data)
+                extracted_contacts = contacts_autofill_from_website(
+                    form.website.data,
+                    locale=getattr(self.request, "locale_name", None),
+                )
             except Exception as e:
                 log.warning(
                     _("Failed to extract contacts via AI: %s"),
@@ -1934,7 +1940,9 @@ class CompanyView:
             extracted_tags = []
             try:
                 extracted_tags = tags_autofill_from_website(
-                    form.website.data, existing_tag_names
+                    form.website.data,
+                    existing_tag_names,
+                    locale=getattr(self.request, "locale_name", None),
                 )
             except Exception as e:
                 log.warning(_("Failed to extract tags via AI: %s"), e)

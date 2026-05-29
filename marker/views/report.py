@@ -74,6 +74,7 @@ class ReportView:
                 try:
                     raw_sql = generate_report_sql(
                         prompt,
+                        locale=getattr(self.request, "locale_name", None),
                         **self._gemini_ai_options(),
                     )
                     sql_generated = validate_sql(raw_sql)

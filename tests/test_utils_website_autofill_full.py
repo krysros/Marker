@@ -474,12 +474,12 @@ def test_tags_autofill_as_dict(monkeypatch):
 
         def invoke(self, prompt):
             return type(
-                "R", (), {"content": '{"tags": ["Construction", "Woodwork"]}'}
+                "R", (), {"content": '{"tags": ["Architecture", "Woodwork"]}'}
             )()
 
     monkeypatch.setattr(website_autofill, "ChatGoogleGenerativeAI", DummyLLM)
     res = website_autofill.tags_autofill_from_website("http://abc.com")
-    assert res == ["Construction", "Woodwork"]
+    assert res == ["Architecture", "Woodwork"]
 
 
 def test_subdivision_partial_substring_match(monkeypatch):

@@ -100,10 +100,56 @@ def get_configured_model() -> str:
     )
 
 
+def _get_locale(locale: str | None = None) -> str:
+    if locale:
+        return locale
+    try:
+        from pyramid.threadlocal import get_current_request
+
+        req = get_current_request()
+        if req is not None:
+            loc = getattr(req, "locale_name", None)
+            if loc:
+                return loc
+    except Exception:
+        pass
+
+    try:
+        req = get_current_request()
+        if (
+            req is not None
+            and hasattr(req, "registry")
+            and hasattr(req.registry, "settings")
+        ):
+            loc = req.registry.settings.get("pyramid.default_locale_name")
+            if loc:
+                return loc
+    except Exception:
+        pass
+
+    for ini_name in ("development.ini", "testing.ini", "production.ini"):
+        path = ini_name
+        for depth in range(3):
+            if os.path.exists(path):
+                try:
+                    from pyramid.paster import get_appsettings
+
+                    settings = get_appsettings(path)
+                    loc = settings.get("pyramid.default_locale_name")
+                    if loc:
+                        return loc
+                except Exception:
+                    pass
+            path = os.path.join("..", path)
+
+    return "en"
+
+
 def generate_report_sql(
     prompt: str,
     fallback_model: str | None = None,
     retries: int | None = None,
+    locale: str | None = None,
 ) -> str:
     model = get_configured_model()
     fallback_model = fallback_model or os.environ.get("GEMINI_FALLBACK_MODEL")
@@ -115,8 +161,32 @@ def generate_report_sql(
                 retries_value = max(0, int(retries_raw))
             except ValueError:
                 retries_value = None
+
+    loc = _get_locale(locale)
+    lang_info = ""
+    if loc.startswith("pl"):
+        lang_info = (
+            "\nUser request language is Polish. Note that:\n"
+            "- 'firmy' maps to 'companies'\n"
+            "- 'projekty' maps to 'projects'\n"
+            "- 'kontakty' maps to 'contacts'\n"
+            "- 'tagi' maps to 'tags'\n"
+            "- 'użytkownicy' maps to 'users'\n"
+            "- 'komentarze' maps to 'comments'\n"
+            "- 'województwo' maps to 'subdivision'\n"
+            "- 'miasto' maps to 'city'\n"
+            "- 'NIP' / 'REGON' / 'KRS' are company identifier columns\n"
+            "Translate these concepts and filter values correctly to SQL."
+        )
+    else:
+        lang_info = (
+            "\nUser request language is English (or non-Polish). Generate the query accordingly."
+        )
+
+    full_context = f"{_SCHEMA_CONTEXT}{lang_info}\nUser request: {prompt}"
+
     sql = invoke_text(
-        f"{_SCHEMA_CONTEXT}\nUser request: {prompt}",
+        full_context,
         model=model,
         fallback_model=fallback_model,
         retries=2 if retries_value is None else retries_value,

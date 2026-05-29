@@ -143,7 +143,7 @@ def test_tags_autofill_from_website_filtering(monkeypatch):
             '["budowa", "Instalacje elektryczne", "jakość", "Konstrukcje stalowe", "technologia"]'
         ),
     )
-    res = autofill.tags_autofill_from_website("http://x")
+    res = autofill.tags_autofill_from_website("http://x", locale="pl")
     # Meaningless tags should be filtered out
     assert "budowa" not in res
     assert "jakość" not in res

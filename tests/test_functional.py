@@ -2846,7 +2846,7 @@ def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
     def mock_invoke(self, prompt):
         if "Extract up to 20 tags" in prompt:
             return type(
-                "Resp", (), {"content": '["Construction", "Civil engineering"]'}
+                "Resp", (), {"content": '["Architecture", "Civil engineering"]'}
             )()
         if "Extract a list of contacts" in prompt:
             return type("Resp", (), {"content": "[]"})()
@@ -2891,7 +2891,7 @@ def test_company_add_ai_saves_tags(testapp, dbsession, monkeypatch):
     ).scalar_one_or_none()
     assert company is not None
     tag_names = {t.name for t in company.tags}
-    assert "Construction" in tag_names
+    assert "Architecture" in tag_names
     assert "Civil engineering" in tag_names
 
 

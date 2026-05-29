@@ -11,7 +11,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
-from .llm_report import get_configured_model
+from .llm_report import get_configured_model, _get_locale
 
 
 class WebBaseLoader:
@@ -157,17 +157,49 @@ def _country_from_locale(locale_str):
     return ""
 
 
-def company_autofill_from_website(website, default_country=""):
-    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country, NIP, REGON, KRS. Returns only one, best-matching result as a JSON object."
+def company_autofill_from_website(website, default_country="", locale=None):
+    loc = _get_locale(locale)
+    if loc.startswith("pl"):
+        prompt = (
+            "Wyodrębnij z kontekstu następujące pola formularza: name (nazwa firmy), "
+            "street (ulica bez przedrostków ul./ulica), postcode (kod pocztowy), "
+            "city (nazwa miasta przetłumaczona na język polski, np. 'Berlin', 'Londyn', 'Warszawa'), "
+            "subdivision (województwo/region), country (kraj), NIP, REGON, KRS. "
+            "Zwróć tylko jeden, najlepiej pasujący wynik jako obiekt JSON."
+        )
+    else:
+        prompt = (
+            "Extract the following form fields from the context: name (company name), "
+            "street (street address), postcode (postcode), "
+            "city (city name translated to English, e.g., 'Warsaw', 'London', 'Berlin'), "
+            "subdivision (subdivision/state/region), country (country), NIP, REGON, KRS. "
+            "Returns only one, best-matching result as a JSON object."
+        )
     return _autofill_from_website(website, prompt, default_country=default_country)
 
 
-def project_autofill_from_website(website, default_country=""):
-    prompt = "Extract the following form fields from the context: name, street, postcode, city, subdivision, country. Returns only one, best-matching result as a JSON object."
+def project_autofill_from_website(website, default_country="", locale=None):
+    loc = _get_locale(locale)
+    if loc.startswith("pl"):
+        prompt = (
+            "Wyodrębnij z kontekstu następujące pola formularza: name (nazwa projektu), "
+            "street (ulica bez przedrostków ul./ulica), postcode (kod pocztowy), "
+            "city (nazwa miasta przetłumaczona na język polski, np. 'Berlin', 'Londyn', 'Warszawa'), "
+            "subdivision (województwo/region), country (kraj). "
+            "Zwróć tylko jeden, najlepiej pasujący wynik jako obiekt JSON."
+        )
+    else:
+        prompt = (
+            "Extract the following form fields from the context: name (project name), "
+            "street (street address), postcode (postcode), "
+            "city (city name translated to English, e.g., 'Warsaw', 'London', 'Berlin'), "
+            "subdivision (subdivision/state/region), country (country). "
+            "Returns only one, best-matching result as a JSON object."
+        )
     return _autofill_from_website(website, prompt, default_country=default_country)
 
 
-def contacts_autofill_from_website(website):
+def contacts_autofill_from_website(website, locale=None):
     """
     Extract a list of contacts (people) from the given website URL.
     In addition to the main URL, tries common contact sub-pages
@@ -228,16 +260,53 @@ def contacts_autofill_from_website(website):
     except Exception:
         fallback_company_name = ""
 
-    prompt = (
-        "Extract a list of contacts from the context.\n"
-        "For each contact provide: name, role, phone, email.\n\n"
-        "Strict Guidelines:\n"
-        f"1. If a specific contact person (first and last name) is NOT extracted or found, but contact information (such as phone or email) is available, use the company name as the contact's 'name'. Identify the company name from the page context. If you cannot find the company name, use '{fallback_company_name or 'the company name'}' as the fallback 'name'. Do not leave the 'name' field blank or skip the contact entry if contact details are present.\n"
-        "2. Provide job titles/roles ('role') in the EXACT form and language in which they appear on the website. Do NOT translate them to English or any other language unless they are originally written that way on the website. Correct only obvious typos/spelling mistakes. Do NOT invent, fabricate, or use your own terms or titles (e.g. keep 'Dyrektor' as 'Dyrektor', do not translate to 'Director' or make up other roles).\n"
-        "3. Returns a JSON array of objects, e.g. "
-        '[{"name": "...", "role": "...", "phone": "...", "email": "..."}]. '
-        "If no contacts are found, return an empty array []."
-    )
+    loc = _get_locale(locale)
+    if loc.startswith("pl"):
+        role_guideline = (
+            "Zachowaj stanowiska/role ('role') w DOKŁADNEJ formie i języku, w jakim występują na stronie internetowej. "
+            "NIE tłumacz ich na angielski ani inny język, chyba że są tak zapisane na stronie. "
+            "Popraw tylko oczywiste literówki. NIE wymyślaj ani nie twórz własnych określeń (np. zachowaj 'Dyrektor' jako 'Dyrektor', "
+            "nie tłumacz na 'Director' ani nie wymyślaj innych ról)."
+        )
+        name_fallback_guideline = (
+            f"Jeśli konkretna osoba kontaktowa (imię i nazwisko) NIE zostanie wyodrębniona lub znaleziona, "
+            f"ale dostępne są informacje kontaktowe (takie jak telefon lub e-mail), użyj nazwy firmy jako 'name' kontaktu. "
+            f"Zidentyfikuj nazwę firmy z kontekstu strony. Jeśli nie możesz znaleźć nazwy firmy, użyj '{fallback_company_name or 'nazwa firmy'}' "
+            f"jako rezerwowej wartości 'name'. Nie pozostawiaj pola 'name' pustego ani nie pomijaj kontaktu, jeśli dane kontaktowe są obecne."
+        )
+        prompt = (
+            "Wyodrębnij listę kontaktów z kontekstu.\n"
+            "Dla każdego kontaktu podaj: name, role, phone, email.\n\n"
+            "Zasady:\n"
+            f"1. {name_fallback_guideline}\n"
+            f"2. {role_guideline}\n"
+            "3. Zwróć tablicę obiektów JSON, np. "
+            '[{"name": "...", "role": "...", "phone": "...", "email": "..."}]. '
+            "Jeśli nie znaleziono kontaktów, zwróć pustą tablicę []."
+        )
+    else:
+        role_guideline = (
+            "Provide job titles/roles ('role') in the EXACT form and language in which they appear on the website. "
+            "Do NOT translate them to English or any other language unless they are originally written that way on the website. "
+            "Correct only obvious typos/spelling mistakes. Do NOT invent, fabricate, or use your own terms or titles (e.g. keep 'Dyrektor' as 'Dyrektor', "
+            "do not translate to 'Director' or make up other roles)."
+        )
+        name_fallback_guideline = (
+            f"If a specific contact person (first and last name) is NOT extracted or found, but contact information (such as phone or email) "
+            f"is available, use the company name as the contact's 'name'. Identify the company name from the page context. "
+            f"If you cannot find the company name, use '{fallback_company_name or 'the company name'}' as the fallback 'name'. "
+            f"Do not leave the 'name' field blank or skip the contact entry if contact details are present."
+        )
+        prompt = (
+            "Extract a list of contacts from the context.\n"
+            "For each contact provide: name, role, phone, email.\n\n"
+            "Strict Guidelines:\n"
+            f"1. {name_fallback_guideline}\n"
+            f"2. {role_guideline}\n"
+            "3. Returns a JSON array of objects, e.g. "
+            '[{"name": "...", "role": "...", "phone": "...", "email": "..."}]. '
+            "If no contacts are found, return an empty array []."
+        )
 
     response = llm.invoke(f"{prompt}:\n\n{content}")
     result = json.loads(response.content)
@@ -289,23 +358,42 @@ def contacts_autofill_from_website(website):
     return final_contacts
 
 
-_AVOID_TAG_LOWER = {
-    "budowa",
-    "jakość",
-    "kierowanie projektem",
-    "budownictwo",
-    "budownictwo ogólne",
-    "technologia",
-    "certyfikaty",
-    "energooszczędność",
+_AVOID_TAGS_BY_LOCALE = {
+    "pl": {
+        "budowa",
+        "jakość",
+        "kierowanie projektem",
+        "budownictwo",
+        "budownictwo ogólne",
+        "technologia",
+        "certyfikaty",
+        "energooszczędność",
+    },
+    "en": {
+        "construction",
+        "quality",
+        "project management",
+        "general construction",
+        "technology",
+        "certificates",
+        "energy efficiency",
+        "about",
+        "contact",
+        "services",
+        "home",
+    }
 }
 
 
-def _is_meaningless_tag(tag: str) -> bool:
-    return tag.strip().lower() in _AVOID_TAG_LOWER
+def _is_meaningless_tag(tag: str, locale: str | None = None) -> bool:
+    loc = _get_locale(locale)
+    # Check if the resolved locale starts with "pl"
+    target_key = "pl" if loc.startswith("pl") else "en"
+    avoid_set = _AVOID_TAGS_BY_LOCALE.get(target_key, _AVOID_TAGS_BY_LOCALE["en"])
+    return tag.strip().lower() in avoid_set
 
 
-def tags_autofill_from_website(website, existing_tags=None):
+def tags_autofill_from_website(website, existing_tags=None, locale=None):
     """
     Extract a list of tags (core business activities or project types) from the
     given website URL.  When *existing_tags* (a list of tag name strings already
@@ -352,28 +440,50 @@ def tags_autofill_from_website(website, existing_tags=None):
         response_mime_type="application/json",
     )
 
+    loc = _get_locale(locale)
     existing_section = ""
     if existing_tags:
         # Pass at most 500 existing names to keep the prompt manageable
         sample = existing_tags[:500]
-        existing_section = (
-            f" The following tags already exist in the database: {json.dumps(sample, ensure_ascii=False)}."
-            " Where possible, reuse an existing tag name exactly (same spelling) instead of creating a new one."
-            " Only propose a new name when none of the existing tags adequately describes the activity or type."
-        )
+        if loc.startswith("pl"):
+            existing_section = (
+                f" Następujące tagi już istnieją w bazie danych: {json.dumps(sample, ensure_ascii=False)}."
+                " Jeśli to możliwe, użyj dokładnie istniejącej nazwy tagu (identyczna pisownia) zamiast tworzyć nowy."
+                " Zaproponuj nową nazwę tylko wtedy, gdy żaden z istniejących tagów nie opisuje odpowiednio działalności lub typu."
+            )
+        else:
+            existing_section = (
+                f" The following tags already exist in the database: {json.dumps(sample, ensure_ascii=False)}."
+                " Where possible, reuse an existing tag name exactly (same spelling) instead of creating a new one."
+                " Only propose a new name when none of the existing tags adequately describes the activity or type."
+            )
 
-    prompt = (
-        "Extract up to 20 tags that best describe the core business activities (for a company) "
-        "or project types (for a project) based on the context.\n"
-        "Strict Guidelines:\n"
-        "1. Strictly avoid meaningless or generic tags (usually single words), such as: "
-        "'budowa', 'jakość', 'kierowanie projektem', 'budownictwo', 'budownictwo ogólne', "
-        "'technologia', 'certyfikaty', 'energooszczędność' and similar low-value or overly broad terms.\n"
-        "2. Select specific tags describing the core/primary scope of business activity or specific project type (e.g. 'instalacje elektryczne', 'konstrukcje stalowe', 'generalne wykonawstwo').\n"
-        + existing_section
-        + ' Return a JSON array of strings, e.g. ["Klimatyzacja", "Usługi instalacyjne", "Projektowanie dróg"].'
-        " Return at most 20 items. If nothing can be determined, return an empty array []."
-    )
+    if loc.startswith("pl"):
+        avoid_tags_str = "'budowa', 'jakość', 'kierowanie projektem', 'budownictwo', 'budownictwo ogólne', 'technologia', 'certyfikaty', 'energooszczędność' i tym podobne mało wartościowe lub zbyt ogólne określenia"
+        example_str = '["Klimatyzacja", "Usługi instalacyjne", "Projektowanie dróg"]'
+        prompt = (
+            "Wyodrębnij do 20 tagów, które najlepiej opisują główną działalność biznesową (dla firmy) "
+            "lub typy projektów (dla projektu) na podstawie kontekstu.\n"
+            "Wskazówki:\n"
+            f"1. Kategorycznie unikaj bezużytecznych lub ogólnych tagów (zazwyczaj jednowyrazowych), takich jak: {avoid_tags_str}.\n"
+            "2. Wybierz konkretne tagi opisujące główny/podstawowy zakres działalności lub specyficzny typ projektu (np. 'instalacje elektryczne', 'konstrukcje stalowe', 'generalne wykonawstwo').\n"
+            f"{existing_section}\n"
+            f"Zwróć tablicę JSON zawierającą ciągi znaków, np. {example_str}.\n"
+            "Zwróć maksymalnie 20 elementów. Jeśli nie można nic ustalić, zwróć pustą tablicę []."
+        )
+    else:
+        avoid_tags_str = "'construction', 'quality', 'project management', 'general construction', 'technology', 'certificates', 'energy efficiency' and similar low-value or overly broad terms"
+        example_str = '["Air conditioning", "Installation services", "Road design"]'
+        prompt = (
+            "Extract up to 20 tags that best describe the core business activities (for a company) "
+            "or project types (for a project) based on the context.\n"
+            "Strict Guidelines:\n"
+            f"1. Strictly avoid meaningless or generic tags (usually single words), such as: {avoid_tags_str}.\n"
+            "2. Select specific tags describing the core/primary scope of business activity or specific project type (e.g. 'electrical installations', 'steel structures', 'general contracting').\n"
+            f"{existing_section}\n"
+            f"Return a JSON array of strings, e.g. {example_str}.\n"
+            "Return at most 20 items. If nothing can be determined, return an empty array []."
+        )
 
     response = llm.invoke(f"{prompt}:\n\n{content}")
     result = json.loads(response.content)
@@ -387,8 +497,8 @@ def tags_autofill_from_website(website, existing_tags=None):
                 tags = [str(t).strip() for t in result[key] if str(t).strip()]
                 break
 
-    filtered_tags = [t for t in tags if t and not _is_meaningless_tag(t)]
-    return filtered_tags[:10]
+    filtered_tags = [t for t in tags if t and not _is_meaningless_tag(t, locale=locale)]
+    return filtered_tags[:20]
 
 
 def _subdivision_code_from_value(value, country_code):
