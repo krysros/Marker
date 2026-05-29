@@ -4398,6 +4398,349 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_json_selected_contacts_companies",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_contacts_companies(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        stmt = (
+            select(Company)
+            .join(Company.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(selected_contacts.c.user_id == user.id)
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "city": company.city,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "color": company.color,
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
+            }
+            for company in companies
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_selected_contacts_companies",
+        renderer="user_map_selected_contacts_companies.mako",
+        permission="view",
+    )
+    def map_selected_contacts_companies(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "name"
+
+        if _order not in {"asc", "desc"}:
+            _order = "asc"
+
+        stmt = (
+            select(Company)
+            .join(Company.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(selected_contacts.c.user_id == user.id)
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        url = self.request.route_url(
+            "user_json_selected_contacts_companies", username=user.name, _query=q
+        )
+        return {"user": user, "url": url, "q": q, "counter": counter}
+
+    @view_config(
+        route_name="user_uptime_selected_contacts_companies",
+        renderer="user_uptime_selected_contacts_companies.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_uptime_selected_contacts_companies_rows",
+        renderer="user_uptime_selected_contacts_companies_rows.mako",
+        permission="view",
+    )
+    def uptime_selected_contacts_companies(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Company)
+            .join(Company.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(
+                selected_contacts.c.user_id == user.id,
+                Company.website.isnot(None),
+                Company.website != "",
+            )
+            .distinct()
+            .order_by(Company.name)
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "user_uptime_selected_contacts_companies_rows",
+            username=user.name,
+            _query={"page": page + 1},
+        )
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "page": page,
+        }
+
+    @view_config(
+        route_name="user_json_selected_contacts_projects",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_contacts_projects(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        object_category = self.request.params.get("object_category", None)
+        stmt = (
+            select(Project)
+            .join(Project.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(selected_contacts.c.user_id == user.id)
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "city": project.city,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "color": project.color,
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
+            }
+            for project in projects
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_selected_contacts_projects",
+        renderer="user_map_selected_contacts_projects.mako",
+        permission="view",
+    )
+    def map_selected_contacts_projects(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        object_category = self.request.params.get("object_category", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "name"
+
+        if _order not in {"asc", "desc"}:
+            _order = "asc"
+
+        stmt = (
+            select(Project)
+            .join(Project.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(selected_contacts.c.user_id == user.id)
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        url = self.request.route_url(
+            "user_json_selected_contacts_projects", username=user.name, _query=q
+        )
+        return {"user": user, "url": url, "q": q, "counter": counter}
+
+    @view_config(
+        route_name="user_uptime_selected_contacts_projects",
+        renderer="user_uptime_selected_contacts_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_uptime_selected_contacts_projects_rows",
+        renderer="user_uptime_selected_contacts_projects_rows.mako",
+        permission="view",
+    )
+    def uptime_selected_contacts_projects(self):
+        user = self.request.context.user
+        page = int(self.request.params.get("page", 1))
+        stmt = (
+            select(Project)
+            .join(Project.contacts)
+            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
+            .filter(
+                selected_contacts.c.user_id == user.id,
+                Project.website.isnot(None),
+                Project.website != "",
+            )
+            .distinct()
+            .order_by(Project.name)
+        )
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "user_uptime_selected_contacts_projects_rows",
+            username=user.name,
+            _query={"page": page + 1},
+        )
+        return {
+            "user": user,
+            "paginator": paginator,
+            "next_page": next_page,
+            "page": page,
+        }
+
+    @view_config(
         route_name="user_selected_contacts",
         renderer="user_selected_contacts.mako",
         permission="view",

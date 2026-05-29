@@ -971,6 +971,26 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_json_selected_contacts_companies",
+        "/user/{username}/json_selected_contacts_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_selected_contacts_companies",
+        "/user/{username}/map_selected_contacts_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_contacts_companies",
+        "/user/{username}/uptime_selected_contacts_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_contacts_companies_rows",
+        "/user/{username}/uptime_selected_contacts_companies_rows",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_selected_contacts_projects",
         "/user/{username}/selected_contacts_projects",
         factory=user_factory,
@@ -978,6 +998,26 @@ def includeme(config):
     config.add_route(
         "user_more_selected_contacts_projects",
         "/user/{username}/more_selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_selected_contacts_projects",
+        "/user/{username}/json_selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_selected_contacts_projects",
+        "/user/{username}/map_selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_contacts_projects",
+        "/user/{username}/uptime_selected_contacts_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_uptime_selected_contacts_projects_rows",
+        "/user/{username}/uptime_selected_contacts_projects_rows",
         factory=user_factory,
     )
     config.add_route(
