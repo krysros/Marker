@@ -801,7 +801,7 @@ msgstr "Firmy, korporacje, organizacje."
 #: marker/templates/project/project_map.mako:11
 #: marker/templates/project/project_uptime.mako:10
 msgid "AI Add"
-msgstr "Dodaj przez AI"
+msgstr "Dodaj z AI"
 
 #: marker/templates/home.mako:33
 msgid "Currently implemented or completed projects."
@@ -846,7 +846,7 @@ msgstr "Profile działalności firm i rodzaje projektów."
 
 #: marker/templates/home.mako:54 marker/templates/tag/tag_all.mako:10
 msgid "AI Search"
-msgstr "Wyszukiwanie AI"
+msgstr "Szukaj z AI"
 
 #: marker/templates/base/layout.mako:55 marker/templates/base/navbar.mako:19
 #: marker/templates/base/navbar.mako:95

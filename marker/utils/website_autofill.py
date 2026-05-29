@@ -498,7 +498,7 @@ def tags_autofill_from_website(website, existing_tags=None, locale=None):
                 break
 
     filtered_tags = [t for t in tags if t and not _is_meaningless_tag(t, locale=locale)]
-    return filtered_tags[:20]
+    return filtered_tags[:10]
 
 
 def _subdivision_code_from_value(value, country_code):
