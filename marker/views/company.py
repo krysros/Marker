@@ -1449,7 +1449,14 @@ class CompanyView:
     def edit(self):
         _ = self.request.translate
         company = self.request.context.company
-        form = CompanyForm(self.request.POST, company, request=self.request)
+        validate_from_ai = self.request.method == "GET" and bool(
+            self.request.params.get("validate")
+        )
+        form = CompanyForm(
+            self.request.params if (self.request.method == "GET" and validate_from_ai) else self.request.POST,
+            company,
+            request=self.request,
+        )
         countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
@@ -1475,7 +1482,12 @@ class CompanyView:
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)
+
+        if validate_from_ai:
+            form.validate()
+
         return {"heading": _("Edit company details"), "form": form}
+
 
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
@@ -2012,3 +2024,188 @@ class CompanyView:
                 return response
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Add a company using AI autofill"), "form": form}
+
+    @view_config(
+        route_name="company_update_ai",
+        request_method="POST",
+        permission="edit",
+    )
+    def update_ai(self):
+        _ = self.request.translate
+        company = self.request.context.company
+
+        if not company.website:
+            self.request.session.flash(_("danger:Company does not have a website address set"))
+            next_url = self.request.route_url(
+                "company_view", company_id=company.id, slug=company.slug
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
+
+        try:
+            autofill = dict(
+                company_autofill_from_website(
+                    company.website,
+                    locale=getattr(self.request, "locale_name", None),
+                )
+            )
+            autofill["website"] = company.website
+        except Exception as e:
+            log.error(_("An error occurred during company update with AI: %s"), e)
+            self.request.session.flash(
+                _(
+                    "danger:An error occurred while trying to update the company data with AI"
+                )
+            )
+            next_url = self.request.route_url(
+                "company_view", company_id=company.id, slug=company.slug
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
+
+        company_form = CompanyForm(MultiDict(autofill), request=self.request)
+        if not company_form.validate():
+            next_url = self.request.route_url(
+                "company_edit",
+                company_id=company.id,
+                slug=company.slug,
+                _query={
+                    k: v
+                    for k, v in {
+                        "validate": "1",
+                        "name": company_form.name.data,
+                        "street": company_form.street.data,
+                        "postcode": company_form.postcode.data,
+                        "city": company_form.city.data,
+                        "subdivision": company_form.subdivision.data,
+                        "country": company_form.country.data,
+                        "website": company_form.website.data,
+                        "NIP": company_form.NIP.data,
+                        "REGON": company_form.REGON.data,
+                        "KRS": company_form.KRS.data,
+                    }.items()
+                    if v
+                },
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
+
+        # 1. Fetch existing tag names first for AI tag extraction hint (fast SELECT)
+        existing_tag_names = []
+        try:
+            existing_tag_names = list(
+                self.request.dbsession.execute(select(Tag.name)).scalars().all()
+            )
+        except Exception as e:
+            log.warning(_("Failed to fetch existing tag names: %s"), e)
+
+        # 2. Perform geocoding
+        geo = None
+        try:
+            geo = location_details(
+                street=company_form.street.data,
+                city=company_form.city.data,
+                country=company_form.country.data,
+                postalcode=company_form.postcode.data,
+            )
+        except Exception as e:
+            log.warning(_("Failed to get location details: %s"), e)
+
+        # 3. Extract contacts
+        extracted_contacts = []
+        try:
+            extracted_contacts = contacts_autofill_from_website(
+                company.website,
+                locale=getattr(self.request, "locale_name", None),
+            )
+        except Exception as e:
+            log.warning(_("Failed to extract contacts via AI: %s"), e)
+
+        # 4. Extract tags
+        extracted_tags = []
+        try:
+            extracted_tags = tags_autofill_from_website(
+                company.website,
+                existing_tag_names,
+                locale=getattr(self.request, "locale_name", None),
+            )
+        except Exception as e:
+            log.warning(_("Failed to extract tags via AI: %s"), e)
+
+        # 5. Apply updates in-place
+        company_form.populate_obj(company)
+        if geo:
+            company.latitude = geo.get("lat")
+            company.longitude = geo.get("lon")
+        company.updated_by = self.request.identity
+
+        # Update contacts
+        for c_data in extracted_contacts:
+            name = (c_data.get("name") or "").strip()
+            if not name:
+                continue
+            existing_contact = None
+            for c in company.contacts:
+                if c.name.strip().lower() == name.lower():
+                    existing_contact = c
+                    break
+
+            if existing_contact:
+                if c_data.get("role"):
+                    existing_contact.role = c_data.get("role")
+                if c_data.get("phone"):
+                    existing_contact.phone = c_data.get("phone")
+                if c_data.get("email"):
+                    existing_contact.email = c_data.get("email")
+            else:
+                contact = Contact(
+                    name=name,
+                    role=c_data.get("role") or None,
+                    phone=c_data.get("phone") or None,
+                    email=c_data.get("email") or None,
+                    color=None,
+                )
+                contact.created_by = self.request.identity
+                company.contacts.append(contact)
+
+        # Update tags
+        for tag_name in extracted_tags[:10]:
+            existing_tag = self.request.dbsession.execute(
+                select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
+            ).scalar_one_or_none()
+            if existing_tag:
+                tag = existing_tag
+            else:
+                tag = Tag(tag_name)
+                tag.created_by = self.request.identity
+            if tag not in company.tags:
+                company.tags.append(tag)
+
+        self.request.dbsession.flush()
+        self.request.session.flash(_("success:Updated with AI"))
+        log.info(
+            _("The user %s has updated the company using AI")
+            % self.request.identity.name
+        )
+        next_url = self.request.route_url(
+            "company_view", company_id=company.id, slug=company.slug
+        )
+        if self.request.headers.get("HX-Request"):
+            response = self.request.response
+            response.headers["HX-Redirect"] = next_url
+            response.status_code = 303
+            return response
+        return HTTPSeeOther(location=next_url)
+

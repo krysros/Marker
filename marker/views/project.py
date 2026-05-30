@@ -1406,7 +1406,14 @@ class ProjectView:
     def edit(self):
         _ = self.request.translate
         project = self.request.context.project
-        form = ProjectForm(self.request.POST, project, request=self.request)
+        validate_from_ai = self.request.method == "GET" and bool(
+            self.request.params.get("validate")
+        )
+        form = ProjectForm(
+            self.request.params if (self.request.method == "GET" and validate_from_ai) else self.request.POST,
+            project,
+            request=self.request,
+        )
         countries = dict(select_countries())
 
         if self.request.method == "POST" and form.validate():
@@ -1434,7 +1441,12 @@ class ProjectView:
                 % self.request.identity.name
             )
             return HTTPSeeOther(location=next_url)
+
+        if validate_from_ai:
+            form.validate()
+
         return {"heading": _("Edit project details"), "form": form}
+
 
     @view_config(
         route_name="project_delete",
@@ -2142,3 +2154,192 @@ class ProjectView:
                 return response
             return HTTPSeeOther(location=next_url)
         return {"heading": _("Add a project using AI autofill"), "form": form}
+
+    @view_config(
+        route_name="project_update_ai",
+        request_method="POST",
+        permission="edit",
+    )
+    def update_ai(self):
+        _ = self.request.translate
+        project = self.request.context.project
+
+        if not project.website:
+            self.request.session.flash(_("danger:Project does not have a website address set"))
+            next_url = self.request.route_url(
+                "project_view", project_id=project.id, slug=project.slug
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
+
+        try:
+            autofill = dict(
+                project_autofill_from_website(
+                    project.website,
+                    locale=getattr(self.request, "locale_name", None),
+                )
+            )
+            autofill["website"] = project.website
+        except Exception as e:
+            log.error(_("An error occurred during project update with AI: %s"), e)
+            self.request.session.flash(
+                _(
+                    "danger:An error occurred while trying to update the project data with AI"
+                )
+            )
+            next_url = self.request.route_url(
+                "project_view", project_id=project.id, slug=project.slug
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
+
+        project_form = ProjectForm(MultiDict(autofill), request=self.request)
+        if not project_form.validate():
+            next_url = self.request.route_url(
+                "project_edit",
+                project_id=project.id,
+                slug=project.slug,
+                _query={
+                    k: v
+                    for k, v in {
+                        "validate": "1",
+                        "name": project_form.name.data,
+                        "street": project_form.street.data,
+                        "postcode": project_form.postcode.data,
+                        "city": project_form.city.data,
+                        "subdivision": project_form.subdivision.data,
+                        "country": project_form.country.data,
+                        "website": project_form.website.data,
+                        "deadline": (
+                            str(project_form.deadline.data)
+                            if project_form.deadline.data
+                            else None
+                        ),
+                        "stage": project_form.stage.data,
+                        "delivery_method": project_form.delivery_method.data,
+                    }.items()
+                    if v
+                },
+            )
+            if self.request.headers.get("HX-Request"):
+                response = self.request.response
+                response.headers["HX-Redirect"] = next_url
+                response.status_code = 303
+                return response
+            return HTTPSeeOther(location=next_url)
+
+        # 1. Fetch existing tag names first for AI tag extraction hint (fast SELECT)
+        existing_tag_names = []
+        try:
+            existing_tag_names = list(
+                self.request.dbsession.execute(select(Tag.name)).scalars().all()
+            )
+        except Exception as e:
+            log.warning(_("Failed to fetch existing tag names: %s"), e)
+
+        # 2. Perform geocoding
+        geo = None
+        try:
+            geo = location_details(
+                street=project_form.street.data,
+                city=project_form.city.data,
+                country=project_form.country.data,
+                postalcode=project_form.postcode.data,
+            )
+        except Exception as e:
+            log.warning(_("Failed to get location details: %s"), e)
+
+        # 3. Extract contacts
+        extracted_contacts = []
+        try:
+            extracted_contacts = contacts_autofill_from_website(
+                project.website,
+                locale=getattr(self.request, "locale_name", None),
+            )
+        except Exception as e:
+            log.warning(_("Failed to extract contacts via AI: %s"), e)
+
+        # 4. Extract tags
+        extracted_tags = []
+        try:
+            extracted_tags = tags_autofill_from_website(
+                project.website,
+                existing_tag_names,
+                locale=getattr(self.request, "locale_name", None),
+            )
+        except Exception as e:
+            log.warning(_("Failed to extract tags via AI: %s"), e)
+
+        # 5. Apply updates in-place
+        project_form.populate_obj(project)
+        if geo:
+            project.latitude = geo.get("lat")
+            project.longitude = geo.get("lon")
+        project.updated_by = self.request.identity
+
+        # Update contacts
+        for c_data in extracted_contacts:
+            name = (c_data.get("name") or "").strip()
+            if not name:
+                continue
+            existing_contact = None
+            for c in project.contacts:
+                if c.name.strip().lower() == name.lower():
+                    existing_contact = c
+                    break
+
+            if existing_contact:
+                if c_data.get("role"):
+                    existing_contact.role = c_data.get("role")
+                if c_data.get("phone"):
+                    existing_contact.phone = c_data.get("phone")
+                if c_data.get("email"):
+                    existing_contact.email = c_data.get("email")
+            else:
+                contact = Contact(
+                    name=name,
+                    role=c_data.get("role") or None,
+                    phone=c_data.get("phone") or None,
+                    email=c_data.get("email") or None,
+                    color=None,
+                )
+                contact.created_by = self.request.identity
+                project.contacts.append(contact)
+
+        # Update tags
+        for tag_name in extracted_tags[:10]:
+            existing_tag = self.request.dbsession.execute(
+                select(Tag).where(func.lower(Tag.name) == func.lower(tag_name))
+            ).scalar_one_or_none()
+            if existing_tag:
+                tag = existing_tag
+            else:
+                tag = Tag(tag_name)
+                tag.created_by = self.request.identity
+            if tag not in project.tags:
+                project.tags.append(tag)
+
+        self.request.dbsession.flush()
+        self.request.session.flash(_("success:Updated with AI"))
+        log.info(
+            _("The user %s has updated the project using AI")
+            % self.request.identity.name
+        )
+        next_url = self.request.route_url(
+            "project_view", project_id=project.id, slug=project.slug
+        )
+        if self.request.headers.get("HX-Request"):
+            response = self.request.response
+            response.headers["HX-Redirect"] = next_url
+            response.status_code = 303
+            return response
+        return HTTPSeeOther(location=next_url)
+

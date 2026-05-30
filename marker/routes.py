@@ -1231,3 +1231,16 @@ def includeme(config):
         "/project/add/ai",
         factory=default_factory,
     )
+
+    config.add_route(
+        "company_update_ai",
+        r"/company/{company_id:\d+}/{slug}/update_ai",
+        factory=company_factory,
+    )
+
+    config.add_route(
+        "project_update_ai",
+        r"/project/{project_id:\d+}/{slug}/update_ai",
+        factory=project_factory,
+    )
+

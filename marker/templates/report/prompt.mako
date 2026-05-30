@@ -1,7 +1,7 @@
 <%inherit file="layout.mako"/>
 
 <h2>
-  <i class="bi bi-robot"></i> ${_("Prompt")}
+  <i class="bi bi-stars"></i> ${_("Prompt")}
 </h2>
 
 <hr>
@@ -28,7 +28,7 @@
     >${prompt | h}</textarea>
   </div>
   <button type="submit" class="btn btn-primary" ${'disabled' if not gemini_api_key_set else ''}>
-    <i class="bi bi-robot"></i> ${_("Generate")}
+    <i class="bi bi-stars"></i> ${_("Generate")}
   </button>
 </form>
 

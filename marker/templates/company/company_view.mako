@@ -6,6 +6,25 @@
   <div class="me-auto">${pills.pills(company_pills)}</div>
   <div>${button.company_star(company)}</div>
   <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('company_edit', company_id=company.id, slug=company.slug))}</div>
+  % if request.is_authenticated and (request.identity.role == 'editor' or request.identity.role == 'admin'):
+  <div>
+    <button type="button"
+            class="btn btn-info"
+            hx-post="${request.route_url('company_update_ai', company_id=company.id, slug=company.slug)}"
+            hx-headers='{"X-CSRF-Token": "${get_csrf_token()}"}'
+            hx-confirm="${_('Are you sure?')}"
+            hx-disabled-elt="this">
+      <span class="spinner-grow spinner-grow-sm me-1 htmx-indicator" role="status" aria-hidden="true"></span>
+      <i class="bi bi-stars"></i> ${_("Aktualizuj z AI")}
+    </button>
+  </div>
+  % else:
+  <div>
+    <button type="button" class="btn btn-info" disabled>
+      <i class="bi bi-stars"></i> ${_("Aktualizuj z AI")}
+    </button>
+  </div>
+  % endif
   <div>${button.button(icon='trash', color='danger', url=request.route_url('company_delete', company_id=company.id, slug=company.slug))}</div>
 </div>
 

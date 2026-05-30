@@ -50,7 +50,7 @@
             </li>
             <li>
               <a class="dropdown-item" href="${request.route_url('prompt')}">
-                <i class="bi bi-robot"></i> ${_("Prompt")}
+                <i class="bi bi-stars"></i> ${_("Prompt")}
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>

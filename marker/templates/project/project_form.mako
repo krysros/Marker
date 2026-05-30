@@ -80,7 +80,7 @@
             aria-label="${_('Refresh form from website')}"
           >
             <span data-website-autofill-icon>
-              <i class="bi bi-robot"></i>
+              <i class="bi bi-stars"></i>
             </span>
             <span class="spinner-grow spinner-grow-sm d-none" data-website-autofill-spinner role="status" aria-hidden="true"></span>
           </button>
