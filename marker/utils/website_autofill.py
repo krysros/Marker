@@ -8,6 +8,7 @@ os.environ["USER_AGENT"] = "Marker/1.0"
 
 import pycountry
 from langchain_google_genai import ChatGoogleGenerativeAI
+from .langchain_ai import invoke_text
 
 from ..forms.ts import TranslationString as _
 from .geo import location_details
@@ -68,16 +69,15 @@ def _autofill_from_website(url, prompt, default_country=""):
 
     content = docs[0].page_content
 
-    # Initialize Gemini model with forced JSON output
-    llm = ChatGoogleGenerativeAI(
+    # Make the request with full retry and backoff support
+    response_text = invoke_text(
+        prompt=f"{prompt}:\n\n{content}",
         model=model,
         response_mime_type="application/json",
+        source="website_autofill_main",
     )
 
-    # Make the request
-    response = llm.invoke(f"{prompt}:\n\n{content}")
-
-    result = json.loads(response.content)
+    result = json.loads(response_text)
 
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
@@ -241,10 +241,7 @@ def contacts_autofill_from_website(website, locale=None):
 
     content = "\n\n---\n\n".join(content_parts[:2])
 
-    llm = ChatGoogleGenerativeAI(
-        model=model,
-        response_mime_type="application/json",
-    )
+    # Model will be invoked later with exponential backoff support
 
     # Identify a backup company name from the website domain
     fallback_company_name = ""
@@ -308,8 +305,13 @@ def contacts_autofill_from_website(website, locale=None):
             "If no contacts are found, return an empty array []."
         )
 
-    response = llm.invoke(f"{prompt}:\n\n{content}")
-    result = json.loads(response.content)
+    response_text = invoke_text(
+        prompt=f"{prompt}:\n\n{content}",
+        model=model,
+        response_mime_type="application/json",
+        source="website_autofill_contacts",
+    )
+    result = json.loads(response_text)
 
     contacts_list = []
     if isinstance(result, list):
@@ -435,10 +437,7 @@ def tags_autofill_from_website(website, existing_tags=None, locale=None):
 
     content = "\n\n---\n\n".join(content_parts[:2])
 
-    llm = ChatGoogleGenerativeAI(
-        model=model,
-        response_mime_type="application/json",
-    )
+    # Model will be invoked later with exponential backoff support
 
     loc = _get_locale(locale)
     existing_section = ""
@@ -485,8 +484,13 @@ def tags_autofill_from_website(website, existing_tags=None, locale=None):
             "Return at most 20 items. If nothing can be determined, return an empty array []."
         )
 
-    response = llm.invoke(f"{prompt}:\n\n{content}")
-    result = json.loads(response.content)
+    response_text = invoke_text(
+        prompt=f"{prompt}:\n\n{content}",
+        model=model,
+        response_mime_type="application/json",
+        source="website_autofill_tags",
+    )
+    result = json.loads(response_text)
 
     tags = []
     if isinstance(result, list):

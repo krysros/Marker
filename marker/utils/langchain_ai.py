@@ -64,11 +64,15 @@ def invoke_text(
     fallback_model: str | None = None,
     retries: int = _DEFAULT_RETRIES,
     source: str = "unknown",
+    response_mime_type: str | None = None,
 ) -> str:
     retries = max(0, int(retries))
     last_error = None
     for model_name in _model_candidates(model, fallback_model):
-        llm = ChatGoogleGenerativeAI(model=model_name, temperature=0)
+        kwargs = {"temperature": 0}
+        if response_mime_type:
+            kwargs["response_mime_type"] = response_mime_type
+        llm = ChatGoogleGenerativeAI(model=model_name, **kwargs)
         for attempt in range(retries + 1):
             started = time.monotonic()
             try:
