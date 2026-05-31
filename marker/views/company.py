@@ -3,7 +3,7 @@ import logging
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select
+from sqlalchemy import func, select, or_
 from webob.multidict import MultiDict
 
 from ..forms import (
@@ -236,6 +236,13 @@ class CompanyView:
             )
             stmt = stmt.filter(func.lower(Company.name).in_(dup_subquery))
             q["duplicates"] = "1"
+
+        no_location = self.request.params.get("no_location") == "1"
+        if no_location:
+            stmt = stmt.filter(
+                or_(Company.latitude.is_(None), Company.longitude.is_(None))
+            )
+            q["no_location"] = "1"
 
         if tags:
             tag_operator = (

@@ -4,7 +4,7 @@ from decimal import Decimal, InvalidOperation
 
 from pyramid.httpexceptions import HTTPNotFound, HTTPSeeOther
 from pyramid.view import view_config
-from sqlalchemy import func, select
+from sqlalchemy import func, select, or_
 from webob.multidict import MultiDict
 
 from ..forms import (
@@ -251,6 +251,13 @@ class ProjectView:
             )
             stmt = stmt.filter(func.lower(Project.name).in_(dup_subquery))
             q["duplicates"] = "1"
+
+        no_location = self.request.params.get("no_location") == "1"
+        if no_location:
+            stmt = stmt.filter(
+                or_(Project.latitude.is_(None), Project.longitude.is_(None))
+            )
+            q["no_location"] = "1"
 
         if tags:
             tag_operator = (
