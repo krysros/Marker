@@ -155,6 +155,9 @@
       initPopovers(document);
       document.body.addEventListener('htmx:after:swap', function(e){
         initPopovers(e.target);
+        if (e.target && e.target.parentElement) {
+          initPopovers(e.target.parentElement);
+        }
       });
     });
 
