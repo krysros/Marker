@@ -25,6 +25,7 @@
 % endfor
 </%def>
 
+<div id="main-container" hx-boost="true" hx-target="#main-container" hx-select="#main-container" hx-swap="outerHTML" hx-push-url="true">
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div class="dropdown">
     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
@@ -88,3 +89,4 @@
 <%include file="search_criteria.mako"/>
 
 <%include file="company_table.mako"/>
+</div>

@@ -13,6 +13,7 @@
 </h2>
 <hr>
 
+<div id="main-container" hx-boost="true" hx-target="#main-container" hx-select="#main-container" hx-swap="outerHTML" hx-push-url="true">
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <%include file="tag_unassigned_filter.mako"/>
   <div class="vr mx-1"></div>
@@ -28,3 +29,4 @@
 <%include file="search_criteria.mako"/>
 
 <%include file="tag_table.mako"/>
+</div>

@@ -12,6 +12,7 @@
 
 <hr>
 
+<div id="main-container" hx-boost="true" hx-target="#main-container" hx-select="#main-container" hx-swap="outerHTML" hx-push-url="true">
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
@@ -20,3 +21,4 @@
 <%include file="search_criteria.mako"/>
 
 <%include file="user_table.mako"/>
+</div>
