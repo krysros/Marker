@@ -3301,3 +3301,325 @@ def test_project_add_ai_tags_returned(
     view = ProjectView(request)
     result = view.add_ai()
     assert isinstance(result, HTTPSeeOther)
+
+
+# ===========================================================================
+# Project update_ai and edit validate coverage additions
+# ===========================================================================
+
+
+def test_project_edit_validate_from_ai(dbsession):
+    user = _make_user(dbsession, "projeditvai")
+    proj = _make_project(dbsession, user, "EditValidateProj")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        project=proj,
+        method="GET",
+        params={"validate": "1", "name": "ValidateProj"},
+    )
+    view = ProjectView(request)
+    result = view.edit()
+    assert "form" in result
+
+
+def test_project_add_ai_invalid_hx_retarget(dbsession):
+    user = _make_user(dbsession, "projaddaiinvhx")
+    transaction.commit()
+    request = _make_request(
+        dbsession,
+        user,
+        method="POST",
+        post={"website": ""},  # website is required, so invalid
+    )
+    request.headers = {"HX-Request": "true"}
+    view = ProjectView(request)
+    view.add_ai()
+    assert request.response.headers.get("HX-Retarget") == "body"
+
+
+def test_project_update_ai_no_website(dbsession):
+    user = _make_user(dbsession, "projupdainoweb")
+    proj = _make_project(dbsession, user, "NoWebProj")
+    proj.website = ""
+    transaction.commit()
+
+    # 1. With HX-Request
+    request1 = _make_request(dbsession, user, project=proj, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    view1 = ProjectView(request1)
+    view1.update_ai()
+    assert request1.response.headers.get("HX-Redirect") is not None
+    assert request1.response.status_code == 303
+
+    # 2. Without HX-Request
+    request2 = _make_request(dbsession, user, project=proj, method="POST")
+    view2 = ProjectView(request2)
+    res2 = view2.update_ai()
+    assert isinstance(res2, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    side_effect=Exception("Autofill fail"),
+)
+def test_project_update_ai_autofill_exception(mock_autofill, dbsession):
+    user = _make_user(dbsession, "projupdaioerr")
+    proj = _make_project(dbsession, user, "ErrWebProj")
+    proj.website = "http://error-website.com"
+    transaction.commit()
+
+    # 1. With HX-Request
+    request1 = _make_request(dbsession, user, project=proj, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    view1 = ProjectView(request1)
+    view1.update_ai()
+    assert request1.response.headers.get("HX-Redirect") is not None
+    assert request1.response.status_code == 303
+
+    # 2. Without HX-Request
+    request2 = _make_request(dbsession, user, project=proj, method="POST")
+    view2 = ProjectView(request2)
+    res2 = view2.update_ai()
+    assert isinstance(res2, HTTPSeeOther)
+
+
+@patch("marker.views.project.project_autofill_from_website", return_value={"name": ""})
+def test_project_update_ai_invalid_form(mock_autofill, dbsession):
+    user = _make_user(dbsession, "projupdaioinv")
+    proj = _make_project(dbsession, user, "InvFormProj")
+    proj.website = "http://invalid-website.com"
+    transaction.commit()
+
+    from urllib.parse import urlencode
+
+    # 1. With HX-Request
+    request1 = _make_request(dbsession, user, project=proj, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    request1.route_url = lambda route_name, *a, **kw: (
+        f"/{route_name}" + ("?" + urlencode(kw["_query"]) if "_query" in kw else "")
+    )
+    view1 = ProjectView(request1)
+    view1.update_ai()
+    assert "validate=1" in request1.response.headers.get("HX-Redirect")
+    assert request1.response.status_code == 303
+
+    # 2. Without HX-Request
+    request2 = _make_request(dbsession, user, project=proj, method="POST")
+    view2 = ProjectView(request2)
+    res2 = view2.update_ai()
+    assert isinstance(res2, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    return_value=["ExistingTag", "NewTag"],
+)
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    return_value=[
+        {
+            "name": "ExistingContact",
+            "role": "new-role",
+            "phone": "987654321",
+            "email": "new@email.com",
+        },
+        {"name": "NewContact", "role": "admin", "phone": None, "email": None},
+        {"name": "", "role": "empty-name"},
+    ],
+)
+@patch(
+    "marker.views.project.location_details", return_value={"lat": 12.34, "lon": 56.78}
+)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "UpdatedProjName",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_project_update_ai_success_paths(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _make_user(dbsession, "projupdaiosucc")
+    proj = _make_project(dbsession, user, "OrigProjName")
+    proj.website = "http://success-website.com"
+    from datetime import datetime
+
+    proj.deadline = datetime(2026, 6, 1, 12, 0)
+    proj.color = "success"
+
+    # Add an existing contact and tag to test the updating flow
+    existing_contact = Contact(
+        name="ExistingContact",
+        role="old-role",
+        phone="123",
+        email="e@e.com",
+        color="red",
+    )
+    existing_contact.project = proj
+    dbsession.add(existing_contact)
+
+    existing_tag = Tag(name="ExistingTag")
+    existing_tag.created_by = user
+    dbsession.add(existing_tag)
+    proj.tags.append(existing_tag)
+
+    proj_id = proj.id
+    existing_contact_id = existing_contact.id
+    transaction.commit()
+
+    # Reload after commit to associate with active session
+    proj = dbsession.get(Project, proj_id)
+    existing_contact = dbsession.get(Contact, existing_contact_id)
+
+    # 1. With HX-Request
+    request1 = _make_request(dbsession, user, project=proj, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    view1 = ProjectView(request1)
+    view1.update_ai()
+    assert request1.response.headers.get("HX-Redirect") is not None
+    assert request1.response.status_code == 303
+
+    # Verify updates
+    assert proj.name == "UpdatedProjName"
+    assert proj.latitude == 12.34
+    assert len(proj.contacts) == 2  # The empty name contact is skipped
+    assert "NewContact" in [c.name for c in proj.contacts]
+    assert existing_contact.role == "new-role"
+    assert existing_contact.phone == "987654321"
+    assert existing_contact.email == "new@email.com"
+    assert "ExistingTag" in [t.name for t in proj.tags]
+    assert "NewTag" in [t.name for t in proj.tags]
+
+
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    return_value=["ExistingTag", "NewTag"],
+)
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    return_value=[{"name": "NewContact"}],
+)
+@patch(
+    "marker.views.project.location_details", return_value={"lat": 12.34, "lon": 56.78}
+)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "UpdatedProjName2",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_project_update_ai_success_path_no_hx(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _make_user(dbsession, "projupdaionohx")
+    proj = _make_project(dbsession, user, "OrigProjName2")
+    proj.website = "http://success-website-nohx.com"
+    proj_id = proj.id
+    transaction.commit()
+
+    proj = dbsession.get(Project, proj_id)
+    request = _make_request(dbsession, user, project=proj, method="POST")
+    view = ProjectView(request)
+    res = view.update_ai()
+    assert isinstance(res, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    side_effect=Exception("Tags error"),
+)
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    side_effect=Exception("Contacts error"),
+)
+@patch("marker.views.project.location_details", side_effect=Exception("Geo error"))
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "UpdatedProjName3",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_project_update_ai_exceptions(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _make_user(dbsession, "projupdaioexcs")
+    proj = _make_project(dbsession, user, "OrigProjName3")
+    proj.website = "http://success-website-nohx.com"
+    proj_id = proj.id
+
+    # Trigger DB execute exception for fetching existing tags
+    orig_execute = dbsession.execute
+
+    def mock_execute(stmt, *a, **kw):
+        from sqlalchemy import sql
+
+        if isinstance(stmt, sql.Select) and "tags." in str(stmt).lower():
+            raise Exception("DB Error tag fetch")
+        return orig_execute(stmt, *a, **kw)
+
+    dbsession.execute = mock_execute
+
+    transaction.commit()
+
+    proj = dbsession.get(Project, proj_id)
+    request = _make_request(dbsession, user, project=proj, method="POST")
+    view = ProjectView(request)
+    res = view.update_ai()
+    assert isinstance(res, HTTPSeeOther)
+
+
+def test_project_count_route(dbsession):
+    user = _make_user(dbsession, "cntuser")
+    _make_project(dbsession, user, "P1")
+    _make_project(dbsession, user, "P2")
+    request = _make_request(dbsession, user)
+    view = ProjectView(request)
+    res = view.count()
+    assert res == 2
+
+
+@patch("marker.views.project.location_details", side_effect=Exception("Geo error"))
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "NewAIProjException",
+        "country": "PL",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
+)
+def test_project_add_ai_exceptions(mock_autofill, mock_geo, dbsession):
+    user = _make_user(dbsession, "projaddexcs")
+
+    # Trigger DB execute exception for fetching existing tags
+    orig_execute = dbsession.execute
+
+    def mock_execute(stmt, *a, **kw):
+        from sqlalchemy import sql
+
+        if isinstance(stmt, sql.Select) and "tags." in str(stmt).lower():
+            raise Exception("DB Error tag fetch")
+        return orig_execute(stmt, *a, **kw)
+
+    dbsession.execute = mock_execute
+
+    transaction.commit()
+    request = _make_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    request.headers = {"HX-Request": "true"}
+    view = ProjectView(request)
+    result = view.add_ai()
+    assert result.status_code == 303

@@ -1243,4 +1243,3 @@ def includeme(config):
         r"/project/{project_id:\d+}/{slug}/update_ai",
         factory=project_factory,
     )
-

@@ -7,7 +7,6 @@ from urllib.parse import urljoin, urlparse
 os.environ["USER_AGENT"] = "Marker/1.0"
 
 import pycountry
-from langchain_google_genai import ChatGoogleGenerativeAI
 from .langchain_ai import invoke_text
 
 from ..forms.ts import TranslationString as _
@@ -383,7 +382,7 @@ _AVOID_TAGS_BY_LOCALE = {
         "contact",
         "services",
         "home",
-    }
+    },
 }
 
 

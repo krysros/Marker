@@ -179,9 +179,7 @@ def generate_report_sql(
             "Translate these concepts and filter values correctly to SQL."
         )
     else:
-        lang_info = (
-            "\nUser request language is English (or non-Polish). Generate the query accordingly."
-        )
+        lang_info = "\nUser request language is English (or non-Polish). Generate the query accordingly."
 
     full_context = f"{_SCHEMA_CONTEXT}{lang_info}\nUser request: {prompt}"
 

@@ -1410,7 +1410,9 @@ class ProjectView:
             self.request.params.get("validate")
         )
         form = ProjectForm(
-            self.request.params if (self.request.method == "GET" and validate_from_ai) else self.request.POST,
+            self.request.params
+            if (self.request.method == "GET" and validate_from_ai)
+            else self.request.POST,
             project,
             request=self.request,
         )
@@ -1446,7 +1448,6 @@ class ProjectView:
             form.validate()
 
         return {"heading": _("Edit project details"), "form": form}
-
 
     @view_config(
         route_name="project_delete",
@@ -2165,7 +2166,9 @@ class ProjectView:
         project = self.request.context.project
 
         if not project.website:
-            self.request.session.flash(_("danger:Project does not have a website address set"))
+            self.request.session.flash(
+                _("danger:Project does not have a website address set")
+            )
             next_url = self.request.route_url(
                 "project_view", project_id=project.id, slug=project.slug
             )
@@ -2200,6 +2203,49 @@ class ProjectView:
                 response.status_code = 303
                 return response
             return HTTPSeeOther(location=next_url)
+
+        # Pre-populate autofill with existing project values for fields missing or empty in autofill
+        for field_name in [
+            "name",
+            "street",
+            "postcode",
+            "city",
+            "subdivision",
+            "country",
+            "website",
+            "stage",
+            "delivery_method",
+            "usable_area",
+            "cubic_volume",
+        ]:
+            if (
+                field_name not in autofill
+                or autofill[field_name] is None
+                or autofill[field_name] == ""
+            ):
+                val = getattr(project, field_name, None)
+                if val is not None:
+                    autofill[field_name] = val
+        if (
+            "color" not in autofill
+            or autofill["color"] is None
+            or autofill["color"] == ""
+        ):
+            if project.color in [
+                "primary",
+                "secondary",
+                "success",
+                "danger",
+                "warning",
+                "info",
+                "light",
+                "dark",
+                "",
+            ]:
+                autofill["color"] = project.color
+        if "deadline" not in autofill or autofill["deadline"] is None:
+            if project.deadline:
+                autofill["deadline"] = project.deadline.strftime("%Y-%m-%dT%H:%M")
 
         project_form = ProjectForm(MultiDict(autofill), request=self.request)
         if not project_form.validate():
@@ -2342,4 +2388,3 @@ class ProjectView:
             response.status_code = 303
             return response
         return HTTPSeeOther(location=next_url)
-

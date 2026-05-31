@@ -3448,3 +3448,331 @@ def test_company_website_autofill_success(mock_autofill, dbsession):
     view = CompanyView(request)
     result = view.website_autofill()
     assert result["fields"] == {"name": "Test Co", "country": "PL"}
+
+
+def test_company_edit_validate_from_ai(dbsession):
+    user = _co_user(dbsession, "coeditval")
+    company = _co_company(dbsession, user, "EditValCo")
+    transaction.commit()
+    request = _co_request(
+        dbsession, user, company=company, method="GET", params={"validate": "1"}
+    )
+    request.query_string = "validate=1"
+    view = CompanyView(request)
+    result = view.edit()
+    assert "form" in result
+
+
+def test_company_add_ai_invalid_hx_request(dbsession):
+    user = _co_user(dbsession, "coaddaihx")
+    transaction.commit()
+    request = _co_request(dbsession, user, method="POST", post={"website": ""})
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+    view.add_ai()
+    assert request.response.headers.get("HX-Retarget") == "body"
+
+
+def test_company_update_ai_no_website(dbsession):
+    user = _co_user(dbsession, "coupdaionoweb")
+    company = _co_company(dbsession, user, "NoWebCo")
+    company.website = None
+    transaction.commit()
+
+    # 1. With HX-Request
+    request1 = _co_request(dbsession, user, company=company, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    view1 = CompanyView(request1)
+    view1.update_ai()
+    assert request1.response.headers.get("HX-Redirect") is not None
+    assert request1.response.status_code == 303
+
+    # 2. Without HX-Request
+    request2 = _co_request(dbsession, user, company=company, method="POST")
+    view2 = CompanyView(request2)
+    res2 = view2.update_ai()
+    assert isinstance(res2, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    side_effect=Exception("Autofill failed"),
+)
+def test_company_update_ai_exception(mock_autofill, dbsession):
+    user = _co_user(dbsession, "coupdaioerr")
+    company = _co_company(dbsession, user, "ErrWebCo")
+    company.website = "http://error-website.com"
+    transaction.commit()
+
+    # 1. With HX-Request
+    request1 = _co_request(dbsession, user, company=company, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    view1 = CompanyView(request1)
+    view1.update_ai()
+    assert request1.response.headers.get("HX-Redirect") is not None
+    assert request1.response.status_code == 303
+
+    # 2. Without HX-Request
+    request2 = _co_request(dbsession, user, company=company, method="POST")
+    view2 = CompanyView(request2)
+    res2 = view2.update_ai()
+    assert isinstance(res2, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.company.company_autofill_from_website", return_value={"name": ""}
+)  # empty name is invalid
+def test_company_update_ai_invalid_form(mock_autofill, dbsession):
+    user = _co_user(dbsession, "coupdaioinv")
+    company = _co_company(dbsession, user, "InvFormCo")
+    company.website = "http://invalid-website.com"
+    transaction.commit()
+
+    from urllib.parse import urlencode
+
+    # 1. With HX-Request
+    request1 = _co_request(dbsession, user, company=company, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    request1.route_url = lambda route_name, *a, **kw: (
+        f"/{route_name}" + ("?" + urlencode(kw["_query"]) if "_query" in kw else "")
+    )
+    view1 = CompanyView(request1)
+    view1.update_ai()
+    assert "validate=1" in request1.response.headers.get("HX-Redirect")
+    assert request1.response.status_code == 303
+
+    # 2. Without HX-Request
+    request2 = _co_request(dbsession, user, company=company, method="POST")
+    view2 = CompanyView(request2)
+    res2 = view2.update_ai()
+    assert isinstance(res2, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    return_value=["ExistingTag", "NewTag"],
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    return_value=[
+        {
+            "name": "ExistingContact",
+            "role": "new-role",
+            "phone": "987654321",
+            "email": "new@email.com",
+        },
+        {"name": "NewContact", "role": "admin", "phone": None, "email": None},
+        {"name": "", "role": "empty-name"},
+    ],
+)
+@patch(
+    "marker.views.company.location_details", return_value={"lat": 12.34, "lon": 56.78}
+)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={
+        "name": "UpdatedCoName",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_company_update_ai_success_paths(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _co_user(dbsession, "coupdaiosucc")
+    company = _co_company(dbsession, user, "OrigCoName")
+    company.website = "http://success-website.com"
+
+    # Add an existing contact and tag to test the updating flow
+    existing_contact = Contact(
+        name="ExistingContact",
+        role="old-role",
+        phone="123",
+        email="e@e.com",
+        color="red",
+    )
+    existing_contact.company = company
+    dbsession.add(existing_contact)
+
+    existing_tag = Tag(name="ExistingTag")
+    existing_tag.created_by = user
+    dbsession.add(existing_tag)
+    company.tags.append(existing_tag)
+
+    transaction.commit()
+
+    # 1. With HX-Request
+    request1 = _co_request(dbsession, user, company=company, method="POST")
+    request1.headers = {"HX-Request": "true"}
+    view1 = CompanyView(request1)
+    view1.update_ai()
+    assert request1.response.headers.get("HX-Redirect") is not None
+    assert request1.response.status_code == 303
+
+    # Verify updates
+    assert company.name == "UpdatedCoName"
+    assert company.latitude == 12.34
+    assert len(company.contacts) == 2  # The empty name contact is skipped
+    assert "NewContact" in [c.name for c in company.contacts]
+    assert existing_contact.role == "new-role"
+    assert existing_contact.phone == "987654321"
+    assert existing_contact.email == "new@email.com"
+    assert "ExistingTag" in [t.name for t in company.tags]
+    assert "NewTag" in [t.name for t in company.tags]
+
+
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    return_value=["ExistingTag", "NewTag"],
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    return_value=[{"name": "NewContact"}],
+)
+@patch(
+    "marker.views.company.location_details", return_value={"lat": 12.34, "lon": 56.78}
+)
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={
+        "name": "UpdatedCoName2",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_company_update_ai_success_path_no_hx(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _co_user(dbsession, "coupdaionohx")
+    company = _co_company(dbsession, user, "OrigCoName2")
+    company.website = "http://success-website-nohx.com"
+    transaction.commit()
+
+    request = _co_request(dbsession, user, company=company, method="POST")
+    view = CompanyView(request)
+    res = view.update_ai()
+    assert isinstance(res, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    side_effect=Exception("Tags error"),
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    side_effect=Exception("Contacts error"),
+)
+@patch("marker.views.company.location_details", side_effect=Exception("Geo error"))
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={
+        "name": "UpdatedCoName3",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_company_update_ai_exceptions(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _co_user(dbsession, "coupdaioexcs")
+    company = _co_company(dbsession, user, "OrigCoName3")
+    company.website = "http://success-website-nohx.com"
+
+    # Also trigger DB execute exception for fetching existing tags
+    orig_execute = dbsession.execute
+
+    def mock_execute(stmt, *a, **kw):
+        from sqlalchemy import sql
+
+        if isinstance(stmt, sql.Select) and any(
+            isinstance(from_clause, sql.selectable.TableValuedAlias)
+            or getattr(from_clause, "name", "") == "tags"
+            for from_clause in stmt.get_final_froms()
+        ):
+            raise Exception("DB Error tag fetch")
+        return orig_execute(stmt, *a, **kw)
+
+    dbsession.execute = mock_execute
+
+    transaction.commit()
+
+    request = _co_request(dbsession, user, company=company, method="POST")
+    view = CompanyView(request)
+    res = view.update_ai()
+    assert isinstance(res, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.company.tags_autofill_from_website",
+    side_effect=Exception("Tags error"),
+)
+@patch(
+    "marker.views.company.contacts_autofill_from_website",
+    side_effect=Exception("Contacts error"),
+)
+@patch("marker.views.company.location_details", side_effect=Exception("Geo error"))
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={
+        "name": "NewCoAI",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_company_add_ai_exceptions(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _co_user(dbsession, "coaddaiexc")
+
+    # Trigger DB execute exception for fetching existing tags
+    orig_execute = dbsession.execute
+
+    def mock_execute(stmt, *a, **kw):
+        from sqlalchemy import sql
+
+        if isinstance(stmt, sql.Select) and any(
+            getattr(from_clause, "name", "") == "tags"
+            for from_clause in stmt.get_final_froms()
+        ):
+            raise Exception("DB Error tag fetch")
+        return orig_execute(stmt, *a, **kw)
+
+    dbsession.execute = mock_execute
+
+    transaction.commit()
+
+    request = _co_request(
+        dbsession, user, method="POST", post={"website": "http://example.com"}
+    )
+    view = CompanyView(request)
+    res = view.add_ai()
+    assert isinstance(res, HTTPSeeOther)
+
+
+def test_company_count(dbsession):
+    user = _co_user(dbsession, "cocountuser")
+    _co_company(dbsession, user, "CountCo1")
+    _co_company(dbsession, user, "CountCo2")
+    transaction.commit()
+
+    request = _co_request(dbsession, user)
+    view = CompanyView(request)
+    res = view.count()
+    assert res == 2
+
+
+# --- Unrelated sort/filter missing branches ---
+
+
+def test_company_all_nip_regon_krs_empty(dbsession):
+    user = _co_user(dbsession, "coallemptynrk")
+    transaction.commit()
+    # verify lines 1925-1926 or other sort branches if any:
+    request = _co_request(dbsession, user, params={"sort": "stars", "order": "asc"})
+    view = CompanyView(request)
+    res = view.all()
+    assert "paginator" in res

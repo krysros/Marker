@@ -6010,3 +6010,350 @@ def test_user_uptime_projects_page2(dbsession):
 
     assert "paginator" in result
     assert result["page"] == 2
+
+
+# --- Additional User View Coverage Tests ---
+
+
+def test_user_json_selected_contacts_companies(dbsession):
+    user = _user(dbsession, "jsconco")
+    co = _company(dbsession, user, "Co1")
+    co.color = "red"
+    co.country = "PL"
+    co.subdivision = "Mazowieckie"
+    c1 = _contact(dbsession, user, "C1", company=co)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    # Test filters
+    request = _req(
+        dbsession,
+        user,
+        params={"color": "red", "country": "PL", "subdivision": "Mazowieckie"},
+    )
+    view = UserView(request)
+    res = view.json_selected_contacts_companies()
+    assert len(res) == 1
+    assert res[0]["id"] == co.id
+
+
+def test_user_map_selected_contacts_companies(dbsession):
+    user = _user(dbsession, "mapconco")
+    co = _company(dbsession, user, "Co2")
+    co.color = "blue"
+    co.country = "PL"
+    co.subdivision = "Slaskie"
+    c1 = _contact(dbsession, user, "C2", company=co)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    # Test valid and invalid sort/order and all filters
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "sort": "invalid",
+            "order": "invalid",
+            "color": "blue",
+            "country": "PL",
+            "subdivision": "Slaskie",
+        },
+    )
+    view = UserView(request)
+    res = view.map_selected_contacts_companies()
+    assert "url" in res
+    assert res["counter"] == 1
+
+    # Test order desc
+    request2 = _req(dbsession, user, params={"order": "desc"})
+    view2 = UserView(request2)
+    res2 = view2.map_selected_contacts_companies()
+    assert "url" in res2
+
+
+def test_user_uptime_selected_contacts_companies(dbsession):
+    user = _user(dbsession, "uptconco")
+    co = _company(dbsession, user, "Co3")
+    c1 = _contact(dbsession, user, "C3", company=co)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    res = view.uptime_selected_contacts_companies()
+    assert "paginator" in res
+
+
+def test_user_json_selected_contacts_projects(dbsession):
+    user = _user(dbsession, "jsconproj")
+    proj = _project(dbsession, user, "Proj1")
+    proj.color = "green"
+    proj.country = "PL"
+    proj.subdivision = "Pomorskie"
+    proj.object_category = "biurowe"
+    c1 = _contact(dbsession, user, "C4", project=proj)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "color": "green",
+            "country": "PL",
+            "subdivision": "Pomorskie",
+            "object_category": "biurowe",
+        },
+    )
+    view = UserView(request)
+    res = view.json_selected_contacts_projects()
+    assert len(res) == 1
+
+
+def test_user_map_selected_contacts_projects(dbsession):
+    user = _user(dbsession, "mapconproj")
+    proj = _project(dbsession, user, "Proj2")
+    proj.color = "yellow"
+    proj.country = "PL"
+    proj.subdivision = "Lodzkie"
+    proj.object_category = "biurowe"
+    c1 = _contact(dbsession, user, "C5", project=proj)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "sort": "invalid",
+            "order": "invalid",
+            "color": "yellow",
+            "country": "PL",
+            "subdivision": "Lodzkie",
+            "object_category": "biurowe",
+        },
+    )
+    view = UserView(request)
+    res = view.map_selected_contacts_projects()
+    assert "url" in res
+    assert res["counter"] == 1
+
+    # Test order desc
+    request2 = _req(dbsession, user, params={"order": "desc"})
+    view2 = UserView(request2)
+    res2 = view2.map_selected_contacts_projects()
+    assert "url" in res2
+
+
+def test_user_uptime_selected_contacts_projects(dbsession):
+    user = _user(dbsession, "uptconproj")
+    proj = _project(dbsession, user, "Proj3")
+    c1 = _contact(dbsession, user, "C6", project=proj)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+    res = view.uptime_selected_contacts_projects()
+    assert "paginator" in res
+
+
+def test_user_selected_companies_tags(dbsession):
+    user = _user(dbsession, "selcotags")
+    co = _company(dbsession, user, "CoTag")
+    tag = _tag(dbsession, user, "Tag1")
+    co.tags.append(tag)
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={"sort": "invalid", "order": "invalid", "category": "companies"},
+    )
+    view = UserView(request)
+    res = view.selected_companies_tags()
+    assert "paginator" in res
+
+    # Bulk select request (POST with _select_all)
+    request2 = _req(dbsession, user, method="POST", params={"_select_all": "1"})
+    view2 = UserView(request2)
+    res2 = view2.selected_companies_tags()
+    assert isinstance(res2, dict) or hasattr(res2, "status_code")
+
+
+def test_user_selected_companies_projects(dbsession):
+    from marker.models import Activity
+    import datetime
+
+    user = _user(dbsession, "selcoprojs")
+    co = _company(dbsession, user, "CoProj")
+    proj = _project(dbsession, user, "ProjLinked")
+    proj.color = "red"
+    proj.country = "PL"
+    proj.subdivision = "Wielkopolskie"
+    proj.stage = "budowa"
+    proj.delivery_method = "zaprojektuj_i_buduj"
+    proj.object_category = "biurowe"
+    proj.deadline = datetime.datetime.now() + datetime.timedelta(days=10)
+
+    act = Activity(
+        company=co, project=proj, stage="koncepcja", role="generalny wykonawca"
+    )
+    dbsession.add(act)
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    # Test all filters and sorting (invalid and order desc/asc, statuses)
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "sort": "invalid",
+            "order": "invalid",
+            "status": "in_progress",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "Wielkopolskie",
+            "stage": "budowa",
+            "delivery_method": "zaprojektuj_i_buduj",
+            "object_category": "biurowe",
+        },
+    )
+    view = UserView(request)
+    res = view.selected_companies_projects()
+    assert "paginator" in res
+
+    # status completed and order asc
+    proj.deadline = datetime.datetime.now() - datetime.timedelta(days=10)
+    transaction.commit()
+    request2 = _req(dbsession, user, params={"status": "completed", "order": "asc"})
+    view2 = UserView(request2)
+    res2 = view2.selected_companies_projects()
+    assert "paginator" in res2
+
+    # Bulk select request (POST with _select_all)
+    request3 = _req(dbsession, user, method="POST", params={"_select_all": "1"})
+    view3 = UserView(request3)
+    res3 = view3.selected_companies_projects()
+    assert isinstance(res3, dict) or hasattr(res3, "status_code")
+
+
+def test_user_selected_projects_tags(dbsession):
+    user = _user(dbsession, "selprojtags")
+    proj = _project(dbsession, user, "ProjTag")
+    tag = _tag(dbsession, user, "Tag2")
+    proj.tags.append(tag)
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={"sort": "invalid", "order": "invalid", "category": "projects"},
+    )
+    view = UserView(request)
+    res = view.selected_projects_tags()
+    assert "paginator" in res
+
+    # Bulk select request (POST with _select_all)
+    request2 = _req(dbsession, user, method="POST", params={"_select_all": "1"})
+    view2 = UserView(request2)
+    res2 = view2.selected_projects_tags()
+    assert isinstance(res2, dict) or hasattr(res2, "status_code")
+
+
+def test_user_selected_projects_companies(dbsession):
+    from marker.models import Activity
+
+    user = _user(dbsession, "selprojcos")
+    co = _company(dbsession, user, "CoLinked")
+    co.color = "red"
+    co.country = "PL"
+    co.subdivision = "Malopolskie"
+    proj = _project(dbsession, user, "ProjCo")
+    act = Activity(
+        company=co, project=proj, stage="koncepcja", role="generalny wykonawca"
+    )
+    dbsession.add(act)
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "sort": "invalid",
+            "order": "invalid",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "Malopolskie",
+        },
+    )
+    view = UserView(request)
+    res = view.selected_projects_companies()
+    assert "paginator" in res
+
+    # Order asc
+    request2 = _req(dbsession, user, params={"order": "asc"})
+    view2 = UserView(request2)
+    res2 = view2.selected_projects_companies()
+    assert "paginator" in res2
+
+    # Bulk select request (POST with _select_all)
+    request3 = _req(dbsession, user, method="POST", params={"_select_all": "1"})
+    view3 = UserView(request3)
+    res3 = view3.selected_projects_companies()
+    assert isinstance(res3, dict) or hasattr(res3, "status_code")
+
+
+def test_user_selected_contacts_tags(dbsession):
+    user = _user(dbsession, "selcontags")
+    co = _company(dbsession, user, "CoContactTag")
+    tag = _tag(dbsession, user, "Tag3")
+    co.tags.append(tag)
+    c1 = _contact(dbsession, user, "ContactTag", company=co)
+    user.selected_contacts.append(c1)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={"sort": "invalid", "order": "invalid", "category": "companies"},
+    )
+    view = UserView(request)
+    res = view.selected_contacts_tags()
+    assert "paginator" in res
+
+    # Bulk select request (POST with _select_all)
+    request2 = _req(dbsession, user, method="POST", params={"_select_all": "1"})
+    view2 = UserView(request2)
+    res2 = view2.selected_contacts_tags()
+    assert isinstance(res2, dict) or hasattr(res2, "status_code")
+
+
+def test_user_selected_counts_and_stars(dbsession):
+    user = _user(dbsession, "countsstars")
+    co = _company(dbsession, user, "CoStar")
+    proj = _project(dbsession, user, "ProjStar")
+    tag = _tag(dbsession, user, "TagStar")
+    c1 = _contact(dbsession, user, "ContactStar")
+
+    user.selected_companies.append(co)
+    user.selected_projects.append(proj)
+    user.selected_tags.append(tag)
+    user.selected_contacts.append(c1)
+    user.companies_stars.append(co)
+    user.projects_stars.append(proj)
+
+    transaction.commit()
+
+    request = _req(dbsession, user)
+    view = UserView(request)
+
+    assert view.selected_companies_count() == 1
+    assert view.selected_projects_count() == 1
+    assert view.selected_tags_count() == 1
+    assert view.selected_contacts_count() == 1
+    assert view.companies_stars_count() == 1
+    assert view.projects_stars_count() == 1

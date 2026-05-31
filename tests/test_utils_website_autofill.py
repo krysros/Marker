@@ -1,6 +1,7 @@
 import pytest
 import types
 import marker.utils.website_autofill as autofill
+import marker.utils.langchain_ai as langchain_ai
 
 
 class DummyLLM:
@@ -29,7 +30,7 @@ def test_autofill_from_website_street_cleanup(monkeypatch):
     doc = types.SimpleNamespace(page_content="irrelevant")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill,
+        langchain_ai,
         "ChatGoogleGenerativeAI",
         lambda **kwargs: DummyLLM('{"street": "ul. Testowa 1"}'),
     )
@@ -41,7 +42,7 @@ def test_autofill_from_website_country_fallback(monkeypatch):
     doc = types.SimpleNamespace(page_content="irrelevant")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill,
+        langchain_ai,
         "ChatGoogleGenerativeAI",
         lambda **kwargs: DummyLLM('{"country": "Neverland"}'),
     )
@@ -60,7 +61,9 @@ def test_contacts_autofill_from_website_list(monkeypatch):
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM('[{"name": "A"}]')
+        langchain_ai,
+        "ChatGoogleGenerativeAI",
+        lambda **kwargs: DummyLLM('[{"name": "A"}]'),
     )
     res = autofill.contacts_autofill_from_website("http://x")
     assert isinstance(res, list) and res and res[0]["name"] == "A"
@@ -70,7 +73,7 @@ def test_contacts_autofill_from_website_dict(monkeypatch):
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill,
+        langchain_ai,
         "ChatGoogleGenerativeAI",
         lambda **kwargs: DummyLLM('{"contacts": [{"name": "B"}]}'),
     )
@@ -82,7 +85,7 @@ def test_contacts_autofill_from_website_empty(monkeypatch):
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM("{}")
+        langchain_ai, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM("{}")
     )
     res = autofill.contacts_autofill_from_website("http://x")
     assert res == []
@@ -98,7 +101,7 @@ def test_tags_autofill_from_website_list(monkeypatch):
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM('["A", "B"]')
+        langchain_ai, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM('["A", "B"]')
     )
     res = autofill.tags_autofill_from_website("http://x")
     assert res == ["A", "B"]
@@ -108,7 +111,7 @@ def test_tags_autofill_from_website_dict(monkeypatch):
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill,
+        langchain_ai,
         "ChatGoogleGenerativeAI",
         lambda **kwargs: DummyLLM('{"tags": ["C", "D"]}'),
     )
@@ -120,7 +123,7 @@ def test_tags_autofill_from_website_empty(monkeypatch):
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     monkeypatch.setattr(
-        autofill, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM("{}")
+        langchain_ai, "ChatGoogleGenerativeAI", lambda **kwargs: DummyLLM("{}")
     )
     res = autofill.tags_autofill_from_website("http://x")
     assert res == []
@@ -137,7 +140,7 @@ def test_tags_autofill_from_website_filtering(monkeypatch):
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     # Returning some meaningless and some valid tags
     monkeypatch.setattr(
-        autofill,
+        langchain_ai,
         "ChatGoogleGenerativeAI",
         lambda **kwargs: DummyLLM(
             '["budowa", "Instalacje elektryczne", "jakość", "Konstrukcje stalowe", "technologia"]'
@@ -153,12 +156,13 @@ def test_tags_autofill_from_website_filtering(monkeypatch):
 
 def test_tags_autofill_from_website_limit(monkeypatch):
     import json
+
     doc = types.SimpleNamespace(page_content="abc")
     monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
     # Returning 15 valid tags
     tags = [f"Tag{i}" for i in range(15)]
     monkeypatch.setattr(
-        autofill,
+        langchain_ai,
         "ChatGoogleGenerativeAI",
         lambda **kwargs: DummyLLM(json.dumps(tags)),
     )

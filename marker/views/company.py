@@ -1453,7 +1453,9 @@ class CompanyView:
             self.request.params.get("validate")
         )
         form = CompanyForm(
-            self.request.params if (self.request.method == "GET" and validate_from_ai) else self.request.POST,
+            self.request.params
+            if (self.request.method == "GET" and validate_from_ai)
+            else self.request.POST,
             company,
             request=self.request,
         )
@@ -1487,7 +1489,6 @@ class CompanyView:
             form.validate()
 
         return {"heading": _("Edit company details"), "form": form}
-
 
     @view_config(route_name="company_delete", request_method="POST", permission="edit")
     def delete(self):
@@ -2035,7 +2036,9 @@ class CompanyView:
         company = self.request.context.company
 
         if not company.website:
-            self.request.session.flash(_("danger:Company does not have a website address set"))
+            self.request.session.flash(
+                _("danger:Company does not have a website address set")
+            )
             next_url = self.request.route_url(
                 "company_view", company_id=company.id, slug=company.slug
             )
@@ -2208,4 +2211,3 @@ class CompanyView:
             response.status_code = 303
             return response
         return HTTPSeeOther(location=next_url)
-
