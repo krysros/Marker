@@ -1,6 +1,9 @@
 3.1
 ---
 
+- Achieved 100% automated test coverage across all modules in the `marker` application
+- Added comprehensive unit and functional tests for company, project, and user views to cover all paths and edge cases
+- Fixed and completed tests for utility modules, including `website_autofill` and `llm_report`
 - Migrated AI website autofill from LangChain + langchain-google-genai to `google-genai` (unified Google SDK) with direct `genai.Client().models.generate_content()` calls and forced JSON output
 - Replaced `pylint`, `black` and `isort` with `ruff` for linting and formatting
 - Moved `pyramid_debugtoolbar` to the `dev` dependency group
