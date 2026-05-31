@@ -13,6 +13,30 @@ tr.htmx-swapping td {
   transition: opacity 1s ease-out;
 }
 
+/* Global Top Progress Bar for HTMX AJAX Requests */
+#htmx-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #0d6efd, #0dcaf0, #0d6efd);
+  background-size: 200% 100%;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: width 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Main Container Transitions during Swapping */
+#main-container {
+  transition: opacity 0.15s ease-in-out;
+}
+.htmx-swapping #main-container,
+#main-container.htmx-swapping {
+  opacity: 0;
+}
+
 /* Override htmx 4 opacity-based indicator with display-based hiding.
    !important is needed because htmx injects its default CSS via
    Constructable Stylesheets (document.adoptedStyleSheets) after page load,

@@ -29,6 +29,7 @@
     % endif
   </head>
   <body>
+    <div id="htmx-progress"></div>
     <%include file="navbar.mako"/>
     <main role="main" class="container-fluid px-4 px-md-5">
       <div class="row">
@@ -180,6 +181,21 @@
 
     // Handle HTMX requests specifically
     document.addEventListener('htmx:beforeRequest', function(e) {
+      const progressBar = document.getElementById('htmx-progress');
+      if (progressBar) {
+        progressBar.style.width = '30%';
+        progressBar.style.opacity = '1';
+        // Simulate progress increment over time
+        if (window.htmxProgressInterval) clearInterval(window.htmxProgressInterval);
+        let progress = 30;
+        window.htmxProgressInterval = setInterval(() => {
+          if (progress < 85) {
+            progress += Math.random() * 5;
+            progressBar.style.width = progress + '%';
+          }
+        }, 150);
+      }
+
       const element = e.detail.elt;
       if (element) {
         // If the request was triggered by a button or input, disable it
@@ -191,6 +207,18 @@
     });
 
     document.addEventListener('htmx:afterRequest', function(e) {
+      const progressBar = document.getElementById('htmx-progress');
+      if (progressBar) {
+        if (window.htmxProgressInterval) clearInterval(window.htmxProgressInterval);
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+          progressBar.style.opacity = '0';
+          setTimeout(() => {
+            progressBar.style.width = '0%';
+          }, 300);
+        }, 200);
+      }
+
       const element = e.detail.elt;
       if (element) {
         // Re-enable the triggering element if we disabled it
