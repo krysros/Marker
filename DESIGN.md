@@ -161,6 +161,7 @@ The tech stack for all UI is fixed:
 - **Bootstrap 5.3** — layout, components, and utilities.
 - **Bootstrap Icons** — icon font via `<i class="bi bi-{name}"></i>`.
 - **htmx 2** — progressive enhancement for dynamic interactions.
+- **Alpine.js 3** — lightweight client-side reactivity and declarative interactions.
 
 ## Colors
 
@@ -452,7 +453,7 @@ not degrade readability or performance.
   cannot be achieved with Bootstrap utilities.
 - **Don't** use `<style>` blocks inside Mako templates.
 - **Don't** use `onclick="..."` or inline JavaScript; all JS behaviour is either
-  htmx-driven or handled by the dedicated `static/js/` scripts.
+  htmx-driven, managed by Alpine.js, or handled by the dedicated `static/js/` scripts.
 - **Don't** use Bootstrap's JavaScript API directly (e.g., `new bootstrap.Modal(...)`)
   except in the existing `static/js/` scripts that already do so.
 - **Don't** add a second navbar, sidebar, or fixed footer — the layout has a
