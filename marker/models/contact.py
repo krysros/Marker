@@ -3,10 +3,10 @@ from datetime import UTC
 from typing import TYPE_CHECKING, Optional
 
 from slugify import slugify
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, select, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .meta import Base
+from .meta import Base, CountMixin
 
 if TYPE_CHECKING:
     from .company import Company
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from .user import User
 
 
-class Contact(Base):
+class Contact(CountMixin, Base):
     __tablename__ = "contacts"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
@@ -68,3 +68,14 @@ class Contact(Base):
     @property
     def slug(self) -> str:
         return slugify(self.name or "")
+
+    @property
+    def count_duplicates(self) -> int:
+        return self._scalar_count(
+            select(func.count())
+            .select_from(Contact)
+            .where(
+                func.lower(Contact.name) == func.lower(self.name),
+                Contact.id != self.id,
+            )
+        )

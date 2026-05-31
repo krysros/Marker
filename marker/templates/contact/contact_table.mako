@@ -19,7 +19,11 @@
 % endif
   <td>${checkbox.checkbox(contact, selected_ids=selected_ids('selected_contacts'), url=request.route_url('contact_check', contact_id=contact.id, slug=contact.slug))}</td>
   <td>
+    % if request.params.get("duplicates") == "1":
+    <a href="${request.route_url('contact_duplicates', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a><br>
+    % else:
     <a href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}">${contact.name or "---"}</a><br>
+    % endif
     <small class="text-body-secondary">${_("Created at")}: ${contact.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
     <small class="text-body-secondary">${_("Updated at")}: ${contact.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>

@@ -18,6 +18,7 @@ from ..forms import (
 )
 from ..forms.select import (
     CATEGORIES,
+    COLORS,
     ORDER_CRITERIA,
     SORT_CRITERIA_CONTACTS,
     SORT_CRITERIA_CONTACTS_UNASSIGNED,
@@ -34,6 +35,7 @@ from ..utils.paginator import get_paginator
 from ..utils.vcard_import import parse_vcard, upsert_vcard
 from . import (
     Filter,
+    apply_order,
     clear_selected_rows,
     contains_ci,
     handle_bulk_selection,
@@ -136,6 +138,17 @@ class ContactView:
         categories = dict(CATEGORIES)
         q = {}
         stmt = select(Contact)
+
+        duplicates = self.request.params.get("duplicates") == "1"
+        if duplicates:
+            dup_subquery = (
+                select(func.lower(Contact.name))
+                .group_by(func.lower(Contact.name))
+                .having(func.count() > 1)
+                .scalar_subquery()
+            )
+            stmt = stmt.filter(func.lower(Contact.name).in_(dup_subquery))
+            q["duplicates"] = "1"
 
         allowed_sorts = set(sort_criteria)
         if _sort not in allowed_sorts:
@@ -414,6 +427,31 @@ class ContactView:
             select(func.count()).select_from(select(Contact).subquery())
         ).scalar()
 
+    def pills(self, contact):
+        _ = self.request.translate
+        return [
+            {
+                "title": _("Contact"),
+                "icon": "person",
+                "url": self.request.route_url(
+                    "contact_view", contact_id=contact.id, slug=contact.slug
+                ),
+                "count": None,
+            },
+            {
+                "title": _("Duplicates"),
+                "icon": "files",
+                "url": self.request.route_url(
+                    "contact_duplicates", contact_id=contact.id, slug=contact.slug
+                ),
+                "count": self.request.route_url(
+                    "contact_count_duplicates", contact_id=contact.id, slug=contact.slug
+                ),
+                "event": "contactEvent",
+                "init_value": contact.count_duplicates,
+            },
+        ]
+
     @view_config(
         route_name="contact_view", renderer="contact_view.mako", permission="view"
     )
@@ -443,6 +481,7 @@ class ContactView:
             "is_contact_selected": is_contact_selected,
             "title": contact.name,
             "vcard": vcard,
+            "contact_pills": self.pills(contact),
         }
 
     @view_config(
@@ -964,3 +1003,106 @@ class ContactView:
                 )
             )
         return {"heading": _("Import vCard"), "form": form}
+
+    @view_config(
+        route_name="contact_count_duplicates", renderer="json", permission="view"
+    )
+    def count_duplicates(self):
+        return self.request.context.contact.count_duplicates
+
+    @view_config(
+        route_name="contact_duplicates",
+        renderer="contact_duplicates.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="contact_more_duplicates",
+        renderer="contact_table#rows.mako",
+        permission="view",
+    )
+    def duplicates(self):
+        _ = self.request.translate
+        contact = self.request.context.contact
+        is_contact_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_contacts)
+                .where(
+                    selected_contacts.c.user_id == self.request.identity.id,
+                    selected_contacts.c.contact_id == contact.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
+
+        page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        role = self.request.params.get("role", None)
+        phone = self.request.params.get("phone", None)
+        email = self.request.params.get("email", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        colors = dict(COLORS)
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_CONTACTS)
+        categories = dict(CATEGORIES)
+        q = {}
+
+        stmt = select(Contact).where(
+            func.lower(Contact.name) == func.lower(contact.name),
+            Contact.id != contact.id,
+        )
+
+        if color:
+            stmt = stmt.filter(Contact.color == color)
+            q["color"] = color
+        if role:
+            stmt = stmt.filter(contains_ci(Contact.role, role))
+            q["role"] = role
+        if phone:
+            stmt = stmt.filter(contains_ci(Contact.phone, phone))
+            q["phone"] = phone
+        if email:
+            stmt = stmt.filter(contains_ci(Contact.email, email))
+            q["email"] = email
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        stmt = apply_order(stmt, sort_column(Contact, _sort), _order, Contact.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_contacts
+            )
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "contact_more_duplicates",
+            contact_id=contact.id,
+            slug=contact.slug,
+            _query={**q, "page": page + 1},
+        )
+
+        obj = Filter(**q)
+        form = ContactFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "contact": contact,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "categories": categories,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "title": contact.name,
+            "contact_pills": self.pills(contact),
+            "form": form,
+            "is_contact_selected": is_contact_selected,
+        }

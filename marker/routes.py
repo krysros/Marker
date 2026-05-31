@@ -124,6 +124,16 @@ def includeme(config):
         factory=company_factory,
     )
     config.add_route(
+        "company_duplicates",
+        r"/company/{company_id:\d+}/{slug}/duplicates",
+        factory=company_factory,
+    )
+    config.add_route(
+        "company_more_duplicates",
+        r"/company/{company_id:\d+}/{slug}/more_duplicates",
+        factory=company_factory,
+    )
+    config.add_route(
         "company_count_projects",
         r"/company/{company_id:\d+}/{slug}/count_projects",
         factory=company_factory,
@@ -151,6 +161,11 @@ def includeme(config):
     config.add_route(
         "company_count_similar",
         r"/company/{company_id:\d+}/{slug}/count_similar",
+        factory=company_factory,
+    )
+    config.add_route(
+        "company_count_duplicates",
+        r"/company/{company_id:\d+}/{slug}/count_duplicates",
         factory=company_factory,
     )
     config.add_route(
@@ -287,6 +302,16 @@ def includeme(config):
         factory=project_factory,
     )
     config.add_route(
+        "project_duplicates",
+        r"/project/{project_id:\d+}/{slug}/duplicates",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_more_duplicates",
+        r"/project/{project_id:\d+}/{slug}/more_duplicates",
+        factory=project_factory,
+    )
+    config.add_route(
         "project_count_companies",
         r"/project/{project_id:\d+}/{slug}/count_companies",
         factory=project_factory,
@@ -314,6 +339,11 @@ def includeme(config):
     config.add_route(
         "project_count_similar",
         r"/project/{project_id:\d+}/{slug}/count_similar",
+        factory=project_factory,
+    )
+    config.add_route(
+        "project_count_duplicates",
+        r"/project/{project_id:\d+}/{slug}/count_duplicates",
         factory=project_factory,
     )
     config.add_route(
@@ -473,6 +503,21 @@ def includeme(config):
         r"/tag/{tag_id:\d+}/{slug}/check",
         factory=tag_factory,
     )
+    config.add_route(
+        "tag_duplicates",
+        r"/tag/{tag_id:\d+}/{slug}/duplicates",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_more_duplicates",
+        r"/tag/{tag_id:\d+}/{slug}/more_duplicates",
+        factory=tag_factory,
+    )
+    config.add_route(
+        "tag_count_duplicates",
+        r"/tag/{tag_id:\d+}/{slug}/count_duplicates",
+        factory=tag_factory,
+    )
 
     config.add_route("contact_all", "/contact", factory=default_factory)
     config.add_route("contact_more", "/contact/more", factory=default_factory)
@@ -562,6 +607,21 @@ def includeme(config):
     config.add_route(
         "contact_check",
         r"/contact/{contact_id:\d+}/{slug}/check",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_duplicates",
+        r"/contact/{contact_id:\d+}/{slug}/duplicates",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_more_duplicates",
+        r"/contact/{contact_id:\d+}/{slug}/more_duplicates",
+        factory=contact_factory,
+    )
+    config.add_route(
+        "contact_count_duplicates",
+        r"/contact/{contact_id:\d+}/{slug}/count_duplicates",
         factory=contact_factory,
     )
 

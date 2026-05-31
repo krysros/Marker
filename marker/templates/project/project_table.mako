@@ -19,7 +19,11 @@
 % endif
   <td>${checkbox.checkbox(project, selected_ids=selected_ids('selected_projects'), url=request.route_url('project_check', project_id=project.id, slug=project.slug))}</td>
   <td>
+    % if request.params.get("duplicates") == "1":
+    <a href="${request.route_url('project_duplicates', project_id=project.id, slug=project.slug)}">${project.name}</a><br>
+    % else:
     <a href="${request.route_url('project_view', project_id=project.id, slug=project.slug)}">${project.name}</a><br>
+    % endif
     % if project.object_category:
     <small class="text-body-secondary">${_("Object category")}: ${project.object_category}</small><br>
     % endif

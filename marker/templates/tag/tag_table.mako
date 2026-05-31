@@ -17,7 +17,11 @@
 % endif
   <td>${checkbox.checkbox(tag, selected_ids=selected_ids('selected_tags'), url=request.route_url('tag_check', tag_id=tag.id, slug=tag.slug))}</td>
   <td>
+    % if request.params.get("duplicates") == "1":
+    <a href="${request.route_url('tag_duplicates', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a><br>
+    % else:
     <a href="${request.route_url('tag_view', tag_id=tag.id, slug=tag.slug)}">${tag.name}</a><br>
+    % endif
     <small class="text-body-secondary">${_("Created at")}: ${tag.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
     <small class="text-body-secondary">${_("Updated at")}: ${tag.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>

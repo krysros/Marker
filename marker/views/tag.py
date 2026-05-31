@@ -270,6 +270,18 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
                 "event": "tagEvent",
                 "init_value": self.count_projects,
             },
+            {
+                "title": _("Duplicates"),
+                "icon": "files",
+                "url": self.request.route_url(
+                    "tag_duplicates", tag_id=tag.id, slug=tag.slug
+                ),
+                "count": self.request.route_url(
+                    "tag_count_duplicates", tag_id=tag.id, slug=tag.slug
+                ),
+                "event": "tagEvent",
+                "init_value": tag.count_duplicates,
+            },
         ]
 
     @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
@@ -294,6 +306,17 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         q = {}
 
         stmt = select(Tag)
+
+        duplicates = self.request.params.get("duplicates") == "1"
+        if duplicates:
+            dup_subquery = (
+                select(func.lower(Tag.name))
+                .group_by(func.lower(Tag.name))
+                .having(func.count() > 1)
+                .scalar_subquery()
+            )
+            stmt = stmt.filter(func.lower(Tag.name).in_(dup_subquery))
+            q["duplicates"] = "1"
 
         if name:
             stmt = stmt.filter(contains_ci(Tag.name, name))
@@ -1639,3 +1662,91 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
                 location=self.request.route_url("tag_all", _query={"ai_query": query})
             )
         return {"heading": _("Search tags with AI"), "form": form}
+
+    @view_config(route_name="tag_count_duplicates", renderer="json", permission="view")
+    def count_duplicates(self):
+        return self.request.context.tag.count_duplicates
+
+    @view_config(
+        route_name="tag_duplicates", renderer="tag_duplicates.mako", permission="view"
+    )
+    @view_config(
+        route_name="tag_more_duplicates",
+        renderer="tag_table#rows.mako",
+        permission="view",
+    )
+    def duplicates(self):
+        _ = self.request.translate
+        tag = self.request.context.tag
+        is_tag_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_tags)
+                .where(
+                    selected_tags.c.user_id == self.request.identity.id,
+                    selected_tags.c.tag_id == tag.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
+
+        page = int(self.request.params.get("page", 1))
+        category = self.request.params.get("category", "")
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA)
+        sort_criteria["name"] = self.request.translate("Tag")
+        categories = dict(CATEGORIES)
+        q = {}
+
+        stmt = select(Tag).where(
+            func.lower(Tag.name) == func.lower(tag.name), Tag.id != tag.id
+        )
+
+        if category:
+            stmt = stmt.filter(Tag.category == category)
+            q["category"] = category
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        stmt = apply_order(stmt, sort_column(Tag, _sort), _order, Tag.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_tags
+            )
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "tag_more_duplicates",
+            tag_id=tag.id,
+            slug=tag.slug,
+            _query={**q, "page": page + 1},
+        )
+
+        obj = Filter(**q)
+        form = TagFilterForm(self.request.GET, obj, request=self.request)
+
+        self.count_companies = tag.count_companies
+        self.count_projects = tag.count_projects
+
+        return {
+            "q": q,
+            "tag": tag,
+            "paginator": paginator,
+            "next_page": next_page,
+            "categories": categories,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "title": tag.name,
+            "tag_pills": self.pills(tag),
+            "form": form,
+            "is_tag_selected": is_tag_selected,
+        }

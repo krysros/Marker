@@ -164,6 +164,18 @@ class CompanyView:
                 "event": "tagEvent",
                 "init_value": company.count_similar,
             },
+            {
+                "title": _("Duplicates"),
+                "icon": "files",
+                "url": self.request.route_url(
+                    "company_duplicates", company_id=company.id, slug=company.slug
+                ),
+                "count": self.request.route_url(
+                    "company_count_duplicates", company_id=company.id, slug=company.slug
+                ),
+                "event": "companyEvent",
+                "init_value": company.count_duplicates,
+            },
         ]
 
     @view_config(
@@ -213,6 +225,17 @@ class CompanyView:
         q = {}
 
         stmt = select(Company)
+
+        duplicates = self.request.params.get("duplicates") == "1"
+        if duplicates:
+            dup_subquery = (
+                select(func.lower(Company.name))
+                .group_by(func.lower(Company.name))
+                .having(func.count() > 1)
+                .scalar_subquery()
+            )
+            stmt = stmt.filter(func.lower(Company.name).in_(dup_subquery))
+            q["duplicates"] = "1"
 
         if tags:
             tag_operator = (
@@ -2211,3 +2234,112 @@ class CompanyView:
             response.status_code = 303
             return response
         return HTTPSeeOther(location=next_url)
+
+    @view_config(
+        route_name="company_count_duplicates", renderer="json", permission="view"
+    )
+    def count_duplicates(self):
+        return self.request.context.company.count_duplicates
+
+    @view_config(
+        route_name="company_duplicates",
+        renderer="company_duplicates.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="company_more_duplicates",
+        renderer="company_table#rows.mako",
+        permission="view",
+    )
+    def duplicates(self):
+        _ = self.request.translate
+        company = self.request.context.company
+        is_company_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_companies)
+                .where(
+                    selected_companies.c.user_id == self.request.identity.id,
+                    selected_companies.c.company_id == company.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
+
+        page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        colors = dict(COLORS)
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_COMPANIES)
+        q = {}
+
+        stmt = select(Company).where(
+            func.lower(Company.name) == func.lower(company.name),
+            Company.id != company.id,
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Company.created_at >= date_from_dt)
+            q["date_from"] = date_from
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Company.created_at <= date_to_dt)
+            q["date_to"] = date_to
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        stmt = apply_order(stmt, sort_column(Company, _sort), _order, Company.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_companies
+            )
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "company_more_duplicates",
+            company_id=company.id,
+            slug=company.slug,
+            _query={**q, "page": page + 1},
+        )
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "company": company,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "title": company.name,
+            "company_pills": self.pills(company),
+            "form": form,
+            "is_company_selected": is_company_selected,
+        }

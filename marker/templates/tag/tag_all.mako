@@ -22,8 +22,9 @@
   <div>${button.dropdown_order(order_criteria)}</div>
   <div class="vr mx-1"></div>
   <div class="btn-group btn-group-sm" role="group">
-    <a class="btn btn-primary btn-sm" href="${request.route_url('tag_all')}"><i class="bi bi-tags"></i> ${_("All")}</a>
+    <a class="btn ${'btn-primary' if q.get('duplicates') != '1' else 'btn-outline-primary'} btn-sm" href="${request.route_url('tag_all', _query={**q, 'duplicates': None})}"><i class="bi bi-tags"></i> ${_("All")}</a>
     <a class="btn btn-outline-primary btn-sm" href="${request.route_url('tag_unassigned')}"><i class="bi bi-tag-x"></i> ${_("Unassigned")}</a>
+    <a class="btn ${'btn-primary' if q.get('duplicates') == '1' else 'btn-outline-primary'} btn-sm" href="${request.route_url('tag_all', _query={**q, 'duplicates': '1'})}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
   </div>
 </div>
 

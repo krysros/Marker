@@ -36,9 +36,10 @@
   % endif
   <div class="vr mx-1"></div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}" hx-boost="false">
-    <a class="btn btn-primary" href="${request.route_url('project_all', _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn ${'btn-primary' if q.get('duplicates') != '1' else 'btn-outline-primary'}" href="${request.route_url('project_all', _query={**q, 'duplicates': None})}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('project_map', _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('project_uptime')}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
+    <a class="btn ${'btn-primary' if q.get('duplicates') == '1' else 'btn-outline-primary'}" href="${request.route_url('project_all', _query={**q, 'duplicates': '1'})}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
   </div>
 </div>
 

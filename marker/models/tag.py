@@ -63,3 +63,14 @@ class Tag(CountMixin, Base):
         return self._scalar_count(
             select(func.count()).where(projects_tags.c.tag_id == self.id)
         )
+
+    @property
+    def count_duplicates(self) -> int:
+        return self._scalar_count(
+            select(func.count())
+            .select_from(Tag)
+            .where(
+                func.lower(Tag.name) == func.lower(self.name),
+                Tag.id != self.id,
+            )
+        )

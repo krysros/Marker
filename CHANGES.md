@@ -1,3 +1,12 @@
+3.3
+---
+
+- Added a "Duplicates" ("Duplikaty") filter option to switcher buttons across all listing views (companies, projects, tags, contacts)
+- Implemented dedicated `/duplicates` sub-views displaying other duplicate records sharing the same name (case-insensitive) for companies, projects, tags, and contacts
+- Integrated dynamic badges/counters showing real-time count of duplicates within detail views
+- Modified table layouts to redirect users directly to duplicate detail lists when duplicates filter is active
+- Completed full Polish translations for all new elements, resolving "Duplicates" translations and eliminating fuzzy/empty strings in the catalog
+
 3.2
 ---
 

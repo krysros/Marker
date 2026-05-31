@@ -19,7 +19,11 @@
 % endif
   <td>${checkbox.checkbox(company, selected_ids=selected_ids('selected_companies'), url=request.route_url('company_check', company_id=company.id, slug=company.slug))}</td>
   <td>
+    % if request.params.get("duplicates") == "1":
+    <a href="${request.route_url('company_duplicates', company_id=company.id, slug=company.slug)}">${company.name}</a><br>
+    % else:
     <a href="${request.route_url('company_view', company_id=company.id, slug=company.slug)}">${company.name}</a><br>
+    % endif
     <small class="text-body-secondary">${_("Created at")}: ${company.created_at.strftime('%Y-%m-%d %H:%M:%S')}</small><br>
     <small class="text-body-secondary">${_("Updated at")}: ${company.updated_at.strftime('%Y-%m-%d %H:%M:%S')}</small>
   </td>

@@ -142,3 +142,14 @@ class Company(CountMixin, Base):
                 other_tags.c.company_id != self.id,
             )
         )
+
+    @property
+    def count_duplicates(self) -> int:
+        return self._scalar_count(
+            select(func.count())
+            .select_from(Company)
+            .where(
+                func.lower(Company.name) == func.lower(self.name),
+                Company.id != self.id,
+            )
+        )

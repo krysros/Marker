@@ -2020,9 +2020,7 @@ msgstr "Przełącz opcje usuwania"
 
 #: marker/templates/user/user_view.mako:34
 msgid "Delete the user account together with all data added by this user?"
-msgstr ""
-"Usunąć konto użytkownika wraz ze wszystkimi danymi dodanymi przez tego "
-"użytkownika?"
+msgstr "Usunąć konto użytkownika wraz ze wszystkimi danymi dodanymi przez tego użytkownika?"
 
 #: marker/templates/user/user_view.mako:35
 msgid "Delete account with all added data"
@@ -2371,15 +2369,11 @@ msgstr "Użytkownik %s odczepił firmę od projektu"
 #: marker/views/company.py:1847
 #, python-format
 msgid "An error occurred during company autofill with AI: %s"
-msgstr ""
-"Wystąpił błąd podczas automatycznego uzupełniania danych firmy przez AI: "
-"%s"
+msgstr "Wystąpił błąd podczas automatycznego uzupełniania danych firmy przez AI: %s"
 
 #: marker/views/company.py:1850
 msgid "danger:An error occurred while trying to autofill the company data"
-msgstr ""
-"danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych "
-"firmy"
+msgstr "danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych firmy"
 
 #: marker/views/company.py:1872
 msgid ""
@@ -2486,9 +2480,7 @@ msgstr ""
 #: marker/views/contact.py:897
 #, python-format
 msgid "success:CSV file has been imported. Contacts added: %s. Skipped rows: %s"
-msgstr ""
-"success:Plik CSV został pomyślnie zaimportowany. Dodane kontakty: %s. "
-"Pominięte wiersze: %s"
+msgstr "success:Plik CSV został pomyślnie zaimportowany. Dodane kontakty: %s. Pominięte wiersze: %s"
 
 #: marker/views/contact.py:903
 #, python-format
@@ -2573,15 +2565,11 @@ msgstr "Użytkownik %s odpiął tag od projektu"
 #: marker/views/project.py:1971
 #, python-format
 msgid "An error occurred during project autofill with AI: %s"
-msgstr ""
-"Wystąpił błąd podczas automatycznego uzupełniania danych projektu przez "
-"AI: %s"
+msgstr "Wystąpił błąd podczas automatycznego uzupełniania danych projektu przez AI: %s"
 
 #: marker/views/project.py:1974
 msgid "danger:An error occurred while trying to autofill the project data"
-msgstr ""
-"danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych "
-"projektu"
+msgstr "danger:Wystąpił błąd podczas próby automatycznego uzupełnienia danych projektu"
 
 #: marker/views/project.py:1996
 msgid ""
@@ -2611,7 +2599,7 @@ msgstr "Wystąpił błąd podczas aktualizacji projektu za pomocą AI: %s"
 
 #: marker/views/project.py:2191
 msgid "danger:An error occurred while trying to update the project data with AI"
-msgstr "danger:Wystąpił błąd podczas próby aktualizacji danych projektu za pomocą AI"
+msgstr "danger:Wystąpił błąd podczas próby aktualizacji danych projektu przez AI"
 
 #: marker/views/project.py:2333
 #, python-format
@@ -2713,9 +2701,7 @@ msgstr "Edytuj dane użytkownika"
 
 #: marker/views/user.py:1760
 msgid "success:Removed user account with all added data from the database"
-msgstr ""
-"success:Konto użytkownika wraz ze wszystkimi dodanymi danymi zostało "
-"usunięte z bazy danych"
+msgstr "success:Konto użytkownika wraz ze wszystkimi dodanymi danymi zostało usunięte z bazy danych"
 
 #: marker/views/user.py:1763
 #, python-format

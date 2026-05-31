@@ -167,6 +167,18 @@ class ProjectView:
                 "event": "tagEvent",
                 "init_value": project.count_similar,
             },
+            {
+                "title": _("Duplicates"),
+                "icon": "files",
+                "url": self.request.route_url(
+                    "project_duplicates", project_id=project.id, slug=project.slug
+                ),
+                "count": self.request.route_url(
+                    "project_count_duplicates", project_id=project.id, slug=project.slug
+                ),
+                "event": "projectEvent",
+                "init_value": project.count_duplicates,
+            },
         ]
 
     @view_config(
@@ -228,6 +240,17 @@ class ProjectView:
         q = {}
 
         stmt = select(Project)
+
+        duplicates = self.request.params.get("duplicates") == "1"
+        if duplicates:
+            dup_subquery = (
+                select(func.lower(Project.name))
+                .group_by(func.lower(Project.name))
+                .having(func.count() > 1)
+                .scalar_subquery()
+            )
+            stmt = stmt.filter(func.lower(Project.name).in_(dup_subquery))
+            q["duplicates"] = "1"
 
         if tags:
             tag_operator = (
@@ -2388,3 +2411,108 @@ class ProjectView:
             response.status_code = 303
             return response
         return HTTPSeeOther(location=next_url)
+
+    @view_config(
+        route_name="project_count_duplicates", renderer="json", permission="view"
+    )
+    def count_duplicates(self):
+        return self.request.context.project.count_duplicates
+
+    @view_config(
+        route_name="project_duplicates",
+        renderer="project_duplicates.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_more_duplicates",
+        renderer="project_table#rows.mako",
+        permission="view",
+    )
+    def duplicates(self):
+        _ = self.request.translate
+        project = self.request.context.project
+        is_project_selected = (
+            self.request.dbsession.execute(
+                select(1)
+                .select_from(selected_projects)
+                .where(
+                    selected_projects.c.user_id == self.request.identity.id,
+                    selected_projects.c.project_id == project.id,
+                )
+                .limit(1)
+            ).first()
+            is not None
+        )
+
+        page = int(self.request.params.get("page", 1))
+        color = self.request.params.get("color", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        date_from = self.request.params.get("date_from", None)
+        date_to = self.request.params.get("date_to", None)
+        _sort = self.request.params.get("sort", "name")
+        _order = self.request.params.get("order", "asc")
+        colors = dict(COLORS)
+        order_criteria = dict(ORDER_CRITERIA)
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        q = {}
+
+        stmt = select(Project).where(
+            func.lower(Project.name) == func.lower(project.name),
+            Project.id != project.id,
+        )
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+        if date_from:
+            date_from_dt = datetime.datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at >= date_from_dt)
+            q["date_from"] = date_from
+        if date_to:
+            date_to_dt = datetime.datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            stmt = stmt.filter(Project.created_at <= date_to_dt)
+            q["date_to"] = date_to
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        stmt = apply_order(stmt, sort_column(Project, _sort), _order, Project.id)
+
+        if is_bulk_select_request(self.request):
+            return handle_bulk_selection(
+                self.request, stmt, self.request.identity.selected_projects
+            )
+
+        paginator = (
+            self.request.dbsession.execute(get_paginator(stmt, page=page))
+            .scalars()
+            .all()
+        )
+        next_page = self.request.route_url(
+            "project_more_duplicates",
+            project_id=project.id,
+            slug=project.slug,
+            _query={**q, "page": page + 1},
+        )
+
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
+        return {
+            "q": q,
+            "project": project,
+            "paginator": paginator,
+            "next_page": next_page,
+            "colors": colors,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "title": project.name,
+            "project_pills": self.pills(project),
+            "form": form,
+            "is_project_selected": is_project_selected,
+        }

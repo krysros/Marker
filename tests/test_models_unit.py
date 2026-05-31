@@ -162,3 +162,92 @@ def test_project_slug():
         delivery_method=None,
     )
     assert p.slug == "big-project"
+
+
+def test_count_duplicates(dbsession):
+    from marker.models import Contact
+
+    c1 = Company(
+        "Duplicate Company", None, None, None, None, None, None, None, None, None, None
+    )
+    c2 = Company(
+        "duplicate company", None, None, None, None, None, None, None, None, None, None
+    )
+    c3 = Company(
+        "Unique Company", None, None, None, None, None, None, None, None, None, None
+    )
+    dbsession.add_all([c1, c2, c3])
+    dbsession.flush()
+
+    assert c1.count_duplicates == 1
+    assert c2.count_duplicates == 1
+    assert c3.count_duplicates == 0
+
+    p1 = Project(
+        "Duplicate Project",
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    p2 = Project(
+        "duplicate project",
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    p3 = Project(
+        "Unique Project",
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    dbsession.add_all([p1, p2, p3])
+    dbsession.flush()
+
+    assert p1.count_duplicates == 1
+    assert p2.count_duplicates == 1
+    assert p3.count_duplicates == 0
+
+    t1 = Tag(name="Duplicate Tag")
+    t2 = Tag(name="duplicate tag")
+    t3 = Tag(name="Unique Tag")
+    dbsession.add_all([t1, t2, t3])
+    dbsession.flush()
+
+    assert t1.count_duplicates == 1
+    assert t2.count_duplicates == 1
+    assert t3.count_duplicates == 0
+
+    co1 = Contact("Duplicate Contact", None, None, None, None)
+    co2 = Contact("duplicate contact", None, None, None, None)
+    co3 = Contact("Unique Contact", None, None, None, None)
+    dbsession.add_all([co1, co2, co3])
+    dbsession.flush()
+
+    assert co1.count_duplicates == 1
+    assert co2.count_duplicates == 1
+    assert co3.count_duplicates == 0

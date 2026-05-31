@@ -1,14 +1,10 @@
 <%inherit file="layout.mako"/>
 <%namespace name="button" file="button.mako"/>
 
+<%namespace name="pills" file="pills.mako"/>
+
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
-  <div class="me-auto">
-    <ul class="nav nav-pills">
-      <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="${request.route_url('contact_view', contact_id=contact.id, slug=contact.slug)}"><i class="bi bi-person"></i> ${_("Contact")}</a>
-      </li>
-    </ul>
-  </div>
+  <div class="me-auto">${pills.pills(contact_pills, active_url=request.route_url('contact_view', contact_id=contact.id, slug=contact.slug))}</div>
   <div>${button.a(icon='person-vcard', color='primary', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}</div>
   <div>${button.a(icon='pencil-square', color='warning', url=request.route_url('contact_edit', contact_id=contact.id, slug=contact.slug))}</div>
   <div>${button.button(icon='trash', color='danger', url=request.route_url('contact_delete', contact_id=contact.id, slug=contact.slug))}</div>
