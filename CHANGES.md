@@ -1,3 +1,14 @@
+3.2
+---
+
+- Integrated **Alpine.js** globally to provide lightweight, declarative client-side reactivity
+- Switched bulk selection and table indeterminate state synchronization to a reactive Alpine.js directive (`x-select-all-table`)
+- Refactored website autofill into a reactive Alpine.js form component (`autofillForm`), simplifying loading states and select syncs
+- Consolidated the Escape key blur handler into `shortcuts.js` and removed the redundant `marker-blur-on-esc.js` file
+- Restored default browser scroll-to-top behavior for the `Home` key
+- Implemented global **AJAX Live Filtering** across all listing and unassigned views using htmx-boost, updating tables and browser URL history seamlessly without full page reloads or backend changes
+- Excluded Leaflet map and uptime views from htmx-boost to ensure reliable third-party script initialization
+
 3.1
 ---
 
