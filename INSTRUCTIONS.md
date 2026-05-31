@@ -230,5 +230,8 @@ Before ending any task, you **MUST** ensure the following checklist is fully com
    - `uv run alembic -c development.ini revision --autogenerate -m "..."`
    - `uv run alembic -c development.ini upgrade head`
 4. [ ] Run `uv run pytest --cov=marker --cov-report=term-missing` and verify **100% coverage** and **0 failing tests**.
+5. [ ] Maintain release history and project version:
+   - **ALWAYS** document all key changes in **English** on an ongoing basis as they are implemented under the active/upcoming version section in `CHANGES.md`.
+   - Update the package version in `pyproject.toml` when preparing a target release version.
 
 </WORKFLOW_CHECKLIST>
