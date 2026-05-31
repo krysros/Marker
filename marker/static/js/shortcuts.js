@@ -195,13 +195,7 @@ function handleShortcuts(event) {
             return;
         }
     }
-    // Home key redirects to homepage
-    if (event.key === 'Home' && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        // The homepage is always at '/'
-        window.location.href = '/';
-        event.preventDefault();
-        return;
-    }
+
     // '/' opens search modal or focuses search input from any page
     if (event.key === '/' && !event.ctrlKey && !event.altKey && !event.metaKey) {
         if (!modalOpen) {
@@ -283,6 +277,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.addEventListener('keydown', handleSearchSelectModalKeys, true);
     document.addEventListener('keydown', handleAddSelectModalKeys, true);
+    
+    // Unfocus form fields on Escape key, so global shortcuts work
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            const active = document.activeElement;
+            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' || active.isContentEditable)) {
+                active.blur();
+            }
+        }
+    });
 });
 document.body.addEventListener('htmx:after:swap', function(e){
     setupShortcuts();

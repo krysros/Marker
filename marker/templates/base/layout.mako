@@ -19,9 +19,9 @@
     <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>
     <script src="${request.static_url('marker:static/js/marker-select-all-state.js')}"></script>
     <script src="${request.static_url('marker:static/js/marker-website-autofill.js')}"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="${request.static_url('marker:static/css/style.css')}">
     <script src="${request.static_url('marker:static/js/shortcuts.js')}"></script>
-    <script src="${request.static_url('marker:static/js/marker-blur-on-esc.js')}"></script>
     % if title:
     <title>Marker - ${title}</title>
     % else:
@@ -117,10 +117,7 @@
                       <td><kbd>*</kbd></td>
                       <td>${_("Toggle star for company/project")}</td>
                     </tr>
-                    <tr>
-                      <td><kbd>Home</kbd></td>
-                      <td>${_("Go to homepage")}</td>
-                    </tr>
+
                     <tr>
                       <td><kbd>1</kbd>–<kbd>5</kbd></td>
                       <td>${_("Quick navigation to main sections")}</td>
