@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: marker 2.0b3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-02 20:46+0200\n"
+"POT-Creation-Date: 2026-06-02 22:24+0200\n"
 "PO-Revision-Date: 2026-03-04 17:33+0100\n"
 "Last-Translator: \n"
 "Language: pl\n"
@@ -807,6 +807,7 @@ msgstr ""
 "jednym miejscu na potrzeby szybkiego filtrowania, analizy i raportowania."
 
 #: marker/templates/base/layout.mako:103
+#: marker/templates/contact/contact_search_tags.mako:15
 #: marker/templates/contact/contact_search_tags.mako:53
 #: marker/templates/home.mako:10
 msgid "Search"
@@ -1822,10 +1823,6 @@ msgstr ""
 #: marker/templates/contact/contact_import_vcard.mako:50
 msgid "Import"
 msgstr "Importuj"
-
-#: marker/templates/contact/contact_search_tags.mako:15
-msgid "Search in"
-msgstr "Szukaj w"
 
 #: marker/templates/contact/contact_search_tags.mako:33
 msgid "Search mode"

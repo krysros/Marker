@@ -12,7 +12,7 @@
   <div class="card-body">
     <form action="${request.route_url('search_tags_results')}" method="get">
       <div class="mb-3">
-        <label class="form-label" for="target-select">${_("Search in")}</label>
+        <label class="form-label" for="target-select">${_("Search")}</label>
         <select id="target-select" class="form-control" name="target">
           <option value="companies" ${'selected' if not target or target == 'companies' else ''}>${_("Companies")}</option>
           <option value="projects" ${'selected' if target == 'projects' else ''}>${_("Projects")}</option>

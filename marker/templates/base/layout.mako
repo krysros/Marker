@@ -161,25 +161,26 @@
       });
     });
 
-    // Prevent double form submissions and multi-clicks
+    // Prevent double form submissions and handle browser back-button/bfcache restoration
     document.addEventListener('submit', function(e) {
       const form = e.target;
       if (form.tagName === 'FORM') {
         if (form.dataset.submitting === 'true') {
           e.preventDefault();
-          e.stopImmediatePropagation();
           return false;
         }
         form.dataset.submitting = 'true';
-        
-        // Disable submit buttons after a tiny delay so the submit action/HTMX registers
-        const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
         setTimeout(() => {
-          submitButtons.forEach(btn => {
-            btn.disabled = true;
-          });
+          form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(btn => btn.disabled = true);
         }, 0);
       }
+    });
+
+    window.addEventListener('pageshow', () => {
+      document.querySelectorAll('form[data-submitting]').forEach(form => {
+        delete form.dataset.submitting;
+        form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(btn => btn.disabled = false);
+      });
     });
 
     // Handle HTMX requests specifically
