@@ -1,13 +1,5 @@
-import json
-import urllib.error
-import urllib.parse
-import urllib.request
-
-NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
-REQUEST_HEADERS = {
-    "User-Agent": "Marker/1.0",
-    "Accept": "application/json",
-}
+from geopy.geocoders import Nominatim
+from geopy.exc import GeopyError
 
 
 def _first_not_empty(*values):
@@ -28,56 +20,41 @@ def _nominatim_search(**kwargs):
     if "q" in kwargs:
         query = _first_not_empty(kwargs.get("q"))
         if not query:
-            return []
-        params = {"q": query}
+            return None
     else:
-        params = {
-            key: value for key, value in kwargs.items() if _first_not_empty(value)
-        }
-        if not params:
-            return []
+        query = {key: value for key, value in kwargs.items() if _first_not_empty(value)}
+        if not query:
+            return None
 
-    params.update(
-        {
-            "format": "json",
-            "addressdetails": 1,
-            "limit": 1,
-        }
-    )
-    url = f"{NOMINATIM_URL}?{urllib.parse.urlencode(params)}"
-    request = urllib.request.Request(url, headers=REQUEST_HEADERS)
     try:
-        with urllib.request.urlopen(request) as response:
-            payload = json.load(response)
-    except (urllib.error.URLError, json.JSONDecodeError, ValueError):
-        return []
-
-    if not isinstance(payload, list):
-        return []
-    return payload
+        # Nominatim geocoder configuration
+        geolocator = Nominatim(user_agent="Marker/1.0", timeout=5)
+        # Call geocode with addressdetails=True to get full details for location_details
+        return geolocator.geocode(query, addressdetails=True)
+    except GeopyError:
+        return None
 
 
 def location(**kwargs):
-    results = _nominatim_search(**kwargs)
-    if not results:
+    loc = _nominatim_search(**kwargs)
+    if not loc:
         return None
 
-    first = results[0]
     try:
         return {
-            "lat": float(first["lat"]),
-            "lon": float(first["lon"]),
+            "lat": loc.latitude,
+            "lon": loc.longitude,
         }
-    except (KeyError, TypeError, ValueError):
+    except (AttributeError, KeyError, TypeError, ValueError):
         return None
 
 
 def location_details(**kwargs):
-    results = _nominatim_search(**kwargs)
-    if not results:
+    loc = _nominatim_search(**kwargs)
+    if not loc or not isinstance(loc.raw, dict):
         return None
 
-    first = results[0]
+    first = loc.raw
     address = first.get("address") if isinstance(first, dict) else None
     if not isinstance(address, dict):
         return None
@@ -107,11 +84,10 @@ def location_details(**kwargs):
         "postcode": postcode,
     }
 
-    if isinstance(first, dict):
-        try:
-            data["lat"] = float(first["lat"])
-            data["lon"] = float(first["lon"])
-        except (KeyError, TypeError, ValueError):
-            pass
+    try:
+        data["lat"] = loc.latitude
+        data["lon"] = loc.longitude
+    except (AttributeError, KeyError, TypeError, ValueError):
+        pass
 
     return {key: value for key, value in data.items() if value}

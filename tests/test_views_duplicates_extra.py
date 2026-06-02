@@ -96,6 +96,7 @@ def test_company_duplicates_coverage(dbsession, test_user_and_db):
     assert count_res == 1
 
     import datetime
+
     now_dt = datetime.datetime.now()
     date_from_str = (now_dt - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
     date_to_str = (now_dt + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
@@ -226,6 +227,7 @@ def test_project_duplicates_coverage(dbsession, test_user_and_db):
     assert count_res == 1
 
     import datetime
+
     now_dt = datetime.datetime.now()
     date_from_str = (now_dt - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
     date_to_str = (now_dt + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")

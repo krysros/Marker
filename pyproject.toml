@@ -42,6 +42,7 @@ dependencies = [
     "beautifulsoup4",
     "langchain",
     "langchain-google-genai",
+    "geopy",
 ]
 
 [dependency-groups]
