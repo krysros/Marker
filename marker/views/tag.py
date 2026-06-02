@@ -286,7 +286,17 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
 
     @view_config(route_name="tag_all", renderer="tag_all.mako", permission="view")
     @view_config(
+        route_name="tag_duplicates_all",
+        renderer="tag_all.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="tag_more",
+        renderer="tag_table#rows.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="tag_duplicates_all_more",
         renderer="tag_table#rows.mako",
         permission="view",
     )
@@ -307,7 +317,9 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
 
         stmt = select(Tag)
 
-        duplicates = self.request.params.get("duplicates") == "1"
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else ""
+        duplicates = route_name in {"tag_duplicates_all", "tag_duplicates_all_more"}
         if duplicates:
             dup_subquery = (
                 select(func.lower(Tag.name))
@@ -316,7 +328,6 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
                 .scalar_subquery()
             )
             stmt = stmt.filter(func.lower(Tag.name).in_(dup_subquery))
-            q["duplicates"] = "1"
 
         if name:
             stmt = stmt.filter(contains_ci(Tag.name, name))
@@ -388,8 +399,9 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             .all()
         )
 
+        next_route = "tag_duplicates_all_more" if duplicates else "tag_more"
         next_page = self.request.route_url(
-            "tag_more",
+            next_route,
             _query={
                 **q,
                 "page": page + 1,
@@ -589,35 +601,13 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         permission="view",
     )
     def uptime_companies(self):
-        tag = self.request.context.tag
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .filter(
-                Company.tags.any(name=tag.name),
-                Company.website.isnot(None),
-                Company.website != "",
-            )
-            .order_by(Company.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "tag_uptime_companies_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "tag_uptime_companies_rows",
-            tag_id=tag.id,
-            slug=tag.slug,
-            _query={"page": page + 1},
-        )
-        return {
-            "tag": tag,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-            "tag_pills": self.pills(tag),
-        }
+        return self._get_tag_companies_context(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="tag_map_projects",
@@ -689,35 +679,11 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         permission="view",
     )
     def uptime_projects(self):
-        tag = self.request.context.tag
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .filter(
-                Project.tags.any(name=tag.name),
-                Project.website.isnot(None),
-                Project.website != "",
-            )
-            .order_by(Project.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "tag_uptime_projects_rows" if matched_route else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "tag_uptime_projects_rows",
-            tag_id=tag.id,
-            slug=tag.slug,
-            _query={"page": page + 1},
-        )
-        return {
-            "tag": tag,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-            "tag_pills": self.pills(tag),
-        }
+        return self._get_tag_projects_context(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="tag_json_companies",
@@ -887,7 +853,7 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         renderer="company_table#rows.mako",
         permission="view",
     )
-    def companies(self):
+    def _get_tag_companies_context(self, is_uptime=False, is_rows=False):
         tag = self.request.context.tag
         is_tag_selected = (
             self.request.dbsession.execute(
@@ -919,6 +885,8 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         q = {}
 
         stmt = select(Company)
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
 
         if role:
             q["role"] = role
@@ -992,8 +960,12 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             .scalars()
             .all()
         )
+        if is_uptime:
+            next_route = "tag_uptime_companies_rows"
+        else:
+            next_route = "tag_more_companies"
         next_page = self.request.route_url(
-            "tag_more_companies",
+            next_route,
             tag_id=tag.id,
             slug=tag.slug,
             _query={
@@ -1033,7 +1005,11 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             "tag_pills": self.pills(tag),
             "form": form,
             "is_tag_selected": is_tag_selected,
+            "page": page,
         }
+
+    def companies(self):
+        return self._get_tag_companies_context(is_uptime=False, is_rows=False)
 
     @view_config(route_name="tag_export_companies", permission="view")
     def export_companies(self):
@@ -1146,7 +1122,7 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         renderer="project_table#rows.mako",
         permission="view",
     )
-    def projects(self):
+    def _get_tag_projects_context(self, is_uptime=False, is_rows=False):
         tag = self.request.context.tag
         is_tag_selected = (
             self.request.dbsession.execute(
@@ -1183,6 +1159,8 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
         q = {}
 
         stmt = select(Project)
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
 
         if role:
             q["role"] = role
@@ -1272,8 +1250,12 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             .scalars()
             .all()
         )
+        if is_uptime:
+            next_route = "tag_uptime_projects_rows"
+        else:
+            next_route = "tag_more_projects"
         next_page = self.request.route_url(
-            "tag_more_projects",
+            next_route,
             tag_id=tag.id,
             slug=tag.slug,
             _query={
@@ -1316,7 +1298,11 @@ Return ONLY a valid JSON list of matched tags (strings) exactly as they appear i
             "tag_pills": self.pills(tag),
             "form": form,
             "is_tag_selected": is_tag_selected,
+            "page": page,
         }
+
+    def projects(self):
+        return self._get_tag_projects_context(is_uptime=False, is_rows=False)
 
     @view_config(route_name="tag_export_projects", permission="view")
     def export_projects(self):

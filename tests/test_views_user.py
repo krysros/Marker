@@ -6357,3 +6357,297 @@ def test_user_selected_counts_and_stars(dbsession):
     assert view.selected_contacts_count() == 1
     assert view.companies_stars_count() == 1
     assert view.projects_stars_count() == 1
+
+
+def test_user_json_selected_companies_projects(dbsession):
+    from marker.models import Activity
+    import datetime
+
+    user = _user(dbsession, "json_selcoproj")
+    co = _company(dbsession, user, "CoProjJson")
+    proj = _project(dbsession, user, "ProjLinkedJson")
+    proj.color = "red"
+    proj.country = "PL"
+    proj.subdivision = "Wielkopolskie"
+    proj.stage = "budowa"
+    proj.delivery_method = "zaprojektuj_i_buduj"
+    proj.object_category = "biurowe"
+    proj.deadline = datetime.datetime.now() + datetime.timedelta(days=10)
+
+    act = Activity(
+        company=co, project=proj, stage="koncepcja", role="generalny wykonawca"
+    )
+    dbsession.add(act)
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "status": "in_progress",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "Wielkopolskie",
+            "stage": "budowa",
+            "delivery_method": "zaprojektuj_i_buduj",
+            "object_category": "biurowe",
+        },
+    )
+    view = UserView(request)
+    res = view.json_selected_companies_projects()
+    assert isinstance(res, list)
+    assert len(res) == 1
+    assert res[0]["id"] == proj.id
+
+
+def test_user_map_selected_companies_projects(dbsession):
+    from marker.models import Activity
+    import datetime
+
+    user = _user(dbsession, "map_selcoproj")
+    co = _company(dbsession, user, "CoProjMap")
+    proj = _project(dbsession, user, "ProjLinkedMap")
+    proj.color = "red"
+    proj.country = "PL"
+    proj.subdivision = "Wielkopolskie"
+    proj.stage = "budowa"
+    proj.delivery_method = "zaprojektuj_i_buduj"
+    proj.object_category = "biurowe"
+    proj.deadline = datetime.datetime.now() + datetime.timedelta(days=10)
+
+    act = Activity(
+        company=co, project=proj, stage="koncepcja", role="generalny wykonawca"
+    )
+    dbsession.add(act)
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "status": "in_progress",
+            "color": "red",
+            "country": "PL",
+            "subdivision": "Wielkopolskie",
+            "stage": "budowa",
+            "delivery_method": "zaprojektuj_i_buduj",
+            "object_category": "biurowe",
+        },
+    )
+    view = UserView(request)
+    res = view.map_selected_companies_projects()
+    assert "url" in res
+    assert res["counter"] == 1
+
+
+def test_user_json_selected_projects_companies(dbsession):
+    from marker.models import Activity
+
+    user = _user(dbsession, "json_selprojco")
+    co = _company(dbsession, user, "CoLinkedJson")
+    co.color = "red"
+    co.country = "PL"
+    co.subdivision = "Malopolskie"
+    proj = _project(dbsession, user, "ProjCoJson")
+    act = Activity(
+        company=co, project=proj, stage="koncepcja", role="generalny wykonawca"
+    )
+    dbsession.add(act)
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "color": "red",
+            "country": "PL",
+            "subdivision": "Malopolskie",
+        },
+    )
+    view = UserView(request)
+    res = view.json_selected_projects_companies()
+    assert isinstance(res, list)
+    assert len(res) == 1
+    assert res[0]["id"] == co.id
+
+
+def test_user_map_selected_projects_companies(dbsession):
+    from marker.models import Activity
+
+    user = _user(dbsession, "map_selprojco")
+    co = _company(dbsession, user, "CoLinkedMap")
+    co.color = "red"
+    co.country = "PL"
+    co.subdivision = "Malopolskie"
+    proj = _project(dbsession, user, "ProjCoMap")
+    act = Activity(
+        company=co, project=proj, stage="koncepcja", role="generalny wykonawca"
+    )
+    dbsession.add(act)
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    request = _req(
+        dbsession,
+        user,
+        params={
+            "color": "red",
+            "country": "PL",
+            "subdivision": "Malopolskie",
+        },
+    )
+    view = UserView(request)
+    res = view.map_selected_projects_companies()
+    assert "url" in res
+    assert res["counter"] == 1
+
+
+def test_user_selected_companies_projects_extra_branches(dbsession):
+    from marker.models import Activity
+    import datetime
+
+    user = _user(dbsession, "extra_selcoproj")
+    co = _company(dbsession, user, "CoProjExtra")
+    proj = _project(dbsession, user, "ProjLinkedExtra")
+    proj.subdivision = ""
+    proj.deadline = datetime.datetime.now() - datetime.timedelta(days=10)
+
+    act = Activity(company=co, project=proj)
+    dbsession.add(act)
+    user.selected_companies.append(co)
+    transaction.commit()
+
+    # Test status = "completed", order = "invalid", invalid sort fallback, multiple subdivisions
+    request = _req(
+        dbsession,
+        user,
+        params=[
+            ("status", "completed"),
+            ("sort", "invalid"),
+            ("order", "invalid"),
+            ("subdivision", "PL-14"),
+            ("subdivision", "PL-15"),
+        ],
+    )
+    view = UserView(request)
+    res = view.map_selected_companies_projects()
+    assert res["counter"] == 0  # No subdivisions match since project has no subdivision
+
+    # Also test order="asc" for coverage of sorting in map
+    request_asc = _req(
+        dbsession,
+        user,
+        params=[
+            ("status", "completed"),
+            ("sort", "name"),
+            ("order", "asc"),
+        ],
+    )
+    view_asc = UserView(request_asc)
+    res_asc = view_asc.map_selected_companies_projects()
+    assert res_asc["counter"] == 1
+
+    # Update subdivision and test json
+    proj.subdivision = "PL-14"
+    transaction.commit()
+    res_json = view.json_selected_companies_projects()
+    assert len(res_json) == 1
+
+
+def test_user_selected_projects_companies_extra_branches(dbsession):
+    from marker.models import Activity
+
+    user = _user(dbsession, "extra_selprojco")
+    co = _company(dbsession, user, "CoLinkedExtra")
+    proj = _project(dbsession, user, "ProjCoExtra")
+    act = Activity(company=co, project=proj)
+    dbsession.add(act)
+    user.selected_projects.append(proj)
+    transaction.commit()
+
+    # Test order = "invalid", invalid sort fallback, subdivision list
+    request = _req(
+        dbsession,
+        user,
+        params=[
+            ("sort", "invalid"),
+            ("order", "invalid"),
+            ("subdivision", "Mazowieckie"),
+        ],
+    )
+    view = UserView(request)
+    res = view.map_selected_projects_companies()
+    assert res["counter"] == 0
+
+    # Also test order="asc" for coverage of sorting in map
+    request_asc = _req(
+        dbsession,
+        user,
+        params=[
+            ("sort", "name"),
+            ("order", "asc"),
+        ],
+    )
+    view_asc = UserView(request_asc)
+    res_asc = view_asc.map_selected_projects_companies()
+    assert res_asc["counter"] == 1
+
+    co.subdivision = "Mazowieckie"
+    transaction.commit()
+    res_json = view.json_selected_projects_companies()
+    assert len(res_json) == 1
+
+
+def test_user_selected_companies_duplicates_and_nolocation(dbsession):
+    user = _user(dbsession, "selcodupnl")
+    co1 = _company(dbsession, user, "DupName")
+    co2 = _company(dbsession, user, "DupName")
+    co3 = _company(dbsession, user, "NoLoc")
+    co3.latitude = None
+    co3.longitude = None
+
+    user.selected_companies.extend([co1, co2, co3])
+    transaction.commit()
+
+    # Test duplicates
+    request_dup = _req(dbsession, user)
+    request_dup.matched_route.name = "user_duplicates_selected_companies"
+    view_dup = UserView(request_dup)
+    res_dup = view_dup.selected_companies()
+    assert "paginator" in res_dup
+
+    # Test nolocation
+    request_nl = _req(dbsession, user)
+    request_nl.matched_route.name = "user_nolocation_selected_companies"
+    view_nl = UserView(request_nl)
+    res_nl = view_nl.selected_companies()
+    assert "paginator" in res_nl
+
+
+def test_user_selected_projects_duplicates_and_nolocation(dbsession):
+    user = _user(dbsession, "selprojdupnl")
+    p1 = _project(dbsession, user, "DupProj")
+    p2 = _project(dbsession, user, "DupProj")
+    p3 = _project(dbsession, user, "NoLocProj")
+    p3.latitude = None
+    p3.longitude = None
+
+    user.selected_projects.extend([p1, p2, p3])
+    transaction.commit()
+
+    # Test duplicates
+    request_dup = _req(dbsession, user)
+    request_dup.matched_route.name = "user_duplicates_selected_projects"
+    view_dup = UserView(request_dup)
+    res_dup = view_dup.selected_projects()
+    assert "paginator" in res_dup
+
+    # Test nolocation
+    request_nl = _req(dbsession, user)
+    request_nl.matched_route.name = "user_nolocation_selected_projects"
+    view_nl = UserView(request_nl)
+    res_nl = view_nl.selected_projects()
+    assert "paginator" in res_nl

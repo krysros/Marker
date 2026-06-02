@@ -23,6 +23,20 @@ def includeme(config):
 
     config.add_route("company_all", "/company", factory=default_factory)
     config.add_route("company_count", "/company/count", factory=default_factory)
+    config.add_route(
+        "company_duplicates_all", "/company/duplicates", factory=default_factory
+    )
+    config.add_route(
+        "company_duplicates_all_more",
+        "/company/duplicates/more",
+        factory=default_factory,
+    )
+    config.add_route(
+        "company_nolocation", "/company/nolocation", factory=default_factory
+    )
+    config.add_route(
+        "company_nolocation_more", "/company/nolocation/more", factory=default_factory
+    )
     config.add_route("company_uptime", "/company/uptime", factory=default_factory)
     config.add_route(
         "company_uptime_check",
@@ -201,6 +215,20 @@ def includeme(config):
 
     config.add_route("project_all", "/project", factory=default_factory)
     config.add_route("project_count", "/project/count", factory=default_factory)
+    config.add_route(
+        "project_duplicates_all", "/project/duplicates", factory=default_factory
+    )
+    config.add_route(
+        "project_duplicates_all_more",
+        "/project/duplicates/more",
+        factory=default_factory,
+    )
+    config.add_route(
+        "project_nolocation", "/project/nolocation", factory=default_factory
+    )
+    config.add_route(
+        "project_nolocation_more", "/project/nolocation/more", factory=default_factory
+    )
     config.add_route("project_uptime", "/project/uptime", factory=default_factory)
     config.add_route(
         "project_uptime_check",
@@ -378,6 +406,10 @@ def includeme(config):
     )
 
     config.add_route("tag_all", "/tag", factory=default_factory)
+    config.add_route("tag_duplicates_all", "/tag/duplicates", factory=default_factory)
+    config.add_route(
+        "tag_duplicates_all_more", "/tag/duplicates/more", factory=default_factory
+    )
     config.add_route("tag_more", "/tag/more", factory=default_factory)
     config.add_route("tag_count", "/tag/count", factory=default_factory)
     config.add_route("tag_unassigned", "/tag/unassigned", factory=default_factory)
@@ -520,6 +552,14 @@ def includeme(config):
     )
 
     config.add_route("contact_all", "/contact", factory=default_factory)
+    config.add_route(
+        "contact_duplicates_all", "/contact/duplicates", factory=default_factory
+    )
+    config.add_route(
+        "contact_duplicates_all_more",
+        "/contact/duplicates/more",
+        factory=default_factory,
+    )
     config.add_route("contact_more", "/contact/more", factory=default_factory)
     config.add_route(
         "contact_unassigned", "/contact/unassigned", factory=default_factory
@@ -801,6 +841,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_duplicates_selected_companies",
+        "/user/{username}/duplicates_selected_companies",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_nolocation_selected_companies",
+        "/user/{username}/nolocation_selected_companies",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_uptime_selected_companies_rows",
         "/user/{username}/uptime_selected_companies_rows",
         factory=user_factory,
@@ -843,6 +893,16 @@ def includeme(config):
     config.add_route(
         "user_more_selected_companies_projects",
         "/user/{username}/selected_companies/projects/more",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_selected_companies_projects",
+        "/user/{username}/selected_companies/projects/json",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_selected_companies_projects",
+        "/user/{username}/selected_companies/projects/map",
         factory=user_factory,
     )
     config.add_route(
@@ -906,6 +966,16 @@ def includeme(config):
         factory=user_factory,
     )
     config.add_route(
+        "user_duplicates_selected_projects",
+        "/user/{username}/duplicates_selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_nolocation_selected_projects",
+        "/user/{username}/nolocation_selected_projects",
+        factory=user_factory,
+    )
+    config.add_route(
         "user_uptime_selected_projects_rows",
         "/user/{username}/uptime_selected_projects_rows",
         factory=user_factory,
@@ -948,6 +1018,16 @@ def includeme(config):
     config.add_route(
         "user_more_selected_projects_companies",
         "/user/{username}/selected_projects/companies/more",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_json_selected_projects_companies",
+        "/user/{username}/selected_projects/companies/json",
+        factory=user_factory,
+    )
+    config.add_route(
+        "user_map_selected_projects_companies",
+        "/user/{username}/selected_projects/companies/map",
         factory=user_factory,
     )
     config.add_route(

@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock
-import transaction
 from webob.multidict import MultiDict
 from marker.models.company import Company
 from marker.models.project import Project
@@ -24,7 +23,7 @@ def test_user_and_db(dbsession):
         password="test_password",
     )
     dbsession.add(user)
-    transaction.commit()
+    dbsession.flush()
     return user
 
 
@@ -65,7 +64,7 @@ def test_company_duplicates_coverage(dbsession, test_user_and_db):
     c2.longitude = 21.0122
 
     dbsession.add_all([c1, c2])
-    transaction.commit()
+    dbsession.flush()
 
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
@@ -134,6 +133,25 @@ def test_company_duplicates_coverage(dbsession, test_user_and_db):
     res_no_loc = view.all()
     assert "paginator" in res_no_loc
 
+    # 6. Test matched_route name-based duplicates/nolocation paths for company.py coverage
+    request.matched_route = MagicMock()
+
+    request.matched_route.name = "company_duplicates_all"
+    res_dup_route = view.all()
+    assert "paginator" in res_dup_route
+
+    request.matched_route.name = "company_duplicates_all_more"
+    res_dup_more = view.all()
+    assert "paginator" in res_dup_more
+
+    request.matched_route.name = "company_nolocation"
+    res_no_loc_route = view.all()
+    assert "paginator" in res_no_loc_route
+
+    request.matched_route.name = "company_nolocation_more"
+    res_no_loc_more = view.all()
+    assert "paginator" in res_no_loc_more
+
 
 def test_project_duplicates_coverage(dbsession, test_user_and_db):
     user = test_user_and_db
@@ -171,7 +189,7 @@ def test_project_duplicates_coverage(dbsession, test_user_and_db):
     p2.longitude = 21.0122
 
     dbsession.add_all([p1, p2])
-    transaction.commit()
+    dbsession.flush()
 
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
@@ -240,6 +258,25 @@ def test_project_duplicates_coverage(dbsession, test_user_and_db):
     res_no_loc = view.all()
     assert "paginator" in res_no_loc
 
+    # 6. Test matched_route name-based duplicates/nolocation paths for project.py coverage
+    request.matched_route = MagicMock()
+
+    request.matched_route.name = "project_duplicates_all"
+    res_dup_route = view.all()
+    assert "paginator" in res_dup_route
+
+    request.matched_route.name = "project_duplicates_all_more"
+    res_dup_more = view.all()
+    assert "paginator" in res_dup_more
+
+    request.matched_route.name = "project_nolocation"
+    res_no_loc_route = view.all()
+    assert "paginator" in res_no_loc_route
+
+    request.matched_route.name = "project_nolocation_more"
+    res_no_loc_more = view.all()
+    assert "paginator" in res_no_loc_more
+
 
 def test_contact_duplicates_coverage(dbsession, test_user_and_db):
     user = test_user_and_db
@@ -259,7 +296,7 @@ def test_contact_duplicates_coverage(dbsession, test_user_and_db):
         color="red",
     )
     dbsession.add_all([cnt1, cnt2])
-    transaction.commit()
+    dbsession.flush()
 
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
@@ -285,6 +322,17 @@ def test_contact_duplicates_coverage(dbsession, test_user_and_db):
     assert "paginator" in result_all
     names = [c.name for c in result_all["paginator"]]
     assert "DuplicateContact" in names or "duplicatecontact" in names
+
+    # 1b. Test ContactView.all() with route_name='contact_duplicates_all' and no param
+    request.matched_route = MagicMock()
+    request.matched_route.name = "contact_duplicates_all"
+    request.params = MultiDict()
+    request.GET = request.params
+    view = ContactView(request)
+    result_route = view.all()
+    assert "paginator" in result_route
+    names_route = [c.name for c in result_route["paginator"]]
+    assert "DuplicateContact" in names_route or "duplicatecontact" in names_route
 
     # 2. Test count_duplicates
     count_res = view.count_duplicates()
@@ -329,7 +377,7 @@ def test_tag_duplicates_coverage(dbsession, test_user_and_db):
     t2 = Tag(name="duplicatetag")
     t2.category = "test_cat"
     dbsession.add_all([t1, t2])
-    transaction.commit()
+    dbsession.flush()
 
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
@@ -355,6 +403,17 @@ def test_tag_duplicates_coverage(dbsession, test_user_and_db):
     assert "paginator" in result_all
     names = [t.name for t in result_all["paginator"]]
     assert "DuplicateTag" in names or "duplicatetag" in names
+
+    # 1b. Test TagView.all() with route_name='tag_duplicates_all' and no param
+    request.matched_route = MagicMock()
+    request.matched_route.name = "tag_duplicates_all"
+    request.params = MultiDict()
+    request.GET = request.params
+    view = TagView(request)
+    result_route = view.all()
+    assert "paginator" in result_route
+    names_route = [t.name for t in result_route["paginator"]]
+    assert "DuplicateTag" in names_route or "duplicatetag" in names_route
 
     # 2. Test count_duplicates
     count_res = view.count_duplicates()

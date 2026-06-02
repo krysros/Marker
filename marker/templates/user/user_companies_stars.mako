@@ -23,9 +23,14 @@
   ${button.dropdown_order(order_criteria)}
   <div class="vr mx-1"></div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
-    <a class="btn btn-primary" href="${request.route_url('user_companies_stars', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn ${'btn-primary' if not context.get('q') or (q.get('duplicates') != '1' and q.get('no_location') != '1') else 'btn-outline-primary'}" href="${request.route_url('user_companies_stars', username=user.name,_query={**q, 'duplicates': None, 'no_location': None} if context.get('q') else {})}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_map_companies_stars', username=user.name)}"><i class="bi bi-map"></i> ${_("Map")}</a>
+  </div>
+  <div class="vr mx-1"></div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_companies_stars', username=user.name)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
+    <a class="btn ${'btn-primary' if context.get('q') and q.get('duplicates') == '1' else 'btn-outline-primary'}" href="${request.route_url('user_companies_stars', username=user.name, _query={**q, 'duplicates': '1', 'no_location': None})}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
+    <a class="btn ${'btn-primary' if context.get('q') and q.get('no_location') == '1' else 'btn-outline-primary'}" href="${request.route_url('user_companies_stars', username=user.name, _query={**q, 'duplicates': None, 'no_location': '1'})}"><i class="bi bi-geo"></i> ${_("No location")}</a>
   </div>
 </div>
 

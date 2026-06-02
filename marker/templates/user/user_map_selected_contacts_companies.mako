@@ -13,7 +13,6 @@
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_contacts_companies', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_map_selected_contacts_companies', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_selected_contacts_companies', username=user.name)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
   </div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Pivot view')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_contacts_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>

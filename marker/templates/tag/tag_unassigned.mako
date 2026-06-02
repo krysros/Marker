@@ -20,10 +20,13 @@
   <div>${button.dropdown_sort(sort_criteria)}</div>
   <div>${button.dropdown_order(order_criteria)}</div>
   <div class="vr mx-1"></div>
+  <%
+    matched_route_name = getattr(request, "matched_route", None).name if getattr(request, "matched_route", None) else ""
+  %>
   <div class="btn-group btn-group-sm" role="group">
-    <a class="btn btn-outline-primary btn-sm" href="${request.route_url('tag_all', _query={**q, 'duplicates': None})}"><i class="bi bi-tags"></i> ${_("All")}</a>
-    <a class="btn btn-primary btn-sm" href="${request.route_url('tag_unassigned')}"><i class="bi bi-tag-x"></i> ${_("Unassigned")}</a>
-    <a class="btn btn-outline-primary btn-sm" href="${request.route_url('tag_all', _query={**q, 'duplicates': '1'})}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
+    <a class="btn ${'btn-primary' if matched_route_name == 'tag_all' else 'btn-outline-primary'} btn-sm" href="${request.route_url('tag_all', _query=q)}"><i class="bi bi-tags"></i> ${_("All")}</a>
+    <a class="btn ${'btn-primary' if matched_route_name == 'tag_unassigned' else 'btn-outline-primary'} btn-sm" href="${request.route_url('tag_unassigned', _query=q)}"><i class="bi bi-tag-x"></i> ${_("Unassigned")}</a>
+    <a class="btn ${'btn-primary' if matched_route_name == 'tag_duplicates_all' else 'btn-outline-primary'} btn-sm" href="${request.route_url('tag_duplicates_all', _query=q)}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
   </div>
 </div>
 

@@ -98,6 +98,8 @@ def test_company_no_location_filter(dbsession):
     request.method = "GET"
     request.GET = MultiDict({"no_location": "1"})
     request.params = MultiDict({"no_location": "1"})
+    request.matched_route = MagicMock()
+    request.matched_route.name = "company_nolocation"
     request.locale_name = "en"
     request.translate = lambda x: x
     request.route_url = lambda *a, **kw: "/company"
@@ -234,6 +236,8 @@ def test_project_no_location_filter(dbsession):
     request.method = "GET"
     request.GET = MultiDict({"no_location": "1"})
     request.params = MultiDict({"no_location": "1"})
+    request.matched_route = MagicMock()
+    request.matched_route.name = "project_nolocation"
     request.locale_name = "en"
     request.translate = lambda x: x
     request.route_url = lambda *a, **kw: "/project"

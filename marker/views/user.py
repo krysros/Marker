@@ -846,7 +846,7 @@ class UserView:
         renderer="company_table#rows.mako",
         permission="view",
     )
-    def companies(self):
+    def companies(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
@@ -884,6 +884,8 @@ class UserView:
             _order = "desc"
 
         stmt = select(Company).filter(Company.created_by == user)
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
 
         if name:
             normalized_name = normalize_ci_value(name)
@@ -965,8 +967,11 @@ class UserView:
             .all()
         )
 
+        next_route = (
+            "user_uptime_companies_rows" if is_uptime else "user_more_companies"
+        )
         next_page = self.request.route_url(
-            "user_more_companies",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -988,6 +993,7 @@ class UserView:
             "title": user.fullname,
             "user_pills": self.pills(user),
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -1107,7 +1113,7 @@ class UserView:
         renderer="project_table#rows.mako",
         permission="view",
     )
-    def projects(self):
+    def projects(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         name = self.request.params.get("name", None)
@@ -1154,6 +1160,8 @@ class UserView:
             _order = "desc"
 
         stmt = select(Project).filter(Project.created_by == user)
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
 
         if name:
             normalized_name = normalize_ci_value(name)
@@ -1259,8 +1267,9 @@ class UserView:
             .all()
         )
 
+        next_route = "user_uptime_projects_rows" if is_uptime else "user_more_projects"
         next_page = self.request.route_url(
-            "user_more_projects",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -1285,6 +1294,7 @@ class UserView:
             "title": user.fullname,
             "user_pills": self.pills(user),
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -1801,11 +1811,21 @@ class UserView:
         permission="view",
     )
     @view_config(
+        route_name="user_duplicates_selected_companies",
+        renderer="user_selected_companies.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_nolocation_selected_companies",
+        renderer="user_selected_companies.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="user_more_selected_companies",
         renderer="company_table#rows.mako",
         permission="view",
     )
-    def selected_companies(self):
+    def selected_companies(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
@@ -1840,6 +1860,26 @@ class UserView:
             .join(selected_companies)
             .filter(user.id == selected_companies.c.user_id)
         )
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
+
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else ""
+        duplicates = route_name == "user_duplicates_selected_companies"
+        if duplicates:
+            dup_subquery = (
+                select(func.lower(Company.name))
+                .group_by(func.lower(Company.name))
+                .having(func.count() > 1)
+                .scalar_subquery()
+            )
+            stmt = stmt.filter(func.lower(Company.name).in_(dup_subquery))
+
+        no_location = route_name == "user_nolocation_selected_companies"
+        if no_location:
+            stmt = stmt.filter(
+                or_(Company.latitude.is_(None), Company.longitude.is_(None))
+            )
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -1879,8 +1919,13 @@ class UserView:
             .all()
         )
 
+        next_route = (
+            "user_uptime_selected_companies_rows"
+            if is_uptime
+            else "user_more_selected_companies"
+        )
         next_page = self.request.route_url(
-            "user_more_selected_companies",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -1898,6 +1943,7 @@ class UserView:
             "colors": colors,
             "counter": counter,
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -1910,7 +1956,7 @@ class UserView:
         renderer="company_table#rows.mako",
         permission="view",
     )
-    def selected_companies_similar(self):
+    def selected_companies_similar(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
@@ -1991,6 +2037,8 @@ class UserView:
         )
 
         stmt = select(Company).join(similarity, similarity.c.company_id == Company.id)
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -2065,8 +2113,13 @@ class UserView:
                 for similar_company_id, names in tag_names_by_company.items()
             }
 
+        next_route = (
+            "user_uptime_selected_companies_similar_rows"
+            if is_uptime
+            else "user_more_selected_companies_similar"
+        )
         next_page = self.request.route_url(
-            "user_more_selected_companies_similar",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -2091,6 +2144,7 @@ class UserView:
             "show_shared_tags": True,
             "shared_tag_counts": shared_tag_counts,
             "shared_tag_labels": shared_tag_labels,
+            "page": page,
         }
 
     @view_config(
@@ -2307,90 +2361,13 @@ class UserView:
         permission="view",
     )
     def uptime_selected_companies_similar(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
-        if tag_operator not in {"or", "and"}:
-            tag_operator = "or"
-
-        selected_company_ids_sq = (
-            select(selected_companies.c.company_id)
-            .where(selected_companies.c.user_id == user.id)
-            .subquery()
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_selected_companies_similar_rows"
+            if matched_route
+            else False
         )
-
-        if tag_operator == "and":
-            n_selected_sq = (
-                select(func.count())
-                .select_from(selected_company_ids_sq)
-                .scalar_subquery()
-            )
-            pool_tags_sq = (
-                select(companies_tags.c.tag_id)
-                .where(
-                    companies_tags.c.company_id.in_(
-                        select(selected_company_ids_sq.c.company_id)
-                    )
-                )
-                .group_by(companies_tags.c.tag_id)
-                .having(
-                    func.count(func.distinct(companies_tags.c.company_id))
-                    == n_selected_sq
-                )
-                .subquery()
-            )
-        else:
-            pool_tags_sq = (
-                select(companies_tags.c.tag_id)
-                .where(
-                    companies_tags.c.company_id.in_(
-                        select(selected_company_ids_sq.c.company_id)
-                    )
-                )
-                .distinct()
-                .subquery()
-            )
-
-        other_tags = companies_tags.alias("other_tags")
-        similarity = (
-            select(
-                other_tags.c.company_id.label("company_id"),
-                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
-            )
-            .where(
-                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
-                other_tags.c.company_id.notin_(
-                    select(selected_company_ids_sq.c.company_id)
-                ),
-            )
-            .group_by(other_tags.c.company_id)
-            .subquery()
-        )
-
-        stmt = (
-            select(Company)
-            .join(similarity, similarity.c.company_id == Company.id)
-            .filter(Company.website.isnot(None), Company.website != "")
-            .order_by(Company.name)
-        )
-
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_selected_companies_similar_rows",
-            username=user.name,
-            _query={"page": page + 1, "tag_operator": tag_operator},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-            "tag_operator": tag_operator,
-        }
+        return self.selected_companies_similar(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_json_selected_companies",
@@ -2524,34 +2501,13 @@ class UserView:
         permission="view",
     )
     def uptime_selected_companies(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .join(selected_companies)
-            .filter(
-                user.id == selected_companies.c.user_id,
-                Company.website.isnot(None),
-                Company.website != "",
-            )
-            .order_by(Company.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_selected_companies_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_selected_companies_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-        }
+        return self.selected_companies(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_export_selected_companies",
@@ -2616,11 +2572,21 @@ class UserView:
         permission="view",
     )
     @view_config(
+        route_name="user_duplicates_selected_projects",
+        renderer="user_selected_projects.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="user_nolocation_selected_projects",
+        renderer="user_selected_projects.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="user_more_selected_projects",
         renderer="project_table#rows.mako",
         permission="view",
     )
-    def selected_projects(self):
+    def selected_projects(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         stage = self.request.params.get("stage", None)
@@ -2660,6 +2626,26 @@ class UserView:
             .join(selected_projects)
             .filter(user.id == selected_projects.c.user_id)
         )
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
+
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else ""
+        duplicates = route_name == "user_duplicates_selected_projects"
+        if duplicates:
+            dup_subquery = (
+                select(func.lower(Project.name))
+                .group_by(func.lower(Project.name))
+                .having(func.count() > 1)
+                .scalar_subquery()
+            )
+            stmt = stmt.filter(func.lower(Project.name).in_(dup_subquery))
+
+        no_location = route_name == "user_nolocation_selected_projects"
+        if no_location:
+            stmt = stmt.filter(
+                or_(Project.latitude.is_(None), Project.longitude.is_(None))
+            )
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
@@ -2715,8 +2701,13 @@ class UserView:
             .all()
         )
 
+        next_route = (
+            "user_uptime_selected_projects_rows"
+            if is_uptime
+            else "user_more_selected_projects"
+        )
         next_page = self.request.route_url(
-            "user_more_selected_projects",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -2737,6 +2728,7 @@ class UserView:
             "colors": colors,
             "counter": counter,
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -2749,7 +2741,7 @@ class UserView:
         renderer="project_table#rows.mako",
         permission="view",
     )
-    def selected_projects_similar(self):
+    def selected_projects_similar(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
@@ -2833,6 +2825,8 @@ class UserView:
         )
 
         stmt = select(Project).join(similarity, similarity.c.project_id == Project.id)
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
 
         if color:
             stmt = stmt.filter(Project.color == color)
@@ -2919,8 +2913,13 @@ class UserView:
                 for similar_project_id, names in tag_names_by_project.items()
             }
 
+        next_route = (
+            "user_uptime_selected_projects_similar_rows"
+            if is_uptime
+            else "user_more_selected_projects_similar"
+        )
         next_page = self.request.route_url(
-            "user_more_selected_projects_similar",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -2945,6 +2944,7 @@ class UserView:
             "show_shared_tags": True,
             "shared_tag_counts": shared_tag_counts,
             "shared_tag_labels": shared_tag_labels,
+            "page": page,
         }
 
     @view_config(
@@ -3188,90 +3188,13 @@ class UserView:
         permission="view",
     )
     def uptime_selected_projects_similar(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        tag_operator = self.request.params.get("tag_operator", "or").strip().lower()
-        if tag_operator not in {"or", "and"}:
-            tag_operator = "or"
-
-        selected_project_ids_sq = (
-            select(selected_projects.c.project_id)
-            .where(selected_projects.c.user_id == user.id)
-            .subquery()
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_selected_projects_similar_rows"
+            if matched_route
+            else False
         )
-
-        if tag_operator == "and":
-            n_selected_sq = (
-                select(func.count())
-                .select_from(selected_project_ids_sq)
-                .scalar_subquery()
-            )
-            pool_tags_sq = (
-                select(projects_tags.c.tag_id)
-                .where(
-                    projects_tags.c.project_id.in_(
-                        select(selected_project_ids_sq.c.project_id)
-                    )
-                )
-                .group_by(projects_tags.c.tag_id)
-                .having(
-                    func.count(func.distinct(projects_tags.c.project_id))
-                    == n_selected_sq
-                )
-                .subquery()
-            )
-        else:
-            pool_tags_sq = (
-                select(projects_tags.c.tag_id)
-                .where(
-                    projects_tags.c.project_id.in_(
-                        select(selected_project_ids_sq.c.project_id)
-                    )
-                )
-                .distinct()
-                .subquery()
-            )
-
-        other_tags = projects_tags.alias("other_tags")
-        similarity = (
-            select(
-                other_tags.c.project_id.label("project_id"),
-                func.count(func.distinct(other_tags.c.tag_id)).label("shared_tags"),
-            )
-            .where(
-                other_tags.c.tag_id.in_(select(pool_tags_sq.c.tag_id)),
-                other_tags.c.project_id.notin_(
-                    select(selected_project_ids_sq.c.project_id)
-                ),
-            )
-            .group_by(other_tags.c.project_id)
-            .subquery()
-        )
-
-        stmt = (
-            select(Project)
-            .join(similarity, similarity.c.project_id == Project.id)
-            .filter(Project.website.isnot(None), Project.website != "")
-            .order_by(Project.name)
-        )
-
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_selected_projects_similar_rows",
-            username=user.name,
-            _query={"page": page + 1, "tag_operator": tag_operator},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-            "tag_operator": tag_operator,
-        }
+        return self.selected_projects_similar(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_json_selected_projects",
@@ -3442,34 +3365,13 @@ class UserView:
         permission="view",
     )
     def uptime_selected_projects(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .join(selected_projects)
-            .filter(
-                user.id == selected_projects.c.user_id,
-                Project.website.isnot(None),
-                Project.website != "",
-            )
-            .order_by(Project.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_selected_projects_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_selected_projects_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-        }
+        return self.selected_projects(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_export_selected_projects",
@@ -4233,7 +4135,7 @@ class UserView:
         renderer="company_table#rows.mako",
         permission="view",
     )
-    def selected_contacts_companies(self):
+    def selected_contacts_companies(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
@@ -4261,6 +4163,8 @@ class UserView:
             .filter(selected_contacts.c.user_id == user.id)
             .distinct()
         )
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -4290,8 +4194,13 @@ class UserView:
             .all()
         )
 
+        next_route = (
+            "user_uptime_selected_contacts_companies_rows"
+            if is_uptime
+            else "user_more_selected_contacts_companies"
+        )
         next_page = self.request.route_url(
-            "user_more_selected_contacts_companies",
+            next_route,
             username=user.name,
             _query={**q, "page": page + 1},
         )
@@ -4306,6 +4215,7 @@ class UserView:
             "colors": colors,
             "counter": counter,
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -4318,7 +4228,7 @@ class UserView:
         renderer="project_table#rows.mako",
         permission="view",
     )
-    def selected_contacts_projects(self):
+    def selected_contacts_projects(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
@@ -4347,6 +4257,9 @@ class UserView:
             .filter(selected_contacts.c.user_id == user.id)
             .distinct()
         )
+
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
 
         if color:
             stmt = stmt.filter(Project.color == color)
@@ -4379,8 +4292,13 @@ class UserView:
             .all()
         )
 
+        next_route = (
+            "user_uptime_selected_contacts_projects_rows"
+            if is_uptime
+            else "user_more_selected_contacts_projects"
+        )
         next_page = self.request.route_url(
-            "user_more_selected_contacts_projects",
+            next_route,
             username=user.name,
             _query={**q, "page": page + 1},
         )
@@ -4395,6 +4313,7 @@ class UserView:
             "colors": colors,
             "counter": counter,
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -4533,36 +4452,13 @@ class UserView:
         permission="view",
     )
     def uptime_selected_contacts_companies(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .join(Company.contacts)
-            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
-            .filter(
-                selected_contacts.c.user_id == user.id,
-                Company.website.isnot(None),
-                Company.website != "",
-            )
-            .distinct()
-            .order_by(Company.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_selected_contacts_companies_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_selected_contacts_companies_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-        }
+        return self.selected_contacts_companies(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_json_selected_contacts_projects",
@@ -4709,36 +4605,13 @@ class UserView:
         permission="view",
     )
     def uptime_selected_contacts_projects(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .join(Project.contacts)
-            .join(selected_contacts, selected_contacts.c.contact_id == Contact.id)
-            .filter(
-                selected_contacts.c.user_id == user.id,
-                Project.website.isnot(None),
-                Project.website != "",
-            )
-            .distinct()
-            .order_by(Project.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_selected_contacts_projects_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_selected_contacts_projects_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-        }
+        return self.selected_contacts_projects(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_selected_contacts",
@@ -5151,6 +5024,207 @@ class UserView:
         }
 
     @view_config(
+        route_name="user_json_selected_companies_projects",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_companies_projects(self):
+        user = self.request.context.user
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        now = datetime.datetime.now()
+
+        selected_company_ids = (
+            select(selected_companies.c.company_id)
+            .where(selected_companies.c.user_id == user.id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(Project)
+            .join(Activity, Activity.project_id == Project.id)
+            .filter(Activity.company_id.in_(selected_company_ids))
+            .distinct()
+        )
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+
+        projects = self.request.dbsession.execute(stmt).scalars().all()
+        selected_project_ids = selected_ids_for_items(
+            self.request,
+            selected_projects,
+            selected_projects.c.project_id,
+            [project.id for project in projects],
+        )
+
+        res = [
+            {
+                "id": project.id,
+                "name": project.name,
+                "street": project.street,
+                "city": project.city,
+                "country": project.country,
+                "latitude": project.latitude,
+                "longitude": project.longitude,
+                "color": project.color,
+                "url": self.request.route_url(
+                    "project_view", project_id=project.id, slug=project.slug
+                ),
+                "check_url": self.request.route_url(
+                    "project_check", project_id=project.id, slug=project.slug
+                ),
+                "checked": project.id in selected_project_ids,
+            }
+            for project in projects
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_selected_companies_projects",
+        renderer="user_map_selected_companies_projects.mako",
+        permission="view",
+    )
+    def map_selected_companies_projects(self):
+        user = self.request.context.user
+        stage = self.request.params.get("stage", None)
+        status = self.request.params.get("status", None)
+        delivery_method = self.request.params.get("delivery_method", None)
+        object_category = self.request.params.get("object_category", None)
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        now = datetime.datetime.now()
+        q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        selected_company_ids = (
+            select(selected_companies.c.company_id)
+            .where(selected_companies.c.user_id == user.id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(Project)
+            .join(Activity, Activity.project_id == Project.id)
+            .filter(Activity.company_id.in_(selected_company_ids))
+            .distinct()
+        )
+
+        if status == "in_progress":
+            stmt = stmt.filter(Project.deadline > now)
+            q["status"] = status
+        elif status == "completed":
+            stmt = stmt.filter(Project.deadline < now)
+            q["status"] = status
+
+        if color:
+            stmt = stmt.filter(Project.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Project.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Project.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if stage:
+            stmt = stmt.filter(Project.stage == stage)
+            q["stage"] = stage
+
+        if delivery_method:
+            stmt = stmt.filter(Project.delivery_method == delivery_method)
+            q["delivery_method"] = delivery_method
+
+        if object_category:
+            stmt = stmt.filter(Project.object_category == object_category)
+            q["object_category"] = object_category
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Project, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Project, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        sort_criteria = dict(SORT_CRITERIA_PROJECTS)
+        sort_criteria["name"] = self.request.translate("Project")
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+        statuses = dict(STATUS)
+        stages = dict(STAGES)
+        project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+
+        obj = Filter(**q)
+        form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
+        url = self.request.route_url(
+            "user_json_selected_companies_projects", username=user.name, _query=q
+        )
+        return {
+            "user": user,
+            "url": url,
+            "q": q,
+            "counter": counter,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "colors": colors,
+            "statuses": statuses,
+            "stages": stages,
+            "project_delivery_methods": project_delivery_methods,
+            "form": form,
+        }
+
+    @view_config(
         route_name="user_selected_projects_tags",
         renderer="user_selected_projects_tags.mako",
         permission="view",
@@ -5342,6 +5416,158 @@ class UserView:
             "next_page": next_page,
             "colors": colors,
             "counter": counter,
+            "form": form,
+        }
+
+    @view_config(
+        route_name="user_json_selected_projects_companies",
+        renderer="json",
+        permission="view",
+    )
+    def json_selected_projects_companies(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+
+        selected_project_ids = (
+            select(selected_projects.c.project_id)
+            .where(selected_projects.c.user_id == user.id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(Company)
+            .join(Activity, Activity.company_id == Company.id)
+            .filter(Activity.project_id.in_(selected_project_ids))
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+
+        companies = self.request.dbsession.execute(stmt).scalars().all()
+        selected_company_ids = selected_ids_for_items(
+            self.request,
+            selected_companies,
+            selected_companies.c.company_id,
+            [company.id for company in companies],
+        )
+
+        res = [
+            {
+                "id": company.id,
+                "name": company.name,
+                "street": company.street,
+                "city": company.city,
+                "country": company.country,
+                "latitude": company.latitude,
+                "longitude": company.longitude,
+                "color": company.color,
+                "url": self.request.route_url(
+                    "company_view", company_id=company.id, slug=company.slug
+                ),
+                "check_url": self.request.route_url(
+                    "company_check", company_id=company.id, slug=company.slug
+                ),
+                "checked": company.id in selected_company_ids,
+            }
+            for company in companies
+        ]
+        return res
+
+    @view_config(
+        route_name="user_map_selected_projects_companies",
+        renderer="user_map_selected_projects_companies.mako",
+        permission="view",
+    )
+    def map_selected_projects_companies(self):
+        user = self.request.context.user
+        color = self.request.params.get("color", None)
+        country = self.request.params.get("country", None)
+        subdivision = [
+            value for value in self.request.params.getall("subdivision") if value
+        ]
+        _sort = self.request.params.get("sort", "created_at")
+        _order = self.request.params.get("order", "desc")
+        q = {}
+
+        allowed_sorts = {
+            "name",
+            "city",
+            "subdivision",
+            "country",
+            "created_at",
+            "updated_at",
+        }
+        if _sort not in allowed_sorts:
+            _sort = "created_at"
+
+        if _order not in {"asc", "desc"}:
+            _order = "desc"
+
+        selected_project_ids = (
+            select(selected_projects.c.project_id)
+            .where(selected_projects.c.user_id == user.id)
+            .scalar_subquery()
+        )
+        stmt = (
+            select(Company)
+            .join(Activity, Activity.company_id == Company.id)
+            .filter(Activity.project_id.in_(selected_project_ids))
+            .distinct()
+        )
+
+        if color:
+            stmt = stmt.filter(Company.color == color)
+            q["color"] = color
+
+        if country:
+            stmt = stmt.filter(Company.country == country)
+            q["country"] = country
+
+        if subdivision:
+            stmt = stmt.filter(Company.subdivision.in_(subdivision))
+            q["subdivision"] = list(subdivision)
+
+        if _order == "asc":
+            stmt = stmt.order_by(sort_column(Company, _sort).asc())
+        elif _order == "desc":
+            stmt = stmt.order_by(sort_column(Company, _sort).desc())
+
+        q["sort"] = _sort
+        q["order"] = _order
+
+        counter = self.request.dbsession.execute(
+            select(func.count()).select_from(stmt.order_by(None).subquery())
+        ).scalar()
+
+        sort_criteria = dict(SORT_CRITERIA_EXT)
+        sort_criteria["name"] = self.request.translate("Company")
+        order_criteria = dict(ORDER_CRITERIA)
+        colors = dict(COLORS)
+
+        obj = Filter(**q)
+        form = CompanyFilterForm(self.request.GET, obj, request=self.request)
+
+        url = self.request.route_url(
+            "user_json_selected_projects_companies", username=user.name, _query=q
+        )
+        return {
+            "user": user,
+            "url": url,
+            "q": q,
+            "counter": counter,
+            "sort_criteria": sort_criteria,
+            "order_criteria": order_criteria,
+            "colors": colors,
             "form": form,
         }
 
@@ -5965,7 +6191,7 @@ class UserView:
         renderer="company_table#rows.mako",
         permission="view",
     )
-    def companies_stars(self):
+    def companies_stars(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         color = self.request.params.get("color", None)
@@ -5993,6 +6219,9 @@ class UserView:
             .join(companies_stars)
             .filter(user.id == companies_stars.c.user_id)
         )
+
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
 
         if color:
             stmt = stmt.filter(Company.color == color)
@@ -6029,8 +6258,13 @@ class UserView:
             select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
+        next_route = (
+            "user_uptime_companies_stars_rows"
+            if is_uptime
+            else "user_more_companies_stars"
+        )
         next_page = self.request.route_url(
-            "user_more_companies_stars",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -6051,6 +6285,7 @@ class UserView:
             "colors": colors,
             "counter": counter,
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -6212,31 +6447,13 @@ class UserView:
         permission="view",
     )
     def uptime_companies_stars(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .join(companies_stars)
-            .filter(user.id == companies_stars.c.user_id)
-            .filter(Company.website is not None)
-            .filter(Company.website != "")
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_companies_stars_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_companies_stars_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-        }
+        return self.companies_stars(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_projects_stars",
@@ -6248,7 +6465,7 @@ class UserView:
         renderer="project_table#rows.mako",
         permission="view",
     )
-    def projects_stars(self):
+    def projects_stars(self, is_uptime=False, is_rows=False):
         user = self.request.context.user
         page = int(self.request.params.get("page", 1))
         status = self.request.params.get("status", None)
@@ -6264,6 +6481,7 @@ class UserView:
         sort_criteria["name"] = self.request.translate("Project")
         order_criteria = dict(ORDER_CRITERIA)
         project_delivery_methods = dict(PROJECT_DELIVERY_METHODS)
+        colors = dict(COLORS)
         now = datetime.datetime.now()
         q = {}
 
@@ -6279,6 +6497,9 @@ class UserView:
             .join(projects_stars)
             .filter(user.id == projects_stars.c.user_id)
         )
+
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
 
         if status == "in_progress":
             stmt = stmt.filter(Project.deadline > now)
@@ -6326,8 +6547,13 @@ class UserView:
             select(func.count()).select_from(stmt.order_by(None).subquery())
         ).scalar()
 
+        next_route = (
+            "user_uptime_projects_stars_rows"
+            if is_uptime
+            else "user_more_projects_stars"
+        )
         next_page = self.request.route_url(
-            "user_more_projects_stars",
+            next_route,
             username=user.name,
             _query={
                 **q,
@@ -6346,8 +6572,10 @@ class UserView:
             "paginator": paginator,
             "next_page": next_page,
             "counter": counter,
+            "colors": colors,
             "project_delivery_methods": project_delivery_methods,
             "form": form,
+            "page": page,
         }
 
     @view_config(
@@ -6520,31 +6748,13 @@ class UserView:
         permission="view",
     )
     def uptime_projects_stars(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .join(projects_stars)
-            .filter(user.id == projects_stars.c.user_id)
-            .filter(Project.website is not None)
-            .filter(Project.website != "")
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_projects_stars_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_projects_stars_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-        }
+        return self.projects_stars(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_selected_companies_count",
@@ -6706,34 +6916,13 @@ class UserView:
         permission="view",
     )
     def uptime_companies(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .filter(
-                Company.created_by == user,
-                Company.website.isnot(None),
-                Company.website != "",
-            )
-            .order_by(Company.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_companies_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_companies_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-            "user_pills": self.pills(user),
-        }
+        return self.companies(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_uptime_projects",
@@ -6746,34 +6935,13 @@ class UserView:
         permission="view",
     )
     def uptime_projects(self):
-        user = self.request.context.user
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .filter(
-                Project.created_by == user,
-                Project.website.isnot(None),
-                Project.website != "",
-            )
-            .order_by(Project.name)
+        matched_route = getattr(self.request, "matched_route", None)
+        is_rows = (
+            matched_route.name == "user_uptime_projects_rows"
+            if matched_route
+            else False
         )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "user_uptime_projects_rows",
-            username=user.name,
-            _query={"page": page + 1},
-        )
-        return {
-            "user": user,
-            "paginator": paginator,
-            "next_page": next_page,
-            "page": page,
-            "user_pills": self.pills(user),
-        }
+        return self.projects(is_uptime=True, is_rows=is_rows)
 
     @view_config(
         route_name="user_json_companies",

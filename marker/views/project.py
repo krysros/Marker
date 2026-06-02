@@ -196,7 +196,33 @@ class ProjectView:
         renderer="contact_table#rows.mako",
         permission="view",
     )
-    def all(self):
+    @view_config(
+        route_name="project_duplicates_all",
+        renderer="project_all.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_duplicates_all_more",
+        renderer="project_table#rows.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_nolocation",
+        renderer="project_all.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="project_nolocation_more",
+        renderer="project_table#rows.mako",
+        permission="view",
+    )
+    def _get_projects_context(
+        self,
+        is_uptime=False,
+        is_rows=False,
+        force_duplicates=False,
+        force_nolocation=False,
+    ):
         page = int(self.request.params.get("page", 1))
         tags = self._normalized_tags()
         requested_view_mode = self.request.params.get("view", "projects")
@@ -240,8 +266,15 @@ class ProjectView:
         q = {}
 
         stmt = select(Project)
+        if is_uptime:
+            stmt = stmt.filter(Project.website.isnot(None), Project.website != "")
 
-        duplicates = self.request.params.get("duplicates") == "1"
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else ""
+        duplicates = force_duplicates or route_name in {
+            "project_duplicates_all",
+            "project_duplicates_all_more",
+        }
         if duplicates:
             dup_subquery = (
                 select(func.lower(Project.name))
@@ -250,14 +283,15 @@ class ProjectView:
                 .scalar_subquery()
             )
             stmt = stmt.filter(func.lower(Project.name).in_(dup_subquery))
-            q["duplicates"] = "1"
 
-        no_location = self.request.params.get("no_location") == "1"
+        no_location = force_nolocation or route_name in {
+            "project_nolocation",
+            "project_nolocation_more",
+        }
         if no_location:
             stmt = stmt.filter(
                 or_(Project.latitude.is_(None), Project.longitude.is_(None))
             )
-            q["no_location"] = "1"
 
         if tags:
             tag_operator = (
@@ -437,9 +471,16 @@ class ProjectView:
             .all()
         )
 
-        next_route = (
-            "project_more_contacts" if view_mode == "contacts" else "project_more"
-        )
+        if is_uptime:
+            next_route = "project_uptime_rows"
+        elif duplicates:
+            next_route = "project_duplicates_all_more"
+        elif no_location:
+            next_route = "project_nolocation_more"
+        else:
+            next_route = (
+                "project_more_contacts" if view_mode == "contacts" else "project_more"
+            )
         next_page = self.request.route_url(
             next_route,
             _query={
@@ -467,7 +508,11 @@ class ProjectView:
             "view_mode": view_mode,
             "show_contacts_toggle": show_contacts_toggle,
             "contact_q": {"category": "projects"},
+            "page": page,
         }
+
+    def all(self):
+        return self._get_projects_context(is_uptime=False, is_rows=False)
 
     @view_config(
         route_name="project_count",
@@ -752,21 +797,7 @@ class ProjectView:
         permission="view",
     )
     def uptime(self):
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .filter(Project.website.isnot(None), Project.website != "")
-            .order_by(Project.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "project_uptime_rows", _query={"page": page + 1}
-        )
-        return {"paginator": paginator, "next_page": next_page, "page": page}
+        return self._get_projects_context(is_uptime=True, is_rows=False)
 
     @view_config(
         route_name="project_uptime_rows",
@@ -774,21 +805,7 @@ class ProjectView:
         permission="view",
     )
     def uptime_rows(self):
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Project)
-            .filter(Project.website.isnot(None), Project.website != "")
-            .order_by(Project.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "project_uptime_rows", _query={"page": page + 1}
-        )
-        return {"paginator": paginator, "next_page": next_page, "page": page}
+        return self._get_projects_context(is_uptime=True, is_rows=True)
 
     @view_config(
         route_name="project_uptime_check",
@@ -891,7 +908,8 @@ class ProjectView:
             ).first()
             is not None
         )
-        route_name = self.request.matched_route.name
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else "project_all"
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)

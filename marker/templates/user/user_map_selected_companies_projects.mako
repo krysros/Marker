@@ -29,4 +29,6 @@
   </div>
 </div>
 
-<%include file="project_table.mako"/>
+<div id="map"></div>
+
+<%include file="/common/markers.mako"/>

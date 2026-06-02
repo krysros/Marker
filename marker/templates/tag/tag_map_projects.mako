@@ -14,7 +14,6 @@
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
     <a class="btn btn-outline-primary" href="${request.route_url('tag_projects', tag_id=tag.id, slug=tag.slug, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-primary" href="${request.route_url('tag_map_projects', tag_id=tag.id, slug=tag.slug, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('tag_uptime_projects', tag_id=tag.id, slug=tag.slug)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
   </div>
 </div>
 

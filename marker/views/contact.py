@@ -113,6 +113,16 @@ class ContactView:
         route_name="contact_all", renderer="contact_all.mako", permission="view"
     )
     @view_config(
+        route_name="contact_duplicates_all",
+        renderer="contact_all.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="contact_duplicates_all_more",
+        renderer="contact_table#rows.mako",
+        permission="view",
+    )
+    @view_config(
         route_name="contact_more",
         renderer="contact_table#rows.mako",
         permission="view",
@@ -139,7 +149,12 @@ class ContactView:
         q = {}
         stmt = select(Contact)
 
-        duplicates = self.request.params.get("duplicates") == "1"
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else ""
+        duplicates = route_name in {
+            "contact_duplicates_all",
+            "contact_duplicates_all_more",
+        }
         if duplicates:
             dup_subquery = (
                 select(func.lower(Contact.name))
@@ -148,7 +163,6 @@ class ContactView:
                 .scalar_subquery()
             )
             stmt = stmt.filter(func.lower(Contact.name).in_(dup_subquery))
-            q["duplicates"] = "1"
 
         allowed_sorts = set(sort_criteria)
         if _sort not in allowed_sorts:
@@ -289,7 +303,7 @@ class ContactView:
         )
 
         next_page = self.request.route_url(
-            "contact_more",
+            "contact_duplicates_all_more" if duplicates else "contact_more",
             _query={
                 **q,
                 "page": page + 1,

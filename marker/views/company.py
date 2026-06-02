@@ -193,7 +193,33 @@ class CompanyView:
         renderer="contact_table#rows.mako",
         permission="view",
     )
-    def all(self):
+    @view_config(
+        route_name="company_duplicates_all",
+        renderer="company_all.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="company_duplicates_all_more",
+        renderer="company_table#rows.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="company_nolocation",
+        renderer="company_all.mako",
+        permission="view",
+    )
+    @view_config(
+        route_name="company_nolocation_more",
+        renderer="company_table#rows.mako",
+        permission="view",
+    )
+    def _get_companies_context(
+        self,
+        is_uptime=False,
+        is_rows=False,
+        force_duplicates=False,
+        force_nolocation=False,
+    ):
         page = int(self.request.params.get("page", 1))
         tags = self._normalized_tags()
         requested_view_mode = self.request.params.get("view", "companies")
@@ -225,8 +251,15 @@ class CompanyView:
         q = {}
 
         stmt = select(Company)
+        if is_uptime:
+            stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
 
-        duplicates = self.request.params.get("duplicates") == "1"
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else ""
+        duplicates = force_duplicates or route_name in {
+            "company_duplicates_all",
+            "company_duplicates_all_more",
+        }
         if duplicates:
             dup_subquery = (
                 select(func.lower(Company.name))
@@ -235,14 +268,15 @@ class CompanyView:
                 .scalar_subquery()
             )
             stmt = stmt.filter(func.lower(Company.name).in_(dup_subquery))
-            q["duplicates"] = "1"
 
-        no_location = self.request.params.get("no_location") == "1"
+        no_location = force_nolocation or route_name in {
+            "company_nolocation",
+            "company_nolocation_more",
+        }
         if no_location:
             stmt = stmt.filter(
                 or_(Company.latitude.is_(None), Company.longitude.is_(None))
             )
-            q["no_location"] = "1"
 
         if tags:
             tag_operator = (
@@ -373,9 +407,16 @@ class CompanyView:
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
 
-        next_route = (
-            "company_more_contacts" if view_mode == "contacts" else "company_more"
-        )
+        if is_uptime:
+            next_route = "company_uptime_rows"
+        elif duplicates:
+            next_route = "company_duplicates_all_more"
+        elif no_location:
+            next_route = "company_nolocation_more"
+        else:
+            next_route = (
+                "company_more_contacts" if view_mode == "contacts" else "company_more"
+            )
         next_page = self.request.route_url(
             next_route,
             _query={
@@ -398,7 +439,11 @@ class CompanyView:
             "view_mode": view_mode,
             "show_contacts_toggle": show_contacts_toggle,
             "contact_q": contact_q,
+            "page": page,
         }
+
+    def all(self):
+        return self._get_companies_context(is_uptime=False, is_rows=False)
 
     @view_config(
         route_name="company_count",
@@ -445,7 +490,8 @@ class CompanyView:
             ).first()
             is not None
         )
-        route_name = self.request.matched_route.name
+        matched_route = getattr(self.request, "matched_route", None)
+        route_name = matched_route.name if matched_route else "company_all"
         _sort = self.request.params.get("sort", "created_at")
         _order = self.request.params.get("order", "desc")
         sort_criteria = dict(SORT_CRITERIA)
@@ -764,21 +810,7 @@ class CompanyView:
         permission="view",
     )
     def uptime(self):
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .filter(Company.website.isnot(None), Company.website != "")
-            .order_by(Company.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "company_uptime_rows", _query={"page": page + 1}
-        )
-        return {"paginator": paginator, "next_page": next_page, "page": page}
+        return self._get_companies_context(is_uptime=True, is_rows=False)
 
     @view_config(
         route_name="company_uptime_rows",
@@ -786,21 +818,7 @@ class CompanyView:
         permission="view",
     )
     def uptime_rows(self):
-        page = int(self.request.params.get("page", 1))
-        stmt = (
-            select(Company)
-            .filter(Company.website.isnot(None), Company.website != "")
-            .order_by(Company.name)
-        )
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
-        next_page = self.request.route_url(
-            "company_uptime_rows", _query={"page": page + 1}
-        )
-        return {"paginator": paginator, "next_page": next_page, "page": page}
+        return self._get_companies_context(is_uptime=True, is_rows=True)
 
     @view_config(
         route_name="company_uptime_check",

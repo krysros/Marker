@@ -34,7 +34,7 @@
     <a class="btn btn-primary" href="${request.route_url('user_selected_projects_tags', username=user.name, _query=q)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_companies', username=user.name)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects', username=user.name)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_contacts', username=user.name, _query={'category': ''})}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_contacts', username=user.name)}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
   </div>
 </div>
 

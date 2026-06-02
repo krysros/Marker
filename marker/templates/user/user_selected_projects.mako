@@ -25,16 +25,24 @@
   ${button.dropdown_sort(sort_criteria)}
   ${button.dropdown_order(order_criteria)}
   <div class="vr mx-1"></div>
+  <%
+    matched_route_name = getattr(request, "matched_route", None).name if getattr(request, "matched_route", None) else ""
+  %>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
-    <a class="btn btn-primary" href="${request.route_url('user_selected_projects', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
+    <a class="btn ${'btn-primary' if matched_route_name == 'user_selected_projects' else 'btn-outline-primary'}" href="${request.route_url('user_selected_projects', username=user.name, _query=q)}"><i class="bi bi-table"></i> ${_("Table")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_map_selected_projects', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_selected_projects', username=user.name)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
+  </div>
+  <div class="vr mx-1"></div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
+    <a class="btn btn-outline-primary" href="${request.route_url('user_uptime_selected_projects', username=user.name, _query=q)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
+    <a class="btn ${'btn-primary' if matched_route_name == 'user_duplicates_selected_projects' else 'btn-outline-primary'}" href="${request.route_url('user_duplicates_selected_projects', username=user.name, _query=q)}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
+    <a class="btn ${'btn-primary' if matched_route_name == 'user_nolocation_selected_projects' else 'btn-outline-primary'}" href="${request.route_url('user_nolocation_selected_projects', username=user.name, _query=q)}"><i class="bi bi-geo"></i> ${_("No location")}</a>
   </div>
   <div class="btn-group btn-group-sm" role="group" aria-label="${_('Pivot view')}">
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_tags', username=user.name)}"><i class="bi bi-tags"></i> ${_("Tags")}</a>
     <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_companies', username=user.name)}"><i class="bi bi-buildings"></i> ${_("Companies")}</a>
     <a class="btn btn-primary" href="${request.route_url('user_selected_projects', username=user.name, _query=q)}"><i class="bi bi-briefcase"></i> ${_("Projects")}</a>
-    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_contacts', username=user.name, _query={'category': ''})}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
+    <a class="btn btn-outline-primary" href="${request.route_url('user_selected_projects_contacts', username=user.name)}"><i class="bi bi-people"></i> ${_("Contacts")}</a>
   </div>
   <div class="vr mx-1"></div>
   <a class="btn btn-sm btn-outline-secondary" href="${request.route_url('user_selected_projects_similar', username=user.name)}"><i class="bi bi-intersect"></i> ${_("Similar")}</a>
