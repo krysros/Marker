@@ -1,3 +1,13 @@
+3.6
+---
+
+- Integrated modern and reliable geocoding using `geopy` (Nominatim API) in `marker/utils/geo.py` to replace low-level `urllib` queries
+- Implemented a dual-mode ("Rola | Lokalizacja") filtering and sorting interface for project-to-companies (`project_companies`) and company-to-projects (`company_projects`) views
+- Added subdivision, country filtering, and standardized batch checkboxes to the location mode table
+- Hardened the view logic with automatic cleanup of incompatible URL search/sort parameters when switching views
+- Fixed a Mako template parser syntax block mismatch error in translation extraction
+- Added robust unit and integration tests covering geodesic exceptions, sorting edge cases, and location-filtering fallback paths, securing 100% test coverage
+
 3.5
 ---
 

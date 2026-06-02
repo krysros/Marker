@@ -15,6 +15,7 @@ from ..forms import (
     CompanySearchForm,
     ContactForm,
     ProjectActivityForm,
+    ProjectFilterForm,
     TagLinkForm,
 )
 from ..forms.select import (
@@ -503,53 +504,138 @@ class CompanyView:
         projects_assoc = []
         contacts = []
         tags = []
+        _mode = self.request.params.get("mode", "role")
+        q["mode"] = _mode
+        form = None
         bulk_stmt = None
         bulk_selected_items = None
 
         if route_name == "company_projects":
-            sort_criteria = {
-                "name": _("Project"),
-                "stage": _("Stage"),
-                "role": _("Role"),
-                "created_at": _("Created at"),
-                "updated_at": _("Updated at"),
-            }
-
-            allowed_sorts = {"name", "stage", "role", "created_at", "updated_at"}
-            if _sort not in allowed_sorts:
-                _sort = "name"
-                q["sort"] = _sort
-
-            if _order not in {"asc", "desc"}:
-                _order = "asc"
-                q["order"] = _order
-
             _filter_stage = self.request.params.get("stage", "")
             _filter_role = self.request.params.get("role", "")
-            if _filter_stage:
-                q["stage"] = _filter_stage
-            if _filter_role:
-                q["role"] = _filter_role
+            _filter_country = self.request.params.get("country", "")
+            _filter_subdivision = [
+                v for v in self.request.params.getall("subdivision") if v
+            ]
+            _filter_city = self.request.params.get("city", "")
+
+            if _mode == "location":
+                if _filter_country:
+                    q["country"] = _filter_country
+                if _filter_subdivision:
+                    q["subdivision"] = _filter_subdivision
+                if _filter_city:
+                    q["city"] = _filter_city
+
+                sort_criteria = {
+                    "name": _("Project"),
+                    "city": _("City"),
+                    "distance": _("Distance"),
+                }
+                allowed_sorts = {"name", "city", "distance"}
+                if _sort not in allowed_sorts:
+                    _sort = "name"
+                    q["sort"] = _sort
+            else:
+                if _filter_stage:
+                    q["stage"] = _filter_stage
+                if _filter_role:
+                    q["role"] = _filter_role
+
+                sort_criteria = {
+                    "name": _("Project"),
+                    "stage": _("Stage"),
+                    "role": _("Role"),
+                    "created_at": _("Created at"),
+                    "updated_at": _("Updated at"),
+                }
+                allowed_sorts = {"name", "stage", "role", "created_at", "updated_at"}
+                if _sort not in allowed_sorts:
+                    _sort = "name"
+                    q["sort"] = _sort
+
+            if _order not in {"asc", "desc"}:
+                _order = (
+                    "asc"
+                    if (_sort == "name" or _sort == "city" or _sort == "distance")
+                    else "desc"
+                )
+                q["order"] = _order
 
             stmt = (
                 select(Activity).join(Project).filter(Activity.company_id == company.id)
             )
-            if _filter_stage:
-                stmt = stmt.filter(Activity.stage == _filter_stage)
-            if _filter_role:
-                stmt = stmt.filter(Activity.role == _filter_role)
-            order_column = {
-                "name": polish_sort_expression(Project.name),
-                "stage": Activity.stage,
-                "role": Activity.role,
-                "created_at": Project.created_at,
-                "updated_at": Project.updated_at,
-            }[_sort]
-            if _order == "asc":
-                stmt = stmt.order_by(order_column.asc(), Activity.project_id)
+            if _mode == "location":
+                if _filter_country:
+                    stmt = stmt.filter(Project.country == _filter_country)
+                if _filter_subdivision:
+                    stmt = stmt.filter(Project.subdivision.in_(_filter_subdivision))
+                if _filter_city:
+                    stmt = stmt.filter(Project.city == _filter_city)
             else:
-                stmt = stmt.order_by(order_column.desc(), Activity.project_id)
-            projects_assoc = self.request.dbsession.execute(stmt).scalars().all()
+                if _filter_stage:
+                    stmt = stmt.filter(Activity.stage == _filter_stage)
+                if _filter_role:
+                    stmt = stmt.filter(Activity.role == _filter_role)
+
+            if _mode == "location":
+                obj = Filter(**q)
+                form = ProjectFilterForm(self.request.GET, obj, request=self.request)
+
+            if _mode != "location":
+                order_column = {
+                    "name": polish_sort_expression(Project.name),
+                    "stage": Activity.stage,
+                    "role": Activity.role,
+                    "created_at": Project.created_at,
+                    "updated_at": Project.updated_at,
+                }[_sort]
+                if _order == "asc":
+                    stmt = stmt.order_by(order_column.asc(), Activity.project_id)
+                else:
+                    stmt = stmt.order_by(order_column.desc(), Activity.project_id)
+                projects_assoc = self.request.dbsession.execute(stmt).scalars().all()
+            else:
+                projects_assoc = self.request.dbsession.execute(stmt).scalars().all()
+                from geopy.distance import geodesic
+
+                c_coords = (
+                    (company.latitude, company.longitude)
+                    if company.latitude and company.longitude
+                    else None
+                )
+                for assoc in projects_assoc:
+                    p_coords = (
+                        (assoc.project.latitude, assoc.project.longitude)
+                        if assoc.project.latitude and assoc.project.longitude
+                        else None
+                    )
+                    if c_coords and p_coords:
+                        try:
+                            assoc.distance_km = geodesic(c_coords, p_coords).km
+                        except Exception:
+                            assoc.distance_km = None
+                    else:
+                        assoc.distance_km = None
+
+                is_desc = _order == "desc"
+                if _sort == "name":
+                    projects_assoc.sort(
+                        key=lambda a: (a.project.name or "").lower(), reverse=is_desc
+                    )
+                elif _sort == "city":
+                    projects_assoc.sort(
+                        key=lambda a: (a.project.city or "").lower(), reverse=is_desc
+                    )
+                elif _sort == "distance":
+                    projects_assoc.sort(
+                        key=lambda a: (
+                            a.distance_km is None,
+                            a.distance_km if a.distance_km is not None else 0,
+                        ),
+                        reverse=is_desc,
+                    )
+
             bulk_stmt = stmt
             bulk_selected_items = self.request.identity.selected_projects
 
@@ -622,6 +708,7 @@ class CompanyView:
             "order_criteria": order_criteria,
             "title": company.name,
             "company_pills": self.pills(company),
+            "form": form,
         }
 
     @view_config(

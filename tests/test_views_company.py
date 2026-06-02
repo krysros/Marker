@@ -3776,3 +3776,177 @@ def test_company_all_nip_regon_krs_empty(dbsession):
     view = CompanyView(request)
     res = view.all()
     assert "paginator" in res
+
+
+def test_company_view_projects_location_mode(dbsession):
+    user = _co_user(dbsession, "coviewpjloc")
+    company = _co_company(dbsession, user, "CoViewPjLocCo")
+    company.latitude = 50.0
+    company.longitude = 20.0
+
+    project = Project(
+        name="LocProj",
+        street="S",
+        postcode="00-000",
+        city="Warszawa",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.latitude = 50.1
+    project.longitude = 20.1
+    project.created_by = user
+    dbsession.add(project)
+    dbsession.flush()
+
+    activity = Activity(role="investor", stage="")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+
+    transaction.commit()
+
+    company = dbsession.get(Company, company.id)
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        params={
+            "mode": "location",
+            "country": "PL",
+            "sort": "distance",
+            "order": "asc",
+        },
+    )
+    request.matched_route.name = "company_projects"
+    view = CompanyView(request)
+    result = view.view()
+
+    assert "projects_assoc" in result
+    assert "form" in result
+    assoc = result["projects_assoc"][0]
+    assert assoc.distance_km is not None
+    assert assoc.distance_km > 0
+
+
+def test_company_view_projects_location_mode_additional_filters(dbsession):
+    user = _co_user(dbsession, "coviewpjlocadd")
+    company = _co_company(dbsession, user, "CoViewPjLocCoAdd")
+    company.latitude = None
+    company.longitude = None
+
+    project = Project(
+        name="LocProjAdd",
+        street="S",
+        postcode="00-000",
+        city="Warszawa",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.created_by = user
+    dbsession.add(project)
+    dbsession.flush()
+
+    activity = Activity(role="investor", stage="")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+
+    transaction.commit()
+
+    company = dbsession.get(Company, company.id)
+
+    # 1. Test filtering by country, subdivision, city, name sort, city sort, and invalid sort
+    params = MultiDict(
+        [
+            ("mode", "location"),
+            ("country", "PL"),
+            ("subdivision", "PL-14"),
+            ("city", "Warszawa"),
+            ("sort", "INVALID_SORT"),  # triggers default to "name" sort
+            ("order", "asc"),
+        ]
+    )
+    request = _co_request(dbsession, user, company=company, params=params)
+    request.matched_route.name = "company_projects"
+    view = CompanyView(request)
+    result = view.view()
+
+    assert len(result["projects_assoc"]) == 1
+    assert result["q"]["sort"] == "name"
+
+    # 2. Test sorting by "name" specifically
+    params = MultiDict([("mode", "location"), ("sort", "name"), ("order", "desc")])
+    request = _co_request(dbsession, user, company=company, params=params)
+    request.matched_route.name = "company_projects"
+    view = CompanyView(request)
+    result = view.view()
+    assert len(result["projects_assoc"]) == 1
+
+    # 3. Test sorting by "city" specifically
+    params = MultiDict([("mode", "location"), ("sort", "city"), ("order", "asc")])
+    request = _co_request(dbsession, user, company=company, params=params)
+    request.matched_route.name = "company_projects"
+    view = CompanyView(request)
+    result = view.view()
+    assert len(result["projects_assoc"]) == 1
+
+
+@patch("geopy.distance.geodesic", side_effect=Exception("Geodesic error"))
+def test_company_view_projects_location_geodesic_exception(mock_geo, dbsession):
+    user = _co_user(dbsession, "coviewpjlocexc")
+    company = _co_company(dbsession, user, "CoViewPjLocCoExc")
+    company.latitude = 50.0
+    company.longitude = 20.0
+
+    project = Project(
+        name="LocProjExc",
+        street="S",
+        postcode="00-000",
+        city="Warszawa",
+        subdivision="PL-14",
+        country="PL",
+        website="",
+        color="",
+        deadline=None,
+        stage="",
+        delivery_method="",
+    )
+    project.latitude = 50.1
+    project.longitude = 20.1
+    project.created_by = user
+    dbsession.add(project)
+    dbsession.flush()
+
+    activity = Activity(role="investor", stage="")
+    activity.company = company
+    activity.project = project
+    dbsession.add(activity)
+
+    transaction.commit()
+
+    company = dbsession.get(Company, company.id)
+    request = _co_request(
+        dbsession,
+        user,
+        company=company,
+        params={
+            "mode": "location",
+            "sort": "distance",
+        },
+    )
+    request.matched_route.name = "company_projects"
+    view = CompanyView(request)
+    result = view.view()
+
+    assoc = result["projects_assoc"][0]
+    assert assoc.distance_km is None

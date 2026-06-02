@@ -3623,3 +3623,169 @@ def test_project_add_ai_exceptions(mock_autofill, mock_geo, dbsession):
     view = ProjectView(request)
     result = view.add_ai()
     assert result.status_code == 303
+
+
+def test_project_companies_location_mode(dbsession):
+    user = _make_user(dbsession, "locuser")
+
+    # Create project with lat/lon coordinates
+    project = _make_project(dbsession, user, "ProjLoc")
+    project.latitude = 52.2297  # Warsaw
+    project.longitude = 21.0122
+
+    # Create companies
+    c1 = _make_company(dbsession, user, "Company A")
+    c1.city = "Berlin"
+    c1.latitude = 52.5200
+    c1.longitude = 13.4050
+
+    c2 = _make_company(dbsession, user, "Company B")
+    c2.city = "Paris"
+    c2.latitude = 48.8566
+    c2.longitude = 2.3522
+
+    c3 = _make_company(dbsession, user, "Company C")
+    c3.city = "Warsaw"
+    c3.latitude = 52.2297
+    c3.longitude = 21.0122
+
+    # Create activities
+    a1 = Activity(role="contractor", stage="started", company=c1, project=project)
+    a2 = Activity(role="investor", stage="completed", company=c2, project=project)
+    a3 = Activity(role="designer", stage="started", company=c3, project=project)
+
+    dbsession.add_all([a1, a2, a3])
+    dbsession.flush()
+
+    # Test Location mode sorting by distance ascending
+    request = _make_request(
+        dbsession,
+        user,
+        project=project,
+        params={"mode": "location", "sort": "distance", "order": "asc"},
+    )
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+
+    assoc_list = res["companies_assoc"]
+    assert len(assoc_list) == 3
+    assert assoc_list[0].company.name == "Company C"
+    assert assoc_list[1].company.name == "Company A"
+    assert assoc_list[2].company.name == "Company B"
+    assert abs(assoc_list[0].distance_km - 0.0) < 0.1
+    assert assoc_list[1].distance_km > 10.0
+
+    # Test sorting by distance descending
+    request = _make_request(
+        dbsession,
+        user,
+        project=project,
+        params={"mode": "location", "sort": "distance", "order": "desc"},
+    )
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+    assoc_list = res["companies_assoc"]
+    assert assoc_list[0].company.name == "Company B"
+    assert assoc_list[1].company.name == "Company A"
+    assert assoc_list[2].company.name == "Company C"
+
+    # Test filtering by city (Warsaw)
+    request = _make_request(
+        dbsession, user, project=project, params={"mode": "location", "city": "Warsaw"}
+    )
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+    assoc_list = res["companies_assoc"]
+    assert len(assoc_list) == 1
+    assert assoc_list[0].company.name == "Company C"
+
+
+def test_project_companies_location_mode_additional_filters(dbsession):
+    user = _make_user(dbsession, "pjlocadd")
+    project = _make_project(dbsession, user, "ProjLocAdd")
+    project.latitude = None
+    project.longitude = None
+
+    c = _make_company(dbsession, user, "CompAdd")
+    c.country = "PL"
+    c.subdivision = "PL-14"
+    c.city = "Warszawa"
+    c.latitude = 52.2
+    c.longitude = 21.0
+
+    a = Activity(role="investor", stage="completed", company=c, project=project)
+    dbsession.add(a)
+    transaction.commit()
+
+    project = dbsession.get(Project, project.id)
+
+    # 1. Location mode: filter by country, subdivision, city, invalid sort (forces fallback to name)
+    params = MultiDict(
+        [
+            ("mode", "location"),
+            ("country", "PL"),
+            ("subdivision", "PL-14"),
+            ("city", "Warszawa"),
+            ("sort", "INVALID_SORT"),
+            ("order", "asc"),
+        ]
+    )
+    request = _make_request(dbsession, user, project=project, params=params)
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+
+    assert len(res["companies_assoc"]) == 1
+    assert res["q"]["sort"] == "name"
+
+    # 2. Location mode: sort by city
+    params = MultiDict([("mode", "location"), ("sort", "city"), ("order", "desc")])
+    request = _make_request(dbsession, user, project=project, params=params)
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+    assert len(res["companies_assoc"]) == 1
+
+    # 3. Non-location mode (Role mode) with city filtering (line 994)
+    params = MultiDict(
+        [("mode", "role"), ("city", "Warszawa"), ("sort", "name"), ("order", "asc")]
+    )
+    request = _make_request(dbsession, user, project=project, params=params)
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+    assert len(res["companies_assoc"]) == 1
+
+
+@patch("geopy.distance.geodesic", side_effect=Exception("Geodesic error"))
+def test_project_companies_location_geodesic_exception(mock_geo, dbsession):
+    user = _make_user(dbsession, "pjlocexc")
+    project = _make_project(dbsession, user, "ProjLocExc")
+    project.latitude = 52.2
+    project.longitude = 21.0
+
+    c = _make_company(dbsession, user, "CompExc")
+    c.latitude = 52.3
+    c.longitude = 21.1
+
+    a = Activity(role="investor", stage="completed", company=c, project=project)
+    dbsession.add(a)
+    transaction.commit()
+
+    project = dbsession.get(Project, project.id)
+    params = MultiDict(
+        [
+            ("mode", "location"),
+            ("sort", "distance"),
+        ]
+    )
+    request = _make_request(dbsession, user, project=project, params=params)
+    request.matched_route.name = "project_companies"
+    view = ProjectView(request)
+    res = view.view()
+
+    assoc = res["companies_assoc"][0]
+    assert assoc.distance_km is None
