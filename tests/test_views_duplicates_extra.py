@@ -95,14 +95,19 @@ def test_company_duplicates_coverage(dbsession, test_user_and_db):
     count_res = view.count_duplicates()
     assert count_res == 1
 
+    import datetime
+    now_dt = datetime.datetime.now()
+    date_from_str = (now_dt - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
+    date_to_str = (now_dt + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
+
     # 3. Test duplicates list with active filters (color, country, subdivision, date range)
     request.params = MultiDict(
         {
             "color": "red",
             "country": "PL",
             "subdivision": "PL-MZ",
-            "date_from": "2026-05-30T12:00",
-            "date_to": "2026-06-02T12:00",
+            "date_from": date_from_str,
+            "date_to": date_to_str,
             "sort": "name",
             "order": "asc",
         }
@@ -220,14 +225,19 @@ def test_project_duplicates_coverage(dbsession, test_user_and_db):
     count_res = view.count_duplicates()
     assert count_res == 1
 
+    import datetime
+    now_dt = datetime.datetime.now()
+    date_from_str = (now_dt - datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
+    date_to_str = (now_dt + datetime.timedelta(days=2)).strftime("%Y-%m-%dT%H:%M")
+
     # 3. Test duplicates list with active filters (color, country, subdivision, date range)
     request.params = MultiDict(
         {
             "color": "red",
             "country": "PL",
             "subdivision": "PL-MZ",
-            "date_from": "2026-05-30T12:00",
-            "date_to": "2026-06-02T12:00",
+            "date_from": date_from_str,
+            "date_to": date_to_str,
             "sort": "name",
             "order": "asc",
         }

@@ -1,3 +1,20 @@
+3.5
+---
+
+- Added comprehensive Map Views and dedicated interactive templates for selected companies' projects and selected projects' companies
+- Expanded both Duplicates and No-Location filters and sub-views to User Selected Views (selected companies and projects)
+- Implemented dedicated JSON endpoints for locations of selected companies' projects and selected projects' companies to support interactive map plotting
+- Expanded Duplicates and No-Location filters, listing views, and dynamic lazy-loading (`/more` endpoints) across all key domains (Companies, Projects, Tags, and Contacts)
+- Resolved time-dependent testing flakiness in duplicate views coverage, securing robust 100% automated test coverage
+
+3.4
+---
+
+- Added "No location" ("Brak lokalizacji") filter options and sub-views to easily list and identify Companies and Projects lacking geographical coordinates
+- Implemented dedicated `/nolocation` sub-views and lazy-loading `/nolocation/more` endpoints for Companies and Projects
+- Updated and compiled Polish translations for all "No location" UI elements, ensuring consistent and professional localization
+- Added comprehensive unit and integration tests for no-location views and duplicate view edge cases, achieving 100% test coverage
+
 3.3
 ---
 
