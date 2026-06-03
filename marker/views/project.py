@@ -2354,6 +2354,7 @@ class ProjectView:
             "delivery_method",
             "usable_area",
             "cubic_volume",
+            "object_category",
         ]:
             if (
                 field_name not in autofill
@@ -2384,7 +2385,7 @@ class ProjectView:
             if project.deadline:
                 autofill["deadline"] = project.deadline.strftime("%Y-%m-%dT%H:%M")
 
-        project_form = ProjectForm(MultiDict(autofill), request=self.request)
+        project_form = ProjectForm(MultiDict(autofill), project, request=self.request)
         if not project_form.validate():
             next_url = self.request.route_url(
                 "project_edit",

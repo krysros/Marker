@@ -1,3 +1,5 @@
+import builtins
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -3620,6 +3622,60 @@ def test_company_update_ai_success_paths(
     assert existing_contact.email == "new@email.com"
     assert "ExistingTag" in [t.name for t in company.tags]
     assert "NewTag" in [t.name for t in company.tags]
+
+
+@patch(
+    "marker.views.company.company_autofill_from_website",
+    return_value={
+        "name": "UpdatedCoName",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_company_update_ai_setattr_exception_branches(
+    mock_autofill, monkeypatch, dbsession
+):
+    user = _co_user(dbsession, "couserattr")
+    company = Company(
+        name="OrigCoName",
+        street="S",
+        postcode="00-000",
+        city="C",
+        subdivision="PL-14",
+        country="PL",
+        website="http://success-website.com",
+        color="",
+        NIP="",
+        REGON="",
+        KRS="",
+    )
+    company.created_by = user
+    dbsession.add(company)
+    dbsession.flush()
+    transaction.commit()
+
+    request = _co_request(dbsession, user, company=company, method="POST")
+    request.headers = {"HX-Request": "true"}
+    view = CompanyView(request)
+
+    orig_setattr = builtins.setattr
+
+    def fake_setattr(obj, name, value):
+        if name == "data" and getattr(obj, "name", None) == "REGON":
+            raise RuntimeError("broken regon")
+        if obj is company and name == "name":
+            raise RuntimeError("broken company name")
+        return orig_setattr(obj, name, value)
+
+    monkeypatch.setattr(builtins, "setattr", fake_setattr)
+    view.update_ai()
+
+    assert request.response.headers.get("HX-Redirect") is not None
+    assert request.response.status_code == 303
+    assert company.street == "Złota 1"
+    assert company.name == "OrigCoName"
+    assert company.city == "Warszawa"
 
 
 @patch(

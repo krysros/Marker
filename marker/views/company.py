@@ -2209,8 +2209,25 @@ class CompanyView:
                 return response
             return HTTPSeeOther(location=next_url)
 
-        company_form = CompanyForm(MultiDict(autofill), request=self.request)
+        company_form = CompanyForm(MultiDict(autofill), company, request=self.request)
+
+        # When AI autofill doesn't include identifier fields, avoid validating
+        # existing (possibly invalid) values from the DB — clear them on the form
+        # so validators that check format won't fail. They won't be written back
+        # because we only populate fields present in `autofill` below.
+        for _ident in ("NIP", "REGON", "KRS"):
+            if _ident not in autofill:
+                try:
+                    setattr(getattr(company_form, _ident), "data", None)
+                except Exception:
+                    pass
+
         if not company_form.validate():
+            log.warning(
+                "company.update_ai: form validation failed, errors=%s, autofill=%s",
+                getattr(company_form, "errors", None),
+                autofill,
+            )
             next_url = self.request.route_url(
                 "company_edit",
                 company_id=company.id,
@@ -2282,8 +2299,25 @@ class CompanyView:
         except Exception as e:
             log.warning(_("Failed to extract tags via AI: %s"), e)
 
-        # 5. Apply updates in-place
-        company_form.populate_obj(company)
+        # 5. Apply updates in-place — only for fields provided by AI autofill
+        for _field in (
+            "name",
+            "street",
+            "postcode",
+            "city",
+            "subdivision",
+            "country",
+            "website",
+            "NIP",
+            "REGON",
+            "KRS",
+        ):
+            if _field in autofill:
+                try:
+                    setattr(company, _field, getattr(company_form, _field).data)
+                except Exception:
+                    # Defensive: ignore missing fields or assignment errors
+                    pass
         if geo:
             company.latitude = geo.get("lat")
             company.longitude = geo.get("lon")

@@ -3385,6 +3385,68 @@ def test_project_update_ai_autofill_exception(mock_autofill, dbsession):
     assert isinstance(res2, HTTPSeeOther)
 
 
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    return_value=["ExistingTag"],
+)
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    return_value=[{"name": "NewContact"}],
+)
+@patch(
+    "marker.views.project.location_details", return_value={"lat": 12.34, "lon": 56.78}
+)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "UpdatedProjNameDbFail",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+    },
+)
+def test_project_update_ai_existing_tag_names_query_exception(
+    mock_autofill, mock_loc, mock_contacts, mock_tags, dbsession
+):
+    user = _make_user(dbsession, "projupdatagdbfail")
+    proj = _make_project(dbsession, user, "DbFailProj")
+    proj.website = "http://success-website.com"
+    transaction.commit()
+
+    request = _make_request(dbsession, user, project=proj, method="POST")
+    request.headers = {"HX-Request": "true"}
+
+    def route_url(route_name, *args, **kw):
+        if route_name == "project_view":
+            return "/project-view"
+        if route_name == "project_edit":
+            return "/project-edit"
+        return "/unknown"
+
+    request.route_url = route_url
+    orig_execute = request.dbsession.execute
+
+    def execute_override(statement, *args, **kwargs):
+        stmt_str = str(statement).lower()
+        if "select tags.name" in stmt_str and "where" not in stmt_str:
+            raise Exception("DB fail")
+        return orig_execute(statement, *args, **kwargs)
+
+    with patch.object(request.dbsession, "execute", side_effect=execute_override):
+        with patch("marker.views.project.log.warning") as mock_warning:
+            with patch(
+                "marker.views.project.ProjectForm.validate",
+                new=lambda self, extra=None: True,
+            ):
+                view = ProjectView(request)
+                view.update_ai()
+
+    assert request.response.headers.get("HX-Redirect") == "/project-view"
+    assert request.response.status_code == 303
+    assert mock_warning.call_count == 1
+    assert "Failed to fetch existing tag names" in str(mock_warning.call_args[0][0])
+
+
 @patch("marker.views.project.project_autofill_from_website", return_value={"name": ""})
 def test_project_update_ai_invalid_form(mock_autofill, dbsession):
     user = _make_user(dbsession, "projupdaioinv")
@@ -3530,6 +3592,87 @@ def test_project_update_ai_success_path_no_hx(
     view = ProjectView(request)
     res = view.update_ai()
     assert isinstance(res, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "UpdatedProjNameDbFail",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
+)
+def test_project_update_ai_existing_tag_names_fetch_exception(mock_autofill, dbsession):
+    user = _make_user(dbsession, "projupdatagfail")
+    proj = _make_project(dbsession, user, "OrigProjNameFail")
+    proj.website = "http://success-website.com"
+    orig_execute = dbsession.execute
+
+    def fake_execute(stmt, *args, **kwargs):
+        query = str(stmt).lower()
+        if "tag.name" in query or "tags.name" in query:
+            raise Exception("DB Error tag fetch")
+        return orig_execute(stmt, *args, **kwargs)
+
+    dbsession.execute = fake_execute
+    transaction.commit()
+
+    proj = dbsession.get(Project, proj.id)
+    request = _make_request(dbsession, user, project=proj, method="POST")
+    view = ProjectView(request)
+    res = view.update_ai()
+    assert isinstance(res, HTTPSeeOther)
+
+
+@patch(
+    "marker.views.project.ProjectForm.validate",
+    new=lambda self, extra=None: True,
+)
+@patch(
+    "marker.views.project.tags_autofill_from_website",
+    side_effect=Exception("Tags error"),
+)
+@patch(
+    "marker.views.project.contacts_autofill_from_website",
+    side_effect=Exception("Contacts error"),
+)
+@patch(
+    "marker.views.project.location_details",
+    side_effect=Exception("Geo error"),
+)
+@patch(
+    "marker.views.project.project_autofill_from_website",
+    return_value={
+        "name": "UpdatedProjNameErrors",
+        "country": "PL",
+        "city": "Warszawa",
+        "street": "Złota 1",
+        "stage": "",
+        "delivery_method": "",
+        "object_category": "",
+    },
+)
+def test_project_update_ai_failure_branches(
+    mock_autofill, mock_geo, mock_contacts, mock_tags, dbsession
+):
+    user = _make_user(dbsession, "projupdatefail")
+    proj = _make_project(dbsession, user, "OrigProjNameFail2")
+    proj.website = "http://success-website.com"
+    proj_id = proj.id
+    transaction.commit()
+
+    proj = dbsession.get(Project, proj_id)
+    request = _make_request(dbsession, user, project=proj, method="POST")
+    view = ProjectView(request)
+    res = view.update_ai()
+    assert isinstance(res, HTTPSeeOther)
+    assert proj.name == "UpdatedProjNameErrors"
+    assert proj.latitude is None
+    assert proj.longitude is None
 
 
 @patch(
