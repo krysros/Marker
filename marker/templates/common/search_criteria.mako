@@ -44,6 +44,12 @@
     % if tags:
       ${_("Tags")}: <strong>${"; ".join(tags)};</strong>
     % endif
+    % if q and q.get("location"):
+      ${_("Lokalizacja")}: <strong>${q.get("location")}</strong>;
+      % if q.get("distance"):
+        ${_("Odległość (km)")}: <strong>${q.get("distance")}</strong>;
+      % endif
+    % endif
   </div>
   <% add_query = {**form.data} %>
   % if tags:

@@ -20,7 +20,7 @@
         </select>
       </div>
       <label class="form-label">${_("Tags")}</label>
-      <div id="tag-inputs" class="vstack gap-2">
+      <div id="tag-inputs" class="vstack gap-3">
         % if tags:
           % for index, value in enumerate(tags, start=1):
             <%include file="contact_tag_input_row.mako" args="row_id='tag-' + str(index), value=value"/>
@@ -42,6 +42,18 @@
           </div>
         </div>
       </div>
+      <div class="row g-2 mb-3">
+        <div class="col-md-8">
+          <label class="form-label" for="location-input">${_("Lokalizacja")}</label>
+          <input type="text" id="location-input" class="form-control" name="location" placeholder="${_('Wpisz adres lub miasto')}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="distance-input">${_("Odległość (km)")}</label>
+          <input type="number" id="distance-input" class="form-control" name="distance" placeholder="50" min="0" value="50">
+        </div>
+      </div>
+      <input type="hidden" name="lat" id="lat-input">
+      <input type="hidden" name="lon" id="lon-input">
       <div class="hstack gap-2 mt-3">
         <button type="button"
                 class="btn btn-secondary"
@@ -55,3 +67,16 @@
     </form>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        document.getElementById('lat-input').value = position.coords.latitude;
+        document.getElementById('lon-input').value = position.coords.longitude;
+      }, function(error) {
+        console.warn("Geolocation permission denied or failed:", error);
+      });
+    }
+  });
+</script>

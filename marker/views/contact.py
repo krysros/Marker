@@ -31,6 +31,7 @@ from ..utils.contact_csv_import import (
 )
 from ..utils.export import response_vcard, vcard_template
 from ..utils.geo import location
+from geopy.distance import geodesic
 from ..utils.paginator import get_paginator
 from ..utils.vcard_import import parse_vcard, upsert_vcard
 from . import (
@@ -642,15 +643,33 @@ class ContactView:
             return HTTPSeeOther(location=self.request.route_url("search_tags"))
 
         tag_operator = self._tag_operator()
+        location_param = self.request.params.get("location")
+        distance_param = self.request.params.get("distance")
+        lat_param = self.request.params.get("lat")
+        lon_param = self.request.params.get("lon")
 
         if target == "companies":
-            q = {"tag": tags, "tag_operator": tag_operator}
+            q = {
+                "tag": tags,
+                "tag_operator": tag_operator,
+                "location": location_param or "",
+                "distance": distance_param or "",
+                "lat": lat_param or "",
+                "lon": lon_param or "",
+            }
             return HTTPSeeOther(
                 location=self.request.route_url("company_all", _query=q)
             )
 
         if target == "projects":
-            q = {"tag": tags, "tag_operator": tag_operator}
+            q = {
+                "tag": tags,
+                "tag_operator": tag_operator,
+                "location": location_param or "",
+                "distance": distance_param or "",
+                "lat": lat_param or "",
+                "lon": lon_param or "",
+            }
             return HTTPSeeOther(
                 location=self.request.route_url("project_all", _query=q)
             )
@@ -685,6 +704,10 @@ class ContactView:
         q["target"] = target
         q["tag"] = tags
         q["tag_operator"] = tag_operator
+        q["location"] = location_param or ""
+        q["distance"] = distance_param or ""
+        q["lat"] = lat_param or ""
+        q["lon"] = lon_param or ""
 
         stmt = self._stmt_contacts_by_tags(tags, operator=tag_operator)
 
@@ -814,20 +837,78 @@ class ContactView:
             },
         )
 
+        # Resolve target coordinates
+        target_coords = None
+        if location_param and location_param.strip():
+            loc_res = location(q=location_param)
+            if loc_res:
+                target_coords = (loc_res["lat"], loc_res["lon"])
+        elif lat_param and lon_param:
+            try:
+                target_coords = (float(lat_param), float(lon_param))
+            except (ValueError, TypeError):
+                pass
+
+        try:
+            distance_km = float(distance_param) if distance_param else 50.0
+        except (ValueError, TypeError):
+            distance_km = 50.0
+
         if is_bulk_select_request(self.request):
+            if target_coords:
+                all_contacts = self.request.dbsession.execute(stmt).scalars().all()
+                filtered_contacts = []
+                for contact in all_contacts:
+                    contact_coords = None
+                    if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
+                        contact_coords = (contact.company.latitude, contact.company.longitude)
+                    elif contact.project and contact.project.latitude is not None and contact.project.longitude is not None:
+                        contact_coords = (contact.project.latitude, contact.project.longitude)
+                    
+                    if contact_coords:
+                        try:
+                            if geodesic(target_coords, contact_coords).km <= distance_km:
+                                filtered_contacts.append(contact)
+                        except Exception:
+                            pass
+                filtered_ids = [c.id for c in filtered_contacts]
+                stmt = stmt.filter(Contact.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Contact.id == -1)
             return handle_bulk_selection(
                 self.request, stmt, self.request.identity.selected_contacts
             )
 
-        counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt.order_by(None).subquery())
-        ).scalar()
+        distances = {}
+        if target_coords:
+            all_contacts = self.request.dbsession.execute(stmt).scalars().all()
+            filtered_contacts = []
+            for contact in all_contacts:
+                contact_coords = None
+                if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
+                    contact_coords = (contact.company.latitude, contact.company.longitude)
+                elif contact.project and contact.project.latitude is not None and contact.project.longitude is not None:
+                    contact_coords = (contact.project.latitude, contact.project.longitude)
+                
+                if contact_coords:
+                    try:
+                        dist = geodesic(target_coords, contact_coords).km
+                        if dist <= distance_km:
+                            filtered_contacts.append(contact)
+                            distances[contact.id] = dist
+                    except Exception:
+                        pass
+            
+            counter = len(filtered_contacts)
+            paginator = filtered_contacts[(page - 1) * 20 : page * 20]
+        else:
+            counter = self.request.dbsession.execute(
+                select(func.count()).select_from(stmt.order_by(None).subquery())
+            ).scalar()
 
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
+            paginator = (
+                self.request.dbsession.execute(get_paginator(stmt, page=page))
+                .scalars()
+                .all()
+            )
 
         obj = Filter(**q)
         form = ContactFilterForm(self.request.GET, obj, request=self.request)
@@ -843,6 +924,7 @@ class ContactView:
             "categories": categories,
             "form": form,
             "heading": _("Search contacts"),
+            "distances": distances,
         }
 
     @view_config(

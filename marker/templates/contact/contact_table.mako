@@ -60,6 +60,18 @@
     ---
     % endif
   </td>
+  <%
+    distances = context.get("distances", {})
+  %>
+  % if distances:
+  <td>
+    % if contact.id in distances:
+    ${"{:.1f} km".format(distances[contact.id])}
+    % else:
+    ---
+    % endif
+  </td>
+  % endif
   <td>
     <div class="hstack gap-2 mx-2">
       ${button.a(icon='person-vcard', color='primary', size='sm', url=request.route_url('contact_vcard', contact_id=contact.id, slug=contact.slug))}
@@ -88,6 +100,9 @@
         <th>${_("Category")}</th>
         % endif
         <th>${_("City")}</th>
+        % if context.get("distances"):
+        <th>${_("Odległość")}</th>
+        % endif
         <th>${_("Action")}</th>
       </tr>
     </thead>

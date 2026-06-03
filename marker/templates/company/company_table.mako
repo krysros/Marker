@@ -7,6 +7,7 @@
   shared_tag_counts = context.get("shared_tag_counts", {})
   shared_tag_labels = context.get("shared_tag_labels", {})
   activity_values = context.get("activity_values")
+  distances = context.get("distances", {})
 %>
 % for company in paginator:
 % if loop.last:
@@ -32,6 +33,15 @@
     <small class="text-body-secondary">${get_subdivision_name(company.subdivision, "---")}</small><br>
     <small class="text-body-secondary">${get_country_name(company.country, "---")}</small>
   </td>
+  % if distances:
+  <td>
+    % if company.id in distances:
+    ${"{:.1f} km".format(distances[company.id])}
+    % else:
+    ---
+    % endif
+  </td>
+  % endif
   % if show_shared_tags:
   <td>
     <span class="badge text-bg-info"
@@ -96,6 +106,9 @@
         <th>${checkbox.select_all()}</th>
         <th>${_("Company")}</th>
         <th>${_("City")}</th>
+        % if context.get("distances"):
+        <th>${_("Odległość")}</th>
+        % endif
         % if show_shared_tags:
         <th>${_("Common tags")}</th>
         % endif

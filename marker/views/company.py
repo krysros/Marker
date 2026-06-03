@@ -46,6 +46,7 @@ from ..models import (
 )
 from ..subscribers import get_subdivision_name
 from ..utils.geo import location, location_details
+from geopy.distance import geodesic
 from ..utils.paginator import get_paginator
 from ..utils.uptime import check_website_uptime, render_uptime_badge
 from ..utils.website_autofill import (
@@ -223,6 +224,11 @@ class CompanyView:
     ):
         page = int(self.request.params.get("page", 1))
         tags = self._normalized_tags()
+        location_param = self.request.params.get("location")
+        distance_param = self.request.params.get("distance")
+        lat_param = self.request.params.get("lat")
+        lon_param = self.request.params.get("lon")
+
         requested_view_mode = self.request.params.get("view", "companies")
         if requested_view_mode not in {"companies", "contacts"}:
             requested_view_mode = "companies"
@@ -250,6 +256,15 @@ class CompanyView:
         order_criteria = dict(ORDER_CRITERIA)
         colors = dict(COLORS)
         q = {}
+        if location_param:
+            q["location"] = location_param
+        if distance_param:
+            q["distance"] = distance_param
+        if lat_param:
+            q["lat"] = lat_param
+        if lon_param:
+            q["lon"] = lon_param
+
 
         stmt = select(Company)
         if is_uptime:
@@ -392,18 +407,91 @@ class CompanyView:
             )
             selected_items = self.request.identity.selected_contacts
 
+        # Resolve target coordinates
+        target_coords = None
+        if location_param and location_param.strip():
+            loc_res = location(q=location_param)
+            if loc_res:
+                target_coords = (loc_res["lat"], loc_res["lon"])
+        elif lat_param and lon_param:
+            try:
+                target_coords = (float(lat_param), float(lon_param))
+            except (ValueError, TypeError):
+                pass
+
+        try:
+            distance_km = float(distance_param) if distance_param else 50.0
+        except (ValueError, TypeError):
+            distance_km = 50.0
+
         if is_bulk_select_request(self.request):
+            if target_coords:
+                if view_mode == "contacts":
+                    all_contacts = self.request.dbsession.execute(stmt).scalars().all()
+                    filtered_contacts = []
+                    for contact in all_contacts:
+                        if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
+                            try:
+                                if geodesic(target_coords, (contact.company.latitude, contact.company.longitude)).km <= distance_km:
+                                    filtered_contacts.append(contact)
+                            except Exception:
+                                pass
+                    filtered_ids = [c.id for c in filtered_contacts]
+                    stmt = stmt.filter(Contact.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Contact.id == -1)
+                else:
+                    all_companies = self.request.dbsession.execute(stmt).scalars().all()
+                    filtered_companies = []
+                    for company in all_companies:
+                        if company.latitude is not None and company.longitude is not None:
+                            try:
+                                if geodesic(target_coords, (company.latitude, company.longitude)).km <= distance_km:
+                                    filtered_companies.append(company)
+                            except Exception:
+                                pass
+                    filtered_ids = [c.id for c in filtered_companies]
+                    stmt = stmt.filter(Company.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Company.id == -1)
             return handle_bulk_selection(self.request, stmt, selected_items)
 
-        counter = self.request.dbsession.execute(
-            select(func.count()).select_from(stmt.order_by(None).subquery())
-        ).scalar()
+        distances = {}
+        if target_coords:
+            if view_mode == "contacts":
+                all_contacts = self.request.dbsession.execute(stmt).scalars().all()
+                filtered_contacts = []
+                for contact in all_contacts:
+                    if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
+                        try:
+                            dist = geodesic(target_coords, (contact.company.latitude, contact.company.longitude)).km
+                            if dist <= distance_km:
+                                filtered_contacts.append(contact)
+                                distances[contact.id] = dist
+                        except Exception:
+                            pass
+                counter = len(filtered_contacts)
+                paginator = filtered_contacts[(page - 1) * 20 : page * 20]
+            else:
+                all_companies = self.request.dbsession.execute(stmt).scalars().all()
+                filtered_companies = []
+                for company in all_companies:
+                    if company.latitude is not None and company.longitude is not None:
+                        try:
+                            dist = geodesic(target_coords, (company.latitude, company.longitude)).km
+                            if dist <= distance_km:
+                                filtered_companies.append(company)
+                                distances[company.id] = dist
+                        except Exception:
+                            pass
+                counter = len(filtered_companies)
+                paginator = filtered_companies[(page - 1) * 20 : page * 20]
+        else:
+            counter = self.request.dbsession.execute(
+                select(func.count()).select_from(stmt.order_by(None).subquery())
+            ).scalar()
 
-        paginator = (
-            self.request.dbsession.execute(get_paginator(stmt, page=page))
-            .scalars()
-            .all()
-        )
+            paginator = (
+                self.request.dbsession.execute(get_paginator(stmt, page=page))
+                .scalars()
+                .all()
+            )
 
         obj = Filter(**q)
         form = CompanyFilterForm(self.request.GET, obj, request=self.request)
@@ -441,6 +529,7 @@ class CompanyView:
             "show_contacts_toggle": show_contacts_toggle,
             "contact_q": contact_q,
             "page": page,
+            "distances": distances,
         }
 
     def all(self):
