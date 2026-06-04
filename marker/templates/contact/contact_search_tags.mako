@@ -29,6 +29,15 @@
           <%include file="contact_tag_input_row.mako" args="row_id='tag-1', value=''"/>
         % endif
       </div>
+      <div class="mt-3">
+        <button type="button"
+                class="btn btn-secondary"
+                hx-get="${request.route_url('search_tags_input')}"
+                hx-target="#tag-inputs"
+                hx-swap="beforeend">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
       <div class="mb-3 mt-3">
         <label class="form-label">${_("Search mode")}</label>
         <div>
@@ -54,14 +63,7 @@
       </div>
       <input type="hidden" name="lat" id="lat-input">
       <input type="hidden" name="lon" id="lon-input">
-      <div class="hstack gap-2 mt-3">
-        <button type="button"
-                class="btn btn-secondary"
-                hx-get="${request.route_url('search_tags_input')}"
-                hx-target="#tag-inputs"
-                hx-swap="beforeend">
-          <i class="bi bi-plus-lg"></i>
-        </button>
+      <div class="mt-3">
         <button type="submit" class="btn btn-primary">${_("Search")}</button>
       </div>
     </form>
