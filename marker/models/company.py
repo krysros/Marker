@@ -52,16 +52,16 @@ class Company(CountMixin, Base):
     updated_by: Mapped[Optional["User"]] = relationship(foreign_keys=[editor_id])
 
     tags: Mapped[list["Tag"]] = relationship(
-        secondary=companies_tags, back_populates=lambda: Tag.companies
+        secondary=companies_tags, back_populates="companies"
     )
     projects: Mapped[list["Activity"]] = relationship(
-        back_populates=lambda: Activity.company, cascade="all, delete-orphan"
+        back_populates="company", cascade="all, delete-orphan"
     )
     contacts: Mapped[list["Contact"]] = relationship(
-        back_populates=lambda: Contact.company, cascade="all, delete-orphan"
+        back_populates="company", cascade="all, delete-orphan"
     )
     comments: Mapped[list["Comment"]] = relationship(
-        back_populates=lambda: Comment.company, cascade="all, delete-orphan"
+        back_populates="company", cascade="all, delete-orphan"
     )
 
     def __init__(

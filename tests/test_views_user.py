@@ -6346,6 +6346,7 @@ def test_user_selected_counts_and_stars(dbsession):
     user.companies_stars.append(co)
     user.projects_stars.append(proj)
 
+    dbsession.flush()
     transaction.commit()
 
     request = _req(dbsession, user)

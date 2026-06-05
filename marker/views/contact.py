@@ -860,19 +860,40 @@ class ContactView:
                 filtered_contacts = []
                 for contact in all_contacts:
                     contact_coords = None
-                    if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
-                        contact_coords = (contact.company.latitude, contact.company.longitude)
-                    elif contact.project and contact.project.latitude is not None and contact.project.longitude is not None:
-                        contact_coords = (contact.project.latitude, contact.project.longitude)
-                    
+                    if (
+                        contact.company
+                        and contact.company.latitude is not None
+                        and contact.company.longitude is not None
+                    ):
+                        contact_coords = (
+                            contact.company.latitude,
+                            contact.company.longitude,
+                        )
+                    elif (
+                        contact.project
+                        and contact.project.latitude is not None
+                        and contact.project.longitude is not None
+                    ):
+                        contact_coords = (
+                            contact.project.latitude,
+                            contact.project.longitude,
+                        )
+
                     if contact_coords:
                         try:
-                            if geodesic(target_coords, contact_coords).km <= distance_km:
+                            if (
+                                geodesic(target_coords, contact_coords).km
+                                <= distance_km
+                            ):
                                 filtered_contacts.append(contact)
                         except Exception:
                             pass
                 filtered_ids = [c.id for c in filtered_contacts]
-                stmt = stmt.filter(Contact.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Contact.id == -1)
+                stmt = (
+                    stmt.filter(Contact.id.in_(filtered_ids))
+                    if filtered_ids
+                    else stmt.filter(Contact.id == -1)
+                )
             return handle_bulk_selection(
                 self.request, stmt, self.request.identity.selected_contacts
             )
@@ -883,11 +904,25 @@ class ContactView:
             filtered_contacts = []
             for contact in all_contacts:
                 contact_coords = None
-                if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
-                    contact_coords = (contact.company.latitude, contact.company.longitude)
-                elif contact.project and contact.project.latitude is not None and contact.project.longitude is not None:
-                    contact_coords = (contact.project.latitude, contact.project.longitude)
-                
+                if (
+                    contact.company
+                    and contact.company.latitude is not None
+                    and contact.company.longitude is not None
+                ):
+                    contact_coords = (
+                        contact.company.latitude,
+                        contact.company.longitude,
+                    )
+                elif (
+                    contact.project
+                    and contact.project.latitude is not None
+                    and contact.project.longitude is not None
+                ):
+                    contact_coords = (
+                        contact.project.latitude,
+                        contact.project.longitude,
+                    )
+
                 if contact_coords:
                     try:
                         dist = geodesic(target_coords, contact_coords).km
@@ -896,7 +931,7 @@ class ContactView:
                             distances[contact.id] = dist
                     except Exception:
                         pass
-            
+
             counter = len(filtered_contacts)
             paginator = filtered_contacts[(page - 1) * 20 : page * 20]
         else:

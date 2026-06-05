@@ -265,7 +265,6 @@ class CompanyView:
         if lon_param:
             q["lon"] = lon_param
 
-
         stmt = select(Company)
         if is_uptime:
             stmt = stmt.filter(Company.website.isnot(None), Company.website != "")
@@ -430,26 +429,56 @@ class CompanyView:
                     all_contacts = self.request.dbsession.execute(stmt).scalars().all()
                     filtered_contacts = []
                     for contact in all_contacts:
-                        if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
+                        if (
+                            contact.company
+                            and contact.company.latitude is not None
+                            and contact.company.longitude is not None
+                        ):
                             try:
-                                if geodesic(target_coords, (contact.company.latitude, contact.company.longitude)).km <= distance_km:
+                                if (
+                                    geodesic(
+                                        target_coords,
+                                        (
+                                            contact.company.latitude,
+                                            contact.company.longitude,
+                                        ),
+                                    ).km
+                                    <= distance_km
+                                ):
                                     filtered_contacts.append(contact)
                             except Exception:
                                 pass
                     filtered_ids = [c.id for c in filtered_contacts]
-                    stmt = stmt.filter(Contact.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Contact.id == -1)
+                    stmt = (
+                        stmt.filter(Contact.id.in_(filtered_ids))
+                        if filtered_ids
+                        else stmt.filter(Contact.id == -1)
+                    )
                 else:
                     all_companies = self.request.dbsession.execute(stmt).scalars().all()
                     filtered_companies = []
                     for company in all_companies:
-                        if company.latitude is not None and company.longitude is not None:
+                        if (
+                            company.latitude is not None
+                            and company.longitude is not None
+                        ):
                             try:
-                                if geodesic(target_coords, (company.latitude, company.longitude)).km <= distance_km:
+                                if (
+                                    geodesic(
+                                        target_coords,
+                                        (company.latitude, company.longitude),
+                                    ).km
+                                    <= distance_km
+                                ):
                                     filtered_companies.append(company)
                             except Exception:
                                 pass
                     filtered_ids = [c.id for c in filtered_companies]
-                    stmt = stmt.filter(Company.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Company.id == -1)
+                    stmt = (
+                        stmt.filter(Company.id.in_(filtered_ids))
+                        if filtered_ids
+                        else stmt.filter(Company.id == -1)
+                    )
             return handle_bulk_selection(self.request, stmt, selected_items)
 
         distances = {}
@@ -458,9 +487,16 @@ class CompanyView:
                 all_contacts = self.request.dbsession.execute(stmt).scalars().all()
                 filtered_contacts = []
                 for contact in all_contacts:
-                    if contact.company and contact.company.latitude is not None and contact.company.longitude is not None:
+                    if (
+                        contact.company
+                        and contact.company.latitude is not None
+                        and contact.company.longitude is not None
+                    ):
                         try:
-                            dist = geodesic(target_coords, (contact.company.latitude, contact.company.longitude)).km
+                            dist = geodesic(
+                                target_coords,
+                                (contact.company.latitude, contact.company.longitude),
+                            ).km
                             if dist <= distance_km:
                                 filtered_contacts.append(contact)
                                 distances[contact.id] = dist
@@ -474,7 +510,9 @@ class CompanyView:
                 for company in all_companies:
                     if company.latitude is not None and company.longitude is not None:
                         try:
-                            dist = geodesic(target_coords, (company.latitude, company.longitude)).km
+                            dist = geodesic(
+                                target_coords, (company.latitude, company.longitude)
+                            ).km
                             if dist <= distance_km:
                                 filtered_companies.append(company)
                                 distances[company.id] = dist

@@ -12,6 +12,7 @@ from marker.views.project import ProjectView
 from marker.views.contact import ContactView
 from tests.conftest import DummyRequestWithIdentity
 
+
 def make_test_request(dbsession, user, params=None):
     request = DummyRequestWithIdentity()
     request.dbsession = dbsession
@@ -29,8 +30,12 @@ def make_test_request(dbsession, user, params=None):
     request.environ = {}
     request.environ["webob._parsed_get_vars"] = (MultiDict(params or {}), MultiDict())
     request.environ["webob._parsed_post_vars"] = (MultiDict(), MultiDict())
-    request.environ["webob._parsed_params_vars"] = (MultiDict(params or {}), MultiDict())
+    request.environ["webob._parsed_params_vars"] = (
+        MultiDict(params or {}),
+        MultiDict(),
+    )
     return request
+
 
 @pytest.fixture
 def test_data(dbsession):
@@ -47,11 +52,11 @@ def test_data(dbsession):
     user.selected_contacts = []
     user.selected_tags = []
     dbsession.add(user)
-    
+
     # Tag to enable view_mode contacts toggle if needed
     tag = Tag(name="testtag")
     dbsession.add(tag)
-    
+
     # Company with valid coordinates (Warsaw: 52.2297, 21.0122)
     company_warsaw = Company(
         name="Warsaw Company",
@@ -70,7 +75,7 @@ def test_data(dbsession):
     company_warsaw.longitude = 21.0122
     company_warsaw.tags.append(tag)
     dbsession.add(company_warsaw)
-    
+
     # Company outside Warsaw (Krakow: 50.0647, 19.9450 - about 250km away)
     company_krakow = Company(
         name="Krakow Company",
@@ -241,22 +246,22 @@ def test_data(dbsession):
     transaction.commit()
     return user, tag
 
+
 # Helper to mock location response
 def mock_location_warsaw(q):
     if q == "Warszawa":
         return {"lat": 52.2297, "lon": 21.0122}
     return None
 
+
 @patch("marker.views.company.location", side_effect=mock_location_warsaw)
 def test_company_view_location_filtering(mock_loc, dbsession, test_data):
     user, tag = test_data
-    
+
     # 1. Test filtering by location parameter (Warsaw, 50km radius)
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request = make_test_request(
+        dbsession, user, {"location": "Warszawa", "distance": "50", "tag": tag.name}
+    )
     view = CompanyView(request)
     res = view.all()
     assert "paginator" in res
@@ -265,36 +270,36 @@ def test_company_view_location_filtering(mock_loc, dbsession, test_data):
     assert not any(c.name == "No Coords Company" for c in res["paginator"])
 
     # 2. Test filtering by lat/lon directly (Warsaw coords)
-    request_lat_lon = make_test_request(dbsession, user, {
-        "lat": "52.2297",
-        "lon": "21.0122",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request_lat_lon = make_test_request(
+        dbsession,
+        user,
+        {"lat": "52.2297", "lon": "21.0122", "distance": "50", "tag": tag.name},
+    )
     view_lat_lon = CompanyView(request_lat_lon)
     res_lat_lon = view_lat_lon.all()
     assert any(c.name == "Warsaw Company" for c in res_lat_lon["paginator"])
     assert not any(c.name == "Krakow Company" for c in res_lat_lon["paginator"])
 
     # 3. Test invalid lat/lon exceptions handling
-    request_invalid_coords = make_test_request(dbsession, user, {
-        "lat": "abc",
-        "lon": "def",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request_invalid_coords = make_test_request(
+        dbsession, user, {"lat": "abc", "lon": "def", "distance": "50", "tag": tag.name}
+    )
     view_invalid = CompanyView(request_invalid_coords)
     res_invalid = view_invalid.all()
     # It should fall back to no filtering, showing everything
     assert len(res_invalid["paginator"]) >= 3
 
     # 4. Test invalid distance value exceptions handling
-    request_invalid_dist = make_test_request(dbsession, user, {
-        "lat": "52.2297",
-        "lon": "21.0122",
-        "distance": "invalid_dist",
-        "tag": tag.name
-    })
+    request_invalid_dist = make_test_request(
+        dbsession,
+        user,
+        {
+            "lat": "52.2297",
+            "lon": "21.0122",
+            "distance": "invalid_dist",
+            "tag": tag.name,
+        },
+    )
     view_invalid_dist = CompanyView(request_invalid_dist)
     res_invalid_dist = view_invalid_dist.all()
     # Should fallback to default 50km
@@ -302,22 +307,20 @@ def test_company_view_location_filtering(mock_loc, dbsession, test_data):
     assert not any(c.name == "Krakow Company" for c in res_invalid_dist["paginator"])
 
     # 5. Test view contacts mode in company view with location
-    request_contacts = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "contacts"
-    })
+    request_contacts = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "contacts"},
+    )
     view_contacts = CompanyView(request_contacts)
     res_contacts = view_contacts.all()
     assert any(c.name == "Warsaw Co Contact" for c in res_contacts["paginator"])
     assert not any(c.name == "Krakow Co Contact" for c in res_contacts["paginator"])
 
     # 6. Test location query returning empty result (unresolved address)
-    request_empty_loc = make_test_request(dbsession, user, {
-        "location": "NowhereLand",
-        "tag": tag.name
-    })
+    request_empty_loc = make_test_request(
+        dbsession, user, {"location": "NowhereLand", "tag": tag.name}
+    )
     view_empty_loc = CompanyView(request_empty_loc)
     res_empty_loc = view_empty_loc.all()
     assert len(res_empty_loc["paginator"]) >= 3
@@ -328,11 +331,9 @@ def test_project_view_location_filtering(mock_loc, dbsession, test_data):
     user, tag = test_data
 
     # 1. Test projects filtering by location parameter (Warsaw, 50km radius)
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request = make_test_request(
+        dbsession, user, {"location": "Warszawa", "distance": "50", "tag": tag.name}
+    )
     view = ProjectView(request)
     res = view.all()
     assert "paginator" in res
@@ -340,47 +341,46 @@ def test_project_view_location_filtering(mock_loc, dbsession, test_data):
     assert not any(p.name == "Krakow Project" for p in res["paginator"])
 
     # 2. Test projects filtering by lat/lon directly (Warsaw coords)
-    request_lat_lon = make_test_request(dbsession, user, {
-        "lat": "52.2297",
-        "lon": "21.0122",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request_lat_lon = make_test_request(
+        dbsession,
+        user,
+        {"lat": "52.2297", "lon": "21.0122", "distance": "50", "tag": tag.name},
+    )
     view_lat_lon = ProjectView(request_lat_lon)
     res_lat_lon = view_lat_lon.all()
     assert any(p.name == "Warsaw Project" for p in res_lat_lon["paginator"])
     assert not any(p.name == "Krakow Project" for p in res_lat_lon["paginator"])
 
     # 3. Test invalid lat/lon exceptions handling
-    request_invalid_coords = make_test_request(dbsession, user, {
-        "lat": "abc",
-        "lon": "def",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request_invalid_coords = make_test_request(
+        dbsession, user, {"lat": "abc", "lon": "def", "distance": "50", "tag": tag.name}
+    )
     view_invalid = ProjectView(request_invalid_coords)
     res_invalid = view_invalid.all()
     assert len(res_invalid["paginator"]) >= 3
 
     # 4. Test invalid distance value exceptions handling
-    request_invalid_dist = make_test_request(dbsession, user, {
-        "lat": "52.2297",
-        "lon": "21.0122",
-        "distance": "invalid_dist",
-        "tag": tag.name
-    })
+    request_invalid_dist = make_test_request(
+        dbsession,
+        user,
+        {
+            "lat": "52.2297",
+            "lon": "21.0122",
+            "distance": "invalid_dist",
+            "tag": tag.name,
+        },
+    )
     view_invalid_dist = ProjectView(request_invalid_dist)
     res_invalid_dist = view_invalid_dist.all()
     assert any(p.name == "Warsaw Project" for p in res_invalid_dist["paginator"])
     assert not any(p.name == "Krakow Project" for p in res_invalid_dist["paginator"])
 
     # 5. Test view contacts mode in project view with location
-    request_contacts = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "contacts"
-    })
+    request_contacts = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "contacts"},
+    )
     view_contacts = ProjectView(request_contacts)
     res_contacts = view_contacts.all()
     assert any(c.name == "Warsaw Proj Contact" for c in res_contacts["paginator"])
@@ -392,12 +392,16 @@ def test_contact_view_location_filtering(mock_loc, dbsession, test_data):
     user, tag = test_data
 
     # 1. Test contacts filtering by location parameter (Warsaw, 50km radius)
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request = make_test_request(
+        dbsession,
+        user,
+        {
+            "location": "Warszawa",
+            "distance": "50",
+            "tag": tag.name,
+            "target": "contacts",
+        },
+    )
     view = ContactView(request)
     res = view.search_tags_results()
     assert "paginator" in res
@@ -407,13 +411,17 @@ def test_contact_view_location_filtering(mock_loc, dbsession, test_data):
     assert not any(c.name == "Krakow Proj Contact" for c in res["paginator"])
 
     # 2. Test contacts filtering by lat/lon directly (Warsaw coords)
-    request_lat_lon = make_test_request(dbsession, user, {
-        "lat": "52.2297",
-        "lon": "21.0122",
-        "distance": "50",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request_lat_lon = make_test_request(
+        dbsession,
+        user,
+        {
+            "lat": "52.2297",
+            "lon": "21.0122",
+            "distance": "50",
+            "tag": tag.name,
+            "target": "contacts",
+        },
+    )
     view_lat_lon = ContactView(request_lat_lon)
     res_lat_lon = view_lat_lon.search_tags_results()
     assert any(c.name == "Warsaw Co Contact" for c in res_lat_lon["paginator"])
@@ -421,35 +429,43 @@ def test_contact_view_location_filtering(mock_loc, dbsession, test_data):
     assert not any(c.name == "Krakow Co Contact" for c in res_lat_lon["paginator"])
 
     # 3. Test invalid lat/lon exceptions handling
-    request_invalid_coords = make_test_request(dbsession, user, {
-        "lat": "abc",
-        "lon": "def",
-        "distance": "50",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request_invalid_coords = make_test_request(
+        dbsession,
+        user,
+        {
+            "lat": "abc",
+            "lon": "def",
+            "distance": "50",
+            "tag": tag.name,
+            "target": "contacts",
+        },
+    )
     view_invalid = ContactView(request_invalid_coords)
     res_invalid = view_invalid.search_tags_results()
     assert len(res_invalid["paginator"]) >= 4
 
     # 4. Test invalid distance value exceptions handling
-    request_invalid_dist = make_test_request(dbsession, user, {
-        "lat": "52.2297",
-        "lon": "21.0122",
-        "distance": "invalid_dist",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request_invalid_dist = make_test_request(
+        dbsession,
+        user,
+        {
+            "lat": "52.2297",
+            "lon": "21.0122",
+            "distance": "invalid_dist",
+            "tag": tag.name,
+            "target": "contacts",
+        },
+    )
     view_invalid_dist = ContactView(request_invalid_dist)
     res_invalid_dist = view_invalid_dist.search_tags_results()
     assert any(c.name == "Warsaw Co Contact" for c in res_invalid_dist["paginator"])
 
     # 5. Test location query returning empty result (unresolved address)
-    request_empty_loc = make_test_request(dbsession, user, {
-        "location": "NowhereLand",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request_empty_loc = make_test_request(
+        dbsession,
+        user,
+        {"location": "NowhereLand", "tag": tag.name, "target": "contacts"},
+    )
     view_empty_loc = ContactView(request_empty_loc)
     res_empty_loc = view_empty_loc.search_tags_results()
     assert len(res_empty_loc["paginator"]) >= 4
@@ -463,11 +479,9 @@ def test_company_view_geodesic_exception(mock_geodesic, mock_loc, dbsession, tes
     # Force geodesic to raise an exception
     mock_geodesic.side_effect = Exception("Calculation failed")
 
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request = make_test_request(
+        dbsession, user, {"location": "Warszawa", "distance": "50", "tag": tag.name}
+    )
     view = CompanyView(request)
     res = view.all()
     # The results should not fail; instead the failed calculation items are skipped
@@ -481,11 +495,9 @@ def test_project_view_geodesic_exception(mock_geodesic, mock_loc, dbsession, tes
     user, tag = test_data
     mock_geodesic.side_effect = Exception("Calculation failed")
 
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name
-    })
+    request = make_test_request(
+        dbsession, user, {"location": "Warszawa", "distance": "50", "tag": tag.name}
+    )
     view = ProjectView(request)
     res = view.all()
     assert "paginator" in res
@@ -498,12 +510,16 @@ def test_contact_view_geodesic_exception(mock_geodesic, mock_loc, dbsession, tes
     user, tag = test_data
     mock_geodesic.side_effect = Exception("Calculation failed")
 
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request = make_test_request(
+        dbsession,
+        user,
+        {
+            "location": "Warszawa",
+            "distance": "50",
+            "tag": tag.name,
+            "target": "contacts",
+        },
+    )
     view = ContactView(request)
     res = view.search_tags_results()
     assert "paginator" in res
@@ -515,26 +531,29 @@ def test_contact_view_geodesic_exception(mock_geodesic, mock_loc, dbsession, tes
 @patch("marker.views.company.is_bulk_select_request", return_value=True)
 def test_company_view_bulk_select(mock_bulk, mock_loc, dbsession, test_data):
     user, tag = test_data
-    
+
     # 1. Bulk select Companies view
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "companies"
-    })
+    request = make_test_request(
+        dbsession,
+        user,
+        {
+            "location": "Warszawa",
+            "distance": "50",
+            "tag": tag.name,
+            "view": "companies",
+        },
+    )
     view = CompanyView(request)
     res = view.all()
     # Should execute handle_bulk_selection logic (which returns a WebOb Response or similar)
     assert res is not None
 
     # 2. Bulk select Contacts view in Company view
-    request_contacts = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "contacts"
-    })
+    request_contacts = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "contacts"},
+    )
     view_contacts = CompanyView(request_contacts)
     res_contacts = view_contacts.all()
     assert res_contacts is not None
@@ -546,23 +565,21 @@ def test_project_view_bulk_select(mock_bulk, mock_loc, dbsession, test_data):
     user, tag = test_data
 
     # 1. Bulk select Projects view
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "projects"
-    })
+    request = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "projects"},
+    )
     view = ProjectView(request)
     res = view.all()
     assert res is not None
 
     # 2. Bulk select Contacts view in Project view
-    request_contacts = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "contacts"
-    })
+    request_contacts = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "contacts"},
+    )
     view_contacts = ProjectView(request_contacts)
     res_contacts = view_contacts.all()
     assert res_contacts is not None
@@ -573,12 +590,16 @@ def test_project_view_bulk_select(mock_bulk, mock_loc, dbsession, test_data):
 def test_contact_view_bulk_select(mock_bulk, mock_loc, dbsession, test_data):
     user, tag = test_data
 
-    request = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "target": "contacts"
-    })
+    request = make_test_request(
+        dbsession,
+        user,
+        {
+            "location": "Warszawa",
+            "distance": "50",
+            "tag": tag.name,
+            "target": "contacts",
+        },
+    )
     view = ContactView(request)
     res = view.search_tags_results()
     assert res is not None
@@ -586,17 +607,18 @@ def test_contact_view_bulk_select(mock_bulk, mock_loc, dbsession, test_data):
 
 @patch("marker.views.company.location", side_effect=mock_location_warsaw)
 @patch("marker.views.company.geodesic")
-def test_company_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbsession, test_data):
+def test_company_view_geodesic_exception_extended(
+    mock_geodesic, mock_loc, dbsession, test_data
+):
     user, tag = test_data
     mock_geodesic.side_effect = Exception("Calculation failed")
 
     # 1. Normal mode with view=contacts
-    request_contacts = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "contacts"
-    })
+    request_contacts = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "contacts"},
+    )
     view = CompanyView(request_contacts)
     res = view.all()
     assert "paginator" in res
@@ -604,23 +626,25 @@ def test_company_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbses
 
     # 2. Bulk select mode with view=companies
     with patch("marker.views.company.is_bulk_select_request", return_value=True):
-        request_bulk_co = make_test_request(dbsession, user, {
-            "location": "Warszawa",
-            "distance": "50",
-            "tag": tag.name
-        })
+        request_bulk_co = make_test_request(
+            dbsession, user, {"location": "Warszawa", "distance": "50", "tag": tag.name}
+        )
         view = CompanyView(request_bulk_co)
         res = view.all()
         assert res is not None
 
     # 3. Bulk select mode with view=contacts
     with patch("marker.views.company.is_bulk_select_request", return_value=True):
-        request_bulk_contacts = make_test_request(dbsession, user, {
-            "location": "Warszawa",
-            "distance": "50",
-            "tag": tag.name,
-            "view": "contacts"
-        })
+        request_bulk_contacts = make_test_request(
+            dbsession,
+            user,
+            {
+                "location": "Warszawa",
+                "distance": "50",
+                "tag": tag.name,
+                "view": "contacts",
+            },
+        )
         view = CompanyView(request_bulk_contacts)
         res = view.all()
         assert res is not None
@@ -628,17 +652,18 @@ def test_company_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbses
 
 @patch("marker.views.project.location", side_effect=mock_location_warsaw)
 @patch("marker.views.project.geodesic")
-def test_project_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbsession, test_data):
+def test_project_view_geodesic_exception_extended(
+    mock_geodesic, mock_loc, dbsession, test_data
+):
     user, tag = test_data
     mock_geodesic.side_effect = Exception("Calculation failed")
 
     # 1. Normal mode with view=contacts
-    request_contacts = make_test_request(dbsession, user, {
-        "location": "Warszawa",
-        "distance": "50",
-        "tag": tag.name,
-        "view": "contacts"
-    })
+    request_contacts = make_test_request(
+        dbsession,
+        user,
+        {"location": "Warszawa", "distance": "50", "tag": tag.name, "view": "contacts"},
+    )
     view = ProjectView(request_contacts)
     res = view.all()
     assert "paginator" in res
@@ -646,23 +671,25 @@ def test_project_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbses
 
     # 2. Bulk select mode with view=projects
     with patch("marker.views.project.is_bulk_select_request", return_value=True):
-        request_bulk_proj = make_test_request(dbsession, user, {
-            "location": "Warszawa",
-            "distance": "50",
-            "tag": tag.name
-        })
+        request_bulk_proj = make_test_request(
+            dbsession, user, {"location": "Warszawa", "distance": "50", "tag": tag.name}
+        )
         view = ProjectView(request_bulk_proj)
         res = view.all()
         assert res is not None
 
     # 3. Bulk select mode with view=contacts
     with patch("marker.views.project.is_bulk_select_request", return_value=True):
-        request_bulk_contacts = make_test_request(dbsession, user, {
-            "location": "Warszawa",
-            "distance": "50",
-            "tag": tag.name,
-            "view": "contacts"
-        })
+        request_bulk_contacts = make_test_request(
+            dbsession,
+            user,
+            {
+                "location": "Warszawa",
+                "distance": "50",
+                "tag": tag.name,
+                "view": "contacts",
+            },
+        )
         view = ProjectView(request_bulk_contacts)
         res = view.all()
         assert res is not None
@@ -670,19 +697,24 @@ def test_project_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbses
 
 @patch("marker.views.contact.location", side_effect=mock_location_warsaw)
 @patch("marker.views.contact.geodesic")
-def test_contact_view_geodesic_exception_extended(mock_geodesic, mock_loc, dbsession, test_data):
+def test_contact_view_geodesic_exception_extended(
+    mock_geodesic, mock_loc, dbsession, test_data
+):
     user, tag = test_data
     mock_geodesic.side_effect = Exception("Calculation failed")
 
     # Bulk select mode
     with patch("marker.views.contact.is_bulk_select_request", return_value=True):
-        request = make_test_request(dbsession, user, {
-            "location": "Warszawa",
-            "distance": "50",
-            "tag": tag.name,
-            "target": "contacts"
-        })
+        request = make_test_request(
+            dbsession,
+            user,
+            {
+                "location": "Warszawa",
+                "distance": "50",
+                "tag": tag.name,
+                "target": "contacts",
+            },
+        )
         view = ContactView(request)
         res = view.search_tags_results()
         assert res is not None
-

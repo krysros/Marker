@@ -496,26 +496,56 @@ class ProjectView:
                     all_contacts = self.request.dbsession.execute(stmt).scalars().all()
                     filtered_contacts = []
                     for contact in all_contacts:
-                        if contact.project and contact.project.latitude is not None and contact.project.longitude is not None:
+                        if (
+                            contact.project
+                            and contact.project.latitude is not None
+                            and contact.project.longitude is not None
+                        ):
                             try:
-                                if geodesic(target_coords, (contact.project.latitude, contact.project.longitude)).km <= distance_km:
+                                if (
+                                    geodesic(
+                                        target_coords,
+                                        (
+                                            contact.project.latitude,
+                                            contact.project.longitude,
+                                        ),
+                                    ).km
+                                    <= distance_km
+                                ):
                                     filtered_contacts.append(contact)
                             except Exception:
                                 pass
                     filtered_ids = [c.id for c in filtered_contacts]
-                    stmt = stmt.filter(Contact.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Contact.id == -1)
+                    stmt = (
+                        stmt.filter(Contact.id.in_(filtered_ids))
+                        if filtered_ids
+                        else stmt.filter(Contact.id == -1)
+                    )
                 else:
                     all_projects = self.request.dbsession.execute(stmt).scalars().all()
                     filtered_projects = []
                     for project in all_projects:
-                        if project.latitude is not None and project.longitude is not None:
+                        if (
+                            project.latitude is not None
+                            and project.longitude is not None
+                        ):
                             try:
-                                if geodesic(target_coords, (project.latitude, project.longitude)).km <= distance_km:
+                                if (
+                                    geodesic(
+                                        target_coords,
+                                        (project.latitude, project.longitude),
+                                    ).km
+                                    <= distance_km
+                                ):
                                     filtered_projects.append(project)
                             except Exception:
                                 pass
                     filtered_ids = [p.id for p in filtered_projects]
-                    stmt = stmt.filter(Project.id.in_(filtered_ids)) if filtered_ids else stmt.filter(Project.id == -1)
+                    stmt = (
+                        stmt.filter(Project.id.in_(filtered_ids))
+                        if filtered_ids
+                        else stmt.filter(Project.id == -1)
+                    )
             return handle_bulk_selection(self.request, stmt, selected_items)
 
         distances = {}
@@ -524,9 +554,16 @@ class ProjectView:
                 all_contacts = self.request.dbsession.execute(stmt).scalars().all()
                 filtered_contacts = []
                 for contact in all_contacts:
-                    if contact.project and contact.project.latitude is not None and contact.project.longitude is not None:
+                    if (
+                        contact.project
+                        and contact.project.latitude is not None
+                        and contact.project.longitude is not None
+                    ):
                         try:
-                            dist = geodesic(target_coords, (contact.project.latitude, contact.project.longitude)).km
+                            dist = geodesic(
+                                target_coords,
+                                (contact.project.latitude, contact.project.longitude),
+                            ).km
                             if dist <= distance_km:
                                 filtered_contacts.append(contact)
                                 distances[contact.id] = dist
@@ -540,7 +577,9 @@ class ProjectView:
                 for project in all_projects:
                     if project.latitude is not None and project.longitude is not None:
                         try:
-                            dist = geodesic(target_coords, (project.latitude, project.longitude)).km
+                            dist = geodesic(
+                                target_coords, (project.latitude, project.longitude)
+                            ).km
                             if dist <= distance_km:
                                 filtered_projects.append(project)
                                 distances[project.id] = dist
@@ -713,7 +752,6 @@ class ProjectView:
         _order = self.request.params.get("order", "desc")
         now = datetime.datetime.now()
         q = {}
-
 
         stmt = select(Project)
 
