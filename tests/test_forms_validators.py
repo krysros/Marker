@@ -299,6 +299,51 @@ def test_company_krs_not_digits():
     assert "KRS" in form.errors
 
 
+def test_company_nip_not_validated_for_non_pl_country():
+    """NIP validation should be skipped for non-Polish companies."""
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "DE",
+            "subdivision": "",
+            "NIP": "invalid",
+            "color": "",
+        }
+    )
+    assert form.validate() is True
+    assert "NIP" not in form.errors
+
+
+def test_company_regon_not_validated_for_non_pl_country():
+    """REGON validation should be skipped for non-Polish companies."""
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "FR",
+            "subdivision": "",
+            "REGON": "invalid",
+            "color": "",
+        }
+    )
+    assert form.validate() is True
+    assert "REGON" not in form.errors
+
+
+def test_company_krs_not_validated_for_non_pl_country():
+    """KRS validation should be skipped for non-Polish companies."""
+    form = _company_form(
+        {
+            "name": "TestCo",
+            "country": "GB",
+            "subdivision": "",
+            "KRS": "12345678ab",
+            "color": "",
+        }
+    )
+    assert form.validate() is True
+    assert "KRS" not in form.errors
+
+
 def test_company_name_taken():
     existing = SimpleNamespace(name="Taken")
     db = DummyDBSession(exists=existing)

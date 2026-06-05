@@ -141,6 +141,10 @@ class CompanyForm(Form):
         if not field.data:
             return
 
+        # Only validate NIP for Polish companies
+        if self.country.data != "PL":
+            return
+
         if len(field.data) != 10 or not field.data.isdigit():
             raise ValidationError(_("The NIP number should consist of 10 digits"))
 
@@ -152,6 +156,10 @@ class CompanyForm(Form):
 
     def validate_REGON(self, field):
         if not field.data:
+            return
+
+        # Only validate REGON for Polish companies
+        if self.country.data != "PL":
             return
 
         if not field.data.isdigit():
@@ -187,6 +195,10 @@ class CompanyForm(Form):
 
     def validate_KRS(self, field):
         if not field.data:
+            return
+
+        # Only validate KRS for Polish companies
+        if self.country.data != "PL":
             return
 
         if len(field.data) != 10 or not field.data.isdigit():
