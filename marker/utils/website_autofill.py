@@ -78,6 +78,15 @@ def _autofill_from_website(url, prompt, default_country=""):
 
     result = json.loads(response_text)
 
+    # Handle case where LLM returns an array instead of an object
+    if isinstance(result, list):
+        if result and isinstance(result[0], dict):
+            result = result[0]
+        else:
+            raise ValueError(
+                str(_("Invalid response format from AI: expected a JSON object"))
+            )
+
     # Clean up street before geolocation (remove "ul." and "ulica" prefixes)
     street = result.get("street")
     if street:

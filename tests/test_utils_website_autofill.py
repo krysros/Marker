@@ -170,3 +170,30 @@ def test_tags_autofill_from_website_limit(monkeypatch):
     # Should be limited to exactly 10 tags
     assert len(res) == 10
     assert res == [f"Tag{i}" for i in range(10)]
+
+
+def test_autofill_from_website_array_with_dict(monkeypatch):
+    """Test handling of array response where first element is a dict"""
+    doc = types.SimpleNamespace(page_content="irrelevant")
+    monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
+    monkeypatch.setattr(
+        langchain_ai,
+        "ChatGoogleGenerativeAI",
+        lambda **kwargs: DummyLLM('[{"name": "Test Company", "street": "ul. Main 1"}]'),
+    )
+    res = autofill._autofill_from_website("http://x", "prompt")
+    assert res["name"] == "Test Company"
+    assert res["street"] == "Main 1"
+
+
+def test_autofill_from_website_array_invalid(monkeypatch):
+    """Test handling of array response with non-dict elements"""
+    doc = types.SimpleNamespace(page_content="irrelevant")
+    monkeypatch.setattr(autofill, "WebBaseLoader", lambda url: DummyLoader([doc]))
+    monkeypatch.setattr(
+        langchain_ai,
+        "ChatGoogleGenerativeAI",
+        lambda **kwargs: DummyLLM('["string", "values"]'),
+    )
+    with pytest.raises(ValueError, match="Invalid response format from AI"):
+        autofill._autofill_from_website("http://x", "prompt")
