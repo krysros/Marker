@@ -251,3 +251,36 @@ def test_count_duplicates(dbsession):
     assert co1.count_duplicates == 1
     assert co2.count_duplicates == 1
     assert co3.count_duplicates == 0
+
+
+def test_setlocale_exceptions():
+    """Cover marker/models/__init__.py lines 13-14 by forcing setlocale to raise locale.Error."""
+    import importlib
+    import locale
+    from unittest.mock import patch
+    import marker.models
+
+    def mock_setlocale(category, loc):
+        if loc in ("pl_PL.utf8", "Polish_Poland.utf8", "pl_PL"):
+            raise locale.Error("Mock locale error")
+        return loc
+
+    with patch("locale.setlocale", side_effect=mock_setlocale):
+        importlib.reload(marker.models)
+
+
+def test_polish_collate_and_unicode_lower_direct():
+    """Cover marker/models/__init__.py lines 19 and 24 by calling functions directly."""
+    from marker.models import _polish_collate, _unicode_lower
+
+    # Test _polish_collate
+    assert _polish_collate("a", "b") < 0
+    assert _polish_collate("b", "a") > 0
+    assert _polish_collate("a", "a") == 0
+    assert _polish_collate("A", "a") == 0  # Case-insensitive
+
+    # Test _unicode_lower
+    assert _unicode_lower("ŁÓDŹ") == "łódź"
+    assert _unicode_lower(None) is None
+
+
