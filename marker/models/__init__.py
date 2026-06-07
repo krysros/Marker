@@ -6,13 +6,12 @@ from sqlalchemy import engine_from_config, event
 from sqlalchemy.orm import configure_mappers, sessionmaker
 
 # Configure Polish locale for string collation
-try:
-    locale.setlocale(locale.LC_COLLATE, "pl_PL")
-except locale.Error:
+for loc in ("pl_PL.utf8", "Polish_Poland.utf8", "pl_PL", "Polish_Poland.1250"):
     try:
-        locale.setlocale(locale.LC_COLLATE, "Polish_Poland.1250")
+        locale.setlocale(locale.LC_COLLATE, loc)
+        break
     except locale.Error:
-        pass
+        continue
 
 
 def _polish_collate(a: str, b: str) -> int:
