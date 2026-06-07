@@ -1,24 +1,23 @@
 # ruff: noqa: E402,F401
 
+import locale
 import zope.sqlalchemy
 from sqlalchemy import engine_from_config, event
 from sqlalchemy.orm import configure_mappers, sessionmaker
 
-# Polish alphabet order for SQLite collation.
-# Each letter maps to a unique surrogate code point so that str comparison
-# produces correct Polish alphabetical ordering.
-_POLISH_LOWER = "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż"
-_POLISH_COLLATE_MAP = str.maketrans(
-    _POLISH_LOWER,
-    "".join(chr(0x1000 + i) for i in range(len(_POLISH_LOWER))),
-)
+# Configure Polish locale for string collation
+try:
+    locale.setlocale(locale.LC_COLLATE, "pl_PL")
+except locale.Error:
+    try:
+        locale.setlocale(locale.LC_COLLATE, "Polish_Poland.1250")
+    except locale.Error:
+        pass
 
 
 def _polish_collate(a: str, b: str) -> int:
-    """Case-insensitive Polish alphabetical collation for SQLite."""
-    ka = a.lower().translate(_POLISH_COLLATE_MAP)
-    kb = b.lower().translate(_POLISH_COLLATE_MAP)
-    return (ka > kb) - (ka < kb)
+    """Case-insensitive Polish alphabetical collation for SQLite using system locale."""
+    return locale.strcoll(a.lower(), b.lower())
 
 
 def _unicode_lower(s: str | None) -> str | None:
