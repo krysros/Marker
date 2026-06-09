@@ -23,12 +23,22 @@
 
           % if contact.company:
           <dt>${_("Company")}</dt>
-          <dd><a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a></dd>
+          <dd>
+            <a href="${request.route_url('company_view', company_id=contact.company.id, slug=contact.company.slug)}">${contact.company.name}</a>
+            <a href="${request.route_url('company_contacts', company_id=contact.company.id, slug=contact.company.slug)}" class="btn btn-sm btn-outline-secondary ms-2 py-0">
+              <i class="bi bi-people"></i> ${_("Contacts")}
+            </a>
+          </dd>
           % endif
 
           % if contact.project:
           <dt>${_("Project")}</dt>
-          <dd><a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a></dd>
+          <dd>
+            <a href="${request.route_url('project_view', project_id=contact.project.id, slug=contact.project.slug)}">${contact.project.name}</a>
+            <a href="${request.route_url('project_contacts', project_id=contact.project.id, slug=contact.project.slug)}" class="btn btn-sm btn-outline-secondary ms-2 py-0">
+              <i class="bi bi-people"></i> ${_("Contacts")}
+            </a>
+          </dd>
           % endif
 
           <dt>${_("Role")}</dt>
