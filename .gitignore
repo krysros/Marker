@@ -25,3 +25,5 @@ my_data_model_diagram
 # Misc
 *.log
 .coverage
+.pytest_cache
+.ruff_cache
