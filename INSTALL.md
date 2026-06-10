@@ -8,9 +8,9 @@ Change directory into your newly created project if not already there. Your curr
 
     cd marker
 
-Install the project with its testing requirements.
+Install the project with its requirements.
 
-    uv sync --group testing
+    uv sync --all-groups
 
 Initialize and upgrade the database using Alembic.
 

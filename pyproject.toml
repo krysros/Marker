@@ -54,7 +54,7 @@ dev = [
     "WebTest",
     "pytest",
 ]
-testing = [
+test = [
     "WebTest",
     "pytest",
     "pytest-cov",
