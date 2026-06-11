@@ -191,8 +191,8 @@
       <i class="bi bi-download"></i>
     </a>
     <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="${url_xlsx}">XLSX</a></li>
       <li><a class="dropdown-item" href="${url_ods}">ODS</a></li>
+      <li><a class="dropdown-item" href="${url_xlsx}">XLSX</a></li>
     </ul>
   </div>
 </div>
@@ -235,10 +235,10 @@
       <hr class="my-2">
       <div class="mb-2 fw-semibold small">${_("Format")}</div>
       <div class="btn-group btn-group-sm w-100" role="group">
-        <input type="radio" class="btn-check" name="format" value="xlsx" id="fmt-xlsx-${uid}" checked autocomplete="off">
-        <label class="btn btn-outline-primary" for="fmt-xlsx-${uid}">XLSX</label>
-        <input type="radio" class="btn-check" name="format" value="ods" id="fmt-ods-${uid}" autocomplete="off">
+        <input type="radio" class="btn-check" name="format" value="ods" id="fmt-ods-${uid}" checked autocomplete="off">
         <label class="btn btn-outline-primary" for="fmt-ods-${uid}">ODS</label>
+        <input type="radio" class="btn-check" name="format" value="xlsx" id="fmt-xlsx-${uid}" autocomplete="off">
+        <label class="btn btn-outline-primary" for="fmt-xlsx-${uid}">XLSX</label>
       </div>
       <hr class="my-2">
       <button type="submit" class="btn btn-primary btn-sm w-100">
