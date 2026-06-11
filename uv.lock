@@ -886,7 +886,7 @@ docs = [
 lint = [
     { name = "ruff" },
 ]
-testing = [
+test = [
     { name = "factory-boy" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -929,7 +929,7 @@ dev = [
 ]
 docs = [{ name = "sqlalchemy-data-model-visualizer" }]
 lint = [{ name = "ruff" }]
-testing = [
+test = [
     { name = "factory-boy" },
     { name = "pytest" },
     { name = "pytest-cov" },
