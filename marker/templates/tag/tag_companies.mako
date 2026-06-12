@@ -29,11 +29,14 @@
     <a class="btn btn-outline-primary" href="${request.route_url('tag_map_companies', tag_id=tag.id, slug=tag.slug, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
   </div>
   <div class="vr mx-1"></div>
-  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}">
-    <a class="btn btn-outline-primary" href="${request.route_url('tag_uptime_companies', tag_id=tag.id, slug=tag.slug)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
-    <a class="btn ${'btn-primary' if context.get('q') and q.get('duplicates') == '1' else 'btn-outline-primary'}" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug, _query={**q, 'duplicates': '1', 'no_location': None})}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
-    <a class="btn ${'btn-primary' if context.get('q') and q.get('no_location') == '1' else 'btn-outline-primary'}" href="${request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug, _query={**q, 'duplicates': None, 'no_location': '1'})}"><i class="bi bi-geo"></i> ${_("No location")}</a>
-  </div>
+  ${button.dropdown_quality(
+    uptime_url=request.route_url('tag_uptime_companies', tag_id=tag.id, slug=tag.slug),
+    duplicates_url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug, _query={**q, 'duplicates': '1', 'no_location': None}),
+    nolocation_url=request.route_url('tag_companies', tag_id=tag.id, slug=tag.slug, _query={**q, 'duplicates': None, 'no_location': '1'}),
+    is_uptime=matched_route_name == 'tag_uptime_companies',
+    is_duplicates=context.get('q') and q.get('duplicates') == '1',
+    is_nolocation=context.get('q') and q.get('no_location') == '1'
+  )}
 </div>
 
 <%include file="company_table.mako"/>

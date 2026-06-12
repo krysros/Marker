@@ -313,3 +313,74 @@
   </div>
 </div>
 </%def>
+
+<%def name="dropdown_quality(uptime_url, duplicates_url, nolocation_url, is_uptime, is_duplicates, is_nolocation)">
+<%
+  is_active = is_uptime or is_duplicates or is_nolocation
+%>
+<div class="btn-group" hx-boost="false">
+  <div class="dropdown">
+    <button class="btn btn-sm ${'btn-primary' if is_active else 'btn-outline-primary'} dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      % if is_uptime:
+        <i class="bi bi-globe"></i> ${_("Uptime")}
+      % elif is_duplicates:
+        <i class="bi bi-files"></i> ${_("Duplicates")}
+      % elif is_nolocation:
+        <i class="bi bi-geo"></i> ${_("No location")}
+      % else:
+        <i class="bi bi-shield-check"></i> ${_("Status")}
+      % endif
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li>
+        <a class="dropdown-item ${'active' if is_uptime else ''}" href="${uptime_url}">
+          <i class="bi bi-globe me-1"></i> ${_("Uptime")}
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item ${'active' if is_duplicates else ''}" href="${duplicates_url}">
+          <i class="bi bi-files me-1"></i> ${_("Duplicates")}
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item ${'active' if is_nolocation else ''}" href="${nolocation_url}">
+          <i class="bi bi-geo me-1"></i> ${_("No location")}
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+</%def>
+
+<%def name="dropdown_list_mode(all_url, unassigned_url, duplicates_url, is_all, is_unassigned, is_duplicates, icon_all='people', icon_unassigned='person-x')">
+<div class="btn-group">
+  <div class="dropdown">
+    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      % if is_unassigned:
+        <i class="bi bi-${icon_unassigned}"></i> ${_("Unassigned")}
+      % elif is_duplicates:
+        <i class="bi bi-files"></i> ${_("Duplicates")}
+      % else:
+        <i class="bi bi-${icon_all}"></i> ${_("All")}
+      % endif
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li>
+        <a class="dropdown-item ${'active' if is_all else ''}" href="${all_url}">
+          <i class="bi bi-${icon_all} me-1"></i> ${_("All")}
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item ${'active' if is_unassigned else ''}" href="${unassigned_url}">
+          <i class="bi bi-${icon_unassigned} me-1"></i> ${_("Unassigned")}
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item ${'active' if is_duplicates else ''}" href="${duplicates_url}">
+          <i class="bi bi-files me-1"></i> ${_("Duplicates")}
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+</%def>

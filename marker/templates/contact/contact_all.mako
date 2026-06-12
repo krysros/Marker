@@ -25,12 +25,20 @@
   <div class="vr mx-1"></div>
   <%
     matched_route_name = getattr(request, "matched_route", None).name if getattr(request, "matched_route", None) else ""
+    is_unassigned = matched_route_name == 'contact_unassigned'
+    is_duplicates = matched_route_name == 'contact_duplicates_all'
+    is_all = not is_unassigned and not is_duplicates
   %>
-  <div class="btn-group btn-group-sm" role="group">
-    <a class="btn ${'btn-primary' if matched_route_name == 'contact_all' else 'btn-outline-primary'} btn-sm" href="${request.route_url('contact_all', _query=q)}"><i class="bi bi-people"></i> ${_("All")}</a>
-    <a class="btn ${'btn-primary' if matched_route_name == 'contact_unassigned' else 'btn-outline-primary'} btn-sm" href="${request.route_url('contact_unassigned', _query=q)}"><i class="bi bi-person-x"></i> ${_("Unassigned")}</a>
-    <a class="btn ${'btn-primary' if matched_route_name == 'contact_duplicates_all' else 'btn-outline-primary'} btn-sm" href="${request.route_url('contact_duplicates_all', _query=q)}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
-  </div>
+  ${button.dropdown_list_mode(
+    all_url=request.route_url('contact_all', _query=q),
+    unassigned_url=request.route_url('contact_unassigned', _query=q),
+    duplicates_url=request.route_url('contact_duplicates_all', _query=q),
+    is_all=is_all,
+    is_unassigned=is_unassigned,
+    is_duplicates=is_duplicates,
+    icon_all='people',
+    icon_unassigned='person-x'
+  )}
 </div>
 
 <%include file="search_criteria.mako"/>

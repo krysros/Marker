@@ -27,11 +27,14 @@
     <a class="btn btn-outline-primary" href="${request.route_url('user_map_selected_projects', username=user.name, _query=q)}"><i class="bi bi-map"></i> ${_("Map")}</a>
   </div>
   <div class="vr mx-1"></div>
-  <div class="btn-group btn-group-sm" role="group" aria-label="${_('View mode')}" hx-boost="false">
-    <a class="btn ${'btn-primary' if matched_route_name == 'user_uptime_selected_projects' else 'btn-outline-primary'}" href="${request.route_url('user_uptime_selected_projects', username=user.name, _query=q)}"><i class="bi bi-globe"></i> ${_("Uptime")}</a>
-    <a class="btn ${'btn-primary' if matched_route_name == 'user_duplicates_selected_projects' else 'btn-outline-primary'}" href="${request.route_url('user_duplicates_selected_projects', username=user.name, _query=q)}"><i class="bi bi-files"></i> ${_("Duplicates")}</a>
-    <a class="btn ${'btn-primary' if matched_route_name == 'user_nolocation_selected_projects' else 'btn-outline-primary'}" href="${request.route_url('user_nolocation_selected_projects', username=user.name, _query=q)}"><i class="bi bi-geo"></i> ${_("No location")}</a>
-  </div>
+  ${button.dropdown_quality(
+    uptime_url=request.route_url('user_uptime_selected_projects', username=user.name, _query=q),
+    duplicates_url=request.route_url('user_duplicates_selected_projects', username=user.name, _query=q),
+    nolocation_url=request.route_url('user_nolocation_selected_projects', username=user.name, _query=q),
+    is_uptime=matched_route_name == 'user_uptime_selected_projects',
+    is_duplicates=matched_route_name == 'user_duplicates_selected_projects',
+    is_nolocation=matched_route_name == 'user_nolocation_selected_projects'
+  )}
 </div>
 
 <%include file="search_criteria.mako"/>
