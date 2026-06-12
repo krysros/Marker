@@ -282,5 +282,3 @@ def test_polish_collate_and_unicode_lower_direct():
     # Test _unicode_lower
     assert _unicode_lower("ŁÓDŹ") == "łódź"
     assert _unicode_lower(None) is None
-
-
