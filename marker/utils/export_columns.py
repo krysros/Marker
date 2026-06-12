@@ -11,7 +11,7 @@ Usage in a Mako template::
 """
 
 
-def contact_cols(_):
+def basic_contact_cols(_):
     return [
         _("Contact name"),
         _("Contact role"),
@@ -20,8 +20,21 @@ def contact_cols(_):
     ]
 
 
+def contact_cols(_):
+    return basic_contact_cols(_) + [
+        _("Company/Project"),
+        _("Street"),
+        _("Post code"),
+        _("City"),
+        _("Subdivision"),
+        _("Country"),
+        _("Website"),
+        _("Tags"),
+    ]
+
+
 def company_cols(_):
-    return contact_cols(_) + [
+    return basic_contact_cols(_) + [
         _("Company name"),
         _("Company street"),
         _("Company post code"),
@@ -37,7 +50,7 @@ def company_cols(_):
 
 
 def project_cols(_):
-    return contact_cols(_) + [
+    return basic_contact_cols(_) + [
         _("Project name"),
         _("Project street"),
         _("Project post code"),
@@ -55,12 +68,12 @@ def project_cols(_):
 
 def tag_company_cols(_):
     """Column list for tag-scoped company exports (Tag inserted after contact cols)."""
-    return contact_cols(_) + [_("Tag")] + company_cols(_)[4:]
+    return basic_contact_cols(_) + [_("Tag")] + company_cols(_)[4:]
 
 
 def tag_project_cols(_):
     """Column list for tag-scoped project exports (Tag inserted after contact cols)."""
-    return contact_cols(_) + [_("Tag")] + project_cols(_)[4:]
+    return basic_contact_cols(_) + [_("Tag")] + project_cols(_)[4:]
 
 
 def prices_cols(_):

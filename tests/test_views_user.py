@@ -206,7 +206,9 @@ def test_contact_export_header(dbsession):
     request = _req(dbsession, user)
     view = UserView(request)
     header = view._contact_export_header()
-    assert len(header) == 4
+    assert len(header) == 12
+    basic_header = view._basic_contact_export_header()
+    assert len(basic_header) == 4
 
 
 def test_company_export_header(dbsession):
@@ -353,6 +355,23 @@ def test_selected_contacts_export_rows_with_project(dbsession):
     view = UserView(request)
     rows, colors = view._selected_contacts_export_rows([contact], "projects")
     assert len(rows) == 1
+
+
+def test_selected_contacts_export_rows_no_category(dbsession):
+    user = _user(dbsession)
+    company = _company(dbsession, user, "TestLinkedCo")
+    contact_with_co = _contact(dbsession, user, "ContactWithCo", company=company)
+    contact_no_co = _contact(dbsession, user, "ContactNoCo")
+    request = _req(dbsession, user)
+    view = UserView(request)
+    rows, colors = view._selected_contacts_export_rows([contact_with_co, contact_no_co], "")
+    assert len(rows) == 2
+    # First contact (with company)
+    assert rows[0][0] == "ContactWithCo"
+    assert rows[0][4] == "TestLinkedCo"
+    # Second contact (no company)
+    assert rows[1][0] == "ContactNoCo"
+    assert rows[1][4] == ""
 
 
 def test_selected_contacts_export_rows_no_linked(dbsession):

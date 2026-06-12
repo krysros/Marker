@@ -9,10 +9,12 @@ def test_contact_company_project_columns_shape():
     contact = export_columns.contact_cols(_identity_translate)
     company = export_columns.company_cols(_identity_translate)
     project = export_columns.project_cols(_identity_translate)
+    basic_contact = export_columns.basic_contact_cols(_identity_translate)
 
-    assert len(contact) == 4
-    assert company[:4] == contact
-    assert project[:4] == contact
+    assert len(basic_contact) == 4
+    assert len(contact) == 12
+    assert company[:4] == basic_contact
+    assert project[:4] == basic_contact
 
 
 def test_tag_company_cols_inserts_tag_after_contact_prefix():

@@ -249,7 +249,7 @@ class UserView:
             },
         ]
 
-    def _contact_export_header(self):
+    def _basic_contact_export_header(self):
         _ = self.request.translate
         return [
             _("Contact name"),
@@ -258,10 +258,24 @@ class UserView:
             _("Contact email"),
         ]
 
+    def _contact_export_header(self):
+        _ = self.request.translate
+        return [
+            *self._basic_contact_export_header(),
+            _("Company/Project"),
+            _("Street"),
+            _("Post code"),
+            _("City"),
+            _("Subdivision"),
+            _("Country"),
+            _("Website"),
+            _("Tags"),
+        ]
+
     def _company_export_header(self):
         _ = self.request.translate
         return [
-            *self._contact_export_header(),
+            *self._basic_contact_export_header(),
             _("Company name"),
             _("Company street"),
             _("Company post code"),
@@ -278,7 +292,7 @@ class UserView:
     def _project_export_header(self):
         _ = self.request.translate
         return [
-            *self._contact_export_header(),
+            *self._basic_contact_export_header(),
             _("Project name"),
             _("Project street"),
             _("Project post code"),
@@ -297,7 +311,7 @@ class UserView:
         _ = self.request.translate
         if category == "projects":
             return [
-                *self._contact_export_header(),
+                *self._basic_contact_export_header(),
                 _("Tag"),
                 _("Project name"),
                 _("Project street"),
@@ -314,7 +328,7 @@ class UserView:
             ]
 
         return [
-            *self._contact_export_header(),
+            *self._basic_contact_export_header(),
             _("Tag"),
             _("Company name"),
             _("Company street"),
@@ -399,8 +413,42 @@ class UserView:
 
         for contact in contacts:
             if not category:
-                rows.append(self._contact_row_values(contact))
-                row_colors.append(self._resolve_row_color("", contact.color))
+                linked_object = contact.company or contact.project
+                if linked_object:
+                    category_name = linked_object.name
+                    street = linked_object.street
+                    postcode = linked_object.postcode
+                    city = linked_object.city
+                    subdivision = linked_object.subdivision
+                    country = linked_object.country
+                    website = linked_object.website
+                    tags_value = self._tags_as_string(linked_object.tags)
+                    object_color = linked_object.color
+                else:
+                    category_name = ""
+                    street = ""
+                    postcode = ""
+                    city = ""
+                    subdivision = ""
+                    country = ""
+                    website = ""
+                    tags_value = ""
+                    object_color = ""
+
+                rows.append(
+                    [
+                        *self._contact_row_values(contact),
+                        category_name,
+                        street,
+                        postcode,
+                        city,
+                        subdivision,
+                        country,
+                        website,
+                        tags_value,
+                    ]
+                )
+                row_colors.append(self._resolve_row_color(object_color, contact.color))
                 continue
 
             linked_object = contact.project if is_projects else contact.company

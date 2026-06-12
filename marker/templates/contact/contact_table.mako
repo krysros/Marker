@@ -97,7 +97,7 @@
         % elif q.get("category") == "projects":
         <th>${_("Project")}</th>
         % else:
-        <th>${_("Category")}</th>
+        <th>${_("Company/Project")}</th>
         % endif
         <th>${_("City")}</th>
         % if context.get("distances"):
