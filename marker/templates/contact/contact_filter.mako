@@ -43,7 +43,7 @@
   </form>
 </div>
 
-% if context.get('switch_mode') not in ('selected_companies', 'selected_projects'):
+% if context.get('switch_mode') not in ('selected_companies', 'selected_projects', 'selected_contacts'):
 <div class="dropdown">
   <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
     % if q.get('category'):

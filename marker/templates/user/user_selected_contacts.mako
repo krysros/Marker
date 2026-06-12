@@ -18,7 +18,35 @@
     ${button.dropdown_download_cols(request.route_url('user_export_selected_contacts', username=user.name), _export_cols, extra_params=q)}
   </div>
   </div>
+<%namespace name="pills" file="/common/pills.mako"/>
+
 <hr>
+
+<%
+  companies_q = {**q, 'category': 'companies'}
+  projects_q = {**q, 'category': 'projects'}
+  
+  category_pills = [
+      {
+          "title": _("Companies"),
+          "icon": "buildings",
+          "url": request.route_url('user_selected_contacts', username=user.name, _query=companies_q),
+          "count": None,
+      },
+      {
+          "title": _("Projects"),
+          "icon": "briefcase",
+          "url": request.route_url('user_selected_contacts', username=user.name, _query=projects_q),
+          "count": None,
+      }
+  ]
+%>
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
+  <div class="me-auto">
+    ${pills.pills(category_pills, active_url=request.route_url('user_selected_contacts', username=user.name, _query={**q, 'category': q.get('category', 'companies')}))}
+  </div>
+</div>
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-1">
   <%include file="contact_filter.mako"/>

@@ -1890,7 +1890,6 @@ def test_category_filter_defaults_to_all_across_category_views(testapp, dbsessio
         f"/user/{user.name}/tags",
         f"/user/{user.name}/contacts",
         f"/user/{user.name}/selected_tags",
-        f"/user/{user.name}/selected_contacts",
     ]
 
     for page_url in pages_with_category_filter:
